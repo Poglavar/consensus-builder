@@ -2861,6 +2861,16 @@ body.site-intro-open { overflow: hidden; }
 .geom-handle.is-dragging,
 .geom-handle:active { cursor: grabbing; background: var(--cb-primary-hover); }
 
+/* A whole segment between two nodes, grabbed to move it. The hit line is invisible until hovered,
+   so the boundary underneath keeps its own look; on hover it lights up to say "this moves". */
+path.geom-handle-edge {
+    cursor: move;
+    stroke: var(--cb-primary-hover);
+    touch-action: none;
+}
+path.geom-handle-edge:hover,
+path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
+
 /* A node the host has pinned: it sits on geometry this editor is not allowed to reshape (in a land
    readjustment, the pooled outline, which belongs to the neighbours). Hollow, grey and explicitly
    not grabbable, so the boundary reads as given rather than as something you failed to drag. */

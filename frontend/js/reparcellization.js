@@ -150,7 +150,7 @@
         buildingFootprintLayer: null,
         // Node/edge editing of the plot boundaries (plot-topology.js). `nodes` holds the current
         // topology so a drag knows which plots a handle belongs to.
-        nodeEdit: { active: false, topology: null, layer: null, boundaryIndex: null },
+        nodeEdit: { active: false, topology: null, layer: null, boundaryIndex: null, focusRemove: null },
         // Undo stack for layout edits (Cmd/Ctrl+Z). Each entry is a snapshot of the plots and
         // their ownership taken BEFORE a mutating action, so undo restores the state the user
         // last saw rather than an intermediate drag frame.
@@ -364,6 +364,7 @@
             state.previewLayer.remove();
             state.previewLayer = null;
         }
+        clearPlotNumbers();
         if (state.buildingFootprintLayer) {
             state.buildingFootprintLayer.remove();
             state.buildingFootprintLayer = null;
@@ -551,6 +552,7 @@
                       </div>
                       <div class="reparcel-persistent-controls">
                           ${tool('data-reparcel-undo-edit disabled', 'reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)', 'fa-rotate-left')}
+                          ${tool('data-reparcel-redo-edit disabled', 'reparcellization.modal.redoEdit', 'Redo', 'fa-rotate-right')}
                           <button type="button" class="btn btn-sm reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                       </div>
                       <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
@@ -629,6 +631,7 @@
         state.cashTotalEl = root.querySelector('[data-reparcel-cashtotal]');
         state.nodesBtn = root.querySelector('[data-reparcel-nodes]');
         state.undoEditBtn = root.querySelector('[data-reparcel-undo-edit]');
+        state.redoEditBtn = root.querySelector('[data-reparcel-redo-edit]');
         state.drawBtn = root.querySelector('[data-reparcel-draw]');
         state.courtyardToolsEl = root.querySelector('[data-reparcel-courtyard-tools]');
         root.querySelector('[data-reparcel-courtyard-building]').addEventListener('click', openBuiltFormPicker);
@@ -680,7 +683,24 @@
 
         state.escHandler = (event) => {
             if (event.defaultPrevented) return;
+            const targetTag = (event.target && event.target.tagName) || '';
+            const typing = targetTag === 'INPUT' || targetTag === 'TEXTAREA' || targetTag === 'SELECT' || event.target?.isContentEditable;
+            if ((event.key === 'Delete' || event.key === 'Backspace') && !typing && !state.drawing.active
+                && typeof state.nodeEdit.focusRemove === 'function') {
+                event.preventDefault();
+                const remove = state.nodeEdit.focusRemove;
+                state.nodeEdit.focusRemove = null;
+                try { state.map.closePopup(); } catch (_) { }
+                remove();
+                return;
+            }
             if (event.key === 'Escape') {
+                // A node or boundary popup is the innermost thing open: close it, not the editor.
+                const popupOpen = !!(state.map && state.map._popup && state.map.hasLayer && state.map.hasLayer(state.map._popup));
+                if (popupOpen && !state.drawing.active) {
+                    try { state.map.closePopup(); } catch (_) { }
+                    return;
+                }
                 if (state.drawing.active) {
                     cancelDraw();
                     setStatus('', 'info');
@@ -721,6 +741,12 @@
                 if (!target || target.name !== 'reparcel-algorithm') return;
                 const option = getAlgorithmOptionByKey(target.value);
                 if (!option || option.disabled) return;
+                // Draw freely starts from what is on the map, owners included: switching used to
+                // wipe the layout down to one unassigned plot, so the first step of hand editing
+                // was redoing the automatic split by hand. Erase boundaries to start over.
+                state.carrySlices = option.key === 'manual' && state.slices.length
+                    ? JSON.parse(JSON.stringify(state.slices))
+                    : null;
                 state.algorithm = option.key;
                 state.subtitleData.algorithmLabel = option.label;
                 updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
@@ -737,7 +763,7 @@
                 // tools inside this mode; the handles are the mode.
                 if (state.historyCtl) state.historyCtl.clear();
                 refreshPreview().then(() => {
-                    toggleNodeEditing(option.key === 'manual' || option.key === 'amend');
+                    toggleNodeEditing(EDITABLE_ALGORITHMS.includes(option.key));
                 }).catch(() => { });
             });
         }
@@ -755,6 +781,7 @@
             // One shortcut and one button, both owned by the shared module.
             history.bindKeyboard(window);
             if (state.undoEditBtn) history.bindButton(state.undoEditBtn);
+            if (state.redoEditBtn) history.bindRedoButton(state.redoEditBtn);
         }
         if (state.drawBtn) {
             state.drawBtn.addEventListener('click', () => toggleDrawMode('polygon'));
@@ -1812,8 +1839,38 @@
     // ── Manual plot drawing ──────────────────────────────────────────────
 
     // The two hand-edited starting layouts share the same drawing and boundary tools.
+    // Point the starting-layout control (and the subtitle) at `key` without recomputing the
+    // layout. Used when an edit or an undo changes which kind of layout is on the map.
+    function setAlgorithmKey(key) {
+        const option = getAlgorithmOptionByKey(key);
+        if (!option) return;
+        state.algorithm = option.key;
+        if (option.key === 'sweep-line') initSweepOrientation();
+        else destroySweepOrientation();
+        const radio = state.modal && state.modal.querySelector(`input[name="reparcel-algorithm"][value="${option.key}"]`);
+        if (radio) radio.checked = true;
+        if (state.subtitleData) state.subtitleData.algorithmLabel = option.label;
+        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
+        updateDrawToolButtons();
+        updateActiveModeHint();
+    }
+
+    // The automatic split is regenerated whenever the sweep handle moves, so a hand edit cannot
+    // live inside it. Instead of refusing the edit, the first one turns the automatic layout into
+    // a drawn one ("Draw freely") with the same plots and owners; undo turns it back.
+    function adoptLayoutForEditing() {
+        if (state.algorithm !== 'sweep-line') return false;
+        setAlgorithmKey('manual');
+        console.debug('[reparcellization] automatic layout adopted for hand editing', { plots: state.slices.length });
+        return true;
+    }
+
+    // Automatic layouts can be edited too: the first edit adopts the layout as a drawn one
+    // (adoptLayoutForEditing), so every tool is usable whatever the starting layout.
+    const EDITABLE_ALGORITHMS = ['manual', 'amend', 'sweep-line'];
+
     function updateDrawToolButtons() {
-        const enabled = state.ownershipMode === 'multiple' && ['manual', 'amend'].includes(state.algorithm);
+        const enabled = state.ownershipMode === 'multiple' && EDITABLE_ALGORITHMS.includes(state.algorithm);
         [state.drawBtn, state.lineBtn, state.eraseBtn].forEach(btn => { if (btn) btn.disabled = !enabled; });
         if (state.courtyardToolsEl) state.courtyardToolsEl.hidden = state.algorithm !== 'amend' || state.plotsTab === 'old';
         if (!enabled && state.erase.active) toggleEraseMode(false);
@@ -2055,6 +2112,15 @@
         updateDrawToolbar();
     }
 
+    // Double-click finishes the shape where the last click landed, as in every drawing tool. The
+    // two clicks that make up the double-click have already placed that point (twice — both the
+    // plot and the cut paths drop consecutive duplicates).
+    function onDrawDblClick(e) {
+        if (!state.drawing.active) return;
+        if (e && e.originalEvent) L.DomEvent.stop(e.originalEvent);
+        onDrawFinish();
+    }
+
     function onDrawMouseMove(e) {
         if (!state.drawing.active || !e?.latlng) return;
         state.drawing.rawCursor = [e.latlng.lng, e.latlng.lat];
@@ -2130,6 +2196,7 @@
                 setStatus(cutFailureText(result.reason), 'error');
                 return;
             }
+            adoptLayoutForEditing();
             applyCutResult(result);
             console.debug('[reparcellization] cut', {
                 ends: (result.ends || []).map(end => end.kind),
@@ -2166,6 +2233,7 @@
             discardLastHistory();
             return;
         }
+        adoptLayoutForEditing();
         // Carving subtracts the new plot from whatever it overlapped, which leaves the neighbours
         // without the corners it just introduced — the same non-conforming borders the line tool
         // is careful not to make. Node them, then settle: carving drops the sub-1 m² scraps it
@@ -2241,7 +2309,11 @@
         try { state.map.getContainer().style.cursor = 'crosshair'; } catch (_) { }
         state.drawing.cursor = null;
         state.map.on('click', onDrawClick);
+        state.map.on('dblclick', onDrawDblClick);
         state.map.on('mousemove', onDrawMouseMove);
+        // A double-click finishes the shape here, so it must not also zoom the map.
+        state.drawing.dblZoomWasOn = !!(state.map.doubleClickZoom && state.map.doubleClickZoom.enabled());
+        if (state.drawing.dblZoomWasOn) state.map.doubleClickZoom.disable();
         setDrawButtonsActive();
         updateDrawToolbar();
         updateActiveModeHint();
@@ -2280,7 +2352,10 @@
                 state.drawing.zoomHandler = null;
             }
             state.map.off('click', onDrawClick);
+            state.map.off('dblclick', onDrawDblClick);
             state.map.off('mousemove', onDrawMouseMove);
+            if (state.drawing.dblZoomWasOn && state.map.doubleClickZoom) state.map.doubleClickZoom.enable();
+            state.drawing.dblZoomWasOn = false;
             try { state.map.getContainer().style.cursor = ''; } catch (_) { }
         }
         setDrawButtonsActive();
@@ -2318,7 +2393,7 @@
 
     function eraseAvailable() {
         return !!(window.__plotTopology && window.__plotCut && state.map && state.slices.length
-            && state.ownershipMode === 'multiple' && ['manual', 'amend'].includes(state.algorithm));
+            && state.ownershipMode === 'multiple' && EDITABLE_ALGORITHMS.includes(state.algorithm));
     }
 
     function toggleEraseMode(force) {
@@ -2545,15 +2620,27 @@
         const factory = window.GeometryEditHistory;
         if (!factory) return null;
         state.historyCtl = factory.create({
+            // Undo has an inverse here: every snapshot is the whole layout, so replaying one that
+            // was undone puts back exactly what was there.
+            redo: true,
             capture: () => ({
                 slices: JSON.parse(JSON.stringify(state.slices || [])),
                 ownerShares: JSON.parse(JSON.stringify(state.ownerShares || [])),
-                selectedSliceIndex: state.selectedSliceIndex
+                selectedSliceIndex: state.selectedSliceIndex,
+                // The first hand edit of an automatic layout turns it into a drawn one; undoing
+                // that edit has to give the automatic layout (and its sweep handle) back.
+                algorithm: state.algorithm,
+                sweep: state.sweepHandle ? [state.sweepHandle.getLatLng().lat, state.sweepHandle.getLatLng().lng] : null
             }),
-            restore: (snapshot) => {
+            restore: (snapshot, direction) => {
                 state.slices = snapshot.slices;
                 state.ownerShares = snapshot.ownerShares;
                 state.selectedSliceIndex = snapshot.selectedSliceIndex;
+                if (snapshot.algorithm && snapshot.algorithm !== state.algorithm) setAlgorithmKey(snapshot.algorithm);
+                if (snapshot.sweep && state.sweepHandle) {
+                    state.sweepHandle.setLatLng(snapshot.sweep);
+                    updateSweepDirLine();
+                }
                 dismissOwnerPopup();
                 updateLegend(state.ownerShares);
                 drawPreview();
@@ -2561,15 +2648,27 @@
                 if (state.nodeEdit.active) renderNodeHandles();
                 // The erasable network describes the plots too, so it has to follow them back.
                 if (state.erase.active) renderEraseLayer();
-                setStatus(t('reparcellization.modal.status.undone', 'Undid the last change.'),
-                    'info', 'reparcellization.modal.status.undone');
+                if (direction === 'redo') {
+                    setStatus(t('reparcellization.modal.status.redone', 'Redid the change.'),
+                        'info', 'reparcellization.modal.status.redone');
+                } else {
+                    setStatus(t('reparcellization.modal.status.undone', 'Undid the last change.'),
+                        'info', 'reparcellization.modal.status.undone');
+                }
             },
-            onChange: (canUndo) => {
-                if (!state.undoEditBtn) return;
-                state.undoEditBtn.disabled = !canUndo;
-                state.undoEditBtn.title = canUndo
-                    ? t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')
-                    : t('reparcellization.modal.undoNothing', 'Nothing to undo');
+            onChange: (canUndo, canRedo) => {
+                if (state.undoEditBtn) {
+                    state.undoEditBtn.disabled = !canUndo;
+                    state.undoEditBtn.title = canUndo
+                        ? t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')
+                        : t('reparcellization.modal.undoNothing', 'Nothing to undo');
+                }
+                if (state.redoEditBtn) {
+                    state.redoEditBtn.disabled = !canRedo;
+                    state.redoEditBtn.title = canRedo
+                        ? t('reparcellization.modal.redoEdit', 'Redo')
+                        : t('reparcellization.modal.redoNothing', 'Nothing to redo');
+                }
             }
         });
         return state.historyCtl;
@@ -2614,13 +2713,18 @@
             state.erase.nodeEditWasActive = false;
             toggleEraseMode(false);
         }
+        const wasActive = state.nodeEdit.active;
         state.nodeEdit.active = next;
         updateActiveModeHint();
         if (state.nodesBtn) state.nodesBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
-            setStatus(t('reparcellization.modal.status.nodeHint',
-                'Drag a node to move it — shared nodes move every plot that touches them. Remove a node to dissolve the boundary it defines. The pooled outline itself is fixed and carries no nodes.'),
-                'info', 'reparcellization.modal.status.nodeHint');
+            // Re-arming handles that are already up (a layout switch does) must not talk over the
+            // status the switch just set.
+            if (!wasActive) {
+                setStatus(t('reparcellization.modal.status.nodeHint',
+                    'Drag a node, or grab a boundary segment and drag it. Pull a midpoint to bend a boundary. Click a node to remove it, or a boundary to erase it. The pooled outline is fixed.'),
+                    'info', 'reparcellization.modal.status.nodeHint');
+            }
             renderNodeHandles();
         } else {
             clearNodeHandles();
@@ -2730,8 +2834,21 @@
                 return {};
             },
             // No insertion on the outline: a new node there could only ever slide along a line
-            // that is not ours to reshape.
-            edgePolicy: edge => ({ insertable: !edge.onBoundary }),
+            // that is not ours to reshape. The same goes for dragging an outline segment.
+            edgePolicy: edge => ({ insertable: !edge.onBoundary, draggable: !edge.onBoundary }),
+            // Pull a midpoint to bend a boundary; grab a segment to move it whole.
+            dragMidpoints: true,
+            dragEdges: true,
+            onPreviewInsert: (edgeId, coord, topology) => {
+                previewGeometries(topo.insertNodeOnEdge(state.slices, topology, edgeId, coord));
+            },
+            onPreviewMany: (moves, topology) => {
+                previewGeometries(topo.moveNodes(state.slices, topology, moves));
+            },
+            onMoveMany: (moves, topology) => {
+                applyGeometries(topo.moveNodes(state.slices, topology, moves));
+            },
+            onEdgeClick: (edge, coord, latlng) => openEdgePopup(edge, latlng),
             onPreview: (nodeId, coord, topology) => {
                 previewGeometries(topo.moveNode(state.slices, topology, nodeId, coord));
             },
@@ -2825,8 +2942,56 @@
         try {
             marker.unbindPopup();
             marker.bindPopup(container, { className: 'reparcel-node-popup-wrap', closeButton: true, autoPan: true });
+            // While the popup is open, Delete/Backspace removes this node (see the key handler).
+            state.nodeEdit.focusRemove = onRemove;
+            marker.once('popupclose', () => {
+                if (state.nodeEdit.focusRemove === onRemove) state.nodeEdit.focusRemove = null;
+            });
             marker.openPopup();
         } catch (_) { /* a popup that will not open must not break the drag handle */ }
+    }
+
+    // A click on a boundary segment (not a drag): say what it separates, and offer to erase it —
+    // the same act as the eraser tool, without having to find the tool first.
+    function openEdgePopup(edge, latlng) {
+        if (!state.map || !latlng || !edge) return;
+        const plots = Array.isArray(edge.plots) ? edge.plots.filter(i => state.slices[i]) : [];
+        const container = document.createElement('div');
+        container.className = 'reparcel-node-popup';
+        const title = document.createElement('div');
+        title.className = 'reparcel-node-popup__title';
+        const hint = document.createElement('div');
+        hint.className = 'reparcel-node-popup__hint';
+        if (plots.length === 2) {
+            title.textContent = t('reparcellization.modal.edgeBetween', 'Boundary between {{a}} and {{b}}',
+                { a: plotLabel(plots[0]), b: plotLabel(plots[1]) });
+            hint.textContent = t('reparcellization.modal.edgeHint',
+                'Drag it to move this segment. Erasing it joins the two plots; the joined plot keeps the owners of the larger one.');
+        } else {
+            title.textContent = t('reparcellization.modal.edgeOwn', 'Boundary segment');
+            hint.textContent = t('reparcellization.modal.edgeOwnHint', 'Drag it to move this segment.');
+        }
+        container.appendChild(title);
+        container.appendChild(hint);
+        if (plots.length === 2) {
+            const erase = document.createElement('button');
+            erase.type = 'button';
+            erase.className = 'btn btn-danger btn-sm';
+            erase.textContent = t('reparcellization.modal.edgeErase', 'Erase this boundary');
+            erase.addEventListener('click', () => {
+                try { state.map.closePopup(); } catch (_) { }
+                if (mergePlots(plots)) {
+                    setStatus(t('reparcellization.modal.status.edgeErased', 'Boundary erased — the two plots are now one.'), 'info');
+                }
+            });
+            container.appendChild(erase);
+        }
+        try {
+            L.popup({ className: 'reparcel-node-popup-wrap', closeButton: true, autoPan: true })
+                .setLatLng(latlng)
+                .setContent(container)
+                .openOn(state.map);
+        } catch (_) { /* a popup that will not open must not break the editor */ }
     }
 
     // Paint a candidate geometry set without committing it (drag preview).
@@ -3060,6 +3225,7 @@
         });
 
         pushHistory();
+        adoptLayoutForEditing();
         state.slices[keeper].geometry = merged;
         state.slices[keeper].source = 'manual';
         indices.filter(index => index !== keeper)
@@ -3095,6 +3261,7 @@
         // most; whatever is claimed twice goes to one of them.
         const settled = healLayout(geometries, state.slices.map(slice => slice.geometry));
         pushHistory();   // the pre-edit layout, captured before the assignment below
+        adoptLayoutForEditing();
         const dissolved = [];
         state.slices.forEach((slice, idx) => {
             const geometry = settled[idx];
@@ -3534,6 +3701,10 @@
             pane: 'onMapEditorHandles'
         });
         state.sweepHandle.on('drag', onSweepDrag);
+        // The node handles describe the plots; while the sweep regenerates them every frame they
+        // would point at shapes that no longer exist, so they step aside until the drop.
+        state.sweepHandle.on('dragstart', () => clearNodeHandles());
+        state.sweepHandle.on('dragend', () => { if (state.nodeEdit.active) renderNodeHandles(); });
         state.sweepHandle.addTo(state.map);
         updateSweepDirLine();
     }
@@ -3606,16 +3777,74 @@
         }
     }
 
+    function sliceIsUnassigned(slice) {
+        return !!slice && !(Array.isArray(slice.owners) && slice.owners.length) && !slice.ownerKey;
+    }
+
+    // Plots nobody owns yet were all one grey, so a fresh cut looked like nothing happened. They
+    // cycle through a few neutral tints from the stylesheet (on-map-reparcellization.css); pieces
+    // of one cut sit next to each other in the list, so they always differ.
+    function unassignedFill(index) {
+        const n = (Math.abs(index) % 4) + 1;
+        try {
+            const value = getComputedStyle(document.documentElement)
+                .getPropertyValue(`--reparcel-unassigned-fill-${n}`).trim();
+            if (value) return value;
+        } catch (_) { }
+        return '#cccccc';
+    }
+
+    function sliceFillColor(slice, index) {
+        if (sliceIsUnassigned(slice)) return unassignedFill(index);
+        return slice.color || '#888';
+    }
+
     // Base (un-highlighted) Leaflet style for a plot, matching drawPreview's style fn.
-    function sliceBaseStyle(slice) {
+    function sliceBaseStyle(slice, index) {
         const isMulti = Array.isArray(slice.owners) && slice.owners.length > 1;
         return {
             color: isMulti ? '#000' : '#333',
             weight: isMulti ? 2 : 1,
             fillOpacity: 0.55,
-            fillColor: slice.color || '#888',
+            fillColor: sliceFillColor(slice, index),
             dashArray: isMulti ? '6 3' : null
         };
+    }
+
+    // A point inside the plot for its number: the centroid when it falls inside (most plots), else
+    // a point guaranteed to be on the shape (an L or a thin strip).
+    function plotLabelPoint(geometry) {
+        if (!geometry || typeof turf === 'undefined') return null;
+        try {
+            const feature = { type: 'Feature', properties: {}, geometry };
+            const centre = turf.centerOfMass(feature);
+            if (turf.booleanPointInPolygon(centre, feature)) return centre.geometry.coordinates;
+            return turf.pointOnFeature(feature).geometry.coordinates;
+        } catch (_) { return null; }
+    }
+
+    function clearPlotNumbers() {
+        if (state.plotNumberLayer) {
+            try { state.plotNumberLayer.remove(); } catch (_) { }
+            state.plotNumberLayer = null;
+        }
+    }
+
+    // The New plots list numbers its rows; the same numbers on the map say which row is which plot.
+    function drawPlotNumbers() {
+        clearPlotNumbers();
+        if (!state.map || !state.slices.length || state.plotsTab === 'old') return;
+        const markers = state.slices.map((slice, idx) => {
+            const point = plotLabelPoint(slice.geometry);
+            if (!point) return null;
+            return L.marker([point[1], point[0]], {
+                pane: 'reparcelPlots',
+                interactive: false,
+                keyboard: false,
+                icon: L.divIcon({ className: 'reparcel-plot-number', html: String(idx + 1), iconSize: [22, 22] })
+            });
+        }).filter(Boolean);
+        state.plotNumberLayer = L.layerGroup(markers).addTo(state.map);
     }
 
     // Highlight (or restore) every visual piece of a plot when its legend row is
@@ -3630,7 +3859,7 @@
                     layer.setStyle({ color: '#111', weight: 4, fillOpacity: 0.8, dashArray: null });
                     if (typeof layer.bringToFront === 'function') layer.bringToFront();
                 } else {
-                    layer.setStyle(sliceBaseStyle(state.slices[sliceIndex] || {}));
+                    layer.setStyle(sliceBaseStyle(state.slices[sliceIndex] || {}, sliceIndex));
                 }
             }
             layerIndex++;
@@ -3741,7 +3970,7 @@
                     type: 'Feature',
                     properties: {
                         ownerKey: slice.ownerKey,
-                        color: slice.color,
+                        color: sliceFillColor(slice, idx),
                         displayName: ownerDisplayName(slice.displayName),
                         percent: slice.percent,
                         sliceIndex: idx,
@@ -3831,6 +4060,8 @@
             }
             state.hasFitBounds = true;
         }
+
+        drawPlotNumbers();
 
         // Building-footprint guide on top of the plots (outlines guide the layout).
         drawBuildingFootprints();
@@ -4339,14 +4570,26 @@
             setStatus(t('reparcellization.modal.status.amendHint',
                 'Keep the existing plots and owners. Carve a shared courtyard or edit the boundaries.'), 'info');
         } else if (state.algorithm === 'manual') {
-            // Manual: blank slate. Discard any sweep-line result and start from the
-            // undivided superparcel as a single unassigned plot to draw/split on.
-            state.slices = [createUnassignedPlot(state.superParcel.geometry, 'base')];
-            setStatus(
-                t('reparcellization.modal.status.manualHint', 'Draw plots on the map, then assign each to an owner.'),
-                'info',
-                'reparcellization.modal.status.manualHint'
-            );
+            const carried = state.carrySlices;
+            state.carrySlices = null;
+            if (Array.isArray(carried) && carried.length) {
+                // Continue from the layout that was on the map (see the algorithm switch).
+                state.slices = carried;
+                setStatus(
+                    t('reparcellization.modal.status.manualFromLayout',
+                        'Drawing freely from the current layout. Drag nodes or whole boundary segments, cut with the line tool, or click a boundary to erase it.'),
+                    'info',
+                    'reparcellization.modal.status.manualFromLayout'
+                );
+            } else {
+                // Nothing to continue from: the undivided pool as one unassigned plot.
+                state.slices = [createUnassignedPlot(state.superParcel.geometry, 'base')];
+                setStatus(
+                    t('reparcellization.modal.status.manualHint', 'Draw plots on the map, then assign each to an owner.'),
+                    'info',
+                    'reparcellization.modal.status.manualHint'
+                );
+            }
         } else {
             setStatus(
                 t('reparcellization.modal.status.algorithmUnavailable', 'Selected algorithm is not available yet.'),
@@ -4720,7 +4963,9 @@
         await refreshPreview();
         // Manual IS the node/edge system — there are not two manual modes, one with handles and
         // one without. Draw-plot and split-with-line are tools used inside it.
-        if (state.algorithm === 'manual' || state.algorithm === 'amend') toggleNodeEditing(true);
+        // The handles are the editor: they are on from the start in every layout, so a boundary
+        // can be grabbed without first finding the right tool.
+        if (EDITABLE_ALGORITHMS.includes(state.algorithm)) toggleNodeEditing(true);
         // Baseline for "did anything change?" — taken AFTER the opening layout is generated, so
         // simply opening and closing is never treated as unsaved work.
         state.session?.fitFeature?.(state.superParcel, { maxZoom: 21 });

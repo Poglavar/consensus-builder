@@ -262,6 +262,27 @@
     color: var(--cb-text-muted);
 }
 
+/* Counterproposals and forks made from this proposal (proposals/lineage.js): a short list of
+   script links under the description, each opening that proposal in this panel. */
+.proposal-lineage {
+    margin-top: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.proposal-lineage__title {
+    margin: 0;
+}
+
+.proposal-lineage__list {
+    margin: var(--cb-space-1) 0 0;
+    padding-left: var(--cb-space-4);
+}
+
+.proposal-lineage__note {
+    color: var(--cb-text-faint);
+}
+
 /* Binding drift notice (binding-drift-panel.js): today's cadastre binds this published record's
    site differently; offers Re-bind, which publishes a new derived record. */
 .proposal-binding-drift {

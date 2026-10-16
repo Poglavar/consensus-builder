@@ -1624,6 +1624,68 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
     app.post('/proposals/:id/owner-decisions/bundle', createUploadRateLimiter(), ownerDecisions.bundle);
 
+    // Where a proposal came from and what was made from it. A fork or counterproposal records its
+    // source's id in proposal_data (sourceProposalId / replacementOfProposalId / copiedFromProposalId,
+    // written by the browser, frontend/js/proposals/create.js); this resolves the source when it was
+    // published and lists every published record that names this one as its source, so the original
+    // can show its counterproposals. A source that was only ever a local draft is reported as such.
+    app.get('/proposals/:id/lineage', async (req, res) => {
+        try {
+            const target = await pool.query(`
+                SELECT id, proposal_id,
+                       COALESCE(proposal_data->>'sourceProposalId', proposal_data->>'replacementOfProposalId', proposal_data->>'copiedFromProposalId') AS source_key,
+                       proposal_data->>'copiedFromName' AS source_name
+                FROM proposal
+                ${oneProposalByIdClause('$1')}
+            `, [req.params.id]);
+            const row = target.rows[0];
+            if (!row) return res.status(404).json({ error: 'Proposal not found' });
+
+            let source = null;
+            if (row.source_key) {
+                const found = await pool.query(`
+                    SELECT id, proposal_id, title, name, ${EFFECTIVE_STATUS_SQL} AS effective_status
+                    FROM proposal
+                    ${oneProposalByIdClause('$1')}
+                `, [String(row.source_key)]);
+                const hit = found.rows[0];
+                source = hit
+                    ? { published: true, id: hit.id, proposalId: hit.proposal_id, title: hit.title || hit.name || null, status: hit.effective_status }
+                    : { published: false, proposalId: String(row.source_key), title: row.source_name || null };
+            }
+
+            const keys = [String(row.proposal_id), String(row.id)];
+            const derived = await pool.query(`
+                SELECT id, proposal_id, title, name, author, created_at, ${EFFECTIVE_STATUS_SQL} AS effective_status,
+                       (proposal_data ? 'landFork') AS land_fork
+                FROM proposal
+                WHERE id <> $2
+                  AND (proposal_data->>'sourceProposalId' = ANY($1::text[])
+                    OR proposal_data->>'replacementOfProposalId' = ANY($1::text[])
+                    OR proposal_data->>'copiedFromProposalId' = ANY($1::text[]))
+                ORDER BY created_at DESC
+                LIMIT 50
+            `, [keys, row.id]);
+            res.json({
+                id: row.id,
+                proposalId: row.proposal_id,
+                source,
+                derived: derived.rows.map(entry => ({
+                    id: entry.id,
+                    proposalId: entry.proposal_id,
+                    title: entry.title || entry.name || null,
+                    author: entry.author || null,
+                    createdAt: entry.created_at,
+                    status: entry.effective_status,
+                    landFork: entry.land_fork === true
+                }))
+            });
+        } catch (err) {
+            console.error(`[${new Date().toISOString()}] Error in GET /proposals/:id/lineage:`, err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/proposals', async (req, res) => {
         try {
             const parcelId = req.query.parcel_id;

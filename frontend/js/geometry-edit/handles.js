@@ -20,7 +20,10 @@
         nodeSize: [12, 12],
         sharedSize: [14, 14],
         midSize: [9, 9],
-        showMidpoints: true
+        edgeClass: 'geom-handle-edge',
+        showMidpoints: true,
+        dragMidpoints: false,
+        dragEdges: false
     };
 
     // opts:
@@ -39,7 +42,14 @@
     //       boundary — expresses it here rather than validating after the fact, so the illegal
     //       gesture is simply not reachable. `constrain` also runs during the live drag preview,
     //       so the shape follows what the drop will actually do.
-    //   edgePolicy(edge, topology) -> { insertable? }   which edges offer an insert midpoint
+    //   edgePolicy(edge, topology) -> { insertable?, draggable? }   which edges offer an insert
+    //       midpoint, and (with dragEdges) which can be dragged as a whole segment
+    //   dragMidpoints    -> true: a midpoint can be dragged, inserting the node where it is dropped
+    //   onPreviewInsert(edgeId, coord, topology) -> void (optional, live midpoint-drag feedback)
+    //   dragEdges        -> true: grabbing a segment between two nodes moves both of its ends
+    //   onMoveMany(moves, topology)    -> void   moves = [{ nodeId, coord }]
+    //   onPreviewMany(moves, topology) -> void   (optional, live segment-drag feedback)
+    //   onEdgeClick(edge, coord, anchorLatLng, topology) -> void (optional, a click on a segment)
     function create(opts) {
         const options = Object.assign({}, DEFAULTS, opts || {}, (opts && opts.classes) || {});
         const L = options.leaflet || (typeof window !== 'undefined' ? window.L : null);
@@ -97,18 +107,43 @@
             };
             const edgeById = new Map((topology.edges || []).map(e => [e.id, e]));
 
+            if (options.dragEdges === true) renderEdgeHandles(topology, policyFor, edgeById);
+
             // Midpoints first so real vertices sit above them and win the click.
             if (options.showMidpoints) {
                 topo.edgeMidpoints(topology).filter(mid => edgeInsertable(edgeById.get(mid.edgeId))).forEach(mid => {
                     const marker = L.marker([mid.coord[1], mid.coord[0]], markerOptions({
                         icon: L.divIcon({ className: options.midClass, iconSize: options.midSize }),
                         interactive: true,
+                        draggable: options.dragMidpoints === true,
+                        autoPan: options.dragMidpoints === true,
                         keyboard: false
                     }));
                     marker.on('click', event => {
                         L.DomEvent.stop(event);
                         if (typeof options.onInsert === 'function') options.onInsert(mid.edgeId, mid.coord, topology);
                     });
+                    if (options.dragMidpoints === true) {
+                        // Grab the midpoint and pull: the new node lands where it is dropped, so
+                        // bending a boundary is one gesture instead of "click to add, then drag".
+                        marker.on('dragstart', () => {
+                            const el = marker.getElement();
+                            if (el) el.classList.add('is-dragging');
+                        });
+                        marker.on('drag', event => {
+                            if (typeof options.onPreviewInsert !== 'function') return;
+                            const ll = event.target.getLatLng();
+                            options.onPreviewInsert(mid.edgeId, [ll.lng, ll.lat], topology);
+                        });
+                        marker.on('dragend', event => {
+                            const ll = event.target.getLatLng();
+                            let coord = [ll.lng, ll.lat];
+                            if (typeof options.snap === 'function') {
+                                try { coord = options.snap(coord) || coord; } catch (_) { }
+                            }
+                            if (typeof options.onInsert === 'function') options.onInsert(mid.edgeId, coord, topology);
+                        });
+                    }
                     marker.addTo(group);
                 });
             }
@@ -181,6 +216,105 @@
             });
 
             return topology;
+        }
+
+        // A pane just under the handle pane for the segment hit-lines, so a node or a midpoint
+        // sitting on a segment always wins the pointer.
+        function edgePane() {
+            const name = `${options.pane || 'overlayPane'}Edges`;
+            let pane = map.getPane(name);
+            if (!pane && typeof map.createPane === 'function') {
+                pane = map.createPane(name);
+                const base = Number((map.getPane(options.pane || 'overlayPane') || {}).style?.zIndex) || 400;
+                if (pane && pane.style) pane.style.zIndex = String(base - 1);
+            }
+            return pane ? name : undefined;
+        }
+
+        // Every segment between two nodes, as an invisible fat line that can be grabbed. Dragging
+        // it moves both ends by the same offset (each end still obeys its own nodePolicy, so an
+        // end on the pool outline slides along it); a click without a drag is handed to the host.
+        function renderEdgeHandles(topology, policyFor, edgeById) {
+            const nodeById = new Map(topology.nodes.map(n => [n.id, n]));
+            const paneName = edgePane();
+            const renderer = paneName && typeof L.svg === 'function' ? L.svg({ pane: paneName }) : undefined;
+            (topology.edges || []).forEach(edge => {
+                let edgeRule = {};
+                if (typeof options.edgePolicy === 'function') {
+                    try { edgeRule = options.edgePolicy(edge, topology) || {}; } catch (_) { edgeRule = {}; }
+                }
+                if (edgeRule.draggable === false) return;
+                const ends = [nodeById.get(edge.a), nodeById.get(edge.b)];
+                if (ends.some(node => !node)) return;
+                const rules = ends.map(node => policyFor(node));
+                if (rules.some(rule => rule.hidden === true || rule.draggable === false)) return;
+                const constrainers = rules.map(rule => (typeof rule.constrain === 'function'
+                    ? coord => { try { return rule.constrain(coord) || coord; } catch (_) { return coord; } }
+                    : coord => coord));
+                const line = L.polyline(ends.map(node => [node.coord[1], node.coord[0]]), {
+                    pane: paneName,
+                    renderer,
+                    weight: 14,
+                    opacity: 0,
+                    interactive: true,
+                    bubblingMouseEvents: false,
+                    className: options.edgeClass
+                });
+                line.addTo(group);
+                let suppressClick = false;
+                line.on('click', event => {
+                    L.DomEvent.stop(event);
+                    if (suppressClick) { suppressClick = false; return; }
+                    if (typeof options.onEdgeClick !== 'function') return;
+                    const ll = event.latlng;
+                    options.onEdgeClick(edgeById.get(edge.id) || edge, ll ? [ll.lng, ll.lat] : null, ll, topology);
+                });
+                const el = line.getElement && line.getElement();
+                if (!el) return;
+                // The map pans on mousedown/touchstart anywhere inside it; this segment is the
+                // thing being dragged, so the pan must never start.
+                L.DomEvent.on(el, 'mousedown touchstart', L.DomEvent.stopPropagation);
+                el.addEventListener('pointerdown', down => {
+                    if (down.pointerType === 'mouse' && down.button !== 0) return;
+                    down.stopPropagation();
+                    const start = map.mouseEventToLatLng(down);
+                    const origin = { x: down.clientX, y: down.clientY };
+                    let moves = null;
+                    try { el.setPointerCapture(down.pointerId); } catch (_) { }
+                    const onMove = move => {
+                        if (!moves && Math.hypot(move.clientX - origin.x, move.clientY - origin.y) < 4) return;
+                        const ll = map.mouseEventToLatLng(move);
+                        const dx = ll.lng - start.lng;
+                        const dy = ll.lat - start.lat;
+                        moves = ends.map((node, i) => ({
+                            nodeId: node.id,
+                            coord: constrainers[i]([node.coord[0] + dx, node.coord[1] + dy])
+                        }));
+                        line.setLatLngs(moves.map(m => [m.coord[1], m.coord[0]]));
+                        el.classList.add('is-dragging');
+                        if (typeof options.onPreviewMany === 'function') options.onPreviewMany(moves, topology);
+                    };
+                    const onUp = () => {
+                        el.removeEventListener('pointermove', onMove);
+                        el.removeEventListener('pointerup', onUp);
+                        el.removeEventListener('pointercancel', onUp);
+                        el.classList.remove('is-dragging');
+                        if (!moves) return;
+                        suppressClick = true;
+                        const snapped = moves.map(m => {
+                            let coord = m.coord;
+                            if (typeof options.snap === 'function') {
+                                try { coord = options.snap(coord) || coord; } catch (_) { }
+                            }
+                            return { nodeId: m.nodeId, coord };
+                        });
+                        if (typeof options.onMoveMany === 'function') options.onMoveMany(snapped, topology);
+                    };
+                    el.addEventListener('pointermove', onMove);
+                    el.addEventListener('pointerup', onUp);
+                    el.addEventListener('pointercancel', onUp);
+                });
+            });
         }
 
         function destroy() {

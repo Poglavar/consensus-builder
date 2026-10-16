@@ -651,7 +651,7 @@
             <footer class="proposal-editor-footer">
                 <button type="button" class="btn btn-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
                 ${reviewing
-                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
+                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? (global.ProposalLineage?.forkSubmitLabel(draft.sourceProposalId) || tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')) : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
                     : `<button type="button" class="btn btn-primary" data-editor-action="review">${escapeHtml(tDraft('proposalDrafts.actions.review', 'Review changes'))}</button>`}
             </footer>`;
         shell.classList.add('is-open');
@@ -1935,7 +1935,8 @@
             submit.textContent = isVote
                 ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
                 : (source
-                    ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+                    ? (global.ProposalLineage?.forkSubmitLabel(draft.sourceProposalId)
+                        || tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal'))
                     : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }

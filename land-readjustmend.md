@@ -4,7 +4,7 @@
 
 Audit and follow-up review dates: **2026-10-11–12**. Filename follows the requested `land-readjustmend.md` spelling.
 The old implementation was selectively integrated and its local branch/worktree deleted.
-**§21 records the balanced money schedule; §20 records the chain anchor for minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
+**§22 records the October 16 audit and the editor, owner-view and lineage work; §21 records the balanced money schedule; §20 records the chain anchor for minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
 abstraction; §14 the earlier consent/review increment; §13 the integration and §12 the review.**
 
 This is the working reference for land readjustment (LR): what exists, what is broken, prior
@@ -1655,4 +1655,121 @@ Before this, LR cash was one non-negative `cashOffer` per owner, paid by an unna
 - Settlement against this schedule needs the program version from §20: collect owner payments and
   the sponsor's share into escrow, then pay owners exactly their lines.
 - Timing (instalments, due dates) and currencies other than EUR are not modelled.
+
+## 22. Live demo, audit and the editor/owner/lineage pass (2026-10-12 – 10-16)
+
+### Live on prod (10-12)
+
+- **Notary rights registry.** The live notary-01 lens member loads its parcel-rights registry
+  (`lens-member-run.mjs --rights`, persona `service.rights`); the file is server-local.
+- **Upload fix.** A readjustment's fingerprint (`lr2-sha256:` + 64 hex) is 75 characters, but upload
+  validated `effectHash` at 64, so every LR upload had failed since 10-11. The limit is now 128,
+  with a test that sends the real browser fingerprint.
+- **Demo:** proposal 879, three parcels on Žminjska ulica, four abstract owners (C and D co-own
+  one parcel), rule ½ of owners and 7/10 of the area, lens notary-01. No owner has accepted yet:
+  `proposal_owner_decision` has no rows, so acceptance has not run end to end with real wallets.
+- **Editor entry.** Land & ownership has an *Edit/Add ownership and approval* button that opens
+  the tabbed editor on its Approval tab. Its review reads as a sentence, not raw JSON.
+
+### Audit (10-16), against four requirements
+
+1. **Easy to create.** Partly: ownership and approval cannot be set in the create dialog; they need
+   the tabbed editor afterwards, which makes a replacement. (Still open.)
+2. **Owners accept.** Built and tested with keypairs; never exercised with real wallets on prod.
+3. **Owners see what they put in and get out.** Only inside the editor or after wallet
+   verification. **Fixed below.**
+4. **Fork/counterpropose with links both ways.** Child → parent only; the parent listed nothing,
+   and forks of local drafts pointed at ids the server never sees. **Fixed below.**
+
+The manual editor was tried by hand. Drawing, node drag, erase and undo worked, but: *Draw freely*
+wiped the layout to one unassigned plot; each gesture needed its own tool; segments could not be
+dragged; midpoints were click-only; there was no redo or Delete; unassigned plots looked identical;
+the tool card covered the land. **All fixed below.**
+
+### Editor
+
+- **Handles are on from the start**, in every layout, including Automatic.
+- **Automatic is editable.** The first hand edit adopts the automatic split as a drawn layout
+  (`adoptLayoutForEditing`). Undo restores the automatic layout and its sweep handle, because the
+  history snapshot carries the layout kind.
+- **Draw freely keeps the layout**, plots and owners included. To start over, erase the boundaries.
+- **Gestures** (shared handle layer `geometry-edit/handles.js`, opt-in so the road and building
+  editors are unchanged):
+  - grab a boundary segment and drag it; both ends move, and an end on the pool outline slides
+    along it (`dragEdges`, `plot-topology.moveNodes`);
+  - pull a midpoint to bend a boundary; the node lands where it is dropped (`dragMidpoints`);
+  - click a segment for a popup naming the two plots it separates, with *Erase this boundary*;
+  - click a node for its popup; Delete/Backspace then removes it, and Escape closes popups before
+    the editor.
+- **Redo** with Shift+Cmd/Ctrl+Z, Ctrl+Y and a button (`geometry-edit/history.js`, opt-in `redo`).
+- **Line and plot drawing** finish on double-click or Enter, as well as F; double-click does not
+  zoom while drawing.
+- **Plot numbers** on the map match the numbered New plots rows. Unassigned plots cycle through
+  neutral tints, so a fresh cut shows two plots.
+- **The land is fitted below the tool card** on desktop too, with room for its drawing row.
+
+### What each owner puts in and gets, for anyone
+
+- The *Owner acceptance* card has a row of owner buttons ("What each owner puts in and gets").
+  Each opens the existing review read-only, in the third person: *Owner C's deal* lists the parcels
+  and shares put in, the plots received, land in/out, cash, the conditions and the progress with
+  that owner's acceptance. *I am Owner C — review and accept* goes on to the signing review.
+- *Show on map* opens the before/after divider focused on that owner: their parcels outlined on
+  "before", their plots on "after" (`before-after.js ownerFocusParts`).
+- **Details panel fixes:**
+  - "Total area" was 0 m² once the parcels were replaced: cadastre records carry `calculated_area`;
+  - generated plots read *New plot 3 · 219 m² · Owner C*, not `2897/2#c2-…-3`;
+  - input parcels read *Pooled into the new plots*, not *Removed*;
+  - the money schedule is shown once under Land & ownership, owners in label order;
+  - the old "Parcel/Owner acceptance status" tallies are hidden when the card shows the same thing.
+
+### Lineage: counterproposals listed on the original
+
+- `GET /proposals/:id/lineage` returns the proposal's source (published, or "a draft that was never
+  published") and every published record naming it in `sourceProposalId`,
+  `replacementOfProposalId` or `copiedFromProposalId`. It matches either the proposal id or the
+  row id.
+- The details panel lists *Counterproposals and forks (n)* under the description: the server's
+  list plus this browser's unpublished forks. Each opens in the panel; a published one is fetched
+  the way a Proposals list row is (`proposals/lineage.js`).
+- **Upload names published sources.** Upload re-keys a proposal's id to its content fingerprint
+  (`c2-…`), so a fork of a local draft recorded an id the server never had. On prod, none of the 77
+  records with a source pointed at a published row. A fork's upload copy now names the source's
+  published record when the source has been uploaded since (`publishedSourceIds`). Records already
+  published keep their old ids.
+- A fork of a published record saves with *Create counterproposal*; a fork of one's own draft
+  still says *Create replacement proposal*. The "· Variant xxxx" title suffix appears only when a
+  version kept its source's name.
+
+### Verification
+
+- **Headless unit tests:** 59 targeted files, 983 tests, green after the fixes. New:
+  `geometry-edit-handles`, `proposal-lineage` (route), `proposal-lineage-ui`; extended:
+  `geometry-edit-history` (redo), `plot-topology` (`moveNodes`), `proposal-before-after` (owner
+  focus), `on-map-editor` (desktop fit), `reparcellization-ui-state` (Enter). The handle tests
+  went red when segment offsets or the drop point were removed.
+- **Headed browser, by hand**, local frontend against the prod API, proposal 879:
+  - segment drag, midpoint pull, segment popup and erase, Delete on a node;
+  - undo/redo across the Automatic → Draw freely switch, double-click and Enter finish;
+  - the owner-deal dialog and Show on map;
+  - the lineage list with a stubbed response, and its link opening proposal 816;
+  - phone width 390 px.
+- **Lineage SQL** checked read-only against the prod table.
+- **New e2e specs:** `land-readjustment-editor`, `proposal-lineage`, and a public-deal test in
+  `proposal-approval-lens`.
+- **Targeted headless Playwright run, 7 LR spec files:** 40 passed, 1 skipped (the devnet scenario)
+  and 3 failed at first.
+  - One courtyard test timed out at host load ~180 and passed on rerun.
+  - Two tests assumed Draw freely starts blank: `land-readjustment-audit` (invalid GeoJSON) and
+    `reparcel-button-controls` (node removal). They now expect the carried layout.
+  - Reruns of those and of the new specs: 9 passed. No full suite was run.
+
+### Still open
+
+- Ownership and approval in the create flow (one editor rather than create-then-replace).
+- Real-wallet acceptance on 879 (Phantom accounts 2–5), then mint and anchor.
+- Before/after does not zoom to an owner's focus.
+- Touch drag of a whole segment is untested on a device (pointer events are wired).
+- Lineage for records published before this change stays unresolved where they named local ids.
+- Settlement, jurisdiction templates and per-owner land/cash choices are unchanged (§§20–21, §8).
 

@@ -46,9 +46,14 @@
         return proposal?.sourceProposalId || proposal?.replacementOfProposalId || null;
     }
 
+    // A version is suffixed "· Variant <id>" only when it kept its source's name: then the two read
+    // the same and need telling apart. A fork that renamed itself already reads as distinct, and the
+    // details panel names its source anyway ("Variant of …").
     function title(value, proposal) {
         const base = text(value, proposal);
         if (!variantSourceId(proposal)) return base;
+        const sourceName = valueText(proposal?.copiedFromName).trim();
+        if (!sourceName || sourceName !== valueText(value).trim()) return base;
         const id = String(proposal?.proposalId || proposal?.id || '');
         const key = 'proposalDrafts.variantLabel';
         const translated = global.i18n?.t?.(key, { id: id.slice(-8) });

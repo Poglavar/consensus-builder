@@ -96,6 +96,32 @@ describe('moveNode', () => {
     });
 });
 
+describe('moveNodes', () => {
+    it('moves both ends of the shared boundary in both plots — a whole segment drag', () => {
+        const t = topo.buildTopology(PAIR);
+        const top = t.nodes.find(n => n.plots.length > 1 && Math.abs(n.coord[1] - 10) < 1e-9); // (10,10)
+        const bottom = t.nodes.find(n => n.plots.length > 1 && Math.abs(n.coord[1]) < 1e-9);    // (10,0)
+        const out = topo.moveNodes(PAIR, t, [
+            { nodeId: top.id, coord: [13, 10] },
+            { nodeId: bottom.id, coord: [13, 0] }
+        ]);
+        [0, 1].forEach(i => {
+            expect(has(ringOf(out, i), 13, 10)).toBe(true);
+            expect(has(ringOf(out, i), 13, 0)).toBe(true);
+            expect(has(ringOf(out, i), 10, 0)).toBe(false);
+        });
+        const ring = ringOf(out, 0);
+        expect(ring[0]).toEqual(ring[ring.length - 1]);
+        expect(JSON.stringify(PAIR)).toBe(JSON.stringify([LEFT, RIGHT]));
+    });
+
+    it('ignores unknown nodes and malformed coordinates', () => {
+        const t = topo.buildTopology(PAIR);
+        const out = topo.moveNodes(PAIR, t, [{ nodeId: 999, coord: [1, 1] }, { nodeId: t.nodes[0].id, coord: null }]);
+        expect(out.map(g => g.coordinates)).toEqual(PAIR.map(p => p.geometry.coordinates));
+    });
+});
+
 describe('insertNodeOnEdge', () => {
     it('inserts on the shared edge in both plots', () => {
         const t = topo.buildTopology(PAIR);

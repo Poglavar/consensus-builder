@@ -2,7 +2,9 @@
 // the "Owner acceptance" card in Details > Land & ownership, the "Act for an owner" dialog (a lens
 // member confirms which owners the connected wallet may act for) and the "Accept as Owner X" review
 // dialog, which shows exactly what that owner gives and gets before the wallet signs, then becomes
-// the receipt. Rules and counting live in approval.js / approval-review.js; this file only renders.
+// the receipt. The same review opens read-only for anyone from the card's owner row ("Owner X's
+// deal"), with the before/after divider focused on that owner's land. Rules and counting live in
+// approval.js / approval-review.js; this file only renders.
 (function () {
     const root = typeof window !== 'undefined' ? window : null;
     if (!root) return;
@@ -26,7 +28,8 @@
     const list = names => names.join(', ');
     // The cadastral number people know ("1236"), as the rest of the panel shows it.
     function parcelName(id) {
-        const properties = root.LiveParcelFabric?.get?.(id)?.properties;
+        // A parcel a readjustment replaced is gone from the live fabric; the cadastre still has it.
+        const properties = root.LiveParcelFabric?.get?.(id)?.properties || root.CadastralParcelRepository?.get?.(id)?.properties;
         const number = root.ProposalDisplayText.parcelLabel(getParcelDisplayNumberFromProperties(properties, id));
         return t('panel.proposal.parcels.label', 'Parcel {{id}}', { id: number });
     }
@@ -199,6 +202,16 @@
         return `<div class="approval-card__you">${html}</div>`;
     }
 
+    // Every owner's position, for anyone: what they put in and what they get, without a wallet.
+    function dealsHtml(proposal, label, accepted) {
+        const ids = runtime().inspect(proposal).ownerIds;
+        if (!ids.length) return '';
+        return `<div class="approval-card__deals" data-approval-deals>
+            <p class="approval-card__deals-title">${esc(t('proposalApproval.deals.title', 'What each owner puts in and gets'))}</p>
+            <div class="approval-card__actions">${ids.map(id => `<button type="button" class="btn btn-sm" data-approval-action="inspect" data-owner-id="${esc(id)}"${accepted.includes(id) ? ' data-approval-deal-accepted' : ''}>${accepted.includes(id) ? '<i class="fas fa-check" aria-hidden="true"></i> ' : ''}${esc(label(id))}</button>`).join('')}</div>
+        </div>`;
+    }
+
     // Minted on Solana: how many of the decisions this browser holds are anchored, and the action
     // that anchors the rest. The chain records them; it does not count or pay this approval setup.
     function chainHtml(proposal, hash) {
@@ -280,6 +293,7 @@
             <div class="approval-card__head"><h4 id="${titleId}" class="approval-card__title">${esc(t('panel.parcel.acceptance.ownerTitle', 'Owner acceptance'))}</h4>${status}</div>
             <p class="approval-card__rule">${esc(ruleText(progress.policy))}</p>
             ${progressHtml(proposal, progress, label)}
+            ${dealsHtml(proposal, label, accepted)}
             ${chainHtml(proposal, hash)}
             ${proposal.serverProposalId ? '' : `<p class="approval-card__note" data-approval-local-only>${esc(t('proposalApproval.relay.localOnly', 'Acceptances stay in this browser until the proposal is published.'))}</p>`}
             ${youHtml(proposal, hash, label, accepted)}
@@ -302,6 +316,7 @@
             const ownerId = control.dataset.ownerId || null;
             if (control.dataset.approvalAction === 'verify') openVerify(proposalId);
             else if (control.dataset.approvalAction === 'review') openReview(proposalId, ownerId);
+            else if (control.dataset.approvalAction === 'inspect') openReview(proposalId, ownerId, null, { inspect: true });
             else if (control.dataset.approvalAction === 'withdraw') withdraw(proposalId, ownerId);
             else if (control.dataset.approvalAction === 'anchor') anchorDecisions(proposalId);
         });
@@ -497,17 +512,54 @@
         return `<section class="approval-review__section"><h3>${esc(title)}</h3>${content}</section>`;
     }
 
-    function contributesHtml(review, label) {
+    // The review speaks to the owner ("What you contribute") when they are about to accept, and about
+    // the owner ("What Owner C puts in") when anyone opens it from the card's owner row.
+    function reviewVoice(inspect, owner) {
+        if (!inspect) {
+            return {
+                inspect: false,
+                title: t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner }),
+                contributes: t('proposalApproval.review.contributes', 'What you contribute'),
+                receives: t('proposalApproval.review.receives', 'What you get back'),
+                share: share => t('proposalApproval.review.yourShare', 'Your share {{share}}', { share }),
+                landBefore: t('proposalApproval.review.landBefore', 'Land you put in'),
+                landAfter: t('proposalApproval.review.landAfter', 'Land you get back'),
+                cash: t('proposalApproval.review.cash', 'Cash offered to you'),
+                cashPay: t('proposalApproval.review.cashYouPay', 'Cash you pay'),
+                attestedBy: members => t('proposalApproval.review.attestedBy', 'Ownership and your authority are attested by: {{members}}', { members }),
+                withAcceptance: progress => t('proposalApproval.review.withYou', 'With your acceptance: {{progress}}', { progress }),
+                passes: t('proposalApproval.review.passesWithYou', 'Your acceptance is enough for the proposal to pass.'),
+                needsMore: t('proposalApproval.review.needsMore', 'More owners must accept after you before it passes.')
+            };
+        }
+        return {
+            inspect: true,
+            title: t('proposalApproval.deals.dealOf', '{{owner}}’s deal', { owner }),
+            contributes: t('proposalApproval.deals.contributes', 'What {{owner}} puts in', { owner }),
+            receives: t('proposalApproval.deals.receives', 'What {{owner}} gets', { owner }),
+            share: share => t('proposalApproval.deals.share', 'Share {{share}}', { share }),
+            landBefore: t('proposalApproval.deals.landBefore', 'Land put in'),
+            landAfter: t('proposalApproval.deals.landAfter', 'Land received'),
+            cash: t('proposalApproval.deals.cashReceived', 'Cash received'),
+            cashPay: t('proposalApproval.deals.cashPaid', 'Cash paid'),
+            attestedBy: members => t('proposalApproval.deals.attestedBy', 'Ownership is attested by: {{members}}', { members }),
+            withAcceptance: progress => t('proposalApproval.deals.withOwner', 'With {{owner}}’s acceptance: {{progress}}', { owner, progress }),
+            passes: t('proposalApproval.deals.passesWithOwner', '{{owner}}’s acceptance would be enough for the proposal to pass.', { owner }),
+            needsMore: t('proposalApproval.deals.needsMoreThanOwner', 'More owners besides {{owner}} must accept before it passes.', { owner })
+        };
+    }
+
+    function contributesHtml(review, label, voice) {
         const rows = review.contributes.map(row => `<li data-approval-contribution="${esc(row.parcelId)}">
             <span>${esc(parcelName(row.parcelId))}</span>
-            <span>${esc(t('proposalApproval.review.yourShare', 'Your share {{share}}', { share: row.share }))}${row.shareAreaM2 == null ? ''
+            <span>${esc(voice.share(row.share))}${row.shareAreaM2 == null ? ''
                 : ` · ${esc(t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(row.shareAreaM2), total: area(row.parcelAreaM2) }))}`}${row.coOwnerIds.length
                 ? ` · ${esc(t('proposalApproval.review.coOwnedWith', 'co-owned with {{owners}}', { owners: list(row.coOwnerIds.map(label)) }))}` : ''}</span>
         </li>`).join('');
         return `<ul class="approval-review__list">${rows}</ul>`;
     }
 
-    function receivesHtml(review, label) {
+    function receivesHtml(review, label, voice) {
         const receives = review.receives;
         if (!receives.inLedger && !receives.plots.length) {
             return `<p class="approval-review__warning" data-approval-no-allocation>${esc(t('proposalApproval.review.noAllocation', 'This plan assigns no plot or cash to this owner.'))}</p>`;
@@ -523,12 +575,12 @@
         const change = receives.areaChangeM2 == null ? '—' : `${receives.areaChangeM2 > 0 ? '+' : ''}${area(receives.areaChangeM2)}`;
         return `${plots ? `<ul class="approval-review__list">${plots}</ul>` : ''}
             <dl class="approval-review__facts">
-                <div><dt>${esc(t('proposalApproval.review.landBefore', 'Land you put in'))}</dt><dd>${esc(area(receives.contributedAreaM2 ?? review.contributedAreaM2))}</dd></div>
-                <div><dt>${esc(t('proposalApproval.review.landAfter', 'Land you get back'))}</dt><dd>${esc(area(receives.assignedAreaM2))}</dd></div>
+                <div><dt>${esc(voice.landBefore)}</dt><dd>${esc(area(receives.contributedAreaM2 ?? review.contributedAreaM2))}</dd></div>
+                <div><dt>${esc(voice.landAfter)}</dt><dd>${esc(area(receives.assignedAreaM2))}</dd></div>
                 <div><dt>${esc(t('proposalApproval.review.landChange', 'Change in land'))}</dt><dd>${esc(change)}</dd></div>
                 ${receives.payCents > 0
-                    ? `<div data-approval-cash="pays"><dt>${esc(t('proposalApproval.review.cashYouPay', 'Cash you pay'))}</dt><dd>${esc(money(receives.payCents))}</dd></div>`
-                    : `<div data-approval-cash="receives"><dt>${esc(t('proposalApproval.review.cash', 'Cash offered to you'))}</dt><dd>${esc(money(receives.cashCents))}</dd></div>`}
+                    ? `<div data-approval-cash="pays"><dt>${esc(voice.cashPay)}</dt><dd>${esc(money(receives.payCents))}</dd></div>`
+                    : `<div data-approval-cash="receives"><dt>${esc(voice.cash)}</dt><dd>${esc(money(receives.cashCents))}</dd></div>`}
             </dl>`;
     }
 
@@ -543,7 +595,7 @@
         return lines;
     }
 
-    function conditionsHtml(review, members) {
+    function conditionsHtml(review, members, voice) {
         const c = review.conditions;
         const lines = [ruleText(c.policy)];
         if (c.cashOffered) {
@@ -562,10 +614,9 @@
                 ? t('proposalApproval.review.funded', 'The cash is funded.')
                 : t('proposalApproval.review.unfunded', 'The cash is not funded yet; the proposal cannot execute until it is.'));
         }
-        lines.push(t('proposalApproval.review.attestedBy', 'Ownership and your authority are attested by: {{members}}',
-            { members: list(c.lens.map(key => root.LensCore.memberLabel(key, members))) }));
+        lines.push(voice.attestedBy(list(c.lens.map(key => root.LensCore.memberLabel(key, members)))));
         return `<ul class="approval-review__conditions">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>
-            <p class="approval-review__sign-note">${esc(t('proposalApproval.review.signNote', 'Your wallet signs these exact terms. If they change, your acceptance stops counting.'))}</p>`;
+            ${voice.inspect ? '' : `<p class="approval-review__sign-note">${esc(t('proposalApproval.review.signNote', 'Your wallet signs these exact terms. If they change, your acceptance stops counting.'))}</p>`}`;
     }
 
     function progressLine(progress) {
@@ -576,19 +627,32 @@
             });
     }
 
-    function reviewProgressHtml(review) {
+    function reviewProgressHtml(review, voice) {
         if (review.alreadyAccepted) {
             return `<p data-approval-progress-now>${esc(t('proposalApproval.review.alreadyAccepted', 'This owner has already accepted these terms.'))}</p>`;
         }
         return `<p data-approval-progress-now>${esc(t('proposalApproval.review.now', 'Now: {{progress}}', { progress: progressLine(review.progressWithout) }))}</p>
-            <p data-approval-progress-with>${esc(t('proposalApproval.review.withYou', 'With your acceptance: {{progress}}', { progress: progressLine(review.progressWith) }))}</p>
-            <p class="approval-review__verdict">${esc(review.progressWith.passed
-                ? t('proposalApproval.review.passesWithYou', 'Your acceptance is enough for the proposal to pass.')
-                : t('proposalApproval.review.needsMore', 'More owners must accept after you before it passes.'))}</p>`;
+            <p data-approval-progress-with>${esc(voice.withAcceptance(progressLine(review.progressWith)))}</p>
+            <p class="approval-review__verdict">${esc(review.progressWith.passed ? voice.passes : voice.needsMore)}</p>`;
+    }
+
+    // The before/after divider, focused on this owner: their parcels outlined before, their plots
+    // after. Offered only where the proposal is applied on the map (there is an "after" to show).
+    function mapButton(proposal, ownerId) {
+        const compare = root.ProposalBeforeAfter;
+        if (!compare || typeof root.toggleProposalBeforeAfter !== 'function' || !compare.canCompare(proposal)) return null;
+        const node = button('btn', t('proposalApproval.deals.showOnMap', 'Show on map'), () => {
+            close();
+            root.toggleProposalBeforeAfter(proposal.proposalId, { focusOwnerId: ownerId });
+        });
+        node.setAttribute('data-approval-show-map', ownerId);
+        node.title = t('proposalApproval.deals.showOnMapHint', 'Before: the parcels this owner puts in. After: the plots they get.');
+        return node;
     }
 
     // Accepting always goes through this review: the owner sees what they give and get first.
-    async function openReview(proposalId, ownerId, parcelId = null) {
+    // { inspect: true } opens the same review read-only for anyone (the card's owner row).
+    async function openReview(proposalId, ownerId, parcelId = null, { inspect = false } = {}) {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) return;
         const hash = currentConsentBindingHash(proposal);
@@ -604,16 +668,30 @@
             return;
         }
         const members = (await root.LensPicker.loadDirectory()).members || [];
-        const parts = mount(t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner: label(ownerId) }), 'cb-dialog--lg');
-        parts.dialog.setAttribute('data-approval-review', ownerId);
-        parts.body.innerHTML = section(t('proposalApproval.review.contributes', 'What you contribute'), contributesHtml(review, label))
-            + (review.receives ? section(t('proposalApproval.review.receives', 'What you get back'), receivesHtml(review, label)) : '')
-            + section(t('proposalApproval.review.conditions', 'Conditions'), conditionsHtml(review, members))
-            + section(t('proposalApproval.review.progress', 'Progress'), reviewProgressHtml(review))
+        const voice = reviewVoice(inspect, label(ownerId));
+        const parts = mount(voice.title, 'cb-dialog--lg');
+        parts.dialog.setAttribute(inspect ? 'data-approval-deal' : 'data-approval-review', ownerId);
+        parts.body.innerHTML = section(voice.contributes, contributesHtml(review, label, voice))
+            + (review.receives ? section(voice.receives, receivesHtml(review, label, voice)) : '')
+            + section(t('proposalApproval.review.conditions', 'Conditions'), conditionsHtml(review, members, voice))
+            + section(t('proposalApproval.review.progress', 'Progress'), reviewProgressHtml(review, voice))
             + '<p class="approval-dialog__status" role="status" aria-live="polite" data-approval-review-status></p>';
         const status = parts.body.querySelector('[data-approval-review-status]');
         const authorized = !!signerFor(proposal, ownerId);
         const cancel = button('btn', t('common.cancel', 'Cancel'), close);
+        const showOnMap = mapButton(proposal, ownerId);
+        if (showOnMap) parts.footer.append(showOnMap);
+        if (inspect) {
+            // Read-only: the owner (or whoever acts for them) goes on to the signing review.
+            parts.footer.append(button('btn', t('common.close', 'Close'), close));
+            if (!review.alreadyAccepted) {
+                const acceptAs = button('btn btn-success', t('proposalApproval.deals.acceptAsOwner', 'I am {{owner}} — review and accept', { owner: label(ownerId) }),
+                    () => openReview(proposalId, ownerId));
+                acceptAs.setAttribute('data-approval-deal-accept', ownerId);
+                parts.footer.append(acceptAs);
+            }
+            return;
+        }
         if (review.alreadyAccepted) {
             parts.footer.append(button('btn btn-primary', t('common.close', 'Close'), close));
             return;

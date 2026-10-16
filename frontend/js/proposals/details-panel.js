@@ -159,13 +159,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // the user scrolls / panes parcels into view.
     // A proposal on open ground has no (or not only) cadastral parents: with none, its area is
     // its site's (computeProposalArea prefers the site).
-    const totalArea = parentParcels.length
-        ? parentParcels.reduce((sum, ap) => {
-            const area = ap?.feature?.properties?.calculatedArea;
-            if (Number.isFinite(area)) return sum + area;
-            return sum;
-        }, 0)
-        : (typeof computeProposalArea === 'function' ? (Number(computeProposalArea(proposal)) || 0) : 0);
+    // An applied proposal's parents are replaced on the map and may not carry a measured area any
+    // more; then the site's area stands in, rather than a sum of nothing reading "0 m²".
+    // Cadastre records carry the measured area as calculated_area; live parcels as calculatedArea.
+    const parentAreas = parentParcels.map(ap => ap?.feature?.properties?.calculatedArea ?? ap?.feature?.properties?.calculated_area);
+    const siteArea = () => (typeof computeProposalArea === 'function' ? (Number(computeProposalArea(proposal)) || 0) : 0);
+    const totalArea = parentParcels.length && parentAreas.every(Number.isFinite)
+        ? parentAreas.reduce((sum, area) => sum + area, 0)
+        : (siteArea() || parentAreas.filter(Number.isFinite).reduce((sum, area) => sum + area, 0));
 
     const renderAncestorParcelItem = (parentParcelOrId) => {
         const parentParcel = (typeof parentParcelOrId === 'string')
@@ -210,7 +211,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : tProposal('panel.proposal.parcels.tooltip', 'Click to view parcel details');
         const acceptedLabel = tProposal('panel.proposal.acceptance.accepted', 'Accepted');
         const pendingLabel = tProposal('panel.proposal.acceptance.pending', 'Pending');
-        const removedLabel = tProposal('panel.proposal.parcels.removed', 'Removed');
+        // A readjustment does not remove its parcels: it pools them into the new plots.
+        const removedLabel = (fullProposal || proposal).reparcellization
+            ? tProposal('panel.proposal.parcels.pooled', 'Pooled into the new plots')
+            : tProposal('panel.proposal.parcels.removed', 'Removed');
 
         // Store geometry data for removed parcels so we can focus on location
         const removedGeometry = isRemoved
@@ -271,6 +275,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             roadName = liveFeature.properties.roadName || null;
         }
 
+        // A plot this readjustment made is named as the plan names it (plot number, area, who gets
+        // it), not by its internal synthetic id ("2897/2#c2-…-1").
+        const plotProps = liveFeature?.properties;
+        const plotOwners = Array.isArray(plotProps?.owners) && plotProps.owners.length
+            ? plotProps.owners.map(owner => owner?.displayName || owner?.ownerKey).filter(Boolean).join(', ')
+            : (plotProps?.displayName || '');
+        if ((fullProposal || proposal).reparcellization && plotProps && Number.isFinite(plotProps.syntheticIndex)
+            && String(plotProps.producedByProposalId || '') === String((fullProposal || proposal).proposalId || '')) {
+            const plotArea = Number.isFinite(plotProps.calculatedArea) ? CbFormat.formatArea(plotProps.calculatedArea) : '';
+            const plotLabel = tProposal('panel.proposal.parcels.newPlot', 'New plot {{n}}', { n: plotProps.syntheticIndex });
+            const plotDetail = [plotArea, plotOwners].filter(Boolean).join(' · ');
+            return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}" tabindex="0">
+            <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(plotLabel)}</span>${plotDetail ? ` · ${safeAgentText(plotDetail)}` : ''}
+        </div>`;
+        }
         const label = parcelNumber ? `Parcel ${parcelNumber}` : `Parcel ${descendantKey}`;
         const roadSuffix = isRoad ? (roadName ? ` • Road: ${roadName}` : ' • Road') : '';
         return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}" tabindex="0">
@@ -937,6 +956,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="proposal-description-row">
                 ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}
                 ${copiedFromHtml}
+                <div class="proposal-lineage" data-proposal-lineage hidden></div>
             </div>
             <div class="proposal-author-row">
                 <div class="metric-label">${tProposal('panel.proposal.metrics.author', 'Author:')}</div>
@@ -1021,8 +1041,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${parcelSetRelationsHtml}
             ${window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true ? '<div class="approval-card-slot" data-approval-card-slot></div>' : ''}
             ${editApprovalButtonHtml}
-            ${parcelAcceptancePlaceholder}
-            ${ownerAcceptancePlaceholder}
+            ${typeof proposalRequiresDealConsent === 'function' && proposalRequiresDealConsent(fullProposal || proposal)
+                ? buildReadjustmentCashReviewHtml(fullProposal || proposal) : ''}
+            ${hasApprovalSetup ? '' : parcelAcceptancePlaceholder}
+            ${hasApprovalSetup ? '' : ownerAcceptancePlaceholder}
 
             <hr class="proposal-details-divider">
             <div class="metric-group">
@@ -1293,6 +1315,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 focusProposalDetails(relatedProposalId, { centerOnProposal: true, showDetails: true });
             });
         });
+        // Where this proposal came from and the counterproposals made from it (proposals/lineage.js).
+        window.ProposalLineage?.mount(detailsContent?.querySelector('[data-proposal-lineage]'), fullProposal || proposal);
         // Lazy append remaining ancestor parcels
         setupLazyList('proposal-parent-parcels-list', parentParcelItemsRemaining, renderAncestorParcelItem);
         // Lazy append remaining descendant parcels

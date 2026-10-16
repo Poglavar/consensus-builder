@@ -127,6 +127,29 @@
         return geometries;
     }
 
+    // Move several nodes at once — dragging a whole segment moves both of its ends. `moves` is
+    // [{ nodeId, coord }]. Applied to one copy, so plots that share either end stay shared.
+    function moveNodes(plots, topology, moves) {
+        const geometries = clonePlotGeometries(plots);
+        const nodes = (topology && topology.nodes) || [];
+        (Array.isArray(moves) ? moves : []).forEach(move => {
+            const node = nodes.find(n => n.id === (move && move.nodeId));
+            const coord = move && move.coord;
+            if (!node || !Array.isArray(coord) || coord.length < 2) return;
+            node.refs.forEach(ref => {
+                const geometry = geometries[ref.plot];
+                if (!geometry) return;
+                const ring = ringsOf(geometry)[ref.ring];
+                if (!ring || !ring[ref.vertex]) return;
+                ring[ref.vertex] = [coord[0], coord[1]];
+                if (!isClosedGeometry(geometry)) return;
+                if (ref.vertex === 0) ring[ring.length - 1] = [coord[0], coord[1]];
+                if (ref.vertex === ring.length - 1) ring[0] = [coord[0], coord[1]];
+            });
+        });
+        return geometries;
+    }
+
     // Insert a vertex on an edge, in every plot that shares it, so the boundary stays common.
     function insertNodeOnEdge(plots, topology, edgeId, coord) {
         const geometries = clonePlotGeometries(plots);
@@ -420,7 +443,7 @@
     }
 
     const api = {
-        DEFAULT_TOLERANCE, buildTopology, moveNode, insertNodeOnEdge, removeNode, edgeMidpoints,
+        DEFAULT_TOLERANCE, buildTopology, moveNode, moveNodes, insertNodeOnEdge, removeNode, edgeMidpoints,
         classifyNodeRemoval,
         isClosedGeometry, shapesToPlots, plotsToShapes,
         boundaryIndexOf, classifyAgainstBoundary, annotateBoundary, isOnBoundary,

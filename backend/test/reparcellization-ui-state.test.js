@@ -37,11 +37,12 @@ describe('saved readjustment inputs', () => {
 });
 
 describe('land-readjustment UI state', () => {
-    it('uses F, C, and U for finish, cancel, and undo while drawing', () => {
+    it('uses F (or Enter), C, and U for finish, cancel, and undo while drawing', () => {
         expect(resolveDrawShortcut({ active: true, key: 'f' })).toBe('finish');
         expect(resolveDrawShortcut({ active: true, key: 'C' })).toBe('cancel');
         expect(resolveDrawShortcut({ active: true, key: 'u' })).toBe('undo');
-        expect(resolveDrawShortcut({ active: true, key: 'Enter' })).toBeNull();
+        expect(resolveDrawShortcut({ active: true, key: 'Enter' })).toBe('finish');
+        expect(resolveDrawShortcut({ active: true, key: 'Enter', editable: true })).toBeNull();
         expect(resolveDrawShortcut({ active: true, key: 'Backspace' })).toBeNull();
     });
 

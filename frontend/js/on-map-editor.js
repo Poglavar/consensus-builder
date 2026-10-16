@@ -282,9 +282,13 @@
                     if (!bounds?.isValid?.()) return;
                     const mobile = env.innerWidth < 640;
                     const panelRect = panel.getBoundingClientRect();
+                    // A host whose tool card floats over the top of the map (reserveToolsSpace) gets the
+                    // shape fitted below it on every screen size, not only phones: on desktop the
+                    // card covered the top of the land being edited. The extra room on desktop is
+                    // for the card's drawing row, which appears while a line or plot is drawn.
+                    const toolsBottom = options.reserveToolsSpace ? tools.getBoundingClientRect().bottom : 0;
                     map.fitBounds(bounds, {
-                        paddingTopLeft: [48, mobile && options.reserveToolsSpace
-                            ? Math.max(90, tools.getBoundingClientRect().bottom + 8) : 90],
+                        paddingTopLeft: [48, toolsBottom ? Math.max(90, toolsBottom + (mobile ? 8 : 56)) : 90],
                         paddingBottomRight: mobile
                             ? [24, Math.min(env.innerHeight * 0.62, env.innerHeight - panelRect.top + 24)]
                             : [panelRect.width + 48, 100],

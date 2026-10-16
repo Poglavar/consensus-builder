@@ -7,7 +7,7 @@
         if (input.active !== true || input.editable || input.repeat) return null;
         if (input.ctrlKey || input.metaKey || input.altKey) return null;
         const key = String(input.key || '').toLowerCase();
-        if (key === 'f') return 'finish';
+        if (key === 'f' || key === 'enter') return 'finish';
         if (key === 'c') return 'cancel';
         if (key === 'u') return 'undo';
         return null;

@@ -31,7 +31,8 @@ function updateCreateProposalSubmitState() {
         const createsReplacement = !!(typeof window !== 'undefined'
             && window.pendingProposalReplacementSource?.proposalId);
         btn.textContent = createsReplacement
-            ? (t ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : 'Create replacement proposal')
+            ? (window.ProposalLineage?.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId)
+                || (t ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : 'Create replacement proposal'))
             : (isVote
                 ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
                 : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal'));
@@ -2290,6 +2291,9 @@ function buildUploadReadyProposal(proposal) {
     // below, because callers (the share dialog's Upload) project first and upload the projection.
     stampCurrentAuthor(proposal);
     const uploadProposal = { ...proposal };
+    // A fork of a draft that has been published since names the published record, so the original
+    // can list it as a counterproposal (proposals/lineage.js).
+    Object.assign(uploadProposal, window.ProposalLineage?.publishedSourceIds(proposal, id => proposalStorage.getProposal(id)) || {});
 
     // The complete selected cadastral scope was stamped at creation. Publishing never shrinks it to
     // the output geometry (a block may intentionally include parcels on which no building could be

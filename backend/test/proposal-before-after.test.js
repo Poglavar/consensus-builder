@@ -216,3 +216,52 @@ describe('ProposalBeforeAfter session', () => {
         expect(h.sessions.map(s => s.disposed)).toEqual([1, 1]);
     });
 });
+
+describe('owner focus (what one owner puts in and gets out)', () => {
+    const readjustment = () => ({
+        approvalConfig: { rights: { parcels: [
+            { parcelId: 'A', owners: [{ ownerId: 'owner-a', share: '1/1' }] },
+            { parcelId: 'C', owners: [{ ownerId: 'owner-c', share: '1/2' }, { ownerId: 'owner-d', share: '1/2' }] }
+        ] } },
+        reparcellization: { polygons: [
+            { geometry: square(16, 45.8), owners: [{ ownerKey: 'owner-a', share: 1 }] },
+            { geometry: square(16.002, 45.8), owners: [{ ownerKey: 'owner-c', share: 0.5 }, { ownerKey: 'owner-d', share: 0.5 }] },
+            { geometry: square(16.004, 45.8), ownerKey: 'owner-d', owners: [] },
+            { owners: [{ ownerKey: 'owner-d', share: 1 }] }
+        ] }
+    });
+
+    it('takes the parcels from the rights snapshot and every plot the owner has any share of', () => {
+        const parts = BeforeAfter.ownerFocusParts(readjustment(), 'owner-d');
+        expect(parts.parcelIds).toEqual(['C']);
+        expect(parts.plots.map(f => f.properties.plot)).toEqual([2, 3]);
+        expect(BeforeAfter.ownerFocusParts(readjustment(), 'owner-a')).toMatchObject({ parcelIds: ['A'] });
+        expect(BeforeAfter.ownerFocusParts(readjustment(), 'nobody')).toEqual({ parcelIds: [], plots: [] });
+        expect(BeforeAfter.ownerFocusParts(null, 'owner-a')).toEqual({ parcelIds: [], plots: [] });
+    });
+
+    it('outlines several parcels on the before side', () => {
+        const layers = BeforeAfter.beforeLayers({
+            affectedIds: ['A', 'C'], originals: [feature('A'), feature('C'), feature('D')], presented: [],
+            focusParcelIds: ['A', 'C'], idOfFeature: f => f.properties.parcelId
+        });
+        expect(layers.focus.map(f => f.properties.parcelId)).toEqual(['A', 'C']);
+    });
+
+    it('opens for one owner: their parcels before, their plots on the live map, and toggles by owner', async () => {
+        const h = harness({ originals: [feature('A'), feature('C')] });
+        Object.assign(h.proposal, readjustment(), { cadastreParcelIds: ['A', 'C'] });
+        expect(await h.instance.toggle('p-1', { focusOwnerId: 'owner-c' })).toBe(true);
+        expect(h.instance.activeFocus()).toBe('owner:owner-c');
+        const onHost = h.drawn.filter(d => d.target === h.deps.map);
+        expect(onHost).toHaveLength(1);
+        expect(onHost[0].collection.features.map(f => f.properties.plot)).toEqual([2]);
+        expect(onHost[0].options.style()).toEqual(BeforeAfter.FOCUS_AFTER_STYLE);
+        const focusBefore = h.drawn.filter(d => d.target === 'before-map').pop();
+        expect(focusBefore.collection.features.map(f => f.properties.parcelId)).toEqual(['C']);
+        await h.instance.toggle('p-1', { focusOwnerId: 'owner-a' });
+        expect(h.instance.activeFocus()).toBe('owner:owner-a');
+        await h.instance.toggle('p-1', { focusOwnerId: 'owner-a' });
+        expect(h.instance.isActive()).toBe(false);
+    });
+});

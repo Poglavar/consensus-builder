@@ -118,13 +118,18 @@ test('before/after comparison handle is keyboard accessible and responds to arro
   })).toBeCloseTo(0.9, 2);
 });
 
-test('invalid GeoJSON and partial coverage keep Done disabled', async ({ mockApi: page }) => {
+test('invalid GeoJSON changes nothing and partial coverage keeps Done disabled', async ({ mockApi: page }) => {
   const modal = await openReadjustment(page);
   await modal.locator('input[name="reparcel-algorithm"][value="manual"]').check({ force: true });
+  // Draw freely starts from the complete automatic layout, so Done stays available until an edit
+  // leaves land unassigned.
+  const rows = () => modal.locator('.reparcel-newplots-list tbody tr').allInnerTexts();
+  await expect.poll(async () => (await rows()).length).toBeGreaterThan(1);
+  const layout = await rows();
 
   await uploadGeoJson(page, 'broken.geojson', '{ this is not JSON');
   await expect(modal.locator('[data-reparcel-status]')).toContainText(/parse|invalid/i);
-  await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
+  expect(await rows()).toEqual(layout);
 
   const partial = {
     type: 'FeatureCollection',

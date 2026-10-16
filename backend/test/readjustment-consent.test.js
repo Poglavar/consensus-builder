@@ -217,7 +217,8 @@ describe('fixed readjustment consent', () => {
         ];
         const rows = [...context.buildReadjustmentCashReviewHtml(proposal).matchAll(/<li data-money-[^>]*>\s*<span>([^<]*)<\/span>\s*<strong>([^<]*)<\/strong>/g)]
             .map(match => [match[1], match[2]]);
-        expect(rows).toEqual([['Recipient outside the ownership snapshot', 'receives 10.00\u00a0EUR'], ['Owner B', 'receives 20.00\u00a0EUR'],
+        // Snapshot owners come first in label order; a recipient outside the snapshot follows them.
+        expect(rows).toEqual([['Owner B', 'receives 20.00\u00a0EUR'], ['Recipient outside the ownership snapshot', 'receives 10.00\u00a0EUR'],
             ['Sponsor', 'pays in 30.00\u00a0EUR']]);
     });
 

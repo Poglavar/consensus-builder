@@ -370,6 +370,20 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         session.close();
     });
 
+    it('fits below a desktop tool card too, leaving room for its drawing row', () => {
+        const { editor, env, map } = runtime();
+        env.innerWidth = 1440;
+        env.innerHeight = 900;
+        const session = editor.open({ owner: 'reparcellization', reserveToolsSpace: true, tools: 'tools' });
+        session.panel.getBoundingClientRect = () => ({ top: 76, width: 480 });
+        session.tools.getBoundingClientRect = () => ({ bottom: 260 });
+        session.fitFeature({ type: 'Feature' });
+        expect(map.fitBounds).toHaveBeenCalledWith(expect.anything(), {
+            paddingTopLeft: [48, 316], paddingBottomRight: [528, 100], maxZoom: 21, animate: false
+        });
+        session.close();
+    });
+
     it('refuses to open when the shared edit lock is unavailable', () => {
         const { editor, env } = runtime({ claim: false });
         expect(editor.open({ owner: 'row-house' })).toBeNull();

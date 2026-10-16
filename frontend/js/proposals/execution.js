@@ -217,9 +217,9 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
             </div>`;
     }
 
-    const cashReview = proposalRequiresDealConsent(proposal) && (!firstParcel || firstParcel === parcelKey)
-        ? buildReadjustmentCashReviewHtml(proposal) : '';
-    return `${cashReview}<div class="${compact}">${recipientRowHtml}${rowsHtml}</div>`;
+    // A readjustment's money schedule covers the whole agreement, so the details panel shows it once
+    // under Land & ownership rather than inside the first parcel's owner rows.
+    return `<div class="${compact}">${recipientRowHtml}${rowsHtml}</div>`;
 }
 
 function buildReadjustmentCashReviewHtml(proposal) {
@@ -245,7 +245,12 @@ function buildReadjustmentCashReviewHtml(proposal) {
     const amountText = cents => (cents < 0
         ? t('panel.proposal.acceptance.moneyPays', 'pays in {{amount}}', { amount: money(-cents) })
         : t('panel.proposal.acceptance.moneyReceives', 'receives {{amount}}', { amount: money(cents) }));
-    const rows = deal.ledger.filter(owner => !owner.noOwner).map(owner => {
+    // Owners in label order (A, B, C…), then any recipient outside the ownership snapshot.
+    const outside = id => (rights?.ready && !rights.ownerIds.includes(id) ? 1 : 0);
+    const rows = deal.ledger.filter(owner => !owner.noOwner)
+        .sort((a, b) => outside(a.ownerKey) - outside(b.ownerKey)
+            || String(labels.get(a.ownerKey) || a.ownerKey).localeCompare(String(labels.get(b.ownerKey) || b.ownerKey), undefined, { numeric: true }))
+        .map(owner => {
         const net = owner.cashCents - (owner.payCents || 0);
         return `<li data-money-owner="${escapeHtml(owner.ownerKey)}" data-money-direction="${net < 0 ? 'pays' : 'receives'}">
         <span>${escapeHtml(String(labels.get(owner.ownerKey) || owner.ownerKey))}</span>

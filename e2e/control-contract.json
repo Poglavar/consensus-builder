@@ -5590,6 +5590,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-6ffbb02b779cd6-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"inspect\" data-owner-id=\"${esc(id)}\"${accepted.includes(id) ? ' data-approval-deal-accepted' : ''}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-e325ec9cfed7f8-1",
       "source": "js/proposals/approval-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-approval-action=\"withdraw\" data-owner-id=\"${esc(id)}\">",
@@ -5688,6 +5695,21 @@
             "data-approval-member": ""
           },
           "interaction": "change"
+        },
+        {
+          "name": "Show one owner's land on the before/after divider",
+          "label": "Show on map",
+          "classes": [
+            "btn"
+          ]
+        },
+        {
+          "name": "Go from an owner's deal to the signing review",
+          "labelPattern": "review and accept$",
+          "classes": [
+            "btn",
+            "btn-success"
+          ]
         }
       ],
       "exhaustiveVariants": true,
@@ -7799,6 +7821,23 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
+          "name": "erase a boundary segment from its popup",
+          "classes": [
+            "btn-danger",
+            "btn-sm"
+          ],
+          "label": "Erase this boundary"
+        }
+      ],
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-927adb070f7da7-4",
+      "source": "js/reparcellization.js",
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
           "name": "Reset recipient shares to private-land proportions",
           "classes": [
             "reparcel-owner-popup__joint"
@@ -7823,7 +7862,7 @@
       "controlType": "input"
     },
     {
-      "id": "control-927adb070f7da7-4",
+      "id": "control-927adb070f7da7-5",
       "source": "js/reparcellization.js",
       "markup": "document.createElement('button')",
       "variants": [
@@ -7839,7 +7878,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-927adb070f7da7-5",
+      "id": "control-927adb070f7da7-6",
       "source": "js/reparcellization.js",
       "markup": "document.createElement('button')",
       "variants": [
@@ -10076,6 +10115,29 @@
       "markup": "handle.setAttribute('role', 'slider')",
       "interaction": "change",
       "controlType": "slider"
+    },
+    {
+      "id": "control-594478c86ef091-1",
+      "source": "js/proposals/lineage.js",
+      "markup": "<button type=\"button\" class=\"cb-link proposal-lineage__link\" data-lineage-open=\"${esc(entry.lookup)}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a746354019b928-1",
+      "source": "js/proposals/lineage.js",
+      "markup": "root.document.createElement('button')",
+      "variants": [
+        {
+          "name": "open a published source from the Variant of row",
+          "classes": [
+            "cb-link",
+            "proposal-based-on-link"
+          ]
+        }
+      ],
+      "interaction": "click",
+      "controlType": "button"
     }
   ],
   "variantExclusions": [

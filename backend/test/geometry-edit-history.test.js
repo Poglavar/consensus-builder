@@ -187,3 +187,75 @@ describe('bindKeyboard', () => {
         expect(state.value).toBe('a');
     });
 });
+
+describe('redo (opt-in)', () => {
+    function redoEditor(initial = 'a') {
+        const state = { value: initial };
+        const history = History.create({
+            redo: true,
+            capture: () => state.value,
+            restore: snap => { state.value = snap; }
+        });
+        return { state, history };
+    }
+
+    it('replays an undone step, and undo/redo walk the same path both ways', () => {
+        const { state, history } = redoEditor('a');
+        history.record(); state.value = 'b';
+        history.record(); state.value = 'c';
+        history.undo(); history.undo();
+        expect(state.value).toBe('a');
+        expect(history.redo()).toBe(true);
+        expect(state.value).toBe('b');
+        expect(history.redo()).toBe(true);
+        expect(state.value).toBe('c');
+        expect(history.redo()).toBe(false);
+        history.undo();
+        expect(state.value).toBe('b');
+    });
+
+    it('drops the redo branch when a new edit is made', () => {
+        const { state, history } = redoEditor('a');
+        history.record(); state.value = 'b';
+        history.undo();
+        expect(history.canRedo()).toBe(true);
+        history.record(); state.value = 'x';
+        expect(history.canRedo()).toBe(false);
+        expect(history.redo()).toBe(false);
+        expect(state.value).toBe('x');
+    });
+
+    it('stays off unless asked for, so other editors keep their behaviour', () => {
+        const { state, history } = editor('a');
+        history.record(); state.value = 'b';
+        history.undo();
+        expect(history.canRedo()).toBe(false);
+        expect(history.redo()).toBe(false);
+        expect(state.value).toBe('a');
+    });
+
+    it('redoes on Shift+Cmd+Z and Ctrl+Y, and drives a redo button', () => {
+        const listeners = [];
+        const target = { addEventListener: (_t, fn) => listeners.push(fn), removeEventListener: () => { } };
+        const fire = ev => listeners.forEach(fn => fn({ preventDefault() { }, target: {}, metaKey: false, ctrlKey: false, altKey: false, shiftKey: false, ...ev }));
+        let clickRedo = null;
+        const button = { disabled: false, addEventListener: (_t, fn) => { clickRedo = fn; }, removeEventListener: () => { }, setAttribute: () => { } };
+        const { state, history } = redoEditor('a');
+        history.bindKeyboard(target);
+        history.bindRedoButton(button);
+        history.record(); state.value = 'b';
+        expect(button.disabled).toBe(true);
+        fire({ key: 'z', metaKey: true });
+        expect(state.value).toBe('a');
+        expect(button.disabled).toBe(false);
+        fire({ key: 'Z', metaKey: true, shiftKey: true });
+        expect(state.value).toBe('b');
+        fire({ key: 'z', ctrlKey: true });
+        expect(state.value).toBe('a');
+        fire({ key: 'y', ctrlKey: true });
+        expect(state.value).toBe('b');
+        history.undo();
+        clickRedo();
+        expect(state.value).toBe('b');
+    });
+});

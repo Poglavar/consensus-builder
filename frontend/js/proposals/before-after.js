@@ -7,7 +7,9 @@
 // not a land fork) gets that version's footprint drawn as a dashed outline, so the two versions can
 // be told apart (M5); and a readjustment can be opened for one parcel, which is then outlined on the
 // before side while the plots that came out of it are outlined on the after side (M6, the owner's
-// review, in the modal's own colours: dashed amber in, solid blue out).
+// review, in the modal's own colours: dashed amber in, solid blue out). It can also be opened for
+// one abstract owner of a readjustment: every parcel that owner holds a share in is outlined before,
+// every plot the plan gives them after — "what I put in, what I get out" (ownerFocusParts).
 //
 // beforeLayers() and canCompare() are pure and tested headlessly; create() takes its collaborators
 // as a function so the browser instance can resolve the app's globals at call time (they load
@@ -43,7 +45,7 @@
     // parcel's original cadastre feature. Buildings come along only when the main map shows them.
     // `previous` is the replaced version's footprint; `focusParcelId` picks the one claimed parcel
     // to outline (M6), found among the originals.
-    function beforeLayers({ affectedIds, originals, presented, buildings, buildingsShown, previous, focusParcelId, idOfFeature } = {}) {
+    function beforeLayers({ affectedIds, originals, presented, buildings, buildingsShown, previous, focusParcelId, focusParcelIds, idOfFeature } = {}) {
         const affected = new Set(Array.from(affectedIds || [], idOf).filter(Boolean));
         const kept = (Array.isArray(presented) ? presented : []).filter(entry => {
             if (!entry || !entry.feature) return false;
@@ -51,13 +53,13 @@
             return !ids.some(id => affected.has(idOf(id)));
         }).map(entry => entry.feature);
         const original = withGeometry(originals);
-        const wanted = idOf(focusParcelId);
+        const wanted = new Set([focusParcelId, ...(Array.isArray(focusParcelIds) ? focusParcelIds : [])].map(idOf).filter(Boolean));
         const identify = typeof idOfFeature === 'function' ? idOfFeature : feature => featureIdOf(feature, null);
         return {
             parcels: kept.concat(original),
             buildings: buildingsShown ? withGeometry(buildings) : [],
             previous: withGeometry(previous),
-            focus: wanted ? original.filter(feature => idOf(identify(feature)) === wanted) : []
+            focus: wanted.size ? original.filter(feature => wanted.has(idOf(identify(feature)))) : []
         };
     }
 
@@ -84,6 +86,30 @@
         }
         const props = (feature && feature.properties) || {};
         return idOf(props.parcelId || props.parcel_id || props.id || feature?.id);
+    }
+
+    // One owner's side of a readjustment: the cadastral parcels they hold a share in (from the
+    // proposal's rights snapshot) and the plots the plan assigns them (any share of the plot).
+    function ownerFocusParts(proposal, ownerId) {
+        const id = idOf(ownerId).trim();
+        if (!proposal || !id) return { parcelIds: [], plots: [] };
+        const rights = proposal.approvalConfig && proposal.approvalConfig.rights;
+        const parcelIds = (rights && Array.isArray(rights.parcels) ? rights.parcels : [])
+            .filter(parcel => Array.isArray(parcel && parcel.owners) && parcel.owners.some(owner => idOf(owner && owner.ownerId).trim() === id))
+            .map(parcel => idOf(parcel.parcelId))
+            .filter(Boolean);
+        const polygons = proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)
+            ? proposal.reparcellization.polygons : [];
+        const plots = [];
+        polygons.forEach((plot, index) => {
+            if (!plot || !plot.geometry) return;
+            const owners = Array.isArray(plot.owners) ? plot.owners : [];
+            const receives = owners.length
+                ? owners.some(owner => idOf(owner && owner.ownerKey).trim() === id)
+                : idOf(plot.ownerKey).trim() === id;
+            if (receives) plots.push({ type: 'Feature', properties: { plot: index + 1 }, geometry: plot.geometry });
+        });
+        return { parcelIds, plots };
     }
 
     function create(resolveDependencies) {
@@ -147,6 +173,8 @@
                 ? deps.claims.cadastreParcelIdsOf(proposal)
                 : (Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [])).map(idOf).filter(Boolean));
             const focusParcelId = idOf(options.focusParcelId) || null;
+            const focusOwnerId = idOf(options.focusOwnerId) || null;
+            const ownerParts = focusOwnerId ? ownerFocusParts(proposal, focusOwnerId) : null;
             const previous = typeof deps.previousVersionOf === 'function' ? deps.previousVersionOf(proposal) : null;
             const [originals, presented] = await Promise.all([originalParcels(deps, affectedIds), presentedParcels(deps)]);
             if (session) dispose();
@@ -156,12 +184,17 @@
                 buildingsShown: typeof deps.buildingsShown === 'function' ? deps.buildingsShown() : false,
                 previous: footprintFeatures(previous, deps.footprintParts),
                 focusParcelId,
+                focusParcelIds: ownerParts ? ownerParts.parcelIds : [],
                 idOfFeature: feature => featureIdOf(feature, deps.fabric)
             });
             const t = typeof deps.t === 'function' ? deps.t : (_key, fallback) => fallback;
             const L = deps.L;
+            // The plots the focused owner receives, outlined on the live ("after") map.
+            if (ownerParts && ownerParts.plots.length) {
+                hostLayer = L.geoJSON({ type: 'FeatureCollection', features: ownerParts.plots }, { interactive: false, style: () => FOCUS_AFTER_STYLE }).addTo(deps.map);
+            }
             // The plots that came out of the focused parcel, outlined on the live ("after") map.
-            if (focusParcelId && deps.fabric && typeof deps.fabric.entriesForCadastre === 'function') {
+            if (!ownerParts && focusParcelId && deps.fabric && typeof deps.fabric.entriesForCadastre === 'function') {
                 let plots = [];
                 try { plots = withGeometry(deps.fabric.entriesForCadastre([focusParcelId], { includeCorridors: true })); } catch (_) { plots = []; }
                 if (plots.length) {
@@ -201,15 +234,16 @@
                 }
             });
             activeKey = idOf(key);
-            activeFocus = focusParcelId;
+            activeFocus = focusOwnerId ? `owner:${focusOwnerId}` : focusParcelId;
             // What the before map holds, for a test or a reader of the DOM: the canvas cannot be read.
             try {
                 session.beforeEl.dataset.layers = JSON.stringify({
                     parcels: layers.parcels.length, buildings: layers.buildings.length,
-                    previous: layers.previous.length, focus: layers.focus.length
+                    previous: layers.previous.length, focus: layers.focus.length,
+                    ownerPlots: ownerParts ? ownerParts.plots.length : 0
                 });
             } catch (_) { /* no dataset on this host */ }
-            if (typeof deps.onChange === 'function') deps.onChange(true, { key: activeKey, focusParcelId });
+            if (typeof deps.onChange === 'function') deps.onChange(true, { key: activeKey, focusParcelId, focusOwnerId });
             // The divider is what the reader now operates.
             try { session.handleEl && session.handleEl.focus({ preventScroll: true }); } catch (_) { /* no focus in this host */ }
             return true;
@@ -232,15 +266,18 @@
             },
             // toggle(key) starts or ends the comparison; toggle(key, { focusParcelId }) opens it for
             // one parcel, and asked again for another parcel moves the focus instead of closing.
+            // toggle(key, { focusOwnerId }) does the same for one owner of a readjustment.
             async toggle(key, options = {}) {
-                const focus = idOf(options.focusParcelId) || null;
+                const owner = idOf(options.focusOwnerId) || null;
+                const focus = owner ? `owner:${owner}` : (idOf(options.focusParcelId) || null);
                 if (session && idOf(key) === activeKey && focus === activeFocus) { dispose(); return false; }
                 if (session && !focus) { dispose(); return false; }
                 if (starting) return starting;
                 const deps = resolveDependencies();
                 const proposal = typeof deps.findProposal === 'function' ? deps.findProposal(key) : null;
                 if (!proposal) return false;
-                starting = start(proposal, key, { focusParcelId: focus }).finally(() => { starting = null; });
+                starting = start(proposal, key, owner ? { focusOwnerId: owner } : { focusParcelId: focus })
+                    .finally(() => { starting = null; });
                 return starting;
             }
         };
@@ -292,5 +329,5 @@
         };
     }
 
-    return { canCompare, beforeLayers, footprintFeatures, create, browserDependencies, PREVIOUS_STYLE, FOCUS_BEFORE_STYLE, FOCUS_AFTER_STYLE };
+    return { canCompare, beforeLayers, footprintFeatures, ownerFocusParts, create, browserDependencies, PREVIOUS_STYLE, FOCUS_BEFORE_STYLE, FOCUS_AFTER_STYLE };
 });

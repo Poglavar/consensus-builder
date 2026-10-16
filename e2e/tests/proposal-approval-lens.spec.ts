@@ -527,6 +527,46 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
   expect(await page.evaluate(() => (window as any).__e2eWallet.signed.filter((entry: any) => entry.text.startsWith('Urban Game Theory owner decision')).length)).toBe(0);
 });
 
+// Anyone can read each owner's deal from the card: no wallet, no lens member, nothing signed. The
+// owner (or whoever acts for them) goes on from there to the signing review.
+test('each owner\'s deal is readable by anyone from the Owner acceptance card', async ({ mockApi: page }, testInfo) => {
+  test.setTimeout(60_000);
+  const member = wallet().address;
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members: [
+    { key: member, kind: 'owner-consent', name: 'Test notary' }
+  ] } }));
+  await openCity(page);
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  await establishLocalProfile(page);
+  const proposalId = await seedReadjustment(page, member);
+  await openLand(page, proposalId);
+
+  const owners = card(page).locator('[data-approval-deals] [data-approval-action="inspect"]');
+  await expect(owners).toHaveText(['Owner A', 'Owner B', 'Owner C', 'Owner D']);
+  await owners.filter({ hasText: 'Owner D' }).click();
+
+  const deal = dialog(page);
+  await expect(deal.locator('.cb-dialog__title')).toHaveText('Owner D’s deal');
+  await expect(deal).toContainText('What Owner D puts in');
+  await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('Share 1/2');
+  await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('co-owned with Owner C');
+  await expect(deal).toContainText('What Owner D gets');
+  await expect(deal.locator('[data-approval-plot="3"]')).toContainText('shared with Owner C');
+  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('Cash received');
+  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('7.50');
+  await expect(deal.locator('[data-approval-progress-with]')).toContainText('With Owner D’s acceptance: 1 of 4 owners');
+  // Read-only: nothing here signs.
+  await expect(deal).not.toContainText('Your wallet signs these exact terms');
+  await screenshot(page, testInfo, 'deal-owner-d');
+
+  await deal.locator('[data-approval-deal-accept="owner-d"]').click();
+  const review = dialog(page);
+  await expect(review.locator('.cb-dialog__title')).toHaveText('Accept as Owner D');
+  await expect(review).toContainText('Your share 1/2');
+  await expect(review.locator('[data-approval-review-status]')).toContainText('first confirm with a lens member');
+  expect((await proposalState(page, proposalId)).ownerApprovals || {}).toEqual({});
+});
+
 // A second device: its own browser context, the same mocked API, lens member, relay and wallets.
 async function secondBrowser(browser: Browser, baseURL: string | undefined, setup: (page: Page) => Promise<void>) {
   const context = await browser.newContext({ baseURL });

@@ -672,7 +672,8 @@ function showProposalDialog(overrides = null) {
         recheck: t('modal.createProposal.ownerOffer.recheck', 'Check again')
     };
     const submitLabel = isEditingExisting
-        ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+        ? (window.ProposalLineage?.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId)
+            || t('proposalDrafts.actions.createReplacement', 'Create replacement proposal'))
         : t('modal.createProposal.submit', 'Create Proposal');
     const cancelLabel = t('common.cancel', 'Cancel');
 

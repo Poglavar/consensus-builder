@@ -110,6 +110,21 @@
     font-weight: var(--cb-weight-medium);
 }
 
+/* "What each owner puts in and gets": one button per abstract owner, readable by anyone. */
+.approval-card__deals {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    padding-top: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+.approval-card__deals-title {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
 .approval-card__you {
     display: flex;
     flex-direction: column;
@@ -265,5 +280,10 @@
 
     .approval-card__actions .btn {
         flex: 1 1 100%;
+    }
+
+    /* Owner buttons are short labels: two to a row rather than one per line. */
+    .approval-card__deals .approval-card__actions .btn {
+        flex: 1 1 calc(50% - var(--cb-space-2));
     }
 }

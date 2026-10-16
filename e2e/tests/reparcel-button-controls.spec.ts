@@ -202,6 +202,17 @@ test.describe('reparcellization button controls @core', () => {
     await expect(nodes).toHaveAttribute('aria-pressed', 'true');
 
     const rows = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row');
+    // Draw freely starts from the automatic split. Erase its boundary so the cut below is the only one.
+    await modal.locator('[data-reparcel-erase]').click();
+    // A vertical boundary is a zero-width box, which Playwright will not click: aim at its middle.
+    const boundary = await page.locator('#map-container path.reparcel-erase-line').first().evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    });
+    await page.mouse.click(boundary.x, boundary.y);
+    await expect(rows).toHaveCount(1);
+    await modal.locator('[data-reparcel-erase]').click();
+    await expect(nodes).toHaveAttribute('aria-pressed', 'true');
     const beforeSplit = await rows.count();
     await modal.locator('[data-reparcel-line]').click();
     const map = page.locator('#map-container');
