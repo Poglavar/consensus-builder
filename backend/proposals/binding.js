@@ -171,8 +171,15 @@ export function publicationCityOf({ site = null, parts = null, city = null, parc
 }
 
 // The site in the operation frame (SRID 0, metres), valid and unioned, and — for statements that
-// search the HR cadastre — the same site in its CRS for the indexed candidate search. $1 polygons,
+// search the HR cadastre — the same site in its CRS and the current parcels near it. $1 polygons,
 // $2 centrelines (legacy footprints: buffered in the frame), `proj` the frame's projection string.
+//
+// MATERIALIZED and subdivided on purpose (2026-10-16): a CTE used once is inlined, so the planner
+// rebuilt the transformed, repaired, unioned site for every row of the parcel index scan, and one
+// bbox around a long track met 33k parcels it then tested against the whole site. Proposal 486 (a
+// 9 ha railway in Šibenik, 662 parcels) counted in 53 s and its binding-drift read hit nginx's 60 s.
+// Each piece of ST_Subdivide has a tight bbox and few vertices; the pieces cover exactly the site,
+// so the candidate set is unchanged (ctid deduplicates a parcel that meets several pieces).
 function siteCte(proj, { dataset = false } = {}) {
     return `
     parts AS (
@@ -183,28 +190,34 @@ function siteCte(proj, { dataset = false } = {}) {
         SELECT ST_Buffer(ST_Transform(ST_Segmentize(ST_SetSRID(ST_GeomFromGeoJSON(value->>'line'), 4326), ${SEGMENT_DEG}), ${proj}::text),
                          (value->>'halfWidthM')::float8, 'endcap=flat join=round quad_segs=64') AS geom
         FROM jsonb_array_elements($2::jsonb)
-    ), site AS (
+    ), site AS MATERIALIZED (
         SELECT ST_CollectionExtract(ST_MakeValid(ST_UnaryUnion(ST_Collect(geom))), 3) AS g
         FROM parts WHERE NOT ST_IsEmpty(geom)
-    )${dataset ? `, site_ds AS (
+    )${dataset ? `, site_ds AS MATERIALIZED (
         -- valid again after the transform: a vertex moved by the reprojection can make a ring touch itself
         SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(g, ${proj}::text, ${HR_PARCEL_SRID})), 3) AS g
         FROM site WHERE g IS NOT NULL AND NOT ST_IsEmpty(g)
+    ), site_pieces AS MATERIALIZED (
+        SELECT ST_Subdivide(g, ${SITE_PIECE_VERTICES}) AS g FROM site_ds
+    ), candidate_parcels AS MATERIALIZED (
+        -- current HR parcels near the site: indexed bbox search in 3765 with slack, per piece
+        SELECT DISTINCT ON (p.ctid) p.maticni_broj_ko, p.broj_cestice, p.geom
+        FROM site_pieces s
+        JOIN parcel p ON p.current = true AND p.geom && ST_Expand(s.g, ${CANDIDATE_SLACK_M}) AND ST_DWithin(p.geom, s.g, ${CANDIDATE_SLACK_M})
     )` : ''}`;
 }
+
+// Vertex cap of one site piece in the candidate search (ST_Subdivide's max_vertices).
+const SITE_PIECE_VERTICES = 64;
 
 // A cadastre geometry in the operation frame: split into ≤ 50 m pieces in its own CRS first.
 const inFrame = (geometrySql, proj) => `ST_Transform(ST_Segmentize(${geometrySql}, ${DATASET_SEGMENT_M}), ${proj}::text)`;
 // The ellipsoidal area of a frame geometry.
 const frameArea = (geometrySql, proj) => `ST_Area(ST_Transform(${geometrySql}, ${proj}::text, 4326)::geography)`;
-// Candidate HR parcels for the site: indexed bbox search in 3765 with slack.
-const CANDIDATE_JOIN = `parcel p ON p.current = true AND p.geom && ST_Expand(s.g, ${CANDIDATE_SLACK_M}) AND ST_DWithin(p.geom, s.g, ${CANDIDATE_SLACK_M})`;
-
 // $1 polygons, $2 centrelines, $3 the frame's projection string.
 export const BINDING_COUNT_SQL = `
     WITH ${siteCte('$3', { dataset: true })}
-    SELECT count(*)::int AS parcels
-    FROM site_ds s JOIN ${CANDIDATE_JOIN}
+    SELECT count(*)::int AS parcels FROM candidate_parcels
 `;
 
 // One statement. $1 polygons, $2 centrelines, $3 = max(toleranceM, INTRUSION_NOISE_M), $4 the frame's
@@ -231,7 +244,7 @@ export const BINDING_SQL = `
     ), candidates AS (
         SELECT 'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS id,
                ST_CollectionExtract(ST_MakeValid(${inFrame('ST_MakeValid(p.geom)', '$4')}), 3) AS pg
-        FROM site_ds s JOIN ${CANDIDATE_JOIN}
+        FROM candidate_parcels p
     ), hits AS (
         SELECT DISTINCT ON (id) id, i FROM (
             SELECT c.id, ST_CollectionExtract(ST_Intersection(c.pg, s.g), 3) AS i FROM candidates c, site s
