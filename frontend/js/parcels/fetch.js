@@ -65,7 +65,7 @@
     }
 
     // A session-level ground source the visitor chose when the register could not be loaded (a
-    // register link of their own, or a Schelling plan). It stands in for the network for that city
+    // register link of their own). It stands in for the network for that city
     // and nothing else: see parcels/ground-fallback.js.
     function groundOverride(city) {
         try {

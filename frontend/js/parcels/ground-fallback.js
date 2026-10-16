@@ -9,10 +9,11 @@
 //   3. Imagery      — best-effort inference of parcel boundaries from satellite imagery. The
 //                     pipeline is being built elsewhere; this entry point reports availability.
 //                     OCR is only the working name retained in the integration contract.
-//   4. Schelling    — a parcel plan everyone can derive independently. One algorithm today,
-//                     "Meridians and parallels" (schelling-grid.js); elevation contours planned.
+//   4. Schelling    — shows the Schelling plan layer (js/schelling/): streets, blocks and plots
+//                     everyone can derive independently, drawn over whatever ground is here. It is
+//                     not a parcel source; what is proposed from it stands on open ground.
 //
-// Options 2 and 4 become a parcel SOURCE for the city for this browser session: fetch.js asks
+// Option 2 becomes a parcel SOURCE for the city for this browser session: fetch.js asks
 // `activeSource(city)` before it talks to the network, so the repository, fabric and presenter see
 // these parcels the way they see cadastral ones. Nothing here is persisted beyond sessionStorage,
 // and nothing here is ever labelled a cadastre: every feature carries its provenance.
@@ -147,7 +148,7 @@
     // ---- sources --------------------------------------------------------------------------------
 
     // A source is what fetch.js consults instead of the network:
-    //   { id, kind: 'schelling' | 'custom-url', label, fetchCell({ latLonBbox, bbox, city }),
+    //   { id, kind: 'custom-url', label, fetchCell({ latLonBbox, bbox, city }),
     //     fetchByIds(ids) -> { features, absentIds }, describe() -> persisted descriptor }
     function activeSource(cityId) {
         return sources.get(String(cityId || currentCityId())) || null;
@@ -175,89 +176,6 @@
         const parts = String(text || '').split(',').map(Number);
         if (parts.length < 4 || parts.some(value => !Number.isFinite(value))) return null;
         return { west: parts[0], south: parts[1], east: parts[2], north: parts[3] };
-    }
-
-    function markRoads(features) {
-        if (typeof global.addRoadParcel !== 'function') return;
-        features.forEach(feature => {
-            const props = feature && feature.properties;
-            if (props && props.isRoad === true && props.parcelId) {
-                try { global.addRoadParcel(props.parcelId); } catch (_) { }
-            }
-        });
-    }
-
-    // A plan belongs to a latitude band: planFor rounds the latitude to the whole degree, which fixes
-    // its arcsecond steps, so the same parameters make another plan — and other ids — a band away.
-    // One installed source serves every band the visitor reaches (explore spans the world), each from
-    // that band's own plan, so a parcel's id is the one a stranger starting there derives too; a plan
-    // chosen in Tokyo used to lay 36°N blocks and ids over Helsinki for the rest of the session. A
-    // piece belongs to the band its centre lies in; at the half degree between two bands their
-    // streets meet edge to edge.
-    const bandOf = lat => Math.round(lat);
-    function bandOfParcelId(id) {
-        const match = /^MP:[^:]*@(\d+)([NS]):/.exec(String(id || ''));
-        return match ? (match[2] === 'S' ? -Number(match[1]) : Number(match[1])) : null;
-    }
-    function centreLatOf(feature) {
-        let south = Infinity;
-        let north = -Infinity;
-        feature.geometry.coordinates[0].forEach(position => { south = Math.min(south, position[1]); north = Math.max(north, position[1]); });
-        return (south + north) / 2;
-    }
-
-    function schellingSource(params) {
-        const grid = global.SchellingGrid;
-        if (!grid) throw new Error('SchellingGrid is unavailable.');
-        const plans = new Map();
-        const planAt = band => {
-            if (!plans.has(band)) plans.set(band, grid.planFor({ ...params, lat: band }));
-            return plans.get(band);
-        };
-        const plan = planAt(bandOf(Number(params && params.lat)));
-        return {
-            id: `schelling:${plan.code}`,
-            kind: 'schelling',
-            algorithm: plan.algorithm,
-            plan,
-            label: t('groundFallback.schelling.sourceLabel', 'Schelling plan: meridians and parallels ({code})', { code: plan.code }),
-            fetchCell(cell) {
-                const box = parseLatLonBbox(cell && cell.latLonBbox);
-                if (!box) throw new Error('Schelling source needs a lat/lng bbox.');
-                const features = [];
-                for (let band = bandOf(box.south); band <= bandOf(box.north); band += 1) {
-                    if (Math.abs(band) > 85) continue; // beyond the supported domain: no plan
-                    grid.featuresInBbox(planAt(band), [box.west, box.south, box.east, box.north])
-                        .forEach(feature => { if (bandOf(centreLatOf(feature)) === band) features.push(feature); });
-                }
-                markRoads(features);
-                return { features, returnsWGS84: true };
-            },
-            fetchByIds(ids) {
-                const features = [];
-                const absentIds = [];
-                ids.forEach(id => {
-                    const band = bandOfParcelId(id);
-                    const feature = band === null || Math.abs(band) > 85 ? null : grid.featureForId(planAt(band), id);
-                    if (feature) features.push(feature); else absentIds.push(id);
-                });
-                markRoads(features);
-                return { features, absentIds };
-            },
-            describe() {
-                return {
-                    kind: 'schelling',
-                    algorithm: plan.algorithm,
-                    params: {
-                        lat: plan.refLat,
-                        arterialSpacingM: plan.arterialSpacingM,
-                        arterialWidthM: plan.arterialWidthM,
-                        streetWidthM: plan.streetWidthM,
-                        targetBlockM: plan.targetBlockM
-                    }
-                };
-            }
-        };
     }
 
     // ---- a register the visitor knows of ------------------------------------------------------
@@ -457,8 +375,8 @@
 
     // ---- restoring a session's choice ----------------------------------------------------------
 
-    // A reload within the same tab keeps the plan: proposals drawn on Schelling parcels name those
-    // ids, and a reload that forgot the plan would strand them. A NEW visit attempts the register.
+    // A reload within the same tab keeps the visitor's own register link. A NEW visit attempts the
+    // official register.
     function restoreFromSession(cityId) {
         const city = String(cityId || currentCityId());
         if (!city || sources.has(city)) return activeSource(city);
@@ -466,11 +384,6 @@
         if (!raw) return null;
         try {
             const descriptor = JSON.parse(raw);
-            if (descriptor && descriptor.kind === 'schelling' && descriptor.params) {
-                const source = schellingSource(descriptor.params);
-                sources.set(city, source);
-                return source;
-            }
             if (descriptor && descriptor.kind === 'custom-url' && descriptor.url) {
                 // The URL was validated when it was entered; trusting it again for the same session
                 // is the same trust. A viewport fetch re-validates every reply anyway.
@@ -680,10 +593,16 @@
                 t('groundFallback.options.ocr.title', 'Estimate parcel boundaries from satellite imagery'),
                 t('groundFallback.options.ocr.desc', 'Infer likely boundaries from visible features. Best effort: results may be incomplete or wrong and do not establish legal boundaries.'),
                 renderOcr));
+            // The Schelling plan is not ground: it is a layer drawn over whatever ground is here, and
+            // what is proposed from it stands on open ground where there is no register.
             list.appendChild(option('schelling', 'fa-border-all',
-                t('groundFallback.options.schelling.title', 'Apply a Schelling point algorithm'),
-                t('groundFallback.options.schelling.desc', 'A parcel plan anyone can derive on their own, so everyone arrives at the same one.'),
-                renderSchelling));
+                t('groundFallback.options.schelling.title', 'Use the Schelling plan'),
+                t('groundFallback.options.schelling.desc', 'Streets, blocks and plots anyone can derive on their own, drawn over the map. Its roads can be proposed here on open ground.'),
+                () => {
+                    close();
+                    global.SchellingLayer.setEnabled(true);
+                    status(t('groundFallback.status.schellingShown', 'The Schelling plan is drawn over the map. Its settings and Propose are in Layers.'));
+                }));
             body.appendChild(list);
             const foot = el('div', 'ground-fallback-foot');
             const laterBtn = el('button', 'btn', t('groundFallback.options.later', 'Not now'));
@@ -786,179 +705,6 @@
             body.appendChild(section);
         }
 
-        // -- option 4: Schelling --
-        function renderSchelling() {
-            body.replaceChildren();
-            const grid = global.SchellingGrid;
-            const section = el('div', 'ground-fallback-section');
-            section.appendChild(el('h4', null, t('groundFallback.schelling.heading', 'A plan everyone can agree on')));
-            section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.schelling.intro', 'A Schelling point is a choice people make independently and still agree on, because every input is already common knowledge. The plan below needs only a GPS fix and arithmetic; two strangers get identical parcels.')));
-
-            const picker = el('div', 'ground-fallback-algorithms');
-            // The chosen and the unavailable algorithm read from their radios (css :has()).
-            const meridians = el('label', 'ground-fallback-algorithm');
-            const meridiansRadio = document.createElement('input');
-            meridiansRadio.type = 'radio'; meridiansRadio.name = 'schelling-algorithm'; meridiansRadio.value = 'meridians-parallels'; meridiansRadio.checked = true;
-            meridians.appendChild(meridiansRadio);
-            const meridiansText = el('span');
-            meridiansText.appendChild(el('strong', null, t('groundFallback.schelling.meridians.title', 'Meridians and parallels')));
-            meridiansText.appendChild(el('small', null, t('groundFallback.schelling.meridians.desc', 'Arterial roads on the graticule about 1 km apart, blocks by integer division.')));
-            meridians.appendChild(meridiansText);
-            picker.appendChild(meridians);
-            const contours = el('label', 'ground-fallback-algorithm');
-            const contoursRadio = document.createElement('input');
-            contoursRadio.type = 'radio'; contoursRadio.name = 'schelling-algorithm'; contoursRadio.value = 'contours'; contoursRadio.disabled = true;
-            contours.appendChild(contoursRadio);
-            const contoursText = el('span');
-            contoursText.appendChild(el('strong', null, t('groundFallback.schelling.contours.title', 'Elevation contours (isohypses)')));
-            contoursText.appendChild(el('small', null, t('groundFallback.schelling.contours.desc', 'Streets along contour lines, blocks between them. Planned; needs a terrain source.')));
-            contours.appendChild(contoursText);
-            picker.appendChild(contours);
-            section.appendChild(picker);
-
-            if (!grid) {
-                section.appendChild(el('p', 'ground-fallback-result is-error', 'SchellingGrid is unavailable.'));
-                const actions = el('div', 'ground-fallback-actions');
-                actions.appendChild(backButton());
-                section.appendChild(actions);
-                body.appendChild(section);
-                return;
-            }
-
-            const center = mapCenter();
-            const params = Object.assign({ lat: center.lat }, grid.DEFAULTS);
-            const explainer = el('div', 'ground-fallback-explainer');
-            const preview = el('div', 'ground-fallback-preview');
-            const result = el('p', 'ground-fallback-result');
-
-            const details = document.createElement('details');
-            details.className = 'ground-fallback-params';
-            const summary = el('summary', null, t('groundFallback.schelling.adjust', 'Adjust the assumptions'));
-            details.appendChild(summary);
-            const fields = [
-                ['arterialSpacingM', t('groundFallback.schelling.params.arterialSpacing', 'Arterial spacing (m)')],
-                ['arterialWidthM', t('groundFallback.schelling.params.arterialWidth', 'Arterial width (m)')],
-                ['streetWidthM', t('groundFallback.schelling.params.streetWidth', 'Local street width (m)')],
-                ['targetBlockM', t('groundFallback.schelling.params.targetBlock', 'Target block face (m)')]
-            ];
-            const inputs = {};
-            fields.forEach(([name, labelText]) => {
-                const row = el('label', 'ground-fallback-param');
-                row.appendChild(el('span', null, labelText));
-                const input = document.createElement('input');
-                input.type = 'number'; input.min = '1'; input.step = '1'; input.value = String(params[name]);
-                input.dataset.param = name;
-                input.addEventListener('input', recompute);
-                row.appendChild(input);
-                inputs[name] = input;
-                details.appendChild(row);
-            });
-
-            let plan = null;
-            function recompute() {
-                fields.forEach(([name]) => { params[name] = Number(inputs[name].value); });
-                try {
-                    plan = grid.planFor(params);
-                    result.className = 'ground-fallback-result';
-                    result.textContent = '';
-                    renderExplainer(plan);
-                    renderPreview(plan);
-                    apply.disabled = false;
-                } catch (error) {
-                    plan = null;
-                    apply.disabled = true;
-                    result.className = 'ground-fallback-result is-error';
-                    result.textContent = String(error && error.message || error);
-                }
-            }
-
-            function renderExplainer(current) {
-                const d = grid.describe(current, center);
-                explainer.replaceChildren();
-                const paragraphs = [
-                    t('groundFallback.schelling.explain.angel', 'Shlomo Angel and colleagues (Making Room for a Planet of Cities, 2011) argue that a growing city should fix its arterial roads before the land is built on: about {arterialWidth} m wide and about {arterialSpacing} m apart, so that every point is within a ten-minute walk of a road that can carry public transport. Smaller streets are left to fill in the kilometre squares between them.', { arterialWidth: d.arterialWidthM, arterialSpacing: current.arterialSpacingM }),
-                    t('groundFallback.schelling.explain.graticule', 'Here the arterials follow the graticule, counted from the Equator and Greenwich. At the {refLat}th parallel one second of latitude is {mLat} m and one second of longitude is {mLon} m, so the closest round steps are every {stepLat}″ of latitude ({spacingLat} m) and every {stepLon}″ of longitude ({spacingLon} m).', { refLat: d.refLat, mLat: d.metersPerArcsecondLat, mLon: d.metersPerArcsecondLon, stepLat: d.arterialStepLatSec, spacingLat: d.arterialSpacingLatM, stepLon: d.arterialStepLonSec, spacingLon: d.arterialSpacingLonM }),
-                    t('groundFallback.schelling.explain.blocks', 'Each superblock is divided {nLon} × {nLat} by local streets {streetWidth} m wide, which gives cells of {cellLon} × {cellLat} m and an optimal block of {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} blocks to the superblock.', { nLon: d.nLon, nLat: d.nLat, streetWidth: d.streetWidthM, cellLon: d.cellLonM, cellLat: d.cellLatM, blockWidth: d.blockWidthM, blockDepth: d.blockDepthM, blockArea: d.blockAreaM2, blockHa: d.blockAreaHa, count: d.blocksPerSuperblock })
-                ];
-                if (d.nearest) {
-                    paragraphs.push(t('groundFallback.schelling.explain.nearest', 'The arterials nearest the centre of this map lie on the parallel {latLine} ({latDistance} m away) and the meridian {lonLine} ({lonDistance} m away). Plan code {code}.', {
-                        latLine: d.nearest.latText, latDistance: Math.round(d.nearest.latDistanceM),
-                        lonLine: d.nearest.lonText, lonDistance: Math.round(d.nearest.lonDistanceM), code: d.code
-                    }));
-                }
-                paragraphs.forEach(text => explainer.appendChild(el('p', null, text)));
-            }
-
-            // One superblock, to scale: arterials on the edge, local streets inside, blocks between.
-            function renderPreview(current) {
-                const nLon = current.subdivision.nLon;
-                const nLat = current.subdivision.nLat;
-                const widthM = current.arterial.spacingLonM;
-                const heightM = current.arterial.spacingLatM;
-                const scale = 220 / Math.max(widthM, heightM);
-                const svgNs = 'http://www.w3.org/2000/svg';
-                const svg = document.createElementNS(svgNs, 'svg');
-                const W = widthM * scale, H = heightM * scale;
-                svg.setAttribute('viewBox', `0 0 ${W.toFixed(1)} ${H.toFixed(1)}`);
-                svg.setAttribute('width', W.toFixed(0));
-                svg.setAttribute('height', H.toFixed(0));
-                svg.setAttribute('role', 'img');
-                svg.setAttribute('aria-label', t('groundFallback.schelling.previewAlt', 'One superblock of the plan, to scale'));
-                const ground = document.createElementNS(svgNs, 'rect');
-                ground.setAttribute('x', '0'); ground.setAttribute('y', '0'); ground.setAttribute('width', W); ground.setAttribute('height', H);
-                ground.setAttribute('class', 'ground-fallback-preview-street');
-                svg.appendChild(ground);
-                const cellW = W / nLon, cellH = H / nLat;
-                const halfArterial = current.arterialWidthM / 2 * scale;
-                const halfStreet = current.streetWidthM / 2 * scale;
-                for (let j = 0; j < nLat; j += 1) {
-                    for (let i = 0; i < nLon; i += 1) {
-                        const west = i * cellW + (i === 0 ? halfArterial : halfStreet);
-                        const east = (i + 1) * cellW - (i + 1 === nLon ? halfArterial : halfStreet);
-                        // SVG y grows downwards; row 0 is the southern row, drawn at the bottom.
-                        const south = H - (j * cellH + (j === 0 ? halfArterial : halfStreet));
-                        const north = H - ((j + 1) * cellH - (j + 1 === nLat ? halfArterial : halfStreet));
-                        const block = document.createElementNS(svgNs, 'rect');
-                        block.setAttribute('x', west.toFixed(2)); block.setAttribute('y', north.toFixed(2));
-                        block.setAttribute('width', Math.max(0, east - west).toFixed(2)); block.setAttribute('height', Math.max(0, south - north).toFixed(2));
-                        block.setAttribute('class', 'ground-fallback-preview-block');
-                        svg.appendChild(block);
-                    }
-                }
-                preview.replaceChildren(svg, el('small', null, t('groundFallback.schelling.previewCaption', 'One superblock, {width} × {height} m, to scale. Dark: streets. Light: blocks.', { width: Math.round(widthM), height: Math.round(heightM) })));
-            }
-
-            const actions = el('div', 'ground-fallback-actions');
-            const apply = el('button', 'btn btn-primary btn-block', t('groundFallback.schelling.apply', 'Draw this plan here'));
-            apply.type = 'button';
-            apply.addEventListener('click', async () => {
-                if (!plan) return;
-                apply.disabled = true;
-                try {
-                    const source = schellingSource(params);
-                    installSource(city, source);
-                    resetDismissal(city);
-                    close();
-                    status(t('groundFallback.status.schellingInstalled', 'Drawing the Schelling plan {code} in memory for this session.', { code: source.plan.code }));
-                    reloadWithSource();
-                } catch (error) {
-                    apply.disabled = false;
-                    result.className = 'ground-fallback-result is-error';
-                    result.textContent = String(error && error.message || error);
-                }
-            });
-            actions.appendChild(backButton());
-            actions.appendChild(apply);
-
-            section.appendChild(el('div', 'ground-fallback-schelling-grid')).append(explainer, preview);
-            section.appendChild(details);
-            section.appendChild(result);
-            section.appendChild(el('p', 'ground-fallback-caveat', t('groundFallback.schelling.caveat', 'This is an estimate for planning, not a cadastre: the parcels live in this browser for this session and carry provenance “schelling-point”. Ownership and publishing need a real register.')));
-            section.appendChild(actions);
-            body.appendChild(section);
-            recompute();
-        }
-
         renderOptions();
         document.body.classList.add('ground-fallback-open');
         openDialog = dialogApi.overlay;
@@ -988,7 +734,6 @@
         activeSource,
         installSource,
         clearSource,
-        schellingSource,
         probeCustomUrl,
         restoreFromSession,
         onGroundUnavailable,

@@ -109,4 +109,17 @@ describe('one parcel recovery dialog after the introduction', () => {
         expect(document.body.querySelector('.ground-fallback-status').textContent).toBe('Provider denied access.');
         expect(choices()).toEqual(['url', 'ocr', 'schelling']);
     });
+
+    it('turns the Schelling option into the plan layer, not into ground', () => {
+        const { window, document } = boot();
+        window.closeSiteIntro();
+        const shown = [];
+        window.SchellingLayer = { setEnabled: value => shown.push(value) };
+        window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: Object.assign(new Error('No register'), { code: 'no-register' }) });
+        const option = document.body.querySelectorAll('button').find(node => node.dataset.option === 'schelling');
+        option.listeners.click();
+        expect(shown).toEqual([true]);
+        expect(window.ParcelGroundFallback.isOpen()).toBe(false);
+        expect(window.ParcelGroundFallback.activeSource('sample')).toBeNull();
+    });
 });

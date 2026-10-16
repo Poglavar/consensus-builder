@@ -5933,6 +5933,58 @@
         "tryAgainIn": "Try again in about {{minutes}} min, or plug in your own mirror or source.",
         "tryAgainLater": "Try again later, or plug in your own mirror or source."
     },
+    "schellingPlan": {
+        "title": "Schelling plan",
+        "toggle": "Show the Schelling plan",
+        "blockFace": "Local street spacing (block face)",
+        "streetWidth": "Local street width",
+        "plots": "Plot size",
+        "plotWhole": "Whole blocks",
+        "plotHalf": "1/2 block",
+        "why": "Why these numbers",
+        "proposeFrom": "Propose from this plan",
+        "zoomIn": "Zoom in to see the plan.",
+        "zoomForStreets": "Arterials only at this scale; zoom in for the local streets and blocks.",
+        "zoomForPlots": "Zoom in further to see the plots.",
+        "tooLarge": "The plan cannot be drawn here: {{reason}}",
+        "fixed": "Arterials every {{stepLon}}″ of longitude and {{stepLat}}″ of latitude here ({{spacingLon}} × {{spacingLat}} m), {{width}} m wide. They are fixed: that is what makes this plan the same for everyone.",
+        "blocks": "{{nLon}} × {{nLat}} blocks to a superblock, {{width}} × {{depth}} m each.",
+        "wholeBlocks": "Whole blocks, no plots.",
+        "plotSize": "Plots of {{frontage}} × {{depth}} m ({{area}} m²), facing the north and south streets.",
+        "code": "Plan {{code}}",
+        "whyAngel": "Shlomo Angel and colleagues (Making Room for a Planet of Cities, 2011) argue that a growing city should fix its arterial roads before the land is built on: about 30 m wide and about 1 km apart, so that every point is within a ten-minute walk of a road that can carry public transport.",
+        "whyGraticule": "Here the arterials follow the meridians and parallels, counted from Greenwich and the Equator, on the whole-arcsecond step closest to 1 km. Anyone with a GPS fix gets the same lines, so two strangers arrive at the same plan.",
+        "whyLocal": "The local streets divide each superblock evenly; their spacing and width, and the plot size, are yours to choose.",
+        "propose": {
+            "title": "Schelling roads",
+            "hint": "Click or drag over blocks to add or remove them. Every street around a chosen block is proposed.",
+            "superblock": "This superblock",
+            "clear": "Clear",
+            "proposeRoads": "Propose roads",
+            "disclaimer": "Roads only for now; the blocks and plots between them come next. What the roads take from existing parcels is shown when they land.",
+            "summary": "{{blocks}} · {{streets}} ({{arterial}} km arterial, {{local}} km local) · {{roads}}",
+            "empty": "No blocks chosen.",
+            "zoomIn": "Zoom in to paint blocks.",
+            "limit": "At most {{max}} blocks per proposal for now.",
+            "roadName": "Schelling roads {{code}}",
+            "roadNameNumbered": "Schelling roads {{code}} ({{number}})",
+            "description": "Streets of the Schelling plan {{code}} (meridians and parallels) around {{blocks}}.",
+            "failed": "Could not propose these roads: {{reason}}",
+            "done": "Proposed {{count}} of {{total}} Schelling road networks. Share them as a plan to publish them together.",
+            "blockCount": {
+                "one": "{{count}} block",
+                "other": "{{count}} blocks"
+            },
+            "streetCount": {
+                "one": "{{count}} street",
+                "other": "{{count}} streets"
+            },
+            "roadCount": {
+                "one": "{{count}} road proposal",
+                "other": "{{count}} road proposals"
+            }
+        }
+    },
     "groundFallback": {
         "reopen": "Choose how to continue",
         "title": "No parcel register could be loaded here",
@@ -5946,7 +5998,7 @@
             "dismissed": "Parcel register unavailable. Open the parcel options to choose how to continue.",
             "retrying": "Retrying the parcel register…",
             "urlInstalled": "Loading parcels from your register link for this session.",
-            "schellingInstalled": "Drawing the Schelling plan {code} in memory for this session."
+            "schellingShown": "The Schelling plan is drawn over the map. Its settings and Propose are in Layers."
         },
         "options": {
             "later": "Not now",
@@ -5963,8 +6015,8 @@
                 "desc": "Infer likely boundaries from visible features. Best effort: results may be incomplete or wrong and do not establish legal boundaries."
             },
             "schelling": {
-                "title": "Apply a Schelling point algorithm",
-                "desc": "A parcel plan anyone can derive on their own, so everyone arrives at the same one."
+                "title": "Use the Schelling plan",
+                "desc": "Streets, blocks and plots anyone can derive on their own, drawn over the map. Its roads can be proposed here on open ground."
             }
         },
         "url": {
@@ -5989,36 +6041,6 @@
             "help": "Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.",
             "start": "Start boundary recognition",
             "unavailable": "Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries."
-        },
-        "schelling": {
-            "heading": "A plan everyone can agree on",
-            "intro": "A Schelling point is a choice people make independently and still agree on, because every input is already common knowledge. The plan below needs only a GPS fix and arithmetic; two strangers get identical parcels.",
-            "sourceLabel": "Schelling plan: meridians and parallels ({code})",
-            "meridians": {
-                "title": "Meridians and parallels",
-                "desc": "Arterial roads on the graticule about 1 km apart, blocks by integer division."
-            },
-            "contours": {
-                "title": "Elevation contours (isohypses)",
-                "desc": "Streets along contour lines, blocks between them. Planned; needs a terrain source."
-            },
-            "explain": {
-                "angel": "Shlomo Angel and colleagues (Making Room for a Planet of Cities, 2011) argue that a growing city should fix its arterial roads before the land is built on: about {arterialWidth} m wide and about {arterialSpacing} m apart, so that every point is within a ten-minute walk of a road that can carry public transport. Smaller streets are left to fill in the kilometre squares between them.",
-                "graticule": "Here the arterials follow the graticule, counted from the Equator and Greenwich. At the {refLat}th parallel one second of latitude is {mLat} m and one second of longitude is {mLon} m, so the closest round steps are every {stepLat}″ of latitude ({spacingLat} m) and every {stepLon}″ of longitude ({spacingLon} m).",
-                "blocks": "Each superblock is divided {nLon} × {nLat} by local streets {streetWidth} m wide, which gives cells of {cellLon} × {cellLat} m and an optimal block of {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} blocks to the superblock.",
-                "nearest": "The arterials nearest the centre of this map lie on the parallel {latLine} ({latDistance} m away) and the meridian {lonLine} ({lonDistance} m away). Plan code {code}."
-            },
-            "adjust": "Adjust the assumptions",
-            "params": {
-                "arterialSpacing": "Arterial spacing (m)",
-                "arterialWidth": "Arterial width (m)",
-                "streetWidth": "Local street width (m)",
-                "targetBlock": "Target block face (m)"
-            },
-            "previewAlt": "One superblock of the plan, to scale",
-            "previewCaption": "One superblock, {width} × {height} m, to scale. Dark: streets. Light: blocks.",
-            "apply": "Draw this plan here",
-            "caveat": "This is an estimate for planning, not a cadastre: the parcels live in this browser for this session and carry provenance “schelling-point”. Ownership and publishing need a real register."
         }
     },
     "bets": {

@@ -368,19 +368,8 @@
             fallbackTitle: t('newStreet', 'New street'),
             description: t('proposeDescription', 'New street from a breakup of block {{block}}.', { block: state.block.id })
         });
-        const created = [], failed = [];
-        for (const record of records) {
-            // The steps a drawn road's Finish takes: its land, the parcels it reaches, then the one
-            // transaction that junctions it with the roads already applied.
-            win.rebuildRoadDefinitionFootprint(record.roadProposal.definition);
-            win.declareParcelsUnderRoadLand(record, record.roadProposal.definition.polygon);
-            try {
-                const result = await win.ProposalManager.createCorridorProposalAtomically(record);
-                if (result?.ok) created.push(result.proposalId); else failed.push(result?.reason || '');
-            } catch (error) {
-                failed.push(String(error?.message || error));
-            }
-        }
+        // The steps a drawn road's Finish takes (corridor-import.js createRoadRecords).
+        const { created, failed } = await win.__corridorImport.createRoadRecords(records);
         if (failed.length) console.warn(`[${new Date().toISOString()}] [urban-block-playground] Propose failed for ${failed.length} of ${records.length} streets:`, failed);
         if (!created.length) {
             button.disabled = false;

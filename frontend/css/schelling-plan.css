@@ -1,0 +1,50 @@
+/* The Schelling plan: its layer on the map, its settings in the Layers sheet, and the on-map tool
+   that paints the blocks of a proposal (js/schelling/). Map shapes are Leaflet paths styled through
+   their classes; these rules take precedence over Leaflet's presentation attributes. */
+
+/* The layer draws and never takes clicks: the parcels and tools underneath stay usable. */
+.leaflet-pane.schelling-plan-pane { z-index: var(--cb-z-map-pane-plan); pointer-events: none; }
+
+.schelling-plan__arterial-line { stroke: var(--cb-warning); stroke-width: 2; stroke-opacity: 0.85; fill: none; }
+.schelling-plan__street { stroke: none; fill-opacity: 0.45; }
+.schelling-plan__street.is-arterial { fill: var(--cb-warning); fill-opacity: 0.55; }
+.schelling-plan__street.is-local { fill: var(--cb-text-muted); }
+.schelling-plan__block { fill: none; stroke: var(--cb-primary); stroke-width: 1; stroke-opacity: 0.7; }
+.schelling-plan__plot { fill: none; stroke: var(--cb-primary); stroke-width: 0.75; stroke-opacity: 0.6; stroke-dasharray: 3 3; }
+
+/* Settings in the Layers sheet. */
+.schelling-plan-settings { display: flex; flex-direction: column; gap: var(--cb-space-2); }
+.schelling-plan-settings .sheet-note:empty { display: none; }
+.schelling-plan-settings__range {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--cb-space-1) var(--cb-space-2);
+}
+.schelling-plan-settings__range input[type="range"] { grid-column: 1 / -1; width: 100%; }
+.schelling-plan-settings__range output { color: var(--cb-text-strong); font-weight: var(--cb-weight-semibold); }
+.schelling-plan-settings__field { display: flex; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
+.schelling-plan-settings__field label { flex: none; }
+.schelling-plan-settings__field select { flex: 1 1 auto; min-width: 0; max-width: 12rem; }
+.schelling-plan-settings__code { font-family: var(--cb-font-mono); color: var(--cb-text-muted); }
+.schelling-plan-settings__why summary { cursor: pointer; color: var(--cb-text); font-weight: var(--cb-weight-medium); }
+
+/* The painting tool. */
+.schelling-propose__content { display: flex; flex-direction: column; gap: var(--cb-space-2); }
+.schelling-propose__content p { margin: 0; }
+.schelling-propose__hint,
+.schelling-propose__disclaimer { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.schelling-propose__code { font-family: var(--cb-font-mono); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.schelling-propose__summary { color: var(--cb-text-strong); font-weight: var(--cb-weight-semibold); }
+.schelling-propose__status:empty { display: none; }
+.schelling-propose__status { color: var(--cb-warning-soft-ink); }
+.schelling-propose__actions,
+.schelling-propose__footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-2); }
+.schelling-propose__footer .btn-primary { margin-left: auto; }
+
+/* A block takes a faint fill so all of it can be pressed, not only its outline. */
+.schelling-propose__cell { fill: var(--cb-primary); fill-opacity: 0.04; stroke: var(--cb-primary); stroke-width: 1; stroke-opacity: 0.5; cursor: crosshair; }
+.schelling-propose__cell.is-selected { fill-opacity: 0.3; stroke-opacity: 0.9; stroke-width: 1.5; }
+.schelling-propose__street { stroke: none; fill-opacity: 0.75; }
+.schelling-propose__street.is-arterial { fill: var(--cb-warning); }
+.schelling-propose__street.is-local { fill: var(--cb-text-strong); fill-opacity: 0.55; }

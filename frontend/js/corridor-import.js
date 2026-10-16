@@ -102,6 +102,39 @@
 
     // ---- browser ---------------------------------------------------------------------------------
 
+    async function loadGroundUnder(definition) {
+        const repository = global.CadastralParcelRepository;
+        if (!definition.polygon || !repository || typeof repository.ensureBounds !== 'function' || !global.L) return;
+        await repository.ensureBounds(global.L.geoJSON(definition.polygon).getBounds());
+    }
+
+    // Applied road proposals from records made by recordsFromImport, through the steps a drawn
+    // road's Finish takes: the land from the lanes, the parcels it reaches, then the one transaction
+    // that junctions it with the roads already applied. Used by the file import, the block
+    // playground and the Schelling plan. Answers the new ids and the reasons of the others.
+    async function createRoadRecords(records) {
+        const manager = global.ProposalManager;
+        const created = [];
+        const failed = [];
+        for (const record of records) {
+            const definition = record.roadProposal.definition;
+            if (typeof global.rebuildRoadDefinitionFootprint === 'function') global.rebuildRoadDefinitionFootprint(definition);
+            try {
+                // The parcels a road reaches are read from the ground loaded in this browser, so the
+                // ground under its land is loaded first: a road made away from the view, or below
+                // the parcel zoom, would otherwise declare none of the parcels it takes. A failed
+                // load fails the record rather than declaring too little.
+                await loadGroundUnder(definition);
+                if (typeof global.declareParcelsUnderRoadLand === 'function') global.declareParcelsUnderRoadLand(record, definition.polygon);
+                const result = await manager.createCorridorProposalAtomically(record);
+                if (result && result.ok) created.push(result.proposalId); else failed.push(result && result.reason);
+            } catch (error) {
+                failed.push(String(error && error.message || error));
+            }
+        }
+        return { created, failed };
+    }
+
     function t(key, fallback, params = {}) {
         const api = global && global.i18n;
         if (api && typeof api.t === 'function') {
@@ -192,22 +225,7 @@
             status(t('panel.road.importNone', '{{file}} holds no road this app can draw.', { file: file.name }));
             return null;
         }
-        const manager = global.ProposalManager;
-        const created = [];
-        const failed = [];
-        for (const record of records) {
-            const definition = record.roadProposal.definition;
-            // The same steps Finish takes: the land from the lanes, the parcels it reaches, then the
-            // one transaction that junctions it with the roads already applied.
-            if (typeof global.rebuildRoadDefinitionFootprint === 'function') global.rebuildRoadDefinitionFootprint(definition);
-            if (typeof global.declareParcelsUnderRoadLand === 'function') global.declareParcelsUnderRoadLand(record, definition.polygon);
-            try {
-                const result = await manager.createCorridorProposalAtomically(record);
-                if (result && result.ok) created.push(result.proposalId); else failed.push(result && result.reason);
-            } catch (error) {
-                failed.push(String(error && error.message || error));
-            }
-        }
+        const { created, failed } = await createRoadRecords(records);
         // The picker lives in the drawing panel; an import is the whole road work, so the pen is put down.
         if (created.length && global.roadDrawingMode && typeof global.exitRoadDrawingMode === 'function') {
             try { global.exitRoadDrawingMode(); } catch (error) { console.warn('[corridor-import] could not leave drawing mode', error); }
@@ -244,5 +262,5 @@
         global.openCorridorImportChooser = openCorridorImportChooser;
     }
 
-    return { recordsFromImport, importCorridorFile, openCorridorImportPicker, openCorridorImportChooser, FORMATS, formatFor, extensionOf };
+    return { recordsFromImport, createRoadRecords, importCorridorFile, openCorridorImportPicker, openCorridorImportChooser, FORMATS, formatFor, extensionOf };
 });

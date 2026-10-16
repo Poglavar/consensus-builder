@@ -1,18 +1,18 @@
-# Schelling-point parcel plans
+# Schelling-point plans: roads, blocks and plots
 
-Where no parcel register can be loaded, a visitor is offered a third kind of ground besides a
-register link and best-effort boundary recognition from satellite imagery: a parcel plan that
-everybody derives on their own and still agrees on. A Schelling point is exactly that, a choice
-people make independently because every input to it is already common knowledge. For a parcel plan the inputs have to be things nobody owns and anyone can
-check: the graticule, a published rule of thumb, and arithmetic.
+A plan for streets, blocks and plots that everybody derives on their own and still agrees on. A
+Schelling point is exactly that, a choice people make independently because every input to it is
+already common knowledge. For a plan the inputs have to be things nobody owns and anyone can check:
+the graticule, a published rule of thumb, and arithmetic.
 
-The screen that offers it is `frontend/js/parcels/ground-fallback.js`; the geometry is
-`frontend/js/parcels/schelling-grid.js`, a pure module with no network, no Leaflet and no randomness,
-so it runs the same in the browser and under node (`backend/test/schelling-grid.test.js`).
+The geometry is `frontend/js/parcels/schelling-grid.js`, a pure module with no network, no Leaflet
+and no randomness, so it runs the same in the browser and under node
+(`backend/test/schelling-grid.test.js`). The layer, its settings and the painting tool are in
+`frontend/js/schelling/`.
 
-**Status (2026-10-16):** what follows the plan below describes what is built today, the fallback
-ground. Work continues on branch `schelling-plan`, which turns it into a plan layer you can propose
-from anywhere. This section is the living plan; update it as steps finish.
+**Status (2026-10-16, branch `schelling-plan`):** steps 1 and 2 below are built: the plan is a layer
+in every city with its settings, and painted blocks become road proposals. Plots are drawn but not
+yet proposable. This section is the living plan; update it as steps finish.
 
 ## Plan of record (2026-10-16)
 
@@ -47,7 +47,8 @@ from anywhere. This section is the living plan; update it as steps finish.
 
 ### Proposed, to confirm
 
-- **The intervention boundary is a set of cells.** Schelling fixes the lattice; where it applies is
+- **The intervention boundary is a set of cells** (user, 2026-10-16: "let's try first the painted
+  cells and see how it goes"). Schelling fixes the lattice; where it applies is
   the proposal, the part people argue and bet about. The author paints Schelling blocks on and off;
   drawing a polygon is a quick way to paint (a block is in when its centre is inside); "this
   superblock" is the default selection; helpers may pre-clear blocks with existing buildings, roads
@@ -66,15 +67,25 @@ from anywhere. This section is the living plan; update it as steps finish.
 
 ### Steps
 
-1. **Layer.** Schelling plan layer in the layers panel with a settings panel: fixed values shown
-   read-only with their reason; local street division, local street width and plot size
-   adjustable; show arterials / local streets / blocks / plots. Settings in the address bar so a
-   link shows what its author saw, remembered per viewer. Remove the parcel-source path.
-2. **Propose roads.** Pick cells, then Propose: the bounding streets become an OSM form with
-   arterial and local tags at exact widths (neither 30 m nor 12 m is a preset), through the corridor
-   import (`recordsFromImport` → `createCorridorProposalAtomically`, as the block playground's
-   Propose streets), one record per connected network, applied and ready to share as a plan.
-   `UrbanBlocksPropose.importForm` takes one tag set today and needs per-way tags.
+1. **Layer. Built.** A "Schelling plan" section in the Layers sheet (`schelling-layer.js`): Show,
+   the fixed arterials stated with their reason, local street spacing (block face 60–240 m) and
+   width (8–20 m), plot size (whole blocks to 1/64), the plan code and "Why these numbers". The map
+   draws arterials only below z15, streets and blocks from z15, plots from z17, in its own pane
+   that never takes clicks. Settings live in the address bar as `?schelling=<block>-<street>-<plot
+   denominator>` (`schelling-settings.js`, e.g. `120-12-16`) and are remembered per viewer. The
+   parcel-source path is removed; the fallback screen's option is now "Use the Schelling plan",
+   which turns the layer on.
+2. **Propose roads. Built.** "Propose from this plan" opens an on-map tool (`schelling-propose.js`):
+   the superblock at the map centre is chosen, a press or a drag over blocks adds or removes them
+   (mouse and touch, from z15), "This superblock" and "Clear", a summary of blocks, streets and
+   kilometres, and **Propose roads**. `schelling-streets.js` turns the chosen blocks into the
+   streets that bound them (each lattice line's consecutive edges one way, every lattice node on
+   it, so crossings share nodes), with exact-width cross-sections: a fixed 30 m arterial and a
+   local street of the chosen width. The corridor import makes one record per connected network
+   (`source: 'schelling-point'`), applied and ready to share as a plan. The create loop is shared
+   with the file import and the block playground (`corridor-import.js createRoadRecords`), which now
+   loads the ground under a road's land before declaring the parcels it reaches: proposed from
+   below the parcel zoom, a road used to declare none of the parcels it took.
 3. **Propose plots.** The plot rule as a layout: in Subdivide on open ground (pool = the site,
    plots to public land, execution through a lens verdict), and as a Layout option in land
    readjustment on real parcels, entered from the layer ("Subdivide / readjust this block") or from
@@ -91,19 +102,12 @@ from anywhere. This section is the living plan; update it as steps finish.
 - What a superblock's interior (about 49 crossings and 28 T junctions at 8 × 8) costs as one road
   record; measure before raising the cap.
 
-## When the visitor sees it
+## Where the visitor finds it
 
-The official register is always attempted first. The fallback screen appears only when a viewport
-fetch fails (`fetchParcelData` in `parcels/fetch.js` calls `ParcelGroundFallback.onGroundUnavailable`
-and still rethrows) or when the city's config says there is no register at all
-(`parcels.strategy: 'none'` raises a typed `no-register` error). The two cases are kept apart in the
-wording, for the reason given in `unsurveyed-ground.md`: a failed request must never read as an empty
-answer. Only a failure that looks temporary (network, 5xx, 408/429) gets a **Retry** button.
-
-"Not now" closes the screen for the city for the rest of the session; the parcel refresh button asks
-again. A choice made on the screen becomes the parcel source for that city for the browser tab
-(`sessionStorage`), so a reload keeps the plan that proposals may already stand on, while a new visit
-attempts the register afresh.
+Layers → **Schelling plan**, in every city, or a link carrying `?schelling=`. Where no parcel
+register can be loaded, the fallback screen (`parcels/ground-fallback.js`) offers **Use the
+Schelling plan** beside a register link and boundary recognition from imagery; it turns the same
+layer on, and what is proposed from it stands on open ground.
 
 ## Meridians and parallels
 
@@ -133,8 +137,9 @@ The plan for a place is computed, not asserted, and the explainer shows the comp
 - The explainer also names the arterials nearest the map centre in degrees, minutes and seconds
   ("45° 48′ 30″ N", "15° 58′ 30″ E") and how far away they are.
 
-The four assumptions (arterial spacing and width, local street width, target block face) can be
-adjusted on the screen; the plan code records them, e.g. `45x30-8x8-30-12@46N`.
+The arterial lattice is fixed. The local street width and the target block face can be set; the
+plan code records the lattice and the local streets, e.g. `45x30-8x8-30-12@46N`. A view across a
+half-degree parallel draws each side from its own band's plan (`inBands`).
 
 ### The tiling
 
@@ -148,26 +153,25 @@ covered by exactly three parcels, none overlapping:
 | `MP:<code>:NS:i:j` | the north–south street segment on L_i | between the two east–west strips |
 
 Their union is the box [L_i − hw_i, L_{i+1} − hw_{i+1}] × [P_j − hw_j, P_{j+1} − hw_{j+1}], and those
-boxes tile the plane as i and j run: all land is in some parcel and no two parcels overlap, which is
-what the rest of the app assumes of ground. Street parcels carry `isRoad: true` and a `roadClass`
-(`arterial` or `local`) and are registered with `addRoadParcel`, so block detection sees them as
-corridors. Every feature is stamped `provenance: 'schelling-point'` and `estimated: true`.
+boxes tile the plane as i and j run: all land is in some piece and no two pieces overlap. Street
+pieces carry `isRoad: true` and a `roadClass` (`arterial` or `local`). Every feature is stamped
+`provenance: 'schelling-point'` and `estimated: true`.
 
-Because the geometry is a pure function of indices, a parcel is identical whichever viewport asked
-for it (the per-cell transport dedupes by id and would reject two versions of one parcel), and a
-parcel can be rebuilt from its id alone (`featureForId`), which is how `ensureIds` is answered.
+Because the geometry is a pure function of indices, a piece is identical whichever viewport asked
+for it, and it can be rebuilt from its id alone (`featureForId`). Plots extend the ids with the row
+and the halving path (`MP:<code>:B:i:j/N/011`, `plotsOfBlock`).
 
 ## What it is not
 
-It is not a cadastre and is never labelled as one. Ownership lookups, minting and publishing to the
-backend all assume real cadastral ids; the screen says so. The parcels live in the browser for the
-session. Nothing here writes to the world-parcel registry.
+It is not a cadastre and is never labelled as one, and its pieces are not ground: nothing is
+proposed on `MP:` ids. What is proposed from it is ordinary road proposals on the real ground (the
+register's parcels, or open ground where there is none). Nothing here writes to the world-parcel
+registry.
 
 ## The second algorithm, planned
 
 **Elevation contours (isohypses):** streets along contour lines at an agreed vertical interval,
 cross-streets along lines of steepest descent, blocks between them. It needs a terrain source the
 visitor can also obtain (a public DEM), so it waits on the terrain work in `elevation-realism.md`.
-The screen lists it as planned. Adding it means a second module alongside `schelling-grid.js` with
-the same contract (`planFor`, `featuresInBbox`, `featureForId`, `describe`) and a second
-`schellingSource` in `ground-fallback.js`.
+Adding it means a second module alongside `schelling-grid.js` with the same contract (`planFor`,
+`featuresInBbox`, `cellsInBbox`, `describe`) and a choice of algorithm in the layer.

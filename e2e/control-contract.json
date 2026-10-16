@@ -999,6 +999,41 @@
       "controlType": "checkbox"
     },
     {
+      "id": "control-55e900d0385e1e-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showSchellingPlan\">",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-654b92f0c0686e-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-block\" min=\"60\" max=\"240\" step=\"10\" value=\"120\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-11c539c7a437d7-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-street\" min=\"8\" max=\"20\" step=\"1\" value=\"12\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-22f9cf4741fb75-1",
+      "source": "index.html",
+      "markup": "<select id=\"schelling-plan-plots\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-ab8e10897a1888-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-plan-propose\" class=\"btn\" data-i18n-key=\"schellingPlan.proposeFrom\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-931e5a545d4b02-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"urban-blocks-refresh\" class=\"btn\" disabled>",
@@ -4723,91 +4758,6 @@
       "exhaustiveVariants": true,
       "interaction": "auto",
       "controlType": "dynamic"
-    },
-    {
-      "id": "control-b8049013ae8f6c-1",
-      "source": "js/parcels/ground-fallback.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The meridians algorithm is already selected and is the sole enabled algorithm; its radio cannot change.",
-      "guards": [
-        {
-          "source": "js/parcels/ground-fallback.js",
-          "pattern": "\\.name = 'schelling-algorithm'",
-          "occurrences": 2
-        },
-        {
-          "source": "js/parcels/ground-fallback.js",
-          "includes": "meridiansRadio.value = 'meridians-parallels'; meridiansRadio.checked = true;"
-        },
-        {
-          "source": "js/parcels/ground-fallback.js",
-          "includes": "contoursRadio.value = 'contours'; contoursRadio.disabled = true;"
-        }
-      ]
-    },
-    {
-      "id": "control-b8049013ae8f6c-2",
-      "source": "js/parcels/ground-fallback.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The contour algorithm is permanently disabled until terrain support is implemented.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/parcels/ground-fallback.js",
-          "pattern": "\\.name = 'schelling-algorithm'",
-          "occurrences": 2
-        },
-        {
-          "source": "js/parcels/ground-fallback.js",
-          "includes": "meridiansRadio.value = 'meridians-parallels'; meridiansRadio.checked = true;"
-        },
-        {
-          "source": "js/parcels/ground-fallback.js",
-          "includes": "contoursRadio.value = 'contours'; contoursRadio.disabled = true;"
-        }
-      ]
-    },
-    {
-      "id": "control-b8049013ae8f6c-3",
-      "source": "js/parcels/ground-fallback.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "variants": [
-        {
-          "name": "arterialSpacingM",
-          "attrs": {
-            "data-param": "arterialSpacingM"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "arterialWidthM",
-          "attrs": {
-            "data-param": "arterialWidthM"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "streetWidthM",
-          "attrs": {
-            "data-param": "streetWidthM"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "targetBlockM",
-          "attrs": {
-            "data-param": "targetBlockM"
-          },
-          "interaction": "change"
-        }
-      ],
-      "exhaustiveVariants": true
     },
     {
       "id": "control-52a0fbb1c20d27-1",
@@ -9008,6 +8958,34 @@
           "classes": [
             "urban-block-playground__piece-row"
           ]
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "auto",
+      "controlType": "dynamic"
+    },
+    {
+      "id": "control-4c6e98c3dacf57-1",
+      "source": "js/schelling/schelling-propose.js",
+      "markup": "doc.createElement(tag)",
+      "variants": [
+        {
+          "name": "Select the superblock at the map centre",
+          "attrs": {
+            "data-action": "superblock"
+          }
+        },
+        {
+          "name": "Clear the painted blocks",
+          "attrs": {
+            "data-action": "clear"
+          }
+        },
+        {
+          "name": "Propose the Schelling roads",
+          "attrs": {
+            "data-action": "propose"
+          }
         }
       ],
       "exhaustiveVariants": true,

@@ -5988,6 +5988,61 @@
         "tryAgainIn": "Pokušaj ponovno za otprilike {{minutes}} min ili dodaj vlastito zrcalo ili izvor.",
         "tryAgainLater": "Pokušaj ponovno kasnije ili dodaj vlastito zrcalo ili izvor."
     },
+    "schellingPlan": {
+        "title": "Schellingov plan",
+        "toggle": "Prikaži Schellingov plan",
+        "blockFace": "Razmak lokalnih ulica (pročelje bloka)",
+        "streetWidth": "Širina lokalne ulice",
+        "plots": "Veličina čestice",
+        "plotWhole": "Cijeli blokovi",
+        "plotHalf": "1/2 bloka",
+        "why": "Zašto ovi brojevi",
+        "proposeFrom": "Predloži iz ovog plana",
+        "zoomIn": "Približi kartu da vidiš plan.",
+        "zoomForStreets": "U ovom mjerilu samo glavne prometnice; približi kartu za lokalne ulice i blokove.",
+        "zoomForPlots": "Približi još da vidiš čestice.",
+        "tooLarge": "Plan se ovdje ne može nacrtati: {{reason}}",
+        "fixed": "Glavne prometnice ovdje su svakih {{stepLon}}″ geografske dužine i {{stepLat}}″ geografske širine ({{spacingLon}} × {{spacingLat}} m), široke {{width}} m. Fiksne su: zato je ovaj plan isti za sve.",
+        "blocks": "{{nLon}} × {{nLat}} blokova u superbloku, svaki {{width}} × {{depth}} m.",
+        "wholeBlocks": "Cijeli blokovi, bez čestica.",
+        "plotSize": "Čestice {{frontage}} × {{depth}} m ({{area}} m²), okrenute sjevernoj i južnoj ulici.",
+        "code": "Plan {{code}}",
+        "whyAngel": "Shlomo Angel i suradnici (Making Room for a Planet of Cities, 2011) tvrde da rastući grad treba odrediti glavne prometnice prije nego što se zemljište izgradi: široke oko 30 m i razmaknute oko 1 km, tako da je svaka točka unutar deset minuta hoda od ceste kojom može ići javni prijevoz.",
+        "whyGraticule": "Ovdje glavne prometnice prate meridijane i paralele, računate od Greenwicha i ekvatora, u koraku cijelih lučnih sekundi najbližem 1 km. Svatko s GPS-om dobije iste linije, pa dvoje neznanaca dođe do istog plana.",
+        "whyLocal": "Lokalne ulice dijele svaki superblok na jednake dijelove; njihov razmak i širinu te veličinu čestica biraš ti.",
+        "propose": {
+            "title": "Schellingove ceste",
+            "hint": "Klikni ili povuci preko blokova da ih dodaš ili ukloniš. Predlaže se svaka ulica oko odabranog bloka.",
+            "superblock": "Ovaj superblok",
+            "clear": "Očisti",
+            "proposeRoads": "Predloži ceste",
+            "disclaimer": "Zasad samo ceste; blokovi i čestice između njih dolaze poslije. Što ceste zauzimaju od postojećih čestica vidi se kad se primijene.",
+            "summary": "{{blocks}} · {{streets}} ({{arterial}} km glavnih, {{local}} km lokalnih) · {{roads}}",
+            "empty": "Nijedan blok nije odabran.",
+            "zoomIn": "Približi kartu da označiš blokove.",
+            "limit": "Zasad najviše {{max}} blokova po prijedlogu.",
+            "roadName": "Schellingove ceste {{code}}",
+            "roadNameNumbered": "Schellingove ceste {{code}} ({{number}})",
+            "description": "Ulice Schellingova plana {{code}} (meridijani i paralele) oko: {{blocks}}.",
+            "failed": "Ove ceste nije bilo moguće predložiti: {{reason}}",
+            "done": "Predloženo {{count}} od {{total}} Schellingovih cestovnih mreža. Podijeli ih kao plan da ih objaviš zajedno.",
+            "blockCount": {
+                "one": "{{count}} blok",
+                "few": "{{count}} bloka",
+                "other": "{{count}} blokova"
+            },
+            "streetCount": {
+                "one": "{{count}} ulica",
+                "few": "{{count}} ulice",
+                "other": "{{count}} ulica"
+            },
+            "roadCount": {
+                "one": "{{count}} prijedlog ceste",
+                "few": "{{count}} prijedloga ceste",
+                "other": "{{count}} prijedloga cesta"
+            }
+        }
+    },
     "groundFallback": {
         "reopen": "Odaberite kako nastaviti",
         "title": "Ovdje se nije mogao učitati nijedan registar čestica",
@@ -6001,7 +6056,7 @@
             "dismissed": "Registar čestica nije dostupan. Otvorite opcije za čestice i odaberite kako nastaviti.",
             "retrying": "Ponovni pokušaj dohvata registra čestica…",
             "urlInstalled": "Čestice se za ovu sesiju učitavaju s vaše poveznice na registar.",
-            "schellingInstalled": "Schellingov plan {code} crta se u memoriji za ovu sesiju."
+            "schellingShown": "Schellingov plan nacrtan je preko karte. Postavke i Predloži nalaze se u Slojevima."
         },
         "options": {
             "later": "Ne sada",
@@ -6018,8 +6073,8 @@
                 "desc": "Procjena vjerojatnih granica prema vidljivim obilježjima, uz ograničenu pouzdanost. Rezultati mogu biti nepotpuni ili pogrešni i ne utvrđuju pravne granice čestica."
             },
             "schelling": {
-                "title": "Primijeni algoritam Schellingove točke",
-                "desc": "Plan čestica koji svatko može izvesti sam, pa svi dođu do istoga."
+                "title": "Koristi Schellingov plan",
+                "desc": "Ulice, blokovi i čestice koje svatko može sam izvesti, nacrtani preko karte. Njegove ceste ovdje se mogu predložiti na otvorenom tlu."
             }
         },
         "url": {
@@ -6044,36 +6099,6 @@
             "help": "Procijenite vjerojatne granice čestica iz satelitskih snimaka ovog područja. Obrada se izvodi u pozadini. Rezultati mogu biti nepotpuni ili pogrešni i treba ih provjeriti; snimke ne utvrđuju pravne granice čestica.",
             "start": "Pokreni prepoznavanje granica",
             "unavailable": "Prepoznavanje granica čestica iz satelitskih snimaka još nije dostupno na ovom zaslonu. Procjene će biti ograničene pouzdanosti i trebat će ih provjeriti; snimke ne utvrđuju pravne granice čestica."
-        },
-        "schelling": {
-            "heading": "Plan s kojim se svi mogu složiti",
-            "intro": "Schellingova točka je izbor koji ljudi donose neovisno, a ipak se slože, jer je svaki ulaz već opće poznat. Plan u nastavku traži samo GPS položaj i aritmetiku; dva neznanca dobivaju identične čestice.",
-            "sourceLabel": "Schellingov plan: meridijani i paralele ({code})",
-            "meridians": {
-                "title": "Meridijani i paralele",
-                "desc": "Glavne prometnice na mreži meridijana i paralela na oko 1 km razmaka, blokovi cjelobrojnom podjelom."
-            },
-            "contours": {
-                "title": "Izohipse (slojnice)",
-                "desc": "Ulice duž slojnica, blokovi između njih. Planirano; traži izvor terena."
-            },
-            "explain": {
-                "angel": "Shlomo Angel i suradnici (Making Room for a Planet of Cities, 2011) tvrde da rastući grad treba odrediti glavne prometnice prije nego što se zemljište izgradi: široke oko {arterialWidth} m i razmaknute oko {arterialSpacing} m, tako da je svaka točka unutar deset minuta hoda od ceste koja može nositi javni prijevoz. Manje ulice ostaju popuniti kilometarske kvadrate između njih.",
-                "graticule": "Ovdje glavne prometnice slijede mrežu meridijana i paralela, brojenu od ekvatora i Greenwicha. Na {refLat}. paraleli jedna sekunda zemljopisne širine iznosi {mLat} m, a jedna sekunda dužine {mLon} m, pa su najbliži okrugli koraci svakih {stepLat}″ širine ({spacingLat} m) i svakih {stepLon}″ dužine ({spacingLon} m).",
-                "blocks": "Svaki superblok dijeli se {nLon} × {nLat} lokalnim ulicama širine {streetWidth} m, što daje ćelije od {cellLon} × {cellLat} m i optimalni blok od {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} blokova po superbloku.",
-                "nearest": "Glavne prometnice najbliže središtu ove karte leže na paraleli {latLine} (udaljenost {latDistance} m) i meridijanu {lonLine} (udaljenost {lonDistance} m). Oznaka plana {code}."
-            },
-            "adjust": "Prilagodi pretpostavke",
-            "params": {
-                "arterialSpacing": "Razmak glavnih prometnica (m)",
-                "arterialWidth": "Širina glavne prometnice (m)",
-                "streetWidth": "Širina lokalne ulice (m)",
-                "targetBlock": "Ciljana stranica bloka (m)"
-            },
-            "previewAlt": "Jedan superblok plana, u mjerilu",
-            "previewCaption": "Jedan superblok, {width} × {height} m, u mjerilu. Tamno: ulice. Svijetlo: blokovi.",
-            "apply": "Nacrtaj ovaj plan ovdje",
-            "caveat": "Ovo je procjena za planiranje, a ne katastar: čestice žive u ovom pregledniku za ovu sesiju i nose podrijetlo „schelling-point”. Vlasništvo i objava traže pravi registar."
         }
     },
     "bets": {

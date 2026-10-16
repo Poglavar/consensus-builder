@@ -68,6 +68,13 @@ describe('the plan for a place', () => {
         expect(plan.arterial.spacingLonM).toBeLessThan(1100);
     });
 
+    it('keeps the arterial lattice fixed: arterial options change nothing', () => {
+        const plan = Grid.planFor({ ...ZAGREB, arterialSpacingM: 500, arterialWidthM: 10 });
+        expect(plan.code).toBe(Grid.planFor(ZAGREB).code);
+        expect(plan.arterialWidthM).toBe(Grid.ARTERIAL.widthM);
+        expect(plan.arterialSpacingM).toBe(Grid.ARTERIAL.spacingTargetM);
+    });
+
     it('divides the superblock into blocks near the target face', () => {
         const plan = Grid.planFor(ZAGREB);
         expect(plan.subdivision.nLat).toBe(8);
@@ -249,5 +256,120 @@ describe('what the explainer says', () => {
         expect(d.blockAreaHa).toBeCloseTo(plan.block.areaM2 / 10000, 1);
         expect(d.nearest.latText).toBe('45° 48′ 30″ N');
         expect(Grid.describe(plan).nearest).toBeUndefined();
+    });
+});
+
+describe('cells, the units an intervention is painted in', () => {
+    const plan = Grid.planFor(ZAGREB);
+
+    it('finds the cell a point lies in, and that cell’s block contains the point', () => {
+        const { i, j } = Grid.cellAt(plan, ZAGREB.lat, ZAGREB.lng);
+        const cellBox = { west: Grid.lonOfLine(plan, i), east: Grid.lonOfLine(plan, i + 1), south: Grid.latOfLine(plan, j), north: Grid.latOfLine(plan, j + 1) };
+        expect(ZAGREB.lng).toBeGreaterThanOrEqual(cellBox.west);
+        expect(ZAGREB.lng).toBeLessThan(cellBox.east);
+        expect(ZAGREB.lat).toBeGreaterThanOrEqual(cellBox.south);
+        expect(ZAGREB.lat).toBeLessThan(cellBox.north);
+        const block = bboxOf(Grid.blockOf(plan, i, j));
+        expect(block.west).toBeGreaterThan(cellBox.west);
+        expect(block.north).toBeLessThan(cellBox.north);
+        expect(Grid.blockOf(plan, i, j).properties.parcelId).toBe(`MP:${plan.code}:B:${i}:${j}`);
+    });
+
+    it('gives every cell of a superblock the same superblock, with all n x m cells in it', () => {
+        const { i, j } = Grid.cellAt(plan, ZAGREB.lat, ZAGREB.lng);
+        const superblock = Grid.superblockOf(plan, i, j);
+        expect(superblock.cells).toHaveLength(64);
+        superblock.cells.forEach(cell => expect(Grid.superblockOf(plan, cell.i, cell.j).cells).toEqual(superblock.cells));
+        // Its edges are arterials.
+        const west = Math.min(...superblock.cells.map(cell => cell.i));
+        const south = Math.min(...superblock.cells.map(cell => cell.j));
+        expect(Grid.isArterialLon(plan, west)).toBe(true);
+        expect(Grid.isArterialLat(plan, south)).toBe(true);
+        expect(Grid.isArterialLon(plan, west + 1)).toBe(false);
+    });
+
+    it('lists the cells touching a box, and refuses a continent', () => {
+        const cells = Grid.cellsInBbox(plan, [15.970, 45.800, 15.985, 45.810]);
+        expect(cells.length).toBeGreaterThan(50);
+        expect(new Set(cells.map(cell => `${cell.i}:${cell.j}`)).size).toBe(cells.length);
+        expect(() => Grid.cellsInBbox(plan, [0, 40, 30, 60])).toThrow(RangeError);
+    });
+});
+
+describe('plots', () => {
+    const plan = Grid.planFor(ZAGREB);
+    const { i, j } = Grid.cellAt(plan, ZAGREB.lat, ZAGREB.lng);
+    const blockBox = bboxOf(Grid.blockOf(plan, i, j));
+
+    it('default to a sixteenth of a block: two rows, each frontage halved three times', () => {
+        expect(Grid.DEFAULTS.plotLevel).toBe(3);
+        const plots = Grid.plotsOfBlock(plan, i, j, 3);
+        expect(plots).toHaveLength(16);
+        expect(plots.filter(plot => plot.properties.row === 'N')).toHaveLength(8);
+        const size = Grid.plotSize(plan, 3);
+        expect(size.fraction).toBe(1 / 16);
+        expect(size.frontageM).toBeCloseTo(plan.block.widthM / 8, 6);
+        expect(size.depthM).toBeCloseTo(plan.block.depthM / 2, 6);
+    });
+
+    it('tile their block exactly, without overlap', () => {
+        const plots = Grid.plotsOfBlock(plan, i, j, 2).map(bboxOf);
+        const total = plots.reduce((sum, box) => sum + areaDeg2(box), 0);
+        expect(total).toBeCloseTo(areaDeg2(blockBox), 15);
+        for (let a = 0; a < plots.length; a += 1) {
+            for (let b = a + 1; b < plots.length; b += 1) expect(interiorsOverlap(plots[a], plots[b])).toBe(false);
+        }
+        // Every plot fronts a street: it reaches the block's north or south edge.
+        plots.forEach(box => expect(box.north === blockBox.north || box.south === blockBox.south).toBe(true));
+    });
+
+    it('nest: a plot is exactly its two halves one level down, named by its halving path', () => {
+        const coarse = Grid.plotsOfBlock(plan, i, j, 1);
+        const fine = Grid.plotsOfBlock(plan, i, j, 2);
+        const byId = new Map(fine.map(plot => [plot.properties.parcelId, bboxOf(plot)]));
+        coarse.forEach(plot => {
+            const id = plot.properties.parcelId;
+            const left = byId.get(`${id}0`);
+            const right = byId.get(`${id}1`);
+            expect(left && right).toBeTruthy();
+            const box = bboxOf(plot);
+            expect(left.west).toBe(box.west);
+            expect(right.east).toBe(box.east);
+            expect(left.east).toBeCloseTo(right.west, 12);
+        });
+        expect(coarse[0].properties.parcelId).toBe(`MP:${plan.code}:B:${i}:${j}/S/0`);
+        expect(Grid.plotsOfBlock(plan, i, j, 0).map(plot => plot.properties.parcelId))
+            .toEqual([`MP:${plan.code}:B:${i}:${j}/S`, `MP:${plan.code}:B:${i}:${j}/N`]);
+    });
+
+    it('are absent for whole blocks, and a level outside 0..5 is refused', () => {
+        expect(Grid.plotsOfBlock(plan, i, j, null)).toEqual([]);
+        expect(Grid.plotsInBbox(plan, [15.97, 45.80, 15.98, 45.81], 'whole')).toEqual([]);
+        expect(() => Grid.plotLevelOf(6)).toThrow(RangeError);
+        expect(() => Grid.plotLevelOf(1.5)).toThrow(RangeError);
+    });
+});
+
+describe('a view across two latitude bands', () => {
+    it('takes each piece from its own band’s plan', () => {
+        const planAt = Grid.plansFor({});
+        const features = Grid.inBands(planAt, [15.97, 45.49, 15.975, 45.51], Grid.featuresInBbox);
+        const codes = new Set(features.map(feature => feature.properties.schelling.code));
+        expect(codes).toEqual(new Set([planAt(45).code, planAt(46).code]));
+        features.forEach(feature => {
+            const band = Grid.bandOfId(feature.properties.parcelId);
+            expect(feature.properties.schelling.code).toBe(planAt(band).code);
+        });
+    });
+
+    it('draws arterials only on the ladder step', () => {
+        const plan = Grid.planFor(ZAGREB);
+        const lines = Grid.arterialLinesInBbox(plan, [15.9, 45.75, 16.05, 45.85]);
+        expect(lines.length).toBeGreaterThan(10);
+        lines.forEach(line => {
+            const [[x0, y0], [x1, y1]] = line.geometry.coordinates;
+            const seconds = x0 === x1 ? x0 * 3600 / 45 : y0 * 3600 / 30;
+            expect(Math.abs(seconds - Math.round(seconds))).toBeLessThan(1e-6);
+        });
     });
 });

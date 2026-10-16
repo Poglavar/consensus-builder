@@ -1,8 +1,9 @@
-// Schelling-point parcel plans: "Meridians and parallels".
+// Schelling-point plans: "Meridians and parallels".
 //
-// Where no parcel register can be loaded, the people planning a place still need ground to stand
-// on. A Schelling point is a plan everyone arrives at independently, because every input to it is
-// something everybody already agrees on. This one uses three such inputs:
+// A plan for streets, blocks and plots that anyone can propose anywhere, over a parcel register or
+// where there is none (the Schelling plan layer, js/schelling/). A Schelling point is a plan
+// everyone arrives at independently, because every input to it is something everybody already
+// agrees on. This one uses three such inputs:
 //
 //   1. The graticule. Meridians and parallels are fixed by the Equator and Greenwich; nobody owns
 //      them and anyone with a GPS can find them.
@@ -36,14 +37,24 @@
         1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 36, 40, 45, 60, 72, 90, 120, 180, 240, 300, 360, 600, 720, 900, 1200, 1800, 3600
     ]);
 
+    // The arterial lattice is fixed: it is what makes the plan a Schelling point, the same for
+    // everyone everywhere. A grid with other arterials is a different tool, not a setting of this one
+    // (schelling-parcels.md, "Plan of record").
+    const ARTERIAL = Object.freeze({
+        spacingTargetM: 1000,     // Angel: ~1 km
+        widthM: 30                // Angel: ~30 m right of way
+    });
+
+    // What may be chosen: the local streets between the arterials and the plot size.
     const DEFAULTS = Object.freeze({
-        arterialSpacingM: 1000,   // Angel: ~1 km
-        arterialWidthM: 30,       // Angel: ~30 m right of way
         streetWidthM: 12,         // a two-lane local street with footways
-        targetBlockM: 120         // a short, walkable block face (Barcelona 113 m, Manhattan's short side 80 m)
+        targetBlockM: 120,        // a short, walkable block face (Barcelona 113 m, Manhattan's short side 80 m)
+        plotLevel: 3              // each row's frontage halved three times: 1/16 of a block
     });
 
     const MAX_SUBDIVISION = 40;
+    // Plot levels 0..5: a block is two rows, each row's frontage halved `level` times. null = whole blocks.
+    const MAX_PLOT_LEVEL = 5;
 
     function metersPerDegreeLat(latDeg) {
         const s = Math.sin(latDeg * DEG);
@@ -83,16 +94,17 @@
         return Number.isFinite(n) && n > 0 ? n : fallback;
     }
 
-    // A plan is fully determined by the whole-degree parallel it is computed for and four
-    // parameters. The reference latitude is ROUNDED TO A WHOLE DEGREE on purpose: it is itself a
-    // Schelling point, so two people looking at different corners of the same city build identical
-    // geometry. The cosine drift across half a degree changes a 12 m street by centimetres.
+    // A plan is fully determined by the whole-degree parallel it is computed for and two
+    // parameters of the local streets. The reference latitude is ROUNDED TO A WHOLE DEGREE on
+    // purpose: it is itself a Schelling point, so two people looking at different corners of the same
+    // city build identical geometry. The cosine drift across half a degree changes a 12 m street by
+    // centimetres.
     function planFor(options = {}) {
         const lat = Number(options.lat);
         if (!Number.isFinite(lat) || Math.abs(lat) > 85) throw new RangeError('A plan needs a latitude between -85 and 85.');
         const refLat = Math.round(lat);
-        const arterialSpacingM = positiveNumber(options.arterialSpacingM, DEFAULTS.arterialSpacingM);
-        const arterialWidthM = positiveNumber(options.arterialWidthM, DEFAULTS.arterialWidthM);
+        const arterialSpacingM = ARTERIAL.spacingTargetM;
+        const arterialWidthM = ARTERIAL.widthM;
         const streetWidthM = positiveNumber(options.streetWidthM, DEFAULTS.streetWidthM);
         const targetBlockM = positiveNumber(options.targetBlockM, DEFAULTS.targetBlockM);
 
@@ -258,6 +270,181 @@
         return piece ? featureFor(plan, piece.kind, i, j, piece.west, piece.south, piece.east, piece.north, piece.extra) : null;
     }
 
+    // ---- bands ---------------------------------------------------------------------------------
+
+    // A plan belongs to a latitude band: planFor rounds the latitude to the whole degree, which fixes
+    // its arcsecond steps, so the same settings make another plan, and other ids, a band away. A view
+    // spanning bands takes each piece from its own band's plan, so a piece's id is the one a stranger
+    // starting there derives too. A piece belongs to the band its centre lies in; at the half degree
+    // between two bands their streets meet edge to edge.
+    const bandOf = lat => Math.round(Number(lat));
+
+    function bandOfId(id) {
+        const match = /^MP:[^:]*@(\d+)([NS]):/.exec(String(id || ''));
+        return match ? (match[2] === 'S' ? -Number(match[1]) : Number(match[1])) : null;
+    }
+
+    // One settings object's plans, one per band, each built on first use.
+    function plansFor(settings = {}) {
+        const plans = new Map();
+        return band => {
+            if (!plans.has(band)) plans.set(band, planFor({ ...settings, lat: band }));
+            return plans.get(band);
+        };
+    }
+
+    function centreLatOf(feature) {
+        let south = Infinity;
+        let north = -Infinity;
+        const visit = position => { south = Math.min(south, position[1]); north = Math.max(north, position[1]); };
+        if (feature.geometry.type === 'Polygon') feature.geometry.coordinates[0].forEach(visit);
+        else feature.geometry.coordinates.forEach(visit);
+        return (south + north) / 2;
+    }
+
+    // `collect(plan, box)` run once per band the box spans, on the part of the box inside that band;
+    // each feature is kept only by the band its centre lies in.
+    function inBands(planAt, bbox, collect) {
+        const features = [];
+        for (let band = bandOf(bbox[1]); band <= bandOf(bbox[3]); band += 1) {
+            if (Math.abs(band) > 85) continue; // beyond the supported domain: no plan
+            const south = Math.max(bbox[1], band - 0.5);
+            const north = Math.min(bbox[3], band + 0.5);
+            if (!(south < north)) continue;
+            collect(planAt(band), [bbox[0], south, bbox[2], north])
+                .forEach(feature => { if (bandOf(centreLatOf(feature)) === band) features.push(feature); });
+        }
+        return features;
+    }
+
+    // ---- cells: what an intervention is made of -------------------------------------------------
+
+    // The cell (and so the block) a point lies in.
+    function cellAt(plan, lat, lng) {
+        return {
+            i: Math.floor(Number(lng) / (plan.local.stepLonSec / 3600)),
+            j: Math.floor(Number(lat) / (plan.local.stepLatSec / 3600))
+        };
+    }
+
+    // The superblock a cell lies in: its index and every cell in it, west to east, south to north.
+    function superblockOf(plan, i, j) {
+        const { nLon, nLat } = plan.subdivision;
+        const i0 = Math.floor(i / nLon) * nLon;
+        const j0 = Math.floor(j / nLat) * nLat;
+        const cells = [];
+        for (let jj = j0; jj < j0 + nLat; jj += 1) {
+            for (let ii = i0; ii < i0 + nLon; ii += 1) cells.push({ i: ii, j: jj });
+        }
+        return { I: i0 / nLon, J: j0 / nLat, cells };
+    }
+
+    // The block of cell (i, j) as a feature.
+    function blockOf(plan, i, j) {
+        const block = piecesOfCell(plan, i, j)[0];
+        return featureFor(plan, 'B', i, j, block.west, block.south, block.east, block.north, null);
+    }
+
+    // Every cell that touches the box, as indices only.
+    function cellsInBbox(plan, bbox, limit = 20000) {
+        const stepLatDeg = plan.local.stepLatSec / 3600;
+        const stepLonDeg = plan.local.stepLonSec / 3600;
+        const iMin = Math.floor(bbox[0] / stepLonDeg);
+        const iMax = Math.floor(bbox[2] / stepLonDeg);
+        const jMin = Math.floor(bbox[1] / stepLatDeg);
+        const jMax = Math.floor(bbox[3] / stepLatDeg);
+        const count = (iMax - iMin + 1) * (jMax - jMin + 1);
+        if (count > limit) throw new RangeError(`Refusing to list ${count} cells for one request.`);
+        const cells = [];
+        for (let j = jMin; j <= jMax; j += 1) {
+            for (let i = iMin; i <= iMax; i += 1) cells.push({ i, j });
+        }
+        return cells;
+    }
+
+    // ---- plots ---------------------------------------------------------------------------------
+    //
+    // A block is two rows of plots facing its north and south streets; the rows meet on the block's
+    // middle parallel and each row's frontage is halved `level` times. Every block has a street on
+    // both of those sides, so the rule needs no tie-break, corners included, and every plot keeps a
+    // frontage. A plot at one level is exactly two plots of the next, so sizes never conflict. The id
+    // is the block's id, the row and the halving path from the west: MP:<code>:B:i:j/N/011.
+
+    // A plot level, or null for whole blocks.
+    function plotLevelOf(value) {
+        if (value === null || value === undefined || value === 'whole') return null;
+        const level = Number(value);
+        if (!Number.isInteger(level) || level < 0 || level > MAX_PLOT_LEVEL) throw new RangeError(`A plot level is a whole number from 0 to ${MAX_PLOT_LEVEL}.`);
+        return level;
+    }
+
+    // The plots of an inner block at a level (blocks on an arterial are a little smaller).
+    function plotSize(plan, level) {
+        const lvl = plotLevelOf(level);
+        if (lvl === null) return { fraction: 1, frontageM: plan.block.widthM, depthM: plan.block.depthM, areaM2: plan.block.areaM2 };
+        const count = 2 ** lvl;
+        const frontageM = plan.block.widthM / count;
+        const depthM = plan.block.depthM / 2;
+        return { fraction: 1 / (2 * count), frontageM, depthM, areaM2: frontageM * depthM };
+    }
+
+    function plotsOfBlock(plan, i, j, level) {
+        const lvl = plotLevelOf(level);
+        if (lvl === null) return [];
+        const block = piecesOfCell(plan, i, j)[0];
+        const middle = (block.south + block.north) / 2;
+        const count = 2 ** lvl;
+        const width = (block.east - block.west) / count;
+        const plots = [];
+        [['S', block.south, middle], ['N', middle, block.north]].forEach(([row, south, north]) => {
+            for (let k = 0; k < count; k += 1) {
+                const path = lvl ? k.toString(2).padStart(lvl, '0') : '';
+                const west = block.west + k * width;
+                const east = k === count - 1 ? block.east : block.west + (k + 1) * width;
+                const parcelId = `MP:${plan.code}:B:${i}:${j}/${row}${path ? '/' + path : ''}`;
+                const areaM2 = Math.round(rectangleAreaM2(plan, west, south, east, north));
+                plots.push({
+                    type: 'Feature',
+                    properties: {
+                        parcelId, id: parcelId, kind: 'plot', block: `${i}:${j}`, row, path, level: lvl,
+                        provenance: 'schelling-point', estimated: true,
+                        schelling: { algorithm: ALGORITHM, code: plan.code },
+                        area_m2: areaM2
+                    },
+                    geometry: rectangle(west, south, east, north)
+                });
+            }
+        });
+        return plots;
+    }
+
+    // Every plot of every block that touches the box.
+    function plotsInBbox(plan, bbox, level, limit = 4000) {
+        if (plotLevelOf(level) === null) return [];
+        const box = bbox.map(Number);
+        return cellsInBbox(plan, box, limit).flatMap(({ i, j }) => plotsOfBlock(plan, i, j, level)
+            .filter(plot => {
+                const ring = plot.geometry.coordinates[0];
+                return intersects(box, ring[0][0], ring[0][1], ring[2][0], ring[2][1]);
+            }));
+    }
+
+    // The arterial centre lines crossing a box, for drawing the plan at small scales.
+    function arterialLinesInBbox(plan, bbox, limit = 2000) {
+        const [west, south, east, north] = bbox.map(Number);
+        const stepLatDeg = plan.arterial.stepLatSec / 3600;
+        const stepLonDeg = plan.arterial.stepLonSec / 3600;
+        const parallels = [Math.ceil(south / stepLatDeg), Math.floor(north / stepLatDeg)];
+        const meridians = [Math.ceil(west / stepLonDeg), Math.floor(east / stepLonDeg)];
+        const count = Math.max(0, parallels[1] - parallels[0] + 1) + Math.max(0, meridians[1] - meridians[0] + 1);
+        if (count > limit) throw new RangeError(`Refusing to draw ${count} arterials for one request.`);
+        const line = coordinates => ({ type: 'Feature', properties: { kind: 'arterial', provenance: 'schelling-point' }, geometry: { type: 'LineString', coordinates } });
+        const lines = [];
+        for (let k = parallels[0]; k <= parallels[1]; k += 1) lines.push(line([[west, k * stepLatDeg], [east, k * stepLatDeg]]));
+        for (let k = meridians[0]; k <= meridians[1]; k += 1) lines.push(line([[k * stepLonDeg, south], [k * stepLonDeg, north]]));
+        return lines;
+    }
+
     // ---- the numbers the explainer shows ------------------------------------------------------
 
     function formatDms(valueDeg, axis) {
@@ -326,7 +513,9 @@
     const api = Object.freeze({
         ALGORITHM,
         ARCSECOND_LADDER,
+        ARTERIAL,
         DEFAULTS,
+        MAX_PLOT_LEVEL,
         metersPerDegreeLat,
         metersPerDegreeLon,
         metersPerArcsecondLat,
@@ -335,6 +524,23 @@
         planFor,
         featuresInBbox,
         featureForId,
+        isArterialLat,
+        isArterialLon,
+        latOfLine,
+        lonOfLine,
+        bandOf,
+        bandOfId,
+        plansFor,
+        inBands,
+        cellAt,
+        superblockOf,
+        blockOf,
+        cellsInBbox,
+        plotLevelOf,
+        plotSize,
+        plotsOfBlock,
+        plotsInBbox,
+        arterialLinesInBbox,
         nearestArterials,
         formatDms,
         describe

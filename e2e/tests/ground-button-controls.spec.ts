@@ -40,7 +40,7 @@ test('register recovery Close, parcel Refresh, and Retry dismiss, reopen, and re
   await expect.poll(() => page.evaluate(() => (window as any).parcelLayer.getLayers().length)).toBeGreaterThan(0);
 });
 
-test('register options navigate URL, satellite, and algorithm screens and Not now dismisses them', async ({ mockApi: page }) => {
+test('register options navigate URL and satellite screens and Not now dismisses them', async ({ mockApi: page }) => {
   await unavailableRegister(page);
   const dialog = page.locator('.ground-fallback-dialog');
   await dialog.locator('[data-option="url"]').click();
@@ -51,9 +51,6 @@ test('register options navigate URL, satellite, and algorithm screens and Not no
   await expect(dialog.locator('.ground-fallback-options')).toBeVisible();
   await dialog.locator('[data-option="ocr"]').click();
   await expect(dialog.locator('.ground-fallback-help')).toContainText('not available from this screen yet');
-  await dialog.locator('.ground-fallback-back').click();
-  await dialog.locator('[data-option="schelling"]').click();
-  await expect(dialog.locator('.ground-fallback-preview svg')).toBeVisible();
   await dialog.locator('.ground-fallback-back').click();
   await dialog.getByRole('button', { name: 'Not now', exact: true }).click();
   await expect(dialog).toHaveCount(0);
@@ -83,19 +80,15 @@ test('Check and use installs the validated custom register and restores it after
   await expect.poll(() => page.evaluate(() => (window as any).parcelLayer?.getLayers().length || 0)).toBeGreaterThan(0);
 });
 
-test('Draw this plan installs a Schelling source and renders its derived parcels', async ({ mockApi: page }) => {
+test('Use the Schelling plan draws the plan layer over the map and installs no ground', async ({ mockApi: page }) => {
   await unavailableRegister(page);
   const dialog = page.locator('.ground-fallback-dialog');
   await dialog.locator('[data-option="schelling"]').click();
-  await expect(dialog.locator('.ground-fallback-preview svg')).toBeVisible();
-  await Promise.all([
-    page.waitForEvent('domcontentloaded'),
-    dialog.getByRole('button', { name: 'Draw this plan here' }).click(),
-  ]);
-  await waitForMapReady(page);
   await expect(dialog).toHaveCount(0);
-  await expect.poll(() => page.evaluate(() => (window as any).ParcelGroundFallback?.activeSource()?.kind).catch(() => null)).toBe('schelling');
-  await expect.poll(() => page.evaluate(() => (window as any).parcelLayer?.getLayers().length || 0)).toBeGreaterThan(0);
+  await expect.poll(() => page.evaluate(() => (window as any).SchellingLayer.isEnabled())).toBe(true);
+  await expect.poll(() => page.locator('path.schelling-plan__block').count()).toBeGreaterThan(0);
+  expect(await page.evaluate(() => (window as any).ParcelGroundFallback.activeSource())).toBeNull();
+  expect(new URL(page.url()).searchParams.get('schelling')).toBe('120-12-16');
 });
 
 test('Explore banner requests its place, opens World view, and dismisses for this session', async ({ mockApi: page }) => {

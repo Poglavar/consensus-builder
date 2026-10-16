@@ -5984,6 +5984,58 @@
         "tryAgainIn": "Inténtalo de nuevo en unos {{minutes}} min, o conecta tu propio espejo o fuente.",
         "tryAgainLater": "Inténtalo más tarde, o conecta tu propio espejo o fuente."
     },
+    "schellingPlan": {
+        "title": "Plan de Schelling",
+        "toggle": "Mostrar el plan de Schelling",
+        "blockFace": "Separación de calles locales (frente de manzana)",
+        "streetWidth": "Ancho de calle local",
+        "plots": "Tamaño de parcela",
+        "plotWhole": "Manzanas enteras",
+        "plotHalf": "1/2 manzana",
+        "why": "Por qué estas cifras",
+        "proposeFrom": "Proponer desde este plan",
+        "zoomIn": "Acerca el mapa para ver el plan.",
+        "zoomForStreets": "A esta escala solo las arterias; acerca el mapa para ver calles locales y manzanas.",
+        "zoomForPlots": "Acerca más el mapa para ver las parcelas.",
+        "tooLarge": "El plan no se puede dibujar aquí: {{reason}}",
+        "fixed": "Aquí las arterias van cada {{stepLon}}″ de longitud y {{stepLat}}″ de latitud ({{spacingLon}} × {{spacingLat}} m) y tienen {{width}} m de ancho. Son fijas: eso hace que el plan sea el mismo para todos.",
+        "blocks": "{{nLon}} × {{nLat}} manzanas por supermanzana, de {{width}} × {{depth}} m cada una.",
+        "wholeBlocks": "Manzanas enteras, sin parcelas.",
+        "plotSize": "Parcelas de {{frontage}} × {{depth}} m ({{area}} m²), con frente a las calles norte y sur.",
+        "code": "Plan {{code}}",
+        "whyAngel": "Shlomo Angel y colegas (Making Room for a Planet of Cities, 2011) sostienen que una ciudad en crecimiento debe fijar sus vías arteriales antes de que el suelo se edifique: de unos 30 m de ancho y a 1 km de distancia, para que todo punto quede a diez minutos a pie de una vía que pueda llevar transporte público.",
+        "whyGraticule": "Aquí las arterias siguen los meridianos y paralelos, contados desde Greenwich y el ecuador, con el paso en segundos de arco enteros más cercano a 1 km. Cualquiera con un GPS obtiene las mismas líneas, así que dos desconocidos llegan al mismo plan.",
+        "whyLocal": "Las calles locales dividen cada supermanzana en partes iguales; su separación, su ancho y el tamaño de parcela los eliges tú.",
+        "propose": {
+            "title": "Calles de Schelling",
+            "hint": "Haz clic o arrastra sobre las manzanas para añadirlas o quitarlas. Se propone cada calle alrededor de una manzana elegida.",
+            "superblock": "Esta supermanzana",
+            "clear": "Borrar",
+            "proposeRoads": "Proponer calles",
+            "disclaimer": "Por ahora solo calles; las manzanas y parcelas entre ellas vendrán después. Lo que las calles toman de parcelas existentes se muestra al aplicarlas.",
+            "summary": "{{blocks}} · {{streets}} ({{arterial}} km arteriales, {{local}} km locales) · {{roads}}",
+            "empty": "No hay manzanas elegidas.",
+            "zoomIn": "Acerca el mapa para pintar manzanas.",
+            "limit": "Por ahora, como máximo {{max}} manzanas por propuesta.",
+            "roadName": "Calles de Schelling {{code}}",
+            "roadNameNumbered": "Calles de Schelling {{code}} ({{number}})",
+            "description": "Calles del plan de Schelling {{code}} (meridianos y paralelos) alrededor de {{blocks}}.",
+            "failed": "No se pudieron proponer estas calles: {{reason}}",
+            "done": "Se propusieron {{count}} de {{total}} redes viales de Schelling. Compártelas como plan para publicarlas juntas.",
+            "blockCount": {
+                "one": "{{count}} manzana",
+                "other": "{{count}} manzanas"
+            },
+            "streetCount": {
+                "one": "{{count}} calle",
+                "other": "{{count}} calles"
+            },
+            "roadCount": {
+                "one": "{{count}} propuesta vial",
+                "other": "{{count}} propuestas viales"
+            }
+        }
+    },
     "groundFallback": {
         "reopen": "Elegir cómo continuar",
         "title": "No se pudo cargar ningún registro de parcelas aquí",
@@ -5997,7 +6049,7 @@
             "dismissed": "El registro de parcelas no está disponible. Abre las opciones de parcelas para elegir cómo continuar.",
             "retrying": "Reintentando el registro de parcelas…",
             "urlInstalled": "Cargando parcelas desde tu enlace al registro durante esta sesión.",
-            "schellingInstalled": "Dibujando el plan de Schelling {code} en memoria durante esta sesión."
+            "schellingShown": "El plan de Schelling está dibujado sobre el mapa. Sus ajustes y Proponer están en Capas."
         },
         "options": {
             "later": "Ahora no",
@@ -6014,8 +6066,8 @@
                 "desc": "Inferir límites probables a partir de elementos visibles. Es una estimación con precisión limitada: los resultados pueden ser incompletos o erróneos y no establecen límites legales."
             },
             "schelling": {
-                "title": "Aplicar un algoritmo de punto de Schelling",
-                "desc": "Un plan de parcelas que cualquiera puede derivar por su cuenta, de modo que todos llegan al mismo."
+                "title": "Usar el plan de Schelling",
+                "desc": "Calles, manzanas y parcelas que cualquiera puede derivar por su cuenta, dibujadas sobre el mapa. Sus calles se pueden proponer aquí sobre suelo abierto."
             }
         },
         "url": {
@@ -6040,36 +6092,6 @@
             "help": "Estimar los límites probables de las parcelas a partir de imágenes satelitales de esta zona. El trabajo se ejecuta en segundo plano. Los resultados pueden ser incompletos o erróneos y deben revisarse; las imágenes no establecen límites legales.",
             "start": "Iniciar el reconocimiento de límites",
             "unavailable": "El reconocimiento de límites de parcelas a partir de imágenes satelitales aún no está disponible en esta pantalla. Las estimaciones tendrán una precisión limitada y deberán revisarse; las imágenes no establecen límites legales."
-        },
-        "schelling": {
-            "heading": "Un plan en el que todos pueden coincidir",
-            "intro": "Un punto de Schelling es una elección que las personas hacen de forma independiente y aun así coinciden, porque cada dato de entrada ya es de conocimiento común. El plan siguiente solo necesita una posición GPS y aritmética; dos desconocidos obtienen parcelas idénticas.",
-            "sourceLabel": "Plan de Schelling: meridianos y paralelos ({code})",
-            "meridians": {
-                "title": "Meridianos y paralelos",
-                "desc": "Vías arteriales sobre la retícula geográfica a unos 1 km, manzanas por división entera."
-            },
-            "contours": {
-                "title": "Curvas de nivel (isohipsas)",
-                "desc": "Calles a lo largo de las curvas de nivel, manzanas entre ellas. Previsto; necesita una fuente de terreno."
-            },
-            "explain": {
-                "angel": "Shlomo Angel y colegas (Making Room for a Planet of Cities, 2011) sostienen que una ciudad en crecimiento debe fijar sus vías arteriales antes de que el suelo se edifique: de unos {arterialWidth} m de ancho y a unos {arterialSpacing} m de distancia, para que cada punto quede a diez minutos a pie de una vía capaz de llevar transporte público. Las calles menores quedan para rellenar los cuadrados kilométricos entre ellas.",
-                "graticule": "Aquí las arteriales siguen la retícula geográfica, contada desde el Ecuador y Greenwich. En el paralelo {refLat} un segundo de latitud mide {mLat} m y un segundo de longitud {mLon} m, así que los pasos redondos más cercanos son cada {stepLat}″ de latitud ({spacingLat} m) y cada {stepLon}″ de longitud ({spacingLon} m).",
-                "blocks": "Cada supermanzana se divide {nLon} × {nLat} con calles locales de {streetWidth} m de ancho, lo que da celdas de {cellLon} × {cellLat} m y una manzana óptima de {blockWidth} × {blockDepth} m ({blockArea} m², {blockHa} ha), {count} manzanas por supermanzana.",
-                "nearest": "Las arteriales más cercanas al centro de este mapa están en el paralelo {latLine} (a {latDistance} m) y el meridiano {lonLine} (a {lonDistance} m). Código del plan {code}."
-            },
-            "adjust": "Ajustar los supuestos",
-            "params": {
-                "arterialSpacing": "Separación de arteriales (m)",
-                "arterialWidth": "Ancho de arterial (m)",
-                "streetWidth": "Ancho de calle local (m)",
-                "targetBlock": "Frente de manzana objetivo (m)"
-            },
-            "previewAlt": "Una supermanzana del plan, a escala",
-            "previewCaption": "Una supermanzana, {width} × {height} m, a escala. Oscuro: calles. Claro: manzanas.",
-            "apply": "Dibujar este plan aquí",
-            "caveat": "Esto es una estimación para planificar, no un catastro: las parcelas viven en este navegador durante esta sesión y llevan la procedencia “schelling-point”. La propiedad y la publicación necesitan un registro real."
         }
     },
     "bets": {

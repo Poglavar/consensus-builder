@@ -317,47 +317,6 @@ test.describe('Remaining UI controls @features', () => {
     await expect(modal.locator('#am-list-no-match')).toBeVisible();
   });
 
-  test('each Schelling parameter input updates the generated plan preview', async ({ mockApi: page }) => {
-    await page.route('**/parcels**', route => {
-      const request = route.request();
-      if (['fetch', 'xhr'].includes(request.resourceType()) && request.method() === 'GET'
-          && new URL(request.url()).hostname !== 'register.example.test') {
-        return route.fulfill({ status: 503, json: { error: 'Register unavailable', retryAfterSeconds: 0 } });
-      }
-      return route.fallback();
-    });
-    await page.goto('/?city=zg&at=45.80025,15.9822,18&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
-    await waitForMapReady(page);
-    const dialog = page.locator('.ground-fallback-dialog');
-    await expect(dialog).toBeVisible();
-    await dialog.locator('[data-option="schelling"]').click();
-    const preview = dialog.locator('.ground-fallback-preview svg');
-    const assumptions = dialog.locator('details:has(> summary:has-text("Adjust the assumptions"))');
-    await assumptions.locator('> summary').click();
-    const previewShape = () => preview.evaluate(svg => JSON.stringify({
-      viewBox: svg.getAttribute('viewBox'),
-      blocks: Array.from(svg.querySelectorAll('.ground-fallback-preview-block')).map(block => [
-        block.getAttribute('x'), block.getAttribute('y'), block.getAttribute('width'), block.getAttribute('height'),
-      ]),
-    }));
-    const edits = [
-      ['arterialSpacingM', '500'],
-      ['arterialWidthM', '40'],
-      ['streetWidthM', '18'],
-      ['targetBlockM', '90'],
-    ] as const;
-    for (const [name, value] of edits) {
-      const input = dialog.locator(`.ground-fallback-param input[data-param="${name}"]`);
-      const before = await previewShape();
-      await input.fill(value);
-      await input.press('Tab');
-      await expect(input).toHaveValue(value);
-      await expect.poll(previewShape).not.toBe(before);
-      await expect(dialog.getByRole('button', { name: 'Draw this plan here' })).toBeEnabled();
-    }
-    await expect(dialog.getByRole('button', { name: 'Draw this plan here' })).toBeEnabled();
-  });
-
   test('mint parcel selection checkboxes determine which parcels are submitted', async ({ mockApi: page }) => {
     await page.route('**/metadata', route => route.fulfill({ json: { metadataUrl: 'ipfs://e2e-selected-parcel.json' } }));
     await openCity(page);

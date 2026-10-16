@@ -97,3 +97,39 @@ describe('recordsFromImport', () => {
         expect(imports.formatFor('roads.xml', 'landxml')).toBeNull();
     });
 });
+
+describe('createRoadRecords', () => {
+    const record = () => ({ roadProposal: { definition: { polygon: { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.98, 45.8], [15.98, 45.81], [15.97, 45.8]]] } } } });
+    const install = overrides => {
+        const calls = [];
+        const fakes = {
+            L: { geoJSON: polygon => ({ getBounds: () => ({ polygon }) }) },
+            CadastralParcelRepository: { ensureBounds: async bounds => { calls.push(['ensureBounds', !!bounds.polygon]); } },
+            rebuildRoadDefinitionFootprint: () => calls.push(['footprint']),
+            declareParcelsUnderRoadLand: (item, polygon) => { calls.push(['declare', !!polygon]); item.cadastreParcelIds = ['HR-1']; },
+            ProposalManager: { createCorridorProposalAtomically: async item => { calls.push(['create', item.cadastreParcelIds]); return { ok: true, proposalId: 'p-1' }; } },
+            ...overrides(calls)
+        };
+        const saved = Object.fromEntries(Object.keys(fakes).map(name => [name, globalThis[name]]));
+        Object.assign(globalThis, fakes);
+        return { calls, restore: () => Object.assign(globalThis, saved) };
+    };
+
+    it('loads the ground under the land before declaring the parcels it reaches', async () => {
+        const { calls, restore } = install(() => ({}));
+        try {
+            await expect(imports.createRoadRecords([record()])).resolves.toEqual({ created: ['p-1'], failed: [] });
+            expect(calls).toEqual([['footprint'], ['ensureBounds', true], ['declare', true], ['create', ['HR-1']]]);
+        } finally { restore(); }
+    });
+
+    it('fails a record whose ground cannot be loaded rather than declaring too little', async () => {
+        const { calls, restore } = install(() => ({
+            CadastralParcelRepository: { ensureBounds: async () => { throw new Error('Register unavailable'); } }
+        }));
+        try {
+            await expect(imports.createRoadRecords([record()])).resolves.toEqual({ created: [], failed: ['Register unavailable'] });
+            expect(calls.map(call => call[0])).toEqual(['footprint']);
+        } finally { restore(); }
+    });
+});

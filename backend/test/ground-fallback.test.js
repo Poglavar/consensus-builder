@@ -3,7 +3,7 @@
 // Two things must never blur: "the register failed" and "there is no register" (unsurveyed-ground.md
 // explains why a failed request must not read as an empty answer). So the classification is pinned
 // first. Then the part that turns a choice into ground — a session source that fetch.js consults
-// instead of the network — is exercised for real, and the wiring into fetch.js, index.html and the
+// instead of the network (a register link; the Schelling plan is a layer, never ground) — is exercised for real, and the wiring into fetch.js, index.html and the
 // four locales is pinned against the source, because nothing about it is observable from a return value.
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'node:module';
@@ -71,76 +71,12 @@ describe('what went wrong is named, not guessed', () => {
     });
 });
 
-describe('a Schelling plan becomes the ground source for the session', () => {
-    it('answers a cell with the plan’s parcels in WGS84 and marks its streets as roads', () => {
-        const marked = [];
-        globalThis.addRoadParcel = id => marked.push(id);
-        const source = Fallback.schellingSource({ lat: 45.8 });
-        expect(source.kind).toBe('schelling');
-        expect(source.plan.code).toBe('45x30-8x8-30-12@46N');
-        // fetch.js hands over "minLng,minLat,maxLng,maxLat", i.e. west,south,east,north.
-        const answer = source.fetchCell({ latLonBbox: '15.970,45.800,15.980,45.806', city: 'zagreb' });
-        expect(answer.returnsWGS84).toBe(true);
-        expect(answer.features.length).toBeGreaterThan(50);
-        const streets = answer.features.filter(f => f.properties.isRoad);
-        expect(marked.length).toBe(streets.length);
-        expect(marked).toContain(streets[0].properties.parcelId);
-    });
-
-    it('rebuilds parcels by id and declares the rest absent, as the repository requires', () => {
-        const source = Fallback.schellingSource({ lat: 45.8 });
-        const cell = source.fetchCell({ latLonBbox: '15.970,45.800,15.980,45.806' });
-        const ids = cell.features.slice(0, 3).map(f => f.properties.parcelId);
-        const answer = source.fetchByIds([...ids, 'HR-330264-123']);
-        expect(answer.features.map(f => f.properties.parcelId)).toEqual(ids);
-        expect(answer.absentIds).toEqual(['HR-330264-123']);
-    });
-
-    it('lays each latitude band out from that band\'s own plan, wherever the source was chosen', () => {
-        // Explore spans the world: a plan chosen in Tokyo (36°N) used to lay 36°N blocks and ids over
-        // Helsinki; a stranger starting in Helsinki derives the 60°N plan, and so must this source.
-        const helsinki = { latLonBbox: '24.930,60.165,24.940,60.170' };
-        const fromTokyo = Fallback.schellingSource({ lat: 35.68 }).fetchCell(helsinki).features;
-        const fromHelsinki = Fallback.schellingSource({ lat: 60.17 }).fetchCell(helsinki).features;
-        expect(fromTokyo.length).toBeGreaterThan(0);
-        expect(fromTokyo.map(f => f.properties.parcelId)).toEqual(fromHelsinki.map(f => f.properties.parcelId));
-        expect(fromTokyo[0].properties.parcelId).toMatch(/@60N:/);
-        expect(fromTokyo.map(f => f.geometry)).toEqual(fromHelsinki.map(f => f.geometry));
-        // and rebuilds any band's parcels by id
-        const ids = fromTokyo.slice(0, 2).map(f => f.properties.parcelId);
-        expect(Fallback.schellingSource({ lat: 35.68 }).fetchByIds(ids).features.map(f => f.properties.parcelId)).toEqual(ids);
-    });
-
-    it('splits a cell across two bands at the half degree, each piece in one band only', () => {
-        const source = Fallback.schellingSource({ lat: 45.8 });
-        const features = source.fetchCell({ latLonBbox: '15.970,45.496,15.976,45.504' }).features;
-        const bands = new Set(features.map(f => /@(\d+)N:/.exec(f.properties.parcelId)[1]));
-        expect([...bands].sort()).toEqual(['45', '46']);
-        const ids = features.map(f => f.properties.parcelId);
-        expect(new Set(ids).size).toBe(ids.length);
-        for (const feature of features) {
-            const lats = feature.geometry.coordinates[0].map(p => p[1]);
-            const centre = (Math.min(...lats) + Math.max(...lats)) / 2;
-            const band = Number(/@(\d+)N:/.exec(feature.properties.parcelId)[1]);
-            expect(Math.round(centre)).toBe(band);
-        }
-    });
-
-    it('is installed per city, remembered for the tab, and restored on reload', () => {
-        expect(Fallback.activeSource('zagreb')).toBeNull();
-        const source = Fallback.schellingSource({ lat: 45.8, streetWidthM: 10 });
-        Fallback.installSource('zagreb', source);
-        expect(Fallback.activeSource('zagreb')).toBe(source);
-        expect(Fallback.activeSource('nowhere')).toBeNull();
-        const stored = JSON.parse(globalThis.sessionStorage.getItem('cb_ground_source:zagreb'));
-        expect(stored).toMatchObject({ kind: 'schelling', algorithm: 'meridians-parallels', params: { streetWidthM: 10, lat: 46 } });
-
-        // A reload: the in-memory map is gone, the tab's storage is not.
-        Fallback.clearSource('zagreb');
-        globalThis.sessionStorage.setItem('cb_ground_source:zagreb', JSON.stringify(stored));
-        const restored = Fallback.restoreFromSession('zagreb');
-        expect(restored.kind).toBe('schelling');
-        expect(restored.plan.code).toBe(source.plan.code);
+describe('the Schelling plan is a layer, not ground', () => {
+    it('keeps no Schelling source and drops one an older tab remembered', () => {
+        expect(Fallback.schellingSource).toBeUndefined();
+        globalThis.sessionStorage.setItem('cb_ground_source:zagreb', JSON.stringify({ kind: 'schelling', algorithm: 'meridians-parallels', params: { lat: 46 } }));
+        expect(Fallback.restoreFromSession('zagreb')).toBeNull();
+        expect(globalThis.sessionStorage.getItem('cb_ground_source:zagreb')).toBeNull();
     });
 
     it('forgets a descriptor it cannot read rather than guessing', () => {
@@ -150,7 +86,7 @@ describe('a Schelling plan becomes the ground source for the session', () => {
     });
 
     it('does not offer the screen while a source is already answering, or after the visitor said not now', () => {
-        Fallback.installSource('zagreb', Fallback.schellingSource({ lat: 45.8 }));
+        Fallback.installSource('zagreb', { kind: 'custom-url', fetchCell: () => ({ features: [] }), describe: () => null });
         expect(Fallback.onGroundUnavailable({ city: 'zagreb', error: new Error('HTTP 503') })).toBe(false);
         globalThis.sessionStorage.setItem('cb_ground_fallback_dismissed:nowhere', '1');
         expect(Fallback.onGroundUnavailable({ city: 'nowhere', error: new Error('HTTP 503') })).toBe(false);
@@ -224,17 +160,16 @@ describe('a register link the visitor knows of', () => {
 });
 
 describe('the wiring', () => {
-    it('loads the grid and the fallback before the transport, with their stylesheet', () => {
+    it('loads the fallback before the transport, with its stylesheet', () => {
         const scriptIndex = path => {
             const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             return html.search(new RegExp(`[\"']${escapedPath}(?:\\?[^\"']*)?[\"']`));
         };
-        const grid = scriptIndex('js/parcels/schelling-grid.js');
         const fallback = scriptIndex('js/parcels/ground-fallback.js');
         const fetch = scriptIndex('js/parcels/fetch.js');
-        expect(grid).toBeGreaterThan(-1);
-        expect(fallback).toBeGreaterThan(grid);
+        expect(fallback).toBeGreaterThan(-1);
         expect(fetch).toBeGreaterThan(fallback);
+        expect(scriptIndex('js/schelling/schelling-layer.js')).toBeGreaterThan(-1);
         expect(html).toContain("'css/ground-fallback.css'");
     });
 
@@ -267,7 +202,7 @@ describe('the wiring', () => {
             (value && typeof value === 'object') ? leafKeys(value, `${prefix}${key}.`) : [`${prefix}${key}`]);
         const en = dictOf('en');
         const reference = leafKeys(en.groundFallback).sort();
-        expect(reference.length).toBeGreaterThan(50);
+        expect(reference.length).toBeGreaterThan(30);
         locales.forEach(locale => {
             const dict = dictOf(locale);
             expect(leafKeys(dict.groundFallback).sort(), locale).toEqual(reference);

@@ -23,7 +23,7 @@ function boot(city = 'explore') {
         ParcelSourceSettings: { clearFailure: vi.fn() }
     };
     const context = vm.createContext({ window, console, URL, URLSearchParams, setTimeout, AbortController });
-    for (const path of ['schelling-grid.js', 'ground-fallback.js', 'fetch.js']) {
+    for (const path of ['ground-fallback.js', 'fetch.js']) {
         vm.runInContext(readFileSync(new URL(`../../frontend/js/parcels/${path}`, import.meta.url), 'utf8'), context);
     }
     return { window, transport: window.__cadastralGroundTransport, fetch };
@@ -43,15 +43,22 @@ describe('session ground on the World’s Fair branch', () => {
         expect(fetch).not.toHaveBeenCalled();
     });
 
-    it('loads and rebuilds real Schelling parcels in a place with no cadastral source', async () => {
+    it('loads and rebuilds a visitor’s own register in a place with no cadastral source', async () => {
         const { window, transport, fetch } = boot();
-        const source = window.ParcelGroundFallback.schellingSource({ lat: 44 });
+        const parcel = { type: 'Feature', properties: { parcelId: 'CUSTOM-1', provenance: 'custom-url' },
+            geometry: { type: 'Polygon', coordinates: [[[15.97, 44], [15.971, 44], [15.971, 44.001], [15.97, 44]]] } };
+        const source = {
+            id: 'custom:test', kind: 'custom-url', label: 'Your register link',
+            fetchCell: () => ({ features: [parcel], returnsWGS84: true }),
+            fetchByIds: ids => ({ features: ids.includes('CUSTOM-1') ? [parcel] : [], absentIds: ids.filter(id => id !== 'CUSTOM-1') }),
+            describe: () => null
+        };
         window.ParcelGroundFallback.installSource('explore', source);
         const result = await transport.fetchBounds(null, { keys: ['-15877,8730'] });
         expect(result.returnsWGS84).toBe(true);
         expect(result.features.length).toBeGreaterThan(0);
         const feature = result.features[0];
-        expect(feature.properties).toMatchObject({ provenance: 'schelling-point', estimated: true });
+        expect(feature.properties).toMatchObject({ provenance: 'custom-url' });
         const byId = await transport.fetchByIds([feature.properties.parcelId, 'missing']);
         expect(byId.features).toEqual([feature]);
         expect(byId.absentIds).toEqual(['missing']);
