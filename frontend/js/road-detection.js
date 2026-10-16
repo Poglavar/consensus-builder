@@ -1319,14 +1319,19 @@ async function fetchCuratedRoadParcels(bounds) {
     const ground = window.CadastralParcelRepository;
     if (!ground?.ensureRoadIds || !curatedRoadsAvailable() || typeof map === 'undefined' || !map) return 0;
     const result = await ground.ensureRoadIds(bounds || map.getBounds());
-    let added = 0;
+    const marked = [];
     result.ids.forEach(parcelId => {
         if (!isRoadParcel(parcelId)) {
             addRoadParcel(String(parcelId));
-            added += 1;
+            marked.push(String(parcelId));
         }
     });
-    if (added > 0) updateParcelStyles();
+    const added = marked.length;
+    if (added > 0) {
+        updateParcelStyles();
+        // Roads bound blocks, so a block formed before these were known may span one.
+        window.dispatchEvent(new CustomEvent('roadParcelsMarked', { detail: { parcelIds: marked } }));
+    }
     console.log(`[${new Date().toISOString()}] [curated-roads] ${result.ids.length} road parcels in view, ${added} newly marked`);
     return added;
 }

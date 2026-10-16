@@ -3975,6 +3975,8 @@
             "merging_parcel_data": "Spajanje podataka o česticama…",
             "missing_road_update_function": "Nedostaje funkcija za ažuriranje cesta",
             "multi_parcel_selection_cleared": "Odabir više čestica je obrisan",
+            "blocks_update_as_parcels_load": "Čestice se još učitavaju; blokovi će se ažurirati kako stižu.",
+            "blocks_reformed_after_loading": "Učitano je još čestica: oblikovano ili ažurirano blokova: {{count}}.",
             "neighbor_graph_built_finding_blocks": "Graf susjeda izrađen. Pronalaženje blokova…",
             "analyzing_parcels_against_gup": "Analiza {{count}} čestica u odnosu na GUP ulice…",
             "analyzing_parcels_generic": "Analiza {{count}} čestica…",

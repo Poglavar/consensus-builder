@@ -3970,6 +3970,8 @@
             "merging_parcel_data": "Combinando datos de parcelas…",
             "missing_road_update_function": "Falta la función de actualización de carreteras",
             "multi_parcel_selection_cleared": "Selección multi-parcela borrada",
+            "blocks_update_as_parcels_load": "Las parcelas aún se están cargando; los bloques se actualizarán a medida que lleguen.",
+            "blocks_reformed_after_loading": "Se cargaron más parcelas: {{count}} bloques formados o actualizados.",
             "neighbor_graph_built_finding_blocks": "Grafo de vecinos construido. Buscando bloques…",
             "no_gup_road_data_available_for_detection": "No hay datos viales GUP disponibles para la detección.",
             "no_gup_road_data_available_for_this_view": "No hay datos viales GUP para esta vista.",

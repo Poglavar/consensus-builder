@@ -68,6 +68,14 @@
         return components;
     }
 
+    // After more parcels load, re-form only what they can change: flood out from the new parcels
+    // that are in no block yet. A stored block such a parcel touches is reached by the same flood,
+    // so two blocks a missing parcel had kept apart merge; blocks no new parcel touches keep theirs.
+    function reformComponents(addedIds, blockOf, neighboursOf) {
+        const seeds = (Array.isArray(addedIds) ? addedIds : []).map(String).filter(id => !blockOf(id));
+        return floodComponents(seeds, neighboursOf);
+    }
+
     function perimeterOf(rings) {
         let total = 0;
         (Array.isArray(rings) ? rings : []).forEach(ring => {
@@ -200,7 +208,7 @@
         };
     }
 
-    const api = { DEFAULTS, enumerateBlocks, floodComponents, perimeterOf };
+    const api = { DEFAULTS, enumerateBlocks, floodComponents, reformComponents, perimeterOf };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic scripts
     // loaded alongside this file.

@@ -561,8 +561,75 @@ function buildNeighborMapFromEdges(parcels) {
 }
 
 // Modify the countBlocks function to pre-calculate neighbors
-async function countBlocks() {
+// After a (Re)form Blocks run, parcels that load later are formed into blocks too: only those in
+// no block yet, plus the stored blocks they touch (proposals/block-enumeration.js reformComponents).
+// The same happens for parcels a map move brings into view, and for the members of a block that
+// road parcels marked later turn out to cross. A re-form waits until parcel fetching settles, so a
+// burst of tiles costs one pass.
+const blockReform = { active: false, running: false, pending: new Set() };
+
+function parcelsStillLoading() {
+    return !!(window.ParcelsState && typeof window.ParcelsState.isFetchingParcels === 'function'
+        && window.ParcelsState.isFetchingParcels());
+}
+
+async function flushBlockReform() {
+    if (!blockReform.active || blockReform.running || !blockReform.pending.size || parcelsStillLoading()) return;
+    const addedIds = Array.from(blockReform.pending);
+    blockReform.pending.clear();
+    blockReform.running = true;
+    try {
+        await countBlocks({ addedIds });
+    } finally {
+        blockReform.running = false;
+    }
+    flushBlockReform();
+}
+
+try {
+    window.addEventListener('parcelFabricCommitted', event => {
+        if (!blockReform.active) return;
+        (event.detail?.addedIds || []).forEach(id => blockReform.pending.add(String(id)));
+        flushBlockReform();
+    });
+    window.addEventListener('parcelFetchFinished', flushBlockReform);
+    window.addEventListener('roadParcelsMarked', event => {
+        if (!blockReform.active) return;
+        new Set((event.detail?.parcelIds || []).map(id => blockStorage.blockNameForParcel(id)).filter(Boolean)).forEach(name => {
+            (blockStorage.blocks.get(name)?.parcelIds || []).forEach(id => blockReform.pending.add(String(id)));
+            blockStorage.removeBlock(name);
+            blockPolygonCache.delete(name);
+        });
+        // New roads also split ground that formed no block before (it ran past the view).
+        queueVisibleBlockReform();
+    });
+} catch (_) { /* no window in node tests */ }
+
+// Called from the map's moveend: parcels already loaded but outside the last view count as arrivals.
+function queueVisibleBlockReform() {
+    if (!blockReform.active) return;
+    getVisibleNonCorridorParcels().forEach(layer => {
+        const id = parcelIdFromLayer(layer);
+        if (id && !blockStorage.blockNameForParcel(id)) blockReform.pending.add(String(id));
+    });
+    flushBlockReform();
+}
+
+// With `addedIds`, re-form only around newly loaded parcels; without, form every block in view.
+async function countBlocks({ addedIds = null } = {}) {
+    const reforming = Array.isArray(addedIds);
+    if (!reforming) {
+        blockReform.active = true;
+        blockReform.pending.clear();
+        if (typeof map !== 'undefined' && map && typeof map.on === 'function' && !map._blockReformMoveHooked) {
+            map.on('moveend', queueVisibleBlockReform);
+            map._blockReformMoveHooked = true;
+        }
+    }
+    // A re-form after loading runs unasked, so it reports only its result, never its progress.
+    const showProgress = reforming ? () => {} : updateStatus;
     if (!liveBlockServices()) {
+        if (reforming) return;
         updateStatus(tBlock('status.messages.no_parcels_loaded_please_refresh_data_first', {}, 'No parcels loaded. Please refresh data first.'));
         return;
     }
@@ -571,11 +638,12 @@ async function countBlocks() {
 
     const run = async () => {
         try {
-            updateStatus(tBlock('status.messages.filtering_visible_parcels', {}, 'Filtering visible parcels...'));
+            showProgress(tBlock('status.messages.filtering_visible_parcels', {}, 'Filtering visible parcels...'));
             await new Promise(resolve => setTimeout(resolve, 0));
 
             const currentParcels = getVisibleNonCorridorParcels();
             const totalParcelsInView = currentParcels.length;
+            if (reforming && totalParcelsInView === 0) return;
             if (totalParcelsInView === 0) {
                 const msg = 'No parcels in the current map view to form blocks from';
                 console.warn(msg);
@@ -586,7 +654,7 @@ async function countBlocks() {
 
             console.log(`Starting count with ${totalParcelsInView} parcels intersecting viewport.`);
             console.log('countBlocks: Parcels being processed:', currentParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
-            updateStatus(tBlock('status.messages.found_parcels_intersecting_viewport_building_edge_index', { count: totalParcelsInView }, 'Found {{count}} parcels intersecting viewport. Building edge index...'));
+            showProgress(tBlock('status.messages.found_parcels_intersecting_viewport_building_edge_index', { count: totalParcelsInView }, 'Found {{count}} parcels intersecting viewport. Building edge index...'));
             if (parcelsCountedLabel) {
                 parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
             }
@@ -594,7 +662,7 @@ async function countBlocks() {
 
             const { neighborMap } = buildNeighborMapFromEdges(currentParcels);
             console.log('Neighbor map (edge-index) built for', neighborMap.size, 'parcels');
-            updateStatus(tBlock('status.messages.neighbor_graph_built_finding_blocks', {}, 'Neighbor graph built. Finding blocks...'));
+            showProgress(tBlock('status.messages.neighbor_graph_built_finding_blocks', {}, 'Neighbor graph built. Finding blocks...'));
             await new Promise(resolve => setTimeout(resolve, 0));
 
             const blocksToRemove = new Set();
@@ -610,12 +678,14 @@ async function countBlocks() {
                 const id = parcelIdFromLayer(layer);
                 if (id) layersById.set(String(id), layer);
             });
-            const components = window.__blockEnumeration.floodComponents(
-                Array.from(layersById.keys()),
-                id => (findNeighbors(layersById.get(id), neighborMap) || [])
-                    .map(neighbour => parcelIdFromLayer(neighbour))
-                    .filter(Boolean)
-            );
+            const neighbourIds = id => (findNeighbors(layersById.get(id), neighborMap) || [])
+                .map(neighbour => parcelIdFromLayer(neighbour))
+                .filter(Boolean);
+            const components = reforming
+                ? window.__blockEnumeration.reformComponents(addedIds.filter(id => layersById.has(String(id))),
+                    id => blockStorage.blockNameForParcel(id), neighbourIds)
+                : window.__blockEnumeration.floodComponents(Array.from(layersById.keys()), neighbourIds);
+            if (reforming && !components.length) return;
 
             for (const component of components) {
                 const blockParcels = component.map(id => layersById.get(id)).filter(Boolean);
@@ -637,16 +707,22 @@ async function countBlocks() {
                     } else {
                         console.log(`countBlocks: Rejected incomplete block "${blockName}" with ${blockParcels.length} parcels (some parcels not fully visible):`,
                             blockParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
+                        // A newly loaded parcel joined a stored block to unfinished ground, so that
+                        // block was only ever a part of a larger one.
+                        if (reforming) blockParcels.forEach(p => {
+                            const oldBlock = blockStorage.blockNameForParcel(parcelIdFromLayer(p));
+                            if (oldBlock) blocksToRemove.add(oldBlock);
+                        });
                     }
                 }
 
                 parcelsProcessedCount += component.length;
                 const progress = Math.round((parcelsProcessedCount / totalNonCorridor) * 100);
-                if (parcelsCountedLabel) {
+                if (parcelsCountedLabel && !reforming) {
                     parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonCorridor} (${progress}%)`;
                 }
                 if (parcelsProcessedCount % 50 === 0) {
-                    updateStatus(tBlock('status.messages.counting_blocks_progress', { percent: progress }, 'Counting blocks... {{percent}}%'));
+                    showProgress(tBlock('status.messages.counting_blocks_progress', { percent: progress }, 'Counting blocks... {{percent}}%'));
                     await new Promise(resolve => setTimeout(resolve, 0));
                 }
             }
@@ -663,6 +739,14 @@ async function countBlocks() {
             // sheet and this button in the Tools sheet, so with the layer off the run produced
             // nothing visible at all. Switch it on, as highlightAndCenterBlock does.
             const blocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+            if (reforming) {
+                if (blocksCheckbox && blocksCheckbox.checked) updateBlockLayer();
+                if (blockCount > 0) {
+                    updateStatus(tBlock('status.messages.blocks_reformed_after_loading', { count: blockCount },
+                        'More parcels loaded: {{count}} blocks formed or updated.'));
+                }
+                return;
+            }
             if (blocksCheckbox && !blocksCheckbox.checked && blockCount > 0 && typeof toggleBlocksVisibility === 'function') {
                 blocksCheckbox.checked = true;
                 toggleBlocksVisibility();
@@ -670,13 +754,17 @@ async function countBlocks() {
                 updateBlockLayer();
             }
 
-            updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-corridor parcels processed: ${totalNonCorridor}.`);
+            const stillLoading = parcelsStillLoading()
+                ? ` ${tBlock('status.messages.blocks_update_as_parcels_load', {}, 'Parcels are still loading; blocks will update as they arrive.')}`
+                : '';
+            updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-corridor parcels processed: ${totalNonCorridor}.${stillLoading}`);
         } catch (error) {
             console.error('Error during countBlocks:', error);
             updateStatus(tBlock('status.messages.error_occurred_while_counting_blocks_please_try_again', {}, 'Error occurred while counting blocks. Please try again.'));
         }
     };
 
+    if (reforming) return run();
     const button = document.querySelector('button[onclick="countBlocks()"]');
     if (typeof runWithButtonBusyState === 'function' && button) {
         return runWithButtonBusyState(button, { key: 'common.busy.forming', fallback: 'Forming...' }, run);
@@ -953,8 +1041,10 @@ function clearBlocks() {
     // Get the number of blocks before clearing
     const numberOfBlocks = blockStorage.blocks.size;
 
-    // Clear blocks from storage
+    // Clear blocks from storage; parcels that load later are no longer formed into blocks.
     blockStorage.clear();
+    blockReform.active = false;
+    blockReform.pending.clear();
 
     // Clear legacy blocks layer from map (if still used)
     if (blockLayer) {
