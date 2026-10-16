@@ -195,18 +195,6 @@
         return ids.size;
     }
 
-    // Include spanning parcels too: SVG clipping shows only their borders inside this block.
-    // Input comes from the immutable cadastral repository, never from proposal geometry.
-    function parcelsInBlock(block, parcels, turf) {
-        const bbox = turf.bbox(block);
-        return turf.featureCollection((parcels || []).filter(parcel => {
-            if (!['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type)) return false;
-            const extent = turf.bbox(parcel);
-            return extent[0] <= bbox[2] && extent[2] >= bbox[0] && extent[1] <= bbox[3] && extent[3] >= bbox[1]
-                && turf.booleanIntersects(parcel, block);
-        }));
-    }
-
     // A transparent area scenario, not a subdivision design: new streets and irregular shapes
     // will change the result. Keep at least one block and round up to meet the target area.
     function targetBlockCount(areaM2, targetSideM = 100) {
@@ -228,6 +216,6 @@
         return colorBy === 'walk' ? WALK_COLORS[walkBand(feature.properties.walkMinutes, thresholdMinutes)] : feature.properties.color;
     }
 
-    return { detectBlocks, nodeRoads, metrics, loadedParcelCount, parcelsInBlock, isGroundRoad, isRoadArea, targetBlockCount,
+    return { detectBlocks, nodeRoads, metrics, loadedParcelCount, isGroundRoad, isRoadArea, targetBlockCount,
         rankBlocks, walkBand, blockColor, WALK_COLORS };
 });

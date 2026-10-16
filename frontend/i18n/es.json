@@ -71,8 +71,6 @@
         "linkMissing": "El contorno de este bloque ha cambiado o no está disponible. Selecciona un bloque en el mapa.",
         "playground": {
             "title": "Entorno de subdivisión de manzanas",
-            "diagramLabel": "Vista previa de la subdivisión",
-            "diagramTitle": "Vista previa del trazado",
             "controlsTitle": "Ajustes del trazado",
             "targetAreaReadout": "Cada manzana debe tener como máximo {{area}}.",
             "maxSide": "Lado máximo permitido (m)",
@@ -89,7 +87,6 @@
             "piecesTitle": "Manzanas de este trazado",
             "sideNote": "El lado más largo se mide con un rectángulo delimitador ajustado.",
             "disclaimer": "Geometría conceptual; no se comprueban la anchura de las calles, los edificios ni la propiedad.",
-            "close": "Cerrar",
             "stale": "Han cambiado los ajustes. Las divisiones mostradas usan los ajustes anteriores. Genera divisiones para actualizarlas.",
             "generating": "Generando divisiones…",
             "workerFailure": "No se pudieron generar los trazados. Inténtalo de nuevo.",
@@ -124,7 +121,6 @@
             "perimeterShort": "Punto alternativo del perímetro",
             "cutTitle": "Calle de {{kind}} · {{length}}",
             "candidateTitle": "Punto candidato: {{kind}}",
-            "legendRoad": "Calle existente",
             "shareCopied": "Enlace de la distribución copiado.",
             "shareCopyFailed": "La copia automática no está disponible. Copia el enlace de la barra de direcciones.",
             "propose": "Proponer calles",
@@ -147,7 +143,6 @@
             "traceJunctionProjection": "Cruce de calles proyectado {{length}} hasta el punto más cercano del perímetro de la manzana.",
             "maxSideHelp": "Es un límite, no una longitud recomendada.",
             "pieceShades": "Cada tono identifica una manzana",
-            "parcelBoundaries": "Límites de parcelas catastrales",
             "pieceTitle": "Manzana {{number}} · {{area}} · {{status}}",
             "targetAreaLabel": "Área máxima de manzana (m²)"
         }

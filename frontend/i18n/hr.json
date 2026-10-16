@@ -71,8 +71,6 @@
         "linkMissing": "Obris ovog bloka promijenjen je ili nije dostupan. Odaberite blok na karti.",
         "playground": {
             "title": "Igralište za podjelu bloka",
-            "diagramLabel": "Pregled podjele",
-            "diagramTitle": "Pregled rasporeda",
             "controlsTitle": "Postavke rasporeda",
             "targetAreaReadout": "Površina svakog bloka mora biti najviše {{area}}.",
             "maxSide": "Najveća dopuštena stranica (m)",
@@ -89,7 +87,6 @@
             "piecesTitle": "Blokovi u ovom rasporedu",
             "sideNote": "Najdulja stranica mjeri se iz prilagođenog omeđujućeg pravokutnika.",
             "disclaimer": "Konceptualna geometrija; širina ulica, zgrade i vlasništvo nisu provjereni.",
-            "close": "Zatvori",
             "stale": "Postavke su promijenjene. Prikazane podjele koriste prethodne postavke. Izradite podjele da biste ih ažurirali.",
             "generating": "Izrada podjela…",
             "workerFailure": "Rasporede nije moguće izraditi. Pokušajte ponovno.",
@@ -124,7 +121,6 @@
             "perimeterShort": "Rezervna točka na obodu",
             "cutTitle": "Ulica · {{kind}} · {{length}}",
             "candidateTitle": "Moguća točka · {{kind}}",
-            "legendRoad": "Postojeća ulica",
             "shareCopied": "Poveznica na raspored je kopirana.",
             "shareCopyFailed": "Automatsko kopiranje nije dostupno. Kopirajte poveznicu iz adresne trake.",
             "propose": "Predloži ulice",
@@ -147,7 +143,6 @@
             "traceJunctionProjection": "Raskrižje cesta projicirano {{length}} do najbliže točke na obodu bloka.",
             "maxSideHelp": "To je gornja granica, a ne preporučena duljina.",
             "pieceShades": "Svaka nijansa označava jedan blok",
-            "parcelBoundaries": "Granice katastarskih čestica",
             "pieceTitle": "Blok {{number}} · {{area}} · {{status}}",
             "targetAreaLabel": "Maksimalna površina bloka (m²)"
         }

@@ -222,7 +222,7 @@
     }
     function openSharedPlayground(link) {
         win.UrbanBlocksPlayground.open({ block: selected, roads: selectedRoads, targetSideM: link.targetSideM,
-            parcels: playgroundParcels(), subdivision: link.subdivision, shareError: link.subdivisionError, shareBaseUrl: selectedLink() });
+            subdivision: link.subdivision, shareError: link.subdivisionError, shareBaseUrl: selectedLink() });
     }
     function followSharedLayout() {
         const link = win.UrbanBlocksLinks.parse(win.location.href);
@@ -308,10 +308,6 @@
         button.setAttribute('aria-expanded', String(!collapsed));
     }
 
-    function playgroundParcels(parcels = win.CadastralParcelRepository?.list?.() || []) {
-        return win.UrbanBlocksModel.parcelsInBlock(selected, parcels, win.turf);
-    }
-
     function updateParcelCount() {
         if (!selected || !el('urban-block-parcels-value')) return;
         let count = null;
@@ -319,7 +315,6 @@
         try {
             const parcels = win.CadastralParcelRepository?.list?.() || [];
             count = win.UrbanBlocksModel.loadedParcelCount(selected, parcels, win.turf);
-            win.UrbanBlocksPlayground.updateParcels(playgroundParcels(parcels));
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [urban-blocks] Optional parcel count unavailable: ${error.message}`);
         }
@@ -336,7 +331,7 @@
         preview.textContent = t('seeHow', 'See how');
         preview.disabled = !selectedRoads;
         preview.addEventListener('click', () => win.UrbanBlocksPlayground.open({ block: feature, roads: selectedRoads,
-            parcels: playgroundParcels(), targetSideM, shareBaseUrl: selectedLink() }));
+            targetSideM, shareBaseUrl: selectedLink() }));
         summary.append(result, preview);
         const label = doc.createElement('label'); label.textContent = t('targetSize', 'Target block size');
         const input = doc.createElement('select'); input.id = 'urban-block-target-size';

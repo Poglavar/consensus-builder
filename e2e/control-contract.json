@@ -8976,13 +8976,6 @@
       "controlType": "dynamic"
     },
     {
-      "id": "control-b7aa464124e3dc-1",
-      "source": "js/urban-blocks-playground.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-action=\"close\" aria-label=\"\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-f77bd8f8a0523b-1",
       "source": "js/urban-blocks-playground.js",
       "markup": "<input id=\"urban-block-playground-target-area\" data-setting=\"targetAreaM2\" type=\"range\" min=\"1000\" max=\"50000\" step=\"125\" value=\"10000\">",
@@ -9049,13 +9042,6 @@
       "id": "control-863f1e2b665502-1",
       "source": "js/urban-blocks-playground.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-action=\"propose\" disabled>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e1cdfb41b33b77-1",
-      "source": "js/urban-blocks-playground.js",
-      "markup": "circle.setAttribute('role', 'button')",
       "interaction": "click",
       "controlType": "button"
     },

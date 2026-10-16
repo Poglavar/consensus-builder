@@ -71,8 +71,6 @@
         "linkMissing": "This block’s outline has changed or is unavailable. Select a block on the map.",
         "playground": {
             "title": "Block subdivision playground",
-            "diagramLabel": "Subdivision preview",
-            "diagramTitle": "Layout preview",
             "controlsTitle": "Layout settings",
             "targetAreaReadout": "Each block must be no larger than {{area}}.",
             "maxSide": "Maximum tolerated side (m)",
@@ -89,7 +87,6 @@
             "piecesTitle": "Blocks in this layout",
             "sideNote": "The longest side is measured from a fitted bounding rectangle.",
             "disclaimer": "Concept geometry; street width, buildings and ownership are not checked.",
-            "close": "Close",
             "stale": "Settings changed. Displayed splits use the previous settings. Generate splits to update them.",
             "generating": "Generating splits…",
             "workerFailure": "Could not generate layouts. Please try again.",
@@ -124,7 +121,6 @@
             "perimeterShort": "Perimeter fallback point",
             "cutTitle": "{{kind}} street · {{length}}",
             "candidateTitle": "{{kind}} candidate point",
-            "legendRoad": "Existing street",
             "shareCopied": "Layout link copied.",
             "shareCopyFailed": "Automatic copying is unavailable. Copy the link from the address bar.",
             "propose": "Propose streets",
@@ -147,7 +143,6 @@
             "traceJunctionProjection": "Road junction projected {{length}} to the closest point on the block perimeter.",
             "maxSideHelp": "This is a ceiling, not a preferred length.",
             "pieceShades": "Each shade identifies a block",
-            "parcelBoundaries": "Cadastral parcel boundaries",
             "pieceTitle": "Block {{number}} · {{area}} · {{status}}",
             "targetAreaLabel": "Maximum block area (m²)"
         }

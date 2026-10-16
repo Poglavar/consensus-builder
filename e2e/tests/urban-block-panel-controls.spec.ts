@@ -81,9 +81,11 @@ test('block-layout ranges, candidate visibility and alternative selection change
   await selectNativeOption(page.locator('#urban-block-target-size'), '75');
   await expect(targetSummary).not.toHaveText(originalTarget);
   await page.locator('#urban-block-see-how').click();
-  const dialog = page.locator('.urban-block-playground');
+  const dialog = page.locator('.urban-block-playground .on-map-editor__panel');
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator('.urban-block-playground__candidate').first()).toBeVisible();
+  // Candidate points, pieces and new streets are drawn on the map; the panel holds the controls.
+  const candidates = page.locator('path.urban-block-playground__candidate');
+  await expect(candidates.first()).toBeVisible();
 
   const settings = [
     { id: 'urban-block-playground-target-area', name: 'targetAreaM2', key: 'Home', value: 1000 },
@@ -103,7 +105,7 @@ test('block-layout ranges, candidate visibility and alternative selection change
     await toggle.press('Space');
     await expect(toggle).not.toBeChecked();
   }
-  await expect(dialog.locator('.urban-block-playground__candidate')).toHaveCount(0);
+  await expect(candidates).toHaveCount(0);
   await expect(dialog.locator('[data-slot="candidate-info"]')).toBeHidden();
   for (const field of ['showTJunctions', 'showDeadEnds', 'showPerimeter']) {
     const toggle = dialog.locator(`[data-visibility="${field}"]`);
@@ -111,7 +113,7 @@ test('block-layout ranges, candidate visibility and alternative selection change
     await toggle.press('Space');
     await expect(toggle).toBeChecked();
   }
-  await expect(dialog.locator('.urban-block-playground__candidate').first()).toBeVisible();
+  await expect(candidates.first()).toBeVisible();
   await dialog.locator('[data-action="generate"]').click();
   const layouts = dialog.locator('#urban-block-playground-layout');
   await expect(layouts).toBeEnabled({ timeout: 60_000 });
@@ -138,7 +140,7 @@ test('Propose turns the selected layout\'s new streets into applied road proposa
   await page.locator('#showUrbanBlocks').check();
   await page.locator('#urban-block-list button[data-block-id]').first().click();
   await page.locator('#urban-block-see-how').click();
-  const dialog = page.locator('.urban-block-playground');
+  const dialog = page.locator('.urban-block-playground .on-map-editor__panel');
   const propose = dialog.locator('[data-action="propose"]');
   await expect(propose).toBeDisabled();
   for (const [id, key] of [['urban-block-playground-target-area', 'Home'], ['urban-block-playground-perimeter-step', 'Home']]) {
@@ -237,25 +239,24 @@ test('OSM block browse, details, fit, copy, collapse, refresh, back, and close b
   await expect(panel).not.toHaveClass(/is-collapsed/);
 
   await page.locator('#urban-block-see-how').click();
-  const playground = page.locator('.urban-block-playground');
+  const playground = page.locator('.urban-block-playground .on-map-editor__panel');
   await expect(playground).toBeVisible();
-  const junction = playground.locator('.urban-block-playground__candidate[role="button"]').first();
+  const junction = page.locator('path.urban-block-playground__candidate.is-t').first();
   await expect(junction).toBeVisible();
   await junction.click();
   await expect(junction).toHaveClass(/is-inspected/);
-  await expect(playground.locator('.urban-block-playground__trace')).toHaveCount(1);
+  await expect(page.locator('path.urban-block-playground__trace-source')).toHaveCount(1);
   await expect(playground.locator('[data-slot="candidate-info"]')).not.toContainText('Hover or tap');
   await playground.locator('[data-action="generate"]').click();
   const pieces = playground.locator('.urban-block-playground__piece-row');
   await expect(pieces.first()).toBeVisible({ timeout: 30_000 });
   await pieces.first().click();
   await expect(pieces.first()).toHaveAttribute('aria-pressed', 'true');
-  const pieceId = await pieces.first().getAttribute('data-piece-id');
-  await expect(playground.locator(`svg [data-piece-id="${pieceId}"]`)).toHaveClass(/is-highlighted/);
+  await expect(page.locator('path.urban-block-playground__piece.is-highlighted')).toHaveCount(1);
   await playground.locator('[data-action="share"]').click();
-  await expect(playground.locator('[data-slot="share-url"]')).toHaveValue(/#splits=/);
-  expect(new URL(await playground.locator('[data-slot="share-url"]').inputValue()).searchParams.get('block')).toBe(blockId);
-  await playground.locator('[data-action="close"]').click();
+  await expect(page).toHaveURL(/#splits=/);
+  expect(new URL(page.url()).searchParams.get('block')).toBe(blockId);
+  await playground.locator('.on-map-editor__header .close-circle-btn').click();
   await expect(playground).toBeHidden();
 
   await page.locator('#urban-block-back').click();

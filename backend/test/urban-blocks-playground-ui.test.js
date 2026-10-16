@@ -1,14 +1,10 @@
-// Headless tests for the playground's public dialog actions and share-link UI.
+// Headless tests for the on-map playground's panel actions, share-link UI and map layers.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 
 const playgroundSource = readFileSync(new URL('../../frontend/js/urban-blocks-playground.js', import.meta.url), 'utf8');
 const playgroundCss = readFileSync(new URL('../../frontend/css/urban-blocks-playground.css', import.meta.url), 'utf8');
-
-function descendants(node) {
-    return node.children.flatMap(child => [child, ...descendants(child)]);
-}
 
 function hasClass(node, className) {
     return (node.attributes.class || node.className || '').split(/\s+/).includes(className);
@@ -78,10 +74,6 @@ class FakeDialog extends FakeNode {
     }
     set innerHTML(value) { this.markup = value; }
     querySelector(selector) {
-        if (selector === 'svg') return this.node(selector, 'svg');
-        if (selector === '.urban-block-playground__body') return this.node(selector);
-        if (selector === '.urban-block-playground__side') return this.node(selector, 'aside');
-        if (selector === '.urban-block-playground__chart') return this.node(selector, 'section');
         const setting = selector.match(/^\[data-setting="([^"]+)"\]$/);
         if (setting) return this.settings[setting[1]];
         if (selector === '[data-slot="pieces"] [aria-pressed="true"]') return null;
@@ -90,6 +82,7 @@ class FakeDialog extends FakeNode {
         if (selector === '[data-slot="target-area"]') return this.node(selector, 'p');
         if (selector === '[data-slot="metrics"]') return this.node(selector);
         if (selector === '[data-slot="legend"]') return this.node(selector);
+        if (selector === '[data-action="propose"]') return this.node(selector, 'button');
         if (selector === '[data-action="share"]') return this.node(selector, 'button');
         if (selector === '[data-action="generate"]') return this.node(selector, 'button');
         if (selector === '[data-slot="layout-select"]') return this.node(selector, 'select');
@@ -99,16 +92,12 @@ class FakeDialog extends FakeNode {
         if (slot) return this.node(selector, slot[1] === 'share-link' ? 'label' : 'span');
         const action = selector.match(/^\[data-action="([^"]+)"\]$/);
         if (action) return this.node(selector, 'button');
-        const id = selector.match(/^#([\w-]+)$/);
-        if (id) return this.node(selector, id[1] === 'urban-block-playground-title' ? 'h2' : 'div');
         return this.node(selector);
     }
     querySelectorAll(selector) {
-        if (selector === '[data-action="close"]') return [];
         if (selector === '[data-setting="targetAreaM2"], [data-setting="maxSideM"], [data-setting="perimeterStepM"]') return [this.settings.targetAreaM2, this.settings.maxSideM, this.settings.perimeterStepM];
         if (selector === '[data-visibility]') return this.visibility;
         if (selector === '[data-slot="pieces"] [data-piece-id]') return [];
-        if (selector === '.urban-block-playground__piece') return [];
         return [];
     }
     node(selector, tagName = 'div') {
@@ -118,11 +107,7 @@ class FakeDialog extends FakeNode {
             const action = selector.match(/^\[data-action="([^"]+)"\]$/);
             if (slot) node.dataset.slot = slot[1];
             if (action) node.dataset.action = action[1];
-            if (slot?.[1] === 'share-link') node.hidden = true;
-            if (slot?.[1] === 'share-url') node.readOnly = /data-slot="share-url"[^>]*\breadonly\b/.test(this.markup);
-            if (action?.[1] === 'share') node.disabled = /data-action="share"[^>]*\bdisabled\b/.test(this.markup);
             this.nodes.set(selector, node);
-            if (slot?.[1] === 'share-url') this.node('[data-slot="share-link"]', 'label').append(node);
         }
         return this.nodes.get(selector);
     }
@@ -134,8 +119,50 @@ function deferred() {
     return { promise, resolve, reject };
 }
 
-function createHarness({ clipboard = { writeText: vi.fn(() => Promise.resolve()) }, build = vi.fn(() => 'https://example.test/shared-layout'), parcels = null, targetAreaM2, targetSideM = 75 } = {}) {
+// Leaflet as the playground uses it: every layer records its options, tooltip and handlers, and the
+// one group added to the map holds what is currently drawn.
+function fakeLeaflet() {
+    const groups = [];
+    const layer = (type, options = {}, extra = {}) => ({
+        type, options: options || {}, handlers: {}, tooltip: null,
+        bindTooltip(text) { this.tooltip = text; return this; },
+        on(event, handler) { this.handlers[event] = handler; return this; },
+        addTo(target) { target.addLayer?.(this); return this; },
+        remove() { this.removed = true; },
+        eachLayer(callback) { callback(this); },
+        getElement() { return null; },
+        setLatLng(latLng) { this.latLng = latLng; return this; },
+        setContent(content) { this.content = content; return this; },
+        ...extra
+    });
+    const L = {
+        svg: options => ({ renderer: true, ...options }),
+        layerGroup() {
+            const group = layer('group', {}, { layers: [] });
+            group.addLayer = child => { group.layers.push(child); return group; };
+            group.clearLayers = () => { group.layers = []; return group; };
+            group.eachLayer = callback => group.layers.forEach(callback);
+            groups.push(group);
+            return group;
+        },
+        geoJSON: (feature, options) => layer('geojson', options, { feature }),
+        polyline: (latLngs, options) => layer('polyline', options, { latLngs }),
+        circleMarker: (latLng, options) => layer('circle', options, { latLng }),
+        marker: (latLng, options) => layer('marker', options, { latLng }),
+        divIcon: options => options,
+        tooltip: options => layer('tooltip', options),
+        DomEvent: { stopPropagation() {} }
+    };
+    return { L, drawn: () => groups.find(group => group.onMap)?.layers || [] };
+}
+
+function createHarness({ clipboard = { writeText: vi.fn(() => Promise.resolve()) }, build = vi.fn(() => 'https://example.test/shared-layout'), targetAreaM2, targetSideM = 75 } = {}) {
     const dialog = new FakeDialog();
+    const leaflet = fakeLeaflet();
+    const map = { handlers: {}, on(event, handler) { this.handlers[event] = handler; }, off(event) { delete this.handlers[event]; },
+        addLayer(layer) { layer.onMap = true; } };
+    const session = { root: dialog, pane: 'onMapEditorPane', map, fitFeature: vi.fn(), close: vi.fn() };
+    const editorOpen = vi.fn(() => session);
     const workers = [];
     const historyCalls = [];
     const window = {
@@ -154,6 +181,8 @@ function createHarness({ clipboard = { writeText: vi.fn(() => Promise.resolve())
         UrbanBlocksModel: { isGroundRoad: () => true },
         CityConfigManager: { getCurrentCityId: () => 'explore' },
         appendBuildToken: path => path,
+        L: leaflet.L,
+        OnMapEditor: { open: editorOpen },
         i18n: { t: key => key },
         CbFormat: {
             formatNumber: value => String(value),
@@ -166,22 +195,15 @@ function createHarness({ clipboard = { writeText: vi.fn(() => Promise.resolve())
             terminate() { this.terminated = true; }
         }
     };
-    window.document.body.append = node => { if (node instanceof FakeDialog) node.nodes.set('__dialog__', node); };
-    window.document.createElement = tag => new FakeNode(tag);
-    window.document.createElementNS = (_namespace, tag) => new FakeNode(tag);
-    window.__dialog = dialog;
-
-    // buildDialog constructs the real dialog from its public open() path; the fake dialog supplies
+    // The on-map editor answers with a session whose root holds the panel; the fake root supplies
     // only the selectors and DOM operations that this module uses.
-    const originalCreateElement = window.document.createElement;
-    window.document.createElement = tag => tag === 'dialog' ? dialog : originalCreateElement(tag);
     runInNewContext(playgroundSource, { window, console: { warn() {} }, URL, Intl, Date, Number, String, Array, Math, JSON });
     const block = { type: 'Feature', id: 'block-1', properties: {}, geometry: {
         type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]
     } };
     const roads = { type: 'FeatureCollection', features: [] };
-    window.UrbanBlocksPlayground.open({ block, roads, parcels, targetAreaM2, targetSideM, shareBaseUrl: 'https://example.test/map?city=explore' });
-    return { dialog, workers, historyCalls, build, clipboard, window };
+    window.UrbanBlocksPlayground.open({ block, roads, targetAreaM2, targetSideM, shareBaseUrl: 'https://example.test/map?city=explore' });
+    return { dialog, workers, historyCalls, build, clipboard, window, session, editorOpen, drawn: leaflet.drawn };
 }
 
 function click(node) {
@@ -300,54 +322,53 @@ describe('urban block playground share UI', () => {
     });
 });
 
-describe('urban block playground result overlays', () => {
-    it('labels every piece, matches sidebar shades, and marks hard-limit status with its outline', () => {
+describe('urban block playground on the map', () => {
+    it('opens as an on-map tool framed on the block, and closing it ends the session', () => {
+        const harness = createHarness();
+        expect(harness.editorOpen).toHaveBeenCalledWith(expect.objectContaining({ owner: 'urban-block-playground', modes: ['2d'] }));
+        expect(harness.session.fitFeature).toHaveBeenCalledWith(expect.objectContaining({ id: 'block-1' }));
+        expect(harness.drawn().map(layer => layer.options.className)).toContain('urban-block-playground__outline');
+
+        harness.window.UrbanBlocksPlayground.close();
+        expect(harness.session.close).toHaveBeenCalledTimes(1);
+        expect(harness.workers.every(worker => worker.terminated)).toBe(true);
+    });
+
+    it('draws every piece and label on the map, with sidebar shades and hard-limit outlines', () => {
         const harness = createHarness();
         const pieces = [
             { type: 'Feature', id: 'piece-a', properties: { areaM2: 1200, longestSideM: 42, acceptable: true, labelPoint: [0.0003, 0.0005] }, geometry: { type: 'Polygon', coordinates: [[[0, 0], [0.0005, 0], [0.0005, 0.001], [0, 0.001], [0, 0]]] } },
             { type: 'Feature', id: 'piece-b', properties: { areaM2: 1500, longestSideM: 68, acceptable: false, labelPoint: [0.0008, 0.0005] }, geometry: { type: 'Polygon', coordinates: [[[0.0005, 0], [0.001, 0], [0.001, 0.001], [0.0005, 0.001], [0.0005, 0]]] } }
         ];
-        planOneLayout(harness, [{ cuts: { type: 'FeatureCollection', features: [] }, pieces: { type: 'FeatureCollection', features: pieces }, stats: {} }]);
+        const cut = { type: 'Feature', properties: { kind: 't', lengthM: 100 }, geometry: { type: 'LineString', coordinates: [[0.0005, 0], [0.0005, 0.001]] } };
+        planOneLayout(harness, [{ cuts: { type: 'FeatureCollection', features: [cut] }, pieces: { type: 'FeatureCollection', features: pieces }, stats: {} }]);
 
-        const svgNodes = descendants(harness.dialog.querySelector('svg'));
-        const shapes = svgNodes.filter(node => hasClass(node, 'urban-block-playground__piece'));
-        const labels = svgNodes.filter(node => hasClass(node, 'urban-block-playground__piece-area'));
-        expect(shapes).toHaveLength(2);
-        expect(shapes.map(node => node.attributes.class)).toEqual(expect.arrayContaining([
-            expect.stringContaining('palette-0 is-acceptable'), expect.stringContaining('palette-1 is-oversized')
-        ]));
-        expect(shapes[0].attributes['aria-label']).toContain('Block 1');
-        expect(shapes[0].children[0].textContent).toContain('1200 m²');
-        expect(labels.map(node => node.textContent)).toEqual(['1200 m²', '1500 m²']);
-        expect(labels.every(node => node.attributes.x !== undefined && node.attributes.y !== undefined)).toBe(true);
+        const drawn = harness.drawn();
+        const shapes = drawn.filter(layer => layer.options.className?.includes('urban-block-playground__piece '));
+        expect(shapes.map(layer => layer.options.className)).toEqual([
+            'urban-block-playground__piece palette-0 is-acceptable', 'urban-block-playground__piece palette-1 is-oversized'
+        ]);
+        expect(shapes.every(layer => layer.options.pane === 'onMapEditorPane')).toBe(true);
+        expect(shapes[0].tooltip).toContain('Block 1');
+        expect(shapes[0].tooltip).toContain('1200 m²');
+        const labels = drawn.filter(layer => layer.type === 'marker');
+        expect(labels.map(layer => layer.options.icon.html.textContent)).toEqual(['1200 m²', '1500 m²']);
+        expect(labels[0].latLng).toEqual([0.0005, 0.0003]);
+        expect(drawn.filter(layer => layer.options.className === 'urban-block-playground__cut is-t')).toHaveLength(1);
 
         const rows = harness.dialog.querySelector('[data-slot="pieces"]').children;
         const chips = rows.flatMap(row => row.children).filter(node => hasClass(node, 'urban-block-playground__piece-chip'));
         expect(chips.map(node => node.className)).toEqual(['urban-block-playground__piece-chip palette-0', 'urban-block-playground__piece-chip palette-1']);
-        expect(chips.map(node => node.attributes.style)).toEqual(shapes.map(node => node.attributes.style));
-        expect(new Set(shapes.map(node => node.attributes.style)).size).toBe(2);
+        expect(harness.dialog.querySelector('[data-action="propose"]').disabled).toBe(false);
         expect(harness.dialog.querySelector('[data-slot="max-side-help"]').textContent).toContain('ceiling');
         expect(playgroundCss).toContain('.urban-block-playground__piece.is-oversized { stroke: var(--cb-warning); stroke-dasharray: 6 3; }');
         expect(playgroundCss).toContain('.urban-block-playground__piece.is-acceptable { stroke: var(--cb-success); }');
     });
 
-    it('clips supplied cadastral parcel borders to the block and refreshes them while open', () => {
-        const parcel = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[0, 0], [0.0005, 0], [0.0005, 0.001], [0, 0.001], [0, 0]]] } };
-        const parcels = { type: 'FeatureCollection', features: [parcel] };
-        const harness = createHarness({ parcels });
-
-        let svgNodes = descendants(harness.dialog.querySelector('svg'));
-        let clip = svgNodes.find(node => node.tagName === 'clipPath');
-        let layer = svgNodes.find(node => hasClass(node, 'urban-block-playground__parcels'));
-        expect(clip.attributes.id).toBe('urban-block-playground-block-clip');
-        expect(clip.children[0].attributes['clip-rule']).toBe('evenodd');
-        expect(layer.attributes['clip-path']).toBe('url(#urban-block-playground-block-clip)');
-        expect(layer.attributes['pointer-events']).toBe('none');
-        expect(layer.children.filter(node => hasClass(node, 'urban-block-playground__parcel-border'))).toHaveLength(1);
-
-        harness.window.UrbanBlocksPlayground.updateParcels({ type: 'FeatureCollection', features: [] });
-        svgNodes = descendants(harness.dialog.querySelector('svg'));
-        layer = svgNodes.find(node => hasClass(node, 'urban-block-playground__parcels'));
-        expect(layer.children).toHaveLength(0);
+    it('keeps Propose disabled while the selected layout has no new streets', () => {
+        const harness = createHarness();
+        expect(harness.dialog.querySelector('[data-action="propose"]').disabled).toBe(true);
+        planOneLayout(harness);
+        expect(harness.dialog.querySelector('[data-action="propose"]').disabled).toBe(true);
     });
 });
