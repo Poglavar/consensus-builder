@@ -3822,16 +3822,12 @@
         };
     }
 
-    // A point inside the plot for its number: the centroid when it falls inside (most plots), else
-    // a point guaranteed to be on the shape (an L or a thin strip).
-    function plotLabelPoint(geometry) {
-        if (!geometry || typeof turf === 'undefined') return null;
-        try {
-            const feature = { type: 'Feature', properties: {}, geometry };
-            const centre = turf.centerOfMass(feature);
-            if (turf.booleanPointInPolygon(centre, feature)) return centre.geometry.coordinates;
-            return turf.pointOnFeature(feature).geometry.coordinates;
-        } catch (_) { return null; }
+    // The label's radius in metres at the current zoom: the 22 px badge plus a little air.
+    function plotLabelRadiusM() {
+        const zoom = state.map?.getZoom?.();
+        const lat = state.map?.getCenter?.()?.lat;
+        if (!(typeof zoom === 'number' && Number.isFinite(zoom) && typeof lat === 'number' && Number.isFinite(lat))) return 1;
+        return 14 * 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
     }
 
     function clearPlotNumbers() {
@@ -3839,14 +3835,21 @@
             try { state.plotNumberLayer.remove(); } catch (_) { }
             state.plotNumberLayer = null;
         }
+        if (state.plotNumberZoomHandler && state.map) state.map.off('zoomend', state.plotNumberZoomHandler);
+        state.plotNumberZoomHandler = null;
     }
 
     // The New plots list numbers its rows; the same numbers on the map say which row is which plot.
+    // Each number sits in the clearest spot of its plot (reparcel-label-point.js): away from the
+    // edges and nodes, then off the faint old-parcel and building outlines. How much room the badge
+    // needs depends on the zoom, so the numbers move again after a zoom.
     function drawPlotNumbers() {
         clearPlotNumbers();
         if (!state.map || !state.slices.length || state.plotsTab === 'old') return;
+        const guides = inputParcelFeatures().concat(collectAppliedBuildingFootprints()).map(feature => feature.geometry).filter(Boolean);
+        const radiusM = plotLabelRadiusM();
         const markers = state.slices.map((slice, idx) => {
-            const point = plotLabelPoint(slice.geometry);
+            const point = window.ReparcelLabelPoint.labelPoint(slice.geometry, { guides, radiusM });
             if (!point) return null;
             return L.marker([point[1], point[0]], {
                 pane: 'reparcelPlots',
@@ -3856,6 +3859,8 @@
             });
         }).filter(Boolean);
         state.plotNumberLayer = L.layerGroup(markers).addTo(state.map);
+        state.plotNumberZoomHandler = () => drawPlotNumbers();
+        state.map.on('zoomend', state.plotNumberZoomHandler);
     }
 
     // Highlight (or restore) every visual piece of a plot when its legend row is

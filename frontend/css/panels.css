@@ -2,7 +2,10 @@
 
 /* Shared style for all info panels */
 .info-panel {
-    background: var(--cb-glass);
+    /* A little of the map shows through every panel (user rule 2026-10-17). */
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     color: var(--cb-text);
     border-radius: var(--cb-radius-lg);
     box-shadow: var(--cb-shadow-sm);
@@ -186,12 +189,6 @@ from .right-dock-panel — do not re-declare one here.
 #parcel-info-panel.visible {
     display: flex;
     flex-direction: column;
-}
-
-/* Opaque: see-through, the lower-left 3D/2D/Photo/cadastre buttons and the Leaflet attribution
-   (both on the map-chrome rung, under this panel's) showed through and read as if on top of it. */
-#parcel-info-panel.info-panel {
-    background: var(--cb-surface);
 }
 
 /* Credits occupy the lower left. Right-hand panels end just above the navigation row. */

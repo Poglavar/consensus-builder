@@ -817,15 +817,17 @@
                     </details>
 </div>
                 </div>
+                <!-- Base map: the last row of the same scrolling body, not a pane of its own -->
+                <div class="map-sheet-base-map">
+                    <label class="sheet-field">
+                        <span class="sheet-field-label" data-i18n-key="sidebar.data.baseMapLabel">Base map:</span>
+                        <select id="tile-source-select">
+                            <option value="openstreetmap">OpenStreetMap</option>
+                            <option value="maptiler">MapTiler</option>
+                        </select>
+                    </label>
+                </div>
             </div>
-
-            <div class="map-sheet-body map-layer-view" data-map-modes="2d"><label class="sheet-field">
-                            <span class="sheet-field-label" data-i18n-key="sidebar.data.baseMapLabel">Base map:</span>
-                            <select id="tile-source-select">
-                                <option value="openstreetmap">OpenStreetMap</option>
-                                <option value="maptiler">MapTiler</option>
-                            </select>
-                        </label></div>
             <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d" hidden></div>
             <div class="map-sheet-body" data-map-modes="photo" hidden>
                 <div class="checkbox-group"><label><input id="aerial-city-visible" type="checkbox" checked><span data-i18n-key="mapShell.reorg.aerialLayer">Existing city (Google imagery)</span></label></div>
@@ -1927,6 +1929,7 @@
             'js/reparcellization-ownership.js',
             'js/reparcellization-deal.js',
             'js/reparcellization-validation.js',
+            'js/reparcel-label-point.js',
             'js/reparcellization-allocation.js',
             'js/proposals/approval-review.js',
             'js/proposals/approval-setup.js',

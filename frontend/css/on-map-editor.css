@@ -22,9 +22,10 @@
     overflow: hidden;
     border: 1px solid var(--cb-line-glass);
     border-radius: var(--cb-radius-lg);
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
     box-shadow: var(--cb-shadow-md);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 .on-map-editor__panel--wide { width: min(480px, calc(100vw - 32px)); }
 .on-map-editor__header, .on-map-editor__footer { flex: 0 0 auto; }

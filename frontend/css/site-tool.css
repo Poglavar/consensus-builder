@@ -179,7 +179,9 @@ body.site-tool-drawing .leaflet-container {
     overflow: hidden;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     box-shadow: var(--cb-shadow-md);
     color: var(--cb-text);
     font-size: var(--cb-text-md);
@@ -297,7 +299,7 @@ body.three-mode-active .site-panel {
     top: 0;
     margin: 0;
     padding: 6px 0 4px;
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
     font-weight: var(--cb-weight-semibold);
 }
 
@@ -465,7 +467,9 @@ body.three-mode-active .site-panel {
     padding: 0;
     overflow: hidden;
     border-radius: var(--cb-radius-lg);
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     z-index: var(--cb-z-panel);
 }
 
