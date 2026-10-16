@@ -145,6 +145,23 @@ describe('cadastral parcel fetch transport', () => {
         expect(result.features[0].properties.parcelId).toBe('SR-716090-2581/1');
     });
 
+    it('reports a body that fails mid-read by its own name and message, not a read-only-message TypeError', async () => {
+        // A DOMException's message is a getter: the old wrapper assigned to it and threw
+        // "Cannot set property message … which has only a getter", hiding the real reason.
+        class ReadOnlyMessageError extends Error {
+            get message() { return 'The operation was aborted.'; }
+            get name() { return 'AbortError'; }
+        }
+        const fetch = vi.fn(async () => ({ ok: true, status: 200, json: async () => { throw new ReadOnlyMessageError(); } }));
+        const transport = bootTransport('belgrade', fetch);
+
+        const failure = await transport.fetchByIds(['SR-716090-2581/1']).catch(error => error);
+
+        // (an Error of the page's own realm, so no instanceof across the vm boundary)
+        expect(failure.name).toBe('AbortError');
+        expect(failure.message).toContain('The operation was aborted.');
+    });
+
     it('queries configured live parcel sources through BrowserParcelSources without route fallback', async () => {
         const feature = { type: 'Feature', properties: { parcelId: 'PL-SAMPLE-7' }, geometry: { type: 'Polygon', coordinates: [] } };
         const queryIds = vi.fn(async () => ({ complete: true, features: [feature], absentIds: [] }));

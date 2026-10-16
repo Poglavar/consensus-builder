@@ -169,8 +169,13 @@
         try {
             return await response.json();
         } catch (error) {
-            error.message = `Parcel response was not JSON: ${error.message}`;
-            throw error;
+            // A new error, not a rewritten one: a body read that fails mid-stream throws a
+            // DOMException, whose message is read-only, and assigning to it threw a TypeError that
+            // hid the real reason. The name (AbortError, SyntaxError, …) carries over for the
+            // failure classifiers (parcels/source-health.js).
+            const wrapped = new Error(`Parcel response could not be read as JSON: ${error?.message || error}`, { cause: error });
+            if (error?.name) wrapped.name = error.name;
+            throw wrapped;
         }
     }
 

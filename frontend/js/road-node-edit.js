@@ -43,11 +43,14 @@
     }
 
     // A divIcon's element IS its hit area — on touch screens the mouse-sized handles were
-    // nearly impossible to grab, so coarse pointers get finger-sized ones.
-    const coarsePointer = typeof global.matchMedia === 'function' && global.matchMedia('(pointer: coarse)').matches;
+    // nearly impossible to grab, so coarse pointers get finger-sized ones. Read when each icon is
+    // built, the way the stylesheet reads (pointer: coarse): read once at load, a pointer change
+    // (a convertible, the browser's device mode) gave the icon a mouse-sized box around
+    // finger-sized buttons, and the buttons squeezed into ovals.
+    const isCoarsePointer = () => typeof global.matchMedia === 'function' && global.matchMedia('(pointer: coarse)').matches;
 
     function handleIcon() {
-        const size = coarsePointer ? 26 : 14;
+        const size = isCoarsePointer() ? 26 : 14;
         return global.L.divIcon({
             className: 'road-node-handle',
             iconSize: [size, size],
@@ -56,7 +59,7 @@
     }
 
     function junctionIcon() {
-        const size = coarsePointer ? 32 : 18;
+        const size = isCoarsePointer() ? 32 : 18;
         return global.L.divIcon({
             className: 'road-node-handle road-node-handle--junction',
             iconSize: [size, size],
@@ -64,13 +67,17 @@
         });
     }
 
+    const EDGE_ACTION_GLYPH = '<svg class="road-edge-action__glyph" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M5 1.5v7M1.5 5h7"/></svg>';
+
     function edgeActionsIcon(addDisabled) {
-        const height = coarsePointer ? 26 : 16;
-        const width = coarsePointer ? 56 : 38;
+        const height = isCoarsePointer() ? 26 : 16;
+        const width = isCoarsePointer() ? 56 : 38;
         return global.L.divIcon({
             className: 'road-edge-actions',
-            html: `<span class="road-edge-action road-edge-add${addDisabled ? ' road-edge-add--disabled' : ''}" data-road-edge-action="add">+</span>`
-                + '<span class="road-edge-action road-edge-bulldoze" data-road-edge-action="bulldoze">×</span>',
+            // The + and × are strokes on a 10-unit grid, not font glyphs: a glyph sits on its
+            // baseline and is never exactly centred in a circle.
+            html: `<span class="road-edge-action road-edge-add${addDisabled ? ' road-edge-add--disabled' : ''}" data-road-edge-action="add">${EDGE_ACTION_GLYPH}</span>`
+                + `<span class="road-edge-action road-edge-bulldoze" data-road-edge-action="bulldoze">${EDGE_ACTION_GLYPH}</span>`,
             iconSize: [width, height],
             iconAnchor: [width / 2, height / 2]
         });
@@ -457,7 +464,7 @@
     // ALONG the other kind's centre line is not offered yet — the network noding pass
     // (corridor-network-nodes.js) still nodes roads and tracks as two networks, so that drop would
     // sit on the line with no node back in it: joined on screen only.
-    const SNAP_PX = coarsePointer ? 26 : 12;
+    const snapPx = () => (isCoarsePointer() ? 26 : 12);
 
     function findNodeSnap(latlng, origin, isTrack) {
         const map = global.map;
@@ -469,7 +476,7 @@
         let bestEdge = null;
         const consider = (slot, candidate) => {
             const distance = cursor.distanceTo(map.latLngToLayerPoint(candidate));
-            if (distance > SNAP_PX) return null;
+            if (distance > snapPx()) return null;
             if (slot && distance >= slot.distance) return slot;
             return { distance, latlng: candidate };
         };
@@ -783,7 +790,7 @@
             // and the ones it matters most not to bury.
             handleRadiusByPosition.set(
                 nodeKeyFor(node.lng, node.lat),
-                (emphasised ? (coarsePointer ? 32 : 18) : (coarsePointer ? 26 : 14)) / 2
+                (emphasised ? (isCoarsePointer() ? 32 : 18) : (isCoarsePointer() ? 26 : 14)) / 2
             );
             const marker = global.L.marker([node.lat, node.lng], {
                 draggable: true,
@@ -913,7 +920,7 @@
     //
     // The clearances are pixels, so this is redone on zoom rather than baked into a latlng.
     function edgeActionsReachPx() {
-        return (coarsePointer ? 56 : 38) / 2;
+        return (isCoarsePointer() ? 56 : 38) / 2;
     }
 
     function placeEdgeActionHandles() {

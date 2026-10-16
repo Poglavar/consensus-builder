@@ -130,6 +130,8 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
         const centerlines = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(corridorDefinition) : [];
         if (profile && centerlines.length) {
             renderCorridorRails(centerlines, profile, groups.preview, {
+                // The road's own metric frame (projections.md §2), the one it is drawn in on the map.
+                frame: window.__corridorFootprint.frameForDefinition(corridorDefinition),
                 railColor: '#FF8A00',
                 sleeperColor: '#FFC266',
                 pane: groups.preview?.__paneName || (window.__proposalHighlightPanes && window.__proposalHighlightPanes.preview) || undefined

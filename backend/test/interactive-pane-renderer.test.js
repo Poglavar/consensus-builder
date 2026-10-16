@@ -104,11 +104,15 @@ describe('an interactive pane is never drawn on canvas', () => {
     it('and there is no hit target per STRIP — the footprint carries their exact handlers', () => {
         // ~2,000 SVG paths whose click was rememberSegment(null) + the same forward the footprint
         // target already does, over ground the footprint already covers. mapLoad measured them as
-        // the bulk of the SVG once the parcels moved to canvas. Per-SEGMENT targets stay: they are
-        // the only ones that remember which segment was clicked.
+        // the bulk of the SVG once the parcels moved to canvas. Per-STRETCH targets stay: they
+        // remember which segment was clicked, and every drawn stretch gets one, segment id or not —
+        // the footprint is land and leaves out tunnels, so a single-stretch track under a town had
+        // nothing to click where its rails were drawn (2026-10-16).
         const targets = render.slice(render.indexOf('function renderAppliedCorridorHitTargets'), render.indexOf('function isAppliedCorridorProposal'));
         expect(targets).not.toContain('strips.forEach');
-        expect(targets).toContain('rememberSegment(entry.segmentId)');
+        expect(targets).toContain('segmentEntries.forEach');
+        expect(targets).not.toMatch(/if \(!entry\.segmentId/);
+        expect(targets).toContain('rememberSegment(segmentId)');
         // Exactly one null-segment click WIRING remains (the footprint's). Matched as code —
         // handler shape included — because the explanatory comment also says rememberSegment(null)
         // and a prose match counted it.

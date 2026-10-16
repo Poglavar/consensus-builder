@@ -704,15 +704,20 @@ function forwardAppliedCorridorClick(proposal, event) {
     // two selection systems never stack.
     try { if (typeof hideParcelInfoPanel === 'function') hideParcelInfoPanel(); } catch (_) { }
     // The drill resolves the whole stack at the point (an overlay may stand above the corridor)
-    // and shows the chain; without it, select the road itself.
+    // and shows the chain; without it, select the road itself. The drill reads LAND footprints,
+    // so where this corridor has none (a tunnelled stretch) its stack holds only the parcels
+    // above, and the click on the drawn track opened a parcel: the drill decides only when its
+    // stack contains the corridor that was clicked.
+    const proposalKey = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
     let drillHandled = false;
     try {
         if (window.__drillUi && event && event.latlng) {
-            drillHandled = window.__drillUi.handleSurfaceClick(event.latlng) === true;
+            const stack = window.__drillUi.stackAt(event.latlng) || [];
+            const holdsCorridor = stack.some(entry => entry.kind === 'proposal' && String(entry.key) === String(proposalKey));
+            if (holdsCorridor) drillHandled = window.__drillUi.handleSurfaceClick(event.latlng) === true;
         }
     } catch (_) { }
     if (drillHandled) return;
-    const proposalKey = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
     if (proposalKey && typeof selectAndHighlightProposal === 'function') {
         selectAndHighlightProposal(proposalKey, null, false, true);
     }
@@ -823,15 +828,19 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
             fp.addTo(group);
         } catch (_) { }
     }
-    // Per-segment hit polygons go on LAST (topmost in the pane), so a click inside a segment's
-    // own footprint records that segment before the generic handlers would.
+    // One hit polygon along every drawn stretch, on LAST (topmost in the pane), so a click inside
+    // a segment records that segment before the generic handlers would. Every stretch gets one,
+    // with or without a segment id: the footprint above is the corridor's LAND, which leaves out
+    // its tunnels, so a single-stretch track running under a town (Šibenik, 2026-10-16) had rails
+    // drawn over the streets and nothing under them to click — the tap fell to the parcel.
     if (Array.isArray(segmentEntries) && typeof calculateRoadPolygon === 'function') {
         segmentEntries.forEach(entry => {
-            if (!entry.segmentId || !Array.isArray(entry.points) || entry.points.length < 2) return;
+            if (!Array.isArray(entry.points) || entry.points.length < 2) return;
             const polygon = calculateRoadPolygon(entry.points, entry.width, frame);
             if (!polygon) return;
+            const segmentId = entry.segmentId || null;
             const hit = L.polygon(polygon, hitOptions)
-                .on('click', event => { rememberSegment(entry.segmentId); forwardAppliedCorridorClick(proposal, event); });
+                .on('click', event => { rememberSegment(segmentId); forwardAppliedCorridorClick(proposal, event); });
             attachHitBehaviour(hit);
             hit.addTo(group);
         });

@@ -247,3 +247,43 @@ describe('road-scope preview that keeps per-stretch cross-sections', () => {
         expect(all.map(entry => entry.profile === preview)).toEqual([true, true]);
     });
 });
+
+// A click on an applied corridor's own hit target: the drill (which reads LAND footprints) decides
+// only when its stack holds that corridor. A tunnelled stretch has no land, so the drill saw only
+// the parcels above it and the tap on the drawn track opened a parcel (Šibenik, 2026-10-16).
+describe('a click on an applied corridor', () => {
+    const click = { latlng: { lat: 43.7362, lng: 15.892 } };
+    function clickWith(stack) {
+        const env = environment([]);
+        const handleSurfaceClick = vi.fn(() => true);
+        const selectAndHighlightProposal = vi.fn();
+        env.context.__drillUi = { stackAt: vi.fn(() => stack), handleSurfaceClick };
+        env.context.selectAndHighlightProposal = selectAndHighlightProposal;
+        env.context.hideParcelInfoPanel = vi.fn();
+        env.context.forwardAppliedCorridorClick({ proposalId: 'track-1' }, click);
+        return { handleSurfaceClick, selectAndHighlightProposal };
+    }
+
+    it('selects the corridor when the drill stack at the point does not hold it', () => {
+        const { handleSurfaceClick, selectAndHighlightProposal } = clickWith([{ kind: 'parcel', id: 'HR-1' }]);
+        expect(handleSurfaceClick).not.toHaveBeenCalled();
+        expect(selectAndHighlightProposal).toHaveBeenCalledWith('track-1', null, false, true);
+    });
+
+    it('lets the drill resolve the point when its stack holds the corridor', () => {
+        const { handleSurfaceClick, selectAndHighlightProposal } = clickWith([{ kind: 'proposal', key: 'track-1' }, { kind: 'parcel', id: 'HR-1' }]);
+        expect(handleSurfaceClick).toHaveBeenCalledWith(click.latlng);
+        expect(selectAndHighlightProposal).not.toHaveBeenCalled();
+    });
+});
+
+describe('applied-corridor hit targets', () => {
+    it('give a stretch without a segment id its own target along the drawn line', () => {
+        const proposal = { proposalId: 'track-1', applied: true, roadProposal: { definition: { points: near(0, 0), profile: { strips: [] } } } };
+        const env = environment([proposal]);
+        const group = env.context.L.layerGroup();
+        env.context.renderAppliedCorridorHitTargets([], proposal, group, proposal.roadProposal.definition,
+            [{ segmentId: null, points: near(0, 0), width: 6 }], {});
+        expect(group.getLayers().filter(layer => layer.kind === 'polygon')).toHaveLength(1);
+    });
+});
