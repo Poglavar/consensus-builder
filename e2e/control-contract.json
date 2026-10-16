@@ -9039,21 +9039,6 @@
       "controlType": "select"
     },
     {
-      "id": "control-7bc092eb98435e-1",
-      "source": "js/urban-blocks-playground.js",
-      "markup": "<input data-slot=\"share-url\" type=\"url\" readonly>",
-      "interaction": "change",
-      "controlType": "url",
-      "exempt": "The generated share URL is a read-only output; the share action is covered separately.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/urban-blocks-playground.js",
-          "includes": "<input data-slot=\"share-url\" type=\"url\" readonly>"
-        }
-      ]
-    },
-    {
       "id": "control-a4cf65f7ffb019-1",
       "source": "js/urban-blocks-playground.js",
       "markup": "<button type=\"button\" class=\"btn\" data-action=\"share\">",

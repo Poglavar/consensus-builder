@@ -94,10 +94,6 @@
             </div>
             <footer class="cb-dialog__footer urban-block-playground__footer">
                 <span data-slot="disclaimer"></span>
-                <label class="urban-block-playground__share-link" data-slot="share-link" hidden>
-                    <span class="urban-block-playground__share-label" data-slot="share-label"></span>
-                    <input data-slot="share-url" type="url" readonly>
-                </label>
                 <span class="urban-block-playground__share-status" data-slot="share-status" role="status" aria-live="polite"></span>
                 <button type="button" class="btn" data-action="share"></button>
             </footer>`;
@@ -114,7 +110,6 @@
         });
         dialog.querySelector('[data-action="generate"]').addEventListener('click', generate);
         dialog.querySelector('[data-action="share"]').addEventListener('click', share);
-        dialog.querySelector('[data-slot="share-url"]').addEventListener('click', event => event.target.select());
         dialog.querySelector('svg').addEventListener('click', clearCandidateTrace);
         dialog.querySelectorAll('[data-setting="targetAreaM2"], [data-setting="maxSideM"], [data-setting="perimeterStepM"]').forEach(input => input.addEventListener('input', () => {
             updateRangeOutput(input.dataset.setting);
@@ -152,7 +147,6 @@
         set('[data-slot="method-note"]', 'methodNote', 'The perimeter walk starts at one junction or alley entrance. It advances to the next existing point within the interval, otherwise places a point at that distance, and continues around the block.');
         set('[data-action="generate"]', 'generate', 'Generate splits');
         set('[data-action="share"]', 'share', 'Share layout');
-        set('[data-slot="share-label"]', 'shareLink', 'Layout link');
         set('[data-slot="layout-label"]', 'alternativeLayout', 'Alternative layout');
         set('[data-slot="pieces-title"]', 'piecesTitle', 'Blocks in this layout');
         set('[data-slot="note"]', 'sideNote', 'The longest side is measured from a fitted bounding rectangle.');
@@ -336,8 +330,6 @@
 
     function resetShare() {
         state.shareRequest++;
-        state.dialog.querySelector('[data-slot="share-link"]').hidden = true;
-        state.dialog.querySelector('[data-slot="share-url"]').value = '';
         state.dialog.querySelector('[data-slot="share-status"]').textContent = '';
     }
 
@@ -354,20 +346,14 @@
                 subdivision: { options, layout }
             });
             if (!url) throw new Error(t('shareUnavailable', 'This block layout cannot be shared.'));
+            // The address bar carries the link before the clipboard is asked: a permission prompt
+            // can remain pending, and mobile/insecure contexts may not expose clipboard access.
             win.history.replaceState(win.history.state, '', url);
-            // Reveal the usable artifact before asking the clipboard. A permission prompt can
-            // remain pending, and mobile/insecure contexts may not expose clipboard access.
-            const field = state.dialog.querySelector('[data-slot="share-url"]');
-            field.value = url;
-            state.dialog.querySelector('[data-slot="share-link"]').hidden = false;
-            state.dialog.querySelector('[data-slot="share-status"]').textContent = t('shareReady', 'Link ready. You can copy it from the field above.');
-            field.focus({ preventScroll: true });
-            field.select();
             try {
                 await win.navigator.clipboard.writeText(url);
                 if (request === state.shareRequest) state.dialog.querySelector('[data-slot="share-status"]').textContent = t('shareCopied', 'Layout link copied.');
             } catch (error) {
-                if (request === state.shareRequest) state.dialog.querySelector('[data-slot="share-status"]').textContent = t('shareCopyFailed', 'Automatic copying is unavailable. Copy the selected link above.');
+                if (request === state.shareRequest) state.dialog.querySelector('[data-slot="share-status"]').textContent = t('shareCopyFailed', 'Automatic copying is unavailable. Copy the link from the address bar.');
                 console.warn(`[${new Date().toISOString()}] [urban-block-playground] Clipboard copy failed: ${String(error?.message || error)}`);
             }
         } catch (error) {

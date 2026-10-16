@@ -116,17 +116,16 @@ test('block-layout ranges, candidate visibility and alternative selection change
   const layouts = dialog.locator('#urban-block-playground-layout');
   await expect(layouts).toBeEnabled({ timeout: 60_000 });
   await expect.poll(() => dialog.locator('.urban-block-playground__piece-row').count()).toBeGreaterThan(1);
+  // Share puts the layout link in the address bar (and the clipboard when permitted).
   await dialog.locator('[data-action="share"]').click();
-  const share = dialog.locator('[data-slot="share-url"]');
-  await expect(share).toHaveValue(/#splits=/);
-  const firstLink = await share.inputValue();
+  await expect(page).toHaveURL(/#splits=/);
+  const firstLink = page.url();
   const first = await page.evaluate(url => (window as any).UrbanBlocksLinks.parse(url).subdivision, firstLink);
   expect(first.options).toMatchObject({ targetAreaM2: 1000, maxSideM: 125, perimeterStepM: 50 });
   await selectNativeOption(layouts, '1');
-  await expect(dialog.locator('[data-slot="share-link"]')).toBeHidden();
   await dialog.locator('[data-action="share"]').click();
-  await expect(share).not.toHaveValue(firstLink);
-  const second = await page.evaluate(url => (window as any).UrbanBlocksLinks.parse(url).subdivision, await share.inputValue());
+  await expect.poll(() => page.url()).not.toBe(firstLink);
+  const second = await page.evaluate(url => (window as any).UrbanBlocksLinks.parse(url).subdivision, page.url());
   expect(second.options).toEqual(first.options);
   expect(second.cuts).not.toEqual(first.cuts);
 });

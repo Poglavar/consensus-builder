@@ -197,7 +197,7 @@ function planOneLayout(harness, layouts = [{ cuts: { type: 'FeatureCollection', 
 }
 
 describe('urban block playground share UI', () => {
-    it('shares current settings and empty cuts before Generate, revealing the field before clipboard completion', async () => {
+    it('shares current settings and empty cuts before Generate, putting the link in the address bar before clipboard completion', async () => {
         const copy = deferred();
         const clipboard = { writeText: vi.fn(() => copy.promise) };
         const build = vi.fn(() => 'https://example.test/shared-layout');
@@ -206,8 +206,6 @@ describe('urban block playground share UI', () => {
 
         expect(button.disabled).toBe(false);
         const pending = click(button);
-        const link = harness.dialog.querySelector('[data-slot="share-link"]');
-        const field = harness.dialog.querySelector('[data-slot="share-url"]');
         const status = harness.dialog.querySelector('[data-slot="share-status"]');
 
         expect(build).toHaveBeenCalledWith(expect.objectContaining({
@@ -219,15 +217,8 @@ describe('urban block playground share UI', () => {
             }
         }));
         expect(harness.historyCalls[0]).toEqual([harness.window.history.state, '', 'https://example.test/shared-layout']);
-        expect(link.hidden).toBe(false);
-        expect(link.contains(field)).toBe(true);
-        expect(field.value).toBe('https://example.test/shared-layout');
-        expect(field.readOnly).toBe(true);
-        expect(field.focused).toBe(true);
-        expect(field.selected).toBe(true);
         expect(harness.dialog.querySelector('[data-output="targetAreaM2"]').textContent).toBe('5625 m²');
-        expect(status.textContent).toContain('Link ready');
-        expect(clipboard.writeText).toHaveBeenCalledWith(field.value);
+        expect(clipboard.writeText).toHaveBeenCalledWith('https://example.test/shared-layout');
 
         copy.resolve();
         await pending;
@@ -270,45 +261,42 @@ describe('urban block playground share UI', () => {
         expect(playgroundSource).toContain('for="urban-block-playground-target-area"');
     });
 
-    it('keeps the visible link after clipboard rejection or missing clipboard access', async () => {
+    it('points to the address bar after clipboard rejection or missing clipboard access', async () => {
         const rejected = createHarness({ clipboard: { writeText: vi.fn(() => Promise.reject(new Error('denied'))) } });
         await click(rejected.dialog.querySelector('[data-action="share"]'));
-        expect(rejected.dialog.querySelector('[data-slot="share-link"]').hidden).toBe(false);
-        expect(rejected.dialog.querySelector('[data-slot="share-status"]').textContent).toContain('Copy the selected link above');
+        expect(rejected.historyCalls.at(-1)[2]).toBe('https://example.test/shared-layout');
+        expect(rejected.dialog.querySelector('[data-slot="share-status"]').textContent).toContain('Copy the link from the address bar');
 
         const unavailable = createHarness({ clipboard: null });
         await click(unavailable.dialog.querySelector('[data-action="share"]'));
-        expect(unavailable.dialog.querySelector('[data-slot="share-link"]').hidden).toBe(false);
-        expect(unavailable.dialog.querySelector('[data-slot="share-status"]').textContent).toContain('Copy the selected link above');
+        expect(unavailable.historyCalls.at(-1)[2]).toBe('https://example.test/shared-layout');
+        expect(unavailable.dialog.querySelector('[data-slot="share-status"]').textContent).toContain('Copy the link from the address bar');
     });
 
-    it('clears the link on settings or alternative changes and ignores a late clipboard result', async () => {
+    it('clears the share status on settings or alternative changes and ignores a late clipboard result', async () => {
         const copy = deferred();
-        const harness = createHarness({ clipboard: { writeText: vi.fn(() => copy.promise) } });
+        const harness = createHarness();
         planOneLayout(harness, [
             { cuts: { type: 'FeatureCollection', features: [] }, pieces: { type: 'FeatureCollection', features: [] }, stats: {} },
             { cuts: { type: 'FeatureCollection', features: [] }, pieces: { type: 'FeatureCollection', features: [] }, stats: {} }
         ]);
 
-        const pending = click(harness.dialog.querySelector('[data-action="share"]'));
-        const link = harness.dialog.querySelector('[data-slot="share-link"]');
         const status = harness.dialog.querySelector('[data-slot="share-status"]');
-        expect(link.hidden).toBe(false);
+        await click(harness.dialog.querySelector('[data-action="share"]'));
+        expect(status.textContent).toContain('Layout link copied');
         harness.dialog.querySelector('[data-setting="perimeterStepM"]').value = '200';
         harness.dialog.querySelector('[data-setting="perimeterStepM"]').dispatch('input');
-        expect(link.hidden).toBe(true);
-        expect(harness.dialog.querySelector('[data-slot="share-url"]').value).toBe('');
         expect(status.textContent).toBe('');
 
+        harness.window.navigator.clipboard.writeText = vi.fn(() => copy.promise);
+        const pending = click(harness.dialog.querySelector('[data-action="share"]'));
         const alternative = harness.dialog.querySelector('[data-slot="layout-select"]');
         alternative.value = '1';
         alternative.dispatch('change', { target: alternative });
-        expect(link.hidden).toBe(true);
 
         copy.resolve();
         await pending;
         expect(status.textContent).toBe('');
-        expect(link.hidden).toBe(true);
     });
 });
 
