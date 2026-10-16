@@ -530,11 +530,14 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
     await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
+    const automaticPlots = ((await modal.locator('[data-reparcel-newplots-table]').textContent()) || '').replace(/\s+/g, ' ').trim();
 
+    // Draw freely starts from the current plots and their owners, not from a blank plot.
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     await expect(modal.locator('[data-reparcel-nodes]')).toHaveAttribute('aria-pressed', 'true');
     await expect(modal.locator('.reparcel-subtitle')).toContainText('Draw freely');
-    await expect(modal.locator('[data-reparcel-newplots-table]')).toContainText('Unassigned');
+    await expect(modal.locator('[data-reparcel-newplots-table]')).toHaveText(automaticPlots);
+    await expect(modal.locator('[data-reparcel-newplots-table]')).not.toContainText('Unassigned');
     await modal.locator('label.reparcel-alg-option:has(input[value="sweep-line"])').click();
     await expect(modal.locator('.reparcel-subtitle')).toContainText('Automatic');
 
