@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const supportView = require('../../frontend/js/proposals/support-view.js');
 const displayText = require('../../frontend/js/proposals/display-text.js');
+const betEntry = require('../../frontend/js/proposals/bet-entry.js');
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const renderStart = source.indexOf('function safeAgentText(');
 const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
@@ -52,6 +53,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         addEventListener() {}, removeEventListener() {},
         MapShell: { closeSheets() {} },
         ProposalDisplayText: displayText,
+        ProposalBetEntry: betEntry,
         ProposalPanelPresentation: { resolve: () => 'compact' },
         ProposalSupportView: supportView,
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
