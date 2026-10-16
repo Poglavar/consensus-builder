@@ -20,7 +20,9 @@ function bootStore({ secondaryTab }) {
     const store = new Map();
     globalThis.window = globalThis;
     globalThis.__formationDepth = {
-        stripDerivedRecordData: record => structuredClone(record)
+        stripDerivedRecordData: record => structuredClone(record),
+        encodeRoadRecord: record => record,
+        decodeRoadView: record => record
     };
     globalThis.__cbSecondaryTab = secondaryTab;
     globalThis.PersistentStorage = {

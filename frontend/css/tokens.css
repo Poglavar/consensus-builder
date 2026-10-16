@@ -126,6 +126,20 @@
 
     /* ---- Links ---- */
     --cb-link: var(--cb-primary);
+}
+
+/* Desktop: one step smaller than the phone scale (user rule 2026-10-16: on desktop buttons, type,
+   headers, margins and paddings were too big). Phones keep the touch sizes above. */
+@media (min-width: 768px) {
+    :root {
+        --cb-text-lg: 15px;
+        --cb-text-xl: 17px;
+        --cb-text-2xl: 20px;
+        --cb-control-height-lg: 40px;
+    }
+}
+
+:root {
     --cb-link-hover: var(--cb-primary-hover);
 
     /* ---- Shimmer (css/primitives.css .cb-shimmer): the highlight that sweeps a featured control ---- */

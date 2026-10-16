@@ -232,7 +232,7 @@ function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
     const depthApi = root && root.__formationDepth;
-    if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function') {
+    if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function' || typeof depthApi.encodeRoadRecord !== 'function') {
         throw new Error('Cannot persist proposal: the authored-record projection is unavailable.');
     }
     requireExactCadastreAnchors(record, 'persist');
@@ -1439,7 +1439,7 @@ const proposalStorage = {
         const { existingHash = null } = context || {};
         const root = typeof window !== 'undefined' ? window : globalThis;
         const depthApi = root && root.__formationDepth;
-        if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function') {
+        if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function' || typeof depthApi.decodeRoadView !== 'function') {
             throw new Error('Cannot normalize proposal: the authored-record projection is unavailable.');
         }
         requireExactCadastreAnchors(proposal, 'load');

@@ -234,7 +234,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     display: none;
     border-radius: 12px;
     box-sizing: border-box;
-    padding: 15px 10px;
+    padding: 12px 10px;
 }
 
 #road-info-panel.visible {
@@ -245,7 +245,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     margin: 0 0 10px 0;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--cb-line);
-    font-size: 16px;
+    font-size: var(--cb-text-lg);
     color: var(--cb-text);
     display: flex;
     align-items: center;
@@ -1441,7 +1441,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 20px;
+    padding: 6px 14px;
     border-bottom: 1px solid var(--cb-line);
     background: var(--cb-surface-2);
     border-radius: 8px 8px 0 0;
@@ -1457,7 +1457,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 .panel-header h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--cb-text-lg);
     font-weight: 600;
     color: var(--cb-text);
 }

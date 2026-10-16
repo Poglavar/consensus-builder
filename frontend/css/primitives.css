@@ -70,7 +70,7 @@
     display: flex;
     align-items: center;
     gap: var(--cb-space-3);
-    padding: var(--cb-space-4) var(--cb-space-5);
+    padding: var(--cb-space-3) var(--cb-space-4);
     border-bottom: 1px solid var(--cb-line);
 }
 
@@ -88,7 +88,7 @@
 .cb-dialog__body {
     flex: 1 1 auto;
     min-height: 0;
-    padding: var(--cb-space-5);
+    padding: var(--cb-space-4);
     overflow: auto;
 }
 
@@ -100,7 +100,7 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--cb-space-2);
-    padding: var(--cb-space-3) var(--cb-space-5);
+    padding: var(--cb-space-3) var(--cb-space-4);
     border-top: 1px solid var(--cb-line);
 }
 
@@ -375,11 +375,11 @@ body.debug-mode .btn.debug-only-control {
 }
 
 .close-circle-btn--lg {
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
-    min-height: 42px;
-    font-size: 20px;
+    width: var(--cb-control-height-lg);
+    height: var(--cb-control-height-lg);
+    min-width: var(--cb-control-height-lg);
+    min-height: var(--cb-control-height-lg);
+    font-size: 19px;
 }
 
 /* The hidden attribute wins over the components' own display. */

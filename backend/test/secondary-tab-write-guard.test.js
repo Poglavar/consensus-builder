@@ -37,7 +37,7 @@ beforeAll(() => {
         document: global.document,
         addEventListener: noop,
         __cbSecondaryTab: false,
-        __formationDepth: { stripDerivedRecordData: record => structuredClone(record) }
+        __formationDepth: { stripDerivedRecordData: record => structuredClone(record), encodeRoadRecord: record => record, decodeRoadView: record => record }
     };
     global.L = undefined;
     global.turf = undefined;
