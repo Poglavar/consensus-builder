@@ -125,28 +125,26 @@ describe('urban block road-junction projection', () => {
         expect(turf.intersect(layout.pieces.features[0], layout.pieces.features[1])).toBeNull();
     });
 
-    it('keeps corner T junctions whose incoming arm points outside when planning a diagonal cut', () => {
+    it('keeps corner T junctions whose incoming arm points outside but splits square-on, not diagonally', () => {
         const block = rectangle(140);
         const inputRoads = roads(
             road('boundary-loop', [[0, 0], [140, 0], [140, 140], [0, 140], [0, 0]]),
             road('southwest-corner-arm', [[-30, 30], [0, 0]]),
             road('northeast-corner-arm', [[170, 110], [140, 140]])
         );
+        // A corner-to-corner cut makes two triangles; streets leave the outline square-on.
         const result = subdivision.plan({ block, roads: inputRoads,
-            options: { targetAreaM2: 10000, maxSideM: 200 } }, turf, model);
+            options: { targetAreaM2: 10000, maxSideM: 200, perimeterStepM: 70 } }, turf, model);
         const layout = result.layouts[0];
-        expect(layout.cuts.features).toHaveLength(1);
-        const cut = layout.cuts.features[0];
-        const endpoints = cut.geometry.coordinates.map(local);
-
         expect(result.stats.tCount).toBe(2);
-        expect(cut.properties).toMatchObject({ kind: 't', fromKind: 't', toKind: 't' });
-        expect(endpoints.some(point => distance(point, [0, 0]) < 0.03)).toBe(true);
-        expect(endpoints.some(point => distance(point, [140, 140]) < 0.03)).toBe(true);
-        expect(cut.properties.lengthM).toBeCloseTo(Math.sqrt(2) * 140, 1);
+        expect(layout.cuts.features).toHaveLength(1);
+        const [start, end] = layout.cuts.features[0].geometry.coordinates.map(local);
+
+        expect(Math.min(Math.abs(start[0] - end[0]), Math.abs(start[1] - end[1]))).toBeLessThan(0.03);
+        expect(layout.cuts.features[0].properties.lengthM).toBeCloseTo(140, 1);
         expect(layout.pieces.features).toHaveLength(2);
         expect(layout.pieces.features.every(piece => piece.properties.acceptable)).toBe(true);
-        expect(layout.pieces.features.every(piece => piece.properties.areaM2 <= 10000.1)).toBe(true);
+        expect(layout.pieces.features.every(piece => piece.properties.rectangularity > 0.99)).toBe(true);
         expect(layout.pieces.features.reduce((sum, piece) => sum + turf.area(piece), 0)).toBeCloseTo(turf.area(block), 1);
         expect(turf.intersect(layout.pieces.features[0], layout.pieces.features[1])).toBeNull();
     });

@@ -6,7 +6,7 @@
     if (root) root.UrbanBlocksSubdivision = api;
 })(typeof self !== 'undefined' ? self : null, function () {
     'use strict';
-    const EPS = 0.02, SNAP = 0.5, MAX_PAIRS = 12000, MAX_CUTS = 48, BEAM_WIDTH = 4;
+    const EPS = 0.02, SNAP = 0.5, MAX_PAIRS = 12000, MAX_CUTS = 48, BEAM_WIDTH = 4, RAY_SNAP = 12 * Math.PI / 180;
     const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
     const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
@@ -430,6 +430,17 @@
         return result;
     }
 
+    function inwardNormals(point, ring) {
+        const winding = Math.sign(ring.slice(1).reduce((sum, p, i) => sum + cross(ring[i], p), 0));
+        const result = [];
+        for (let i = 1; i < ring.length; i++) {
+            if (nearest(point, [ring[i - 1], ring[i]]).distance >= EPS) continue;
+            const tangent = unit(sub(ring[i], ring[i - 1]));
+            result.push([-tangent[1] * winding, tangent[0] * winding]);
+        }
+        return result;
+    }
+
     function bendCost(candidate, direction, ring) {
         if (candidate.directions?.length) return Math.min(...candidate.directions.map(approach => 1 - dot(approach, direction)));
         if (candidate.direction) return 1 - dot(candidate.direction, direction);
@@ -468,26 +479,53 @@
     function choicesForFace(parent, context) {
         if (context.cache.has(parent.key)) return context.cache.get(parent.key);
         const natural = candidatesForFace(parent, context.natural);
+        const rings = parent.rings, reach = length(rings[0]) * 2, alleys = natural.filter(candidate => candidate.path.length > 1);
+        const tryCut = (choices, a, b) => {
+            // A dead end is the road the cut extends, so it always leads the stored path.
+            if (b.kind === 'dead-end' && a.kind !== 'dead-end') [a, b] = [b, a];
+            const direction = unit(sub(b.point, a.point));
+            if (a.kind === 'dead-end' && dot(a.direction, direction) < 0) return;
+            if (b.kind === 'dead-end' && dot(b.direction, direction.map(v => -v)) < 0) return;
+            const path = [...a.path, ...b.path.slice().reverse()].filter((p, k, list) => !k || !same(p, list[k - 1]));
+            // A new street may extend an alley but never cross or run along another one.
+            const connector = [a.path.at(-1), b.path.at(-1)];
+            if (alleys.some(alley => alley !== a && alley !== b && alley.path.slice(1).some((q, k) =>
+                intersection(...connector, alley.path[k], q) || nearest(alley.path[k], connector).distance < EPS))) return;
+            const pieces = splitFace(parent, path, context.options);
+            if (!pieces) return;
+            const remaining = pieces.reduce((sum, piece) => sum + work(piece, context.options), 0);
+            if (remaining >= work(parent, context.options) - 1e-7) return;
+            const bending = bendCost(a, direction, rings[0]) + bendCost(b, direction.map(v => -v), rings[0]);
+            const cut = { points: [a.point, b.point], path, connectorIndex: a.path.length - 1,
+                fromKind: a.kind, toKind: b.kind, lengthM: distance(a.point, b.point), bending,
+                kind: cutKind(a.kind, b.kind) };
+            choices.push({ pieces, cut, score: solutionScore(pieces, [cut], context.options) });
+        };
+        // A new street leaves its start the way a street would: an alley or junction arm carries
+        // straight on, and any boundary point also offers the square-on direction. It ends where
+        // it first meets the boundary. A candidate within RAY_SNAP of that line is offered as
+        // the landing too, so two nearly facing junctions still connect.
         const evaluate = candidates => {
             const choices = [];
-            for (let i = 0; i < candidates.length; i++) for (let j = i + 1; j < candidates.length; j++) {
-                if (context.testedPairs >= MAX_PAIRS) { context.limited = true; return choices; }
-                context.testedPairs++;
-                const a = candidates[i], b = candidates[j], direction = unit(sub(b.point, a.point));
-                if (a.kind === 'dead-end' && dot(a.direction, direction) < 0) continue;
-                if (b.kind === 'dead-end' && dot(b.direction, direction.map(v => -v)) < 0) continue;
-                const path = [...a.path, ...b.path.slice().reverse()].filter((p, k, list) => !k || !same(p, list[k - 1]));
-                const pieces = splitFace(parent, path, context.options);
-                if (!pieces) continue;
-                const remaining = pieces.reduce((sum, piece) => sum + work(piece, context.options), 0);
-                if (remaining >= work(parent, context.options) - 1e-7) continue;
-                const addedLengthM = distance(a.point, b.point);
-                const bending = bendCost(a, direction, parent.rings[0]) + bendCost(b, direction.map(v => -v), parent.rings[0]);
-                const cut = { points: [a.point, b.point], path, connectorIndex: a.path.length - 1,
-                    fromKind: a.kind, toKind: b.kind, lengthM: addedLengthM,
-                    bending,
-                    kind: cutKind(a.kind, b.kind) };
-                choices.push({ pieces, cut, score: solutionScore(pieces, [cut], context.options) });
+            for (const a of candidates) {
+                const origin = a.path.at(-1);
+                const directions = a.kind === 'dead-end' ? [a.direction]
+                    : [...(a.directions || []), ...inwardNormals(origin, rings[0])];
+                for (const direction of directions) {
+                    if (context.testedPairs >= MAX_PAIRS) { context.limited = true; return choices; }
+                    context.testedPairs++;
+                    const hit = hits(origin, origin.map((v, i) => v + direction[i] * reach), rings)
+                        .find(item => distance(origin, item.point) > EPS);
+                    if (!hit) continue;
+                    tryCut(choices, a, { kind: 'perimeter', point: hit.point, path: [hit.point] });
+                    for (const b of candidates) {
+                        if (b === a) continue;
+                        const target = b.path.at(-1), offset = sub(target, origin);
+                        if (Math.hypot(...offset) > distance(origin, hit.point) + SNAP
+                            || dot(unit(offset), direction) < Math.cos(RAY_SNAP)) continue;
+                        tryCut(choices, a, b);
+                    }
+                }
             }
             return choices;
         };

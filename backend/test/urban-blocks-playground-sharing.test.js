@@ -64,6 +64,24 @@ describe('urban block subdivision playground sharing', () => {
         expect(previewKindsAndPoints(sparse, 'perimeter')).not.toEqual(previewKindsAndPoints(wide, 'perimeter'));
     });
 
+    it('never lays a new street over or across the curved alley', () => {
+        const model = require('../../frontend/js/urban-blocks-model.js');
+        const alley = turf.lineString(roads.features[0].geometry.coordinates);
+        for (const layout of subdivision.plan({ block, roads, options }, turf, model).layouts) {
+            for (const cut of layout.cuts.features) {
+                const { splitPath, connectorIndex } = cut.properties;
+                const connector = turf.lineString(splitPath.slice(connectorIndex, connectorIndex + 2));
+                const extendsAlley = cut.properties.fromKind === 'dead-end';
+                // Sample the new span; only its start may touch the alley, and only when it extends it.
+                for (let t = 0.02; t < 1; t += 0.02) {
+                    const at = turf.along(connector, turf.length(connector) * t);
+                    expect(turf.pointToLineDistance(at, alley, { units: 'meters' })).toBeGreaterThan(extendsAlley ? 0 : 0.05);
+                }
+                if (!extendsAlley) expect(turf.lineIntersect(connector, alley).features).toHaveLength(0);
+            }
+        }
+    });
+
     it('round-trips a chosen curved dead-end layout without running the search again', () => {
         const model = require('../../frontend/js/urban-blocks-model.js');
         const planSpy = vi.spyOn(subdivision, 'plan');

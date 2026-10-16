@@ -190,7 +190,7 @@ describe('urban block perimeter candidate provenance', () => {
         expect(sparse.candidates.features.some(feature => feature.properties.provenance?.approachPath)).toBe(false);
     });
 
-    it('plans only cuts whose perimeter endpoints appear in the preview candidates', () => {
+    it('starts perimeter cuts only at previewed points or on earlier new streets', () => {
         const block = turf.polygon([[...[ [0, 0], [300, 0], [300, 200], [0, 200], [0, 0] ].map(highLatPoint)]]);
         const planInput = { block, roads: turf.featureCollection([
             highLatRoad('top-boundary', [[0, 200], [300, 200]]),
@@ -210,8 +210,8 @@ describe('urban block perimeter candidate provenance', () => {
             turf.point(endpoint), turf.lineString(cut.properties.splitPath), { units: 'meters' }) < 0.02);
         let streetEndpoints = 0;
         for (const layout of plan.layouts) layout.cuts.features.forEach((cut, index) => {
-            for (const [endpoint, kind] of [[cut.geometry.coordinates[0], cut.properties.fromKind],
-                [cut.geometry.coordinates.at(-1), cut.properties.toKind]]) {
+            // A cut starts at a candidate; its far end may be wherever its ray met the boundary.
+            for (const [endpoint, kind] of [[cut.geometry.coordinates[0], cut.properties.fromKind]]) {
                 if (kind !== 'perimeter') continue;
                 const previewed = perimeterPreview.some(candidate => distanceMetres(endpoint, candidate.geometry.coordinates) < 0.02);
                 if (!previewed) streetEndpoints++;
