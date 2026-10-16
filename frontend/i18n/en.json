@@ -6106,6 +6106,8 @@
     "schellingPlan": {
         "title": "Schelling plan",
         "toggle": "Show the Schelling plan",
+        "layerNote": "Its settings and Propose open in their own panel on the map.",
+        "closePanel": "Close and hide the plan",
         "blockFace": "Local street spacing (block face)",
         "streetWidth": "Local street width",
         "plots": "Plot size",
@@ -6168,7 +6170,7 @@
             "dismissed": "Parcel register unavailable. Open the parcel options to choose how to continue.",
             "retrying": "Retrying the parcel register…",
             "urlInstalled": "Loading parcels from your register link for this session.",
-            "schellingShown": "The Schelling plan is drawn over the map. Its settings and Propose are in Layers."
+            "schellingShown": "The Schelling plan is drawn over the map. Its settings and Propose are in its panel on the map."
         },
         "options": {
             "later": "Not now",

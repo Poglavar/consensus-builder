@@ -1,6 +1,6 @@
-// The Schelling plan's layer and painting tool speak every supported language, ask only for keys
-// that exist, and are wired into the page: a missing key would silently show the English fallback,
-// and a missing script or stylesheet would leave the Layers section dead.
+// The Schelling plan's layer, panel and painting tool speak every supported language, ask only for
+// keys that exist, and are wired into the page: a missing key would silently show the English
+// fallback, and a missing script or stylesheet would leave the panel dead.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +42,21 @@ describe('the Schelling plan UI', () => {
         expect(proposeKeys.length).toBeGreaterThan(10);
         expect(staticKeys.length).toBeGreaterThan(5);
         [...layerKeys, ...proposeKeys, ...staticKeys].forEach(key => expect(available.has(key), key).toBe(true));
+    });
+
+    it('keeps Layers to the switch and the settings in the plan\'s own panel', () => {
+        const layers = html.slice(html.indexOf('data-section="schelling-plan"'), html.indexOf('<!-- Parcel blocks: the layer toggles'));
+        const panelStart = html.indexOf('<section id="schelling-panel"');
+        const panel = html.slice(panelStart, html.indexOf('</section>', panelStart));
+        expect(layers).toContain('id="showSchellingPlan"');
+        for (const id of ['schelling-plan-block', 'schelling-plan-street', 'schelling-plan-plots', 'schelling-plan-propose', 'schelling-panel-collapse', 'schelling-panel-close']) {
+            expect(panel, id).toContain(`id="${id}"`);
+            expect(layers, id).not.toContain(`id="${id}"`);
+        }
+        // The host carries the map-mode rule (MapShell un-hides what it marks), so the panel's own
+        // hidden state stays the plan's: it starts hidden.
+        expect(html).toMatch(/<div class="schelling-panel-host" data-map-modes="2d">\s*<section id="schelling-panel"[^>]* hidden>/);
+        expect(panel).not.toContain('data-map-modes');
     });
 
     it('loads its modules in the page bundle and its stylesheet, and starts after the map', () => {

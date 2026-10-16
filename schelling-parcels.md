@@ -10,8 +10,8 @@ and no randomness, so it runs the same in the browser and under node
 (`backend/test/schelling-grid.test.js`). The layer, its settings and the painting tool are in
 `frontend/js/schelling/`.
 
-**Status (2026-10-16, branch `schelling-plan`):** steps 1 and 2 below are built: the plan is a layer
-in every city with its settings, and painted blocks become road proposals. Plots are drawn but not
+**Status (2026-10-17, branch `schelling-plan`):** steps 1 and 2 below are built: the plan is a layer
+in every city with its own settings panel, and painted blocks become road proposals. Plots are drawn but not
 yet proposable. This section is the living plan; update it as steps finish.
 
 ## Plan of record (2026-10-16)
@@ -67,18 +67,26 @@ yet proposable. This section is the living plan; update it as steps finish.
 
 ### Steps
 
-1. **Layer. Built.** A "Schelling plan" section in the Layers sheet (`schelling-layer.js`): Show,
-   the fixed arterials stated with their reason, local street spacing (block face 60–240 m) and
-   width (8–20 m), plot size (whole blocks to 1/64), the plan code and "Why these numbers". The map
+1. **Layer. Built.** Layers holds only the switch, "Show the Schelling plan" (`schelling-layer.js`).
+   Switching it on closes the sheet and opens the plan's own panel (`#schelling-panel`, user
+   2026-10-17), which is open exactly while the plan is shown: the fixed arterials stated with their
+   reason, local street spacing (block face 60–240 m) and width (8–20 m), plot size (whole blocks
+   to 1/64), the plan code, "Why these numbers" and **Propose from this plan**. Folding the panel
+   (Controls) hides the settings and keeps the plan drawn and Propose at hand; ✕ ("Close and hide
+   the plan") switches the plan off. The panel wears the on-map editor frame in its layer variant
+   (`.on-map-editor__panel--layer`: same spot, panel rung), stands down while any editor holds the
+   map, steps left of a right-dock panel on a wide map and gives way to it on a narrow one. The map
    draws arterials only below z15, streets and blocks from z15, plots from z17, in its own pane
    that never takes clicks. Settings live in the address bar as `?schelling=<block>-<street>-<plot
-   denominator>` (`schelling-settings.js`, e.g. `120-12-16`) and are remembered per viewer. The
-   parcel-source path is removed; the fallback screen's option is now "Use the Schelling plan",
-   which turns the layer on.
-2. **Propose roads. Built.** "Propose from this plan" opens an on-map tool (`schelling-propose.js`):
-   the superblock at the map centre is chosen, a press or a drag over blocks adds or removes them
-   (mouse and touch, from z15), "This superblock" and "Clear", a summary of blocks, streets and
-   kilometres, and **Propose roads**. `schelling-streets.js` turns the chosen blocks into the
+   denominator>` (`schelling-settings.js`, e.g. `120-12-16`; a link opens the plan and its panel)
+   and are remembered per viewer. The parcel-source path is removed; the fallback screen's option
+   is now "Use the Schelling plan", which turns the layer on.
+2. **Propose roads. Built.** "Propose from this plan" opens an on-map tool (`schelling-propose.js`)
+   in the panel's spot, as its next step: the superblock at the map centre is chosen, a press or a
+   drag over blocks adds or removes them (mouse and touch, from z15), "This superblock" and
+   "Clear", a summary of blocks, streets and kilometres, and **Propose roads**. Cancel or Escape
+   goes back to the panel; the painted blocks wait until they are proposed, the page is left, or the
+   plan changes (other settings or another half-degree band). `schelling-streets.js` turns the chosen blocks into the
    streets that bound them (each lattice line's consecutive edges one way, every lattice node on
    it, so crossings share nodes), with exact-width cross-sections: a fixed 30 m arterial and a
    local street of the chosen width. The corridor import makes one record per connected network
@@ -104,7 +112,8 @@ yet proposable. This section is the living plan; update it as steps finish.
 
 ## Where the visitor finds it
 
-Layers → **Schelling plan**, in every city, or a link carrying `?schelling=`. Where no parcel
+Layers → **Show the Schelling plan**, in every city, which opens the plan's panel; or a link
+carrying `?schelling=`. Where no parcel
 register can be loaded, the fallback screen (`parcels/ground-fallback.js`) offers **Use the
 Schelling plan** beside a register link and boundary recognition from imagery; it turns the same
 layer on, and what is proposed from it stands on open ground.

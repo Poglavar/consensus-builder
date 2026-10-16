@@ -6161,6 +6161,8 @@
     "schellingPlan": {
         "title": "Šelingov plan",
         "toggle": "Prikaži Šelingov plan",
+        "layerNote": "Podešavanja i Predloži otvaraju se u sopstvenom panelu na mapi.",
+        "closePanel": "Zatvori i sakrij plan",
         "blockFace": "Razmak lokalnih ulica (front bloka)",
         "streetWidth": "Širina lokalne ulice",
         "plots": "Veličina parcele",
@@ -6226,7 +6228,7 @@
             "dismissed": "Registar parcela nije dostupan. Otvorite opcije za parcele i izaberite kako da nastavite.",
             "retrying": "Ponovni pokušaj preuzimanja registra parcela…",
             "urlInstalled": "Parcele se za ovu sesiju učitavaju sa vašeg linka ka registru.",
-            "schellingShown": "Šelingov plan je nacrtan preko mape. Podešavanja i Predloži su u Slojevima."
+            "schellingShown": "Šelingov plan je nacrtan preko mape. Podešavanja i Predloži su u njegovom panelu na mapi."
         },
         "options": {
             "later": "Ne sada",

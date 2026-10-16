@@ -6161,6 +6161,8 @@
     "schellingPlan": {
         "title": "Schellingov plan",
         "toggle": "Prikaži Schellingov plan",
+        "layerNote": "Postavke i Predloži otvaraju se u vlastitom panelu na karti.",
+        "closePanel": "Zatvori i sakrij plan",
         "blockFace": "Razmak lokalnih ulica (pročelje bloka)",
         "streetWidth": "Širina lokalne ulice",
         "plots": "Veličina čestice",
@@ -6226,7 +6228,7 @@
             "dismissed": "Registar čestica nije dostupan. Otvorite opcije za čestice i odaberite kako nastaviti.",
             "retrying": "Ponovni pokušaj dohvata registra čestica…",
             "urlInstalled": "Čestice se za ovu sesiju učitavaju s vaše poveznice na registar.",
-            "schellingShown": "Schellingov plan nacrtan je preko karte. Postavke i Predloži nalaze se u Slojevima."
+            "schellingShown": "Schellingov plan nacrtan je preko karte. Postavke i Predloži nalaze se u njegovom panelu na karti."
         },
         "options": {
             "later": "Ne sada",

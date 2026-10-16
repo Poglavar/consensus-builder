@@ -601,7 +601,7 @@
                 () => {
                     close();
                     global.SchellingLayer.setEnabled(true);
-                    status(t('groundFallback.status.schellingShown', 'The Schelling plan is drawn over the map. Its settings and Propose are in Layers.'));
+                    status(t('groundFallback.status.schellingShown', 'The Schelling plan is drawn over the map. Its settings and Propose are in its panel on the map.'));
                 }));
             body.appendChild(list);
             const foot = el('div', 'ground-fallback-foot');

@@ -321,6 +321,60 @@
             </div>
         </section>
 
+        <!-- The Schelling plan's own panel (js/schelling/schelling-layer.js): shown exactly while the
+             plan is, in the spot where the painting tool (an on-map editor) opens, so Propose reads as
+             the same panel's next step. Folding keeps the plan drawn; closing hides it. -->
+        <div class="schelling-panel-host" data-map-modes="2d">
+            <section id="schelling-panel" class="on-map-editor__panel on-map-editor__panel--layer schelling-panel" aria-labelledby="schelling-panel-title" hidden>
+                <header class="on-map-editor__header">
+                    <div class="on-map-editor__heading">
+                        <h2 id="schelling-panel-title" tabindex="-1" data-i18n-key="schellingPlan.title">Schelling plan</h2>
+                    </div>
+                    <button type="button" id="schelling-panel-collapse" class="btn btn-sm on-map-editor__toggle" aria-controls="schelling-panel-body" aria-expanded="true">
+                        <span data-i18n-key="onMapEditor.controls">Controls</span>
+                        <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" id="schelling-panel-close" class="close-circle-btn" data-i18n-key="schellingPlan.closePanel" data-i18n-attr="title,aria-label" title="Close and hide the plan" aria-label="Close and hide the plan">×</button>
+                </header>
+                <div id="schelling-panel-body" class="on-map-editor__content schelling-plan-settings">
+                    <p id="schelling-plan-fixed" class="schelling-plan-settings__note"></p>
+                    <div class="schelling-plan-settings__range">
+                        <label for="schelling-plan-block" data-i18n-key="schellingPlan.blockFace">Local street spacing (block face)</label>
+                        <output id="schelling-plan-block-value" for="schelling-plan-block"></output>
+                        <input type="range" id="schelling-plan-block" min="60" max="240" step="10" value="120">
+                    </div>
+                    <p id="schelling-plan-blocks" class="schelling-plan-settings__note"></p>
+                    <div class="schelling-plan-settings__range">
+                        <label for="schelling-plan-street" data-i18n-key="schellingPlan.streetWidth">Local street width</label>
+                        <output id="schelling-plan-street-value" for="schelling-plan-street"></output>
+                        <input type="range" id="schelling-plan-street" min="8" max="20" step="1" value="12">
+                    </div>
+                    <div class="schelling-plan-settings__field">
+                        <label for="schelling-plan-plots" data-i18n-key="schellingPlan.plots">Plot size</label>
+                        <select id="schelling-plan-plots">
+                            <option value="1" data-i18n-key="schellingPlan.plotWhole">Whole blocks</option>
+                            <option value="2" data-i18n-key="schellingPlan.plotHalf">1/2 block</option>
+                            <option value="4">1/4</option>
+                            <option value="8">1/8</option>
+                            <option value="16">1/16</option>
+                            <option value="32">1/32</option>
+                            <option value="64">1/64</option>
+                        </select>
+                    </div>
+                    <p id="schelling-plan-plot-size" class="schelling-plan-settings__note"></p>
+                    <p id="schelling-plan-code" class="schelling-plan-settings__note schelling-plan-settings__code"></p>
+                    <p id="schelling-plan-status" class="schelling-plan-settings__note" role="status" aria-live="polite"></p>
+                    <details class="schelling-plan-settings__why">
+                        <summary data-i18n-key="schellingPlan.why">Why these numbers</summary>
+                        <p id="schelling-plan-why" class="schelling-plan-settings__note"></p>
+                    </details>
+                </div>
+                <footer class="on-map-editor__footer">
+                    <button type="button" id="schelling-plan-propose" class="btn btn-primary" data-i18n-key="schellingPlan.proposeFrom">Propose from this plan</button>
+                </footer>
+            </section>
+        </div>
+
         <!-- Shared map feedback stack: measured by normal flow so a wrapped status and the view
              hint sit above the bottom dock without fixed row offsets. The full status log is in Activity. -->
         <div id="map-feedback-stack" class="map-feedback-stack">
@@ -542,43 +596,12 @@
                         <i class="fas fa-border-all" aria-hidden="true"></i>
                         <span data-i18n-key="schellingPlan.title">Schelling plan</span>
                     </h3>
-                    <div class="sheet-section-body schelling-plan-settings">
+                    <div class="sheet-section-body">
                         <div class="checkbox-group">
                             <label><input type="checkbox" id="showSchellingPlan">
                                 <span data-i18n-key="schellingPlan.toggle">Show the Schelling plan</span></label>
                         </div>
-                        <p id="schelling-plan-fixed" class="sheet-note"></p>
-                        <div class="schelling-plan-settings__range">
-                            <label for="schelling-plan-block" data-i18n-key="schellingPlan.blockFace">Local street spacing (block face)</label>
-                            <output id="schelling-plan-block-value" for="schelling-plan-block"></output>
-                            <input type="range" id="schelling-plan-block" min="60" max="240" step="10" value="120">
-                        </div>
-                        <p id="schelling-plan-blocks" class="sheet-note"></p>
-                        <div class="schelling-plan-settings__range">
-                            <label for="schelling-plan-street" data-i18n-key="schellingPlan.streetWidth">Local street width</label>
-                            <output id="schelling-plan-street-value" for="schelling-plan-street"></output>
-                            <input type="range" id="schelling-plan-street" min="8" max="20" step="1" value="12">
-                        </div>
-                        <div class="schelling-plan-settings__field">
-                            <label for="schelling-plan-plots" data-i18n-key="schellingPlan.plots">Plot size</label>
-                            <select id="schelling-plan-plots">
-                                <option value="1" data-i18n-key="schellingPlan.plotWhole">Whole blocks</option>
-                                <option value="2" data-i18n-key="schellingPlan.plotHalf">1/2 block</option>
-                                <option value="4">1/4</option>
-                                <option value="8">1/8</option>
-                                <option value="16">1/16</option>
-                                <option value="32">1/32</option>
-                                <option value="64">1/64</option>
-                            </select>
-                        </div>
-                        <p id="schelling-plan-plot-size" class="sheet-note"></p>
-                        <p id="schelling-plan-code" class="sheet-note schelling-plan-settings__code"></p>
-                        <p id="schelling-plan-status" class="sheet-note" role="status" aria-live="polite"></p>
-                        <details class="schelling-plan-settings__why">
-                            <summary data-i18n-key="schellingPlan.why">Why these numbers</summary>
-                            <p id="schelling-plan-why" class="sheet-note"></p>
-                        </details>
-                        <button type="button" id="schelling-plan-propose" class="btn" data-i18n-key="schellingPlan.proposeFrom">Propose from this plan</button>
+                        <p class="sheet-note" data-i18n-key="schellingPlan.layerNote">Its settings and Propose open in their own panel on the map.</p>
                     </div>
                 </div>
 

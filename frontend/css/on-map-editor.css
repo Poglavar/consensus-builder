@@ -27,6 +27,9 @@
     backdrop-filter: blur(12px);
 }
 .on-map-editor__panel--wide { width: min(480px, calc(100vw - 32px)); }
+/* A layer's own panel (the Schelling plan) stands where editors open and wears their frame, but on
+   the panel rung: showing a layer is not a mode, so sheets and editors open over it. */
+.on-map-editor__panel--layer { z-index: var(--cb-z-panel); color: var(--cb-text); font-family: var(--cb-font-sans); }
 .on-map-editor__header, .on-map-editor__footer { flex: 0 0 auto; }
 .on-map-editor__header {
     display: flex;

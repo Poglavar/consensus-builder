@@ -1027,9 +1027,23 @@
       "controlType": "select"
     },
     {
-      "id": "control-ab8e10897a1888-1",
+      "id": "control-971b98034ee734-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"schelling-plan-propose\" class=\"btn\" data-i18n-key=\"schellingPlan.proposeFrom\">",
+      "markup": "<button type=\"button\" id=\"schelling-panel-collapse\" class=\"btn btn-sm on-map-editor__toggle\" aria-controls=\"schelling-panel-body\" aria-expanded=\"true\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c150b42e794053-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-panel-close\" class=\"close-circle-btn\" data-i18n-key=\"schellingPlan.closePanel\" data-i18n-attr=\"title,aria-label\" title=\"Close and hide the plan\" aria-label=\"Close and hide the plan\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2f8a5e89f235f1-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-plan-propose\" class=\"btn btn-primary\" data-i18n-key=\"schellingPlan.proposeFrom\">",
       "interaction": "click",
       "controlType": "button"
     },

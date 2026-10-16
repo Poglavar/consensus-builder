@@ -1,5 +1,5 @@
-/* The Schelling plan: its layer on the map, its settings in the Layers sheet, and the on-map tool
-   that paints the blocks of a proposal (js/schelling/). Map shapes are Leaflet paths styled through
+/* The Schelling plan: its layer on the map, its own panel of settings, and the on-map tool that
+   paints the blocks of a proposal (js/schelling/). Map shapes are Leaflet paths styled through
    their classes; these rules take precedence over Leaflet's presentation attributes. */
 
 /* The layer draws and never takes clicks: the parcels and tools underneath stay usable. */
@@ -12,9 +12,26 @@
 .schelling-plan__block { fill: none; stroke: var(--cb-primary); stroke-width: 1; stroke-opacity: 0.7; }
 .schelling-plan__plot { fill: none; stroke: var(--cb-primary); stroke-width: 0.75; stroke-opacity: 0.6; stroke-dasharray: 3 3; }
 
-/* Settings in the Layers sheet. */
-.schelling-plan-settings { display: flex; flex-direction: column; gap: var(--cb-space-2); }
-.schelling-plan-settings .sheet-note:empty { display: none; }
+/* The plan's panel: the on-map editor frame in the layer variant (on-map-editor.css), open exactly
+   while the plan is shown. The painting tool opens in the same spot, and every editor holds the
+   map lock, so the panel stands down while one is open and comes back when it closes. */
+.schelling-panel[hidden], .schelling-plan-settings[hidden] { display: none; }
+body.map-edit-locked .schelling-panel { display: none; }
+/* A right-dock panel (parcel, proposal, road, blocks) opens in the same corner: on a wide map the
+   plan's panel steps left of the dock; on a narrow one the dock is a bottom sheet over it. */
+@media (min-width: 768px) {
+    body:has(.info-panel.right-dock-panel.visible, #urban-block-panel:not([hidden]), #drill-stack-panel.visible) .schelling-panel {
+        right: calc(var(--right-dock-width) + 2 * var(--right-dock-gap) + var(--cb-space-2));
+    }
+}
+@media (max-width: 767.98px) {
+    body:has(.info-panel.right-dock-panel.visible:not(.is-minimized), #urban-block-panel:not([hidden])) .schelling-panel { display: none; }
+}
+
+/* Its settings. */
+.schelling-plan-settings { display: flex; flex-direction: column; gap: var(--cb-space-2); padding-block: var(--cb-space-2); }
+.schelling-plan-settings__note { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); line-height: 1.35; }
+.schelling-plan-settings__note:empty { display: none; }
 .schelling-plan-settings__range {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

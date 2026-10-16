@@ -80,12 +80,13 @@ test('Check and use installs the validated custom register and restores it after
   await expect.poll(() => page.evaluate(() => (window as any).parcelLayer?.getLayers().length || 0)).toBeGreaterThan(0);
 });
 
-test('Use the Schelling plan draws the plan layer over the map and installs no ground', async ({ mockApi: page }) => {
+test('Use the Schelling plan draws the plan layer and its panel over the map and installs no ground', async ({ mockApi: page }) => {
   await unavailableRegister(page);
   const dialog = page.locator('.ground-fallback-dialog');
   await dialog.locator('[data-option="schelling"]').click();
   await expect(dialog).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).SchellingLayer.isEnabled())).toBe(true);
+  await expect(page.locator('#schelling-panel')).toBeVisible();
   await expect.poll(() => page.locator('path.schelling-plan__block').count()).toBeGreaterThan(0);
   expect(await page.evaluate(() => (window as any).ParcelGroundFallback.activeSource())).toBeNull();
   expect(new URL(page.url()).searchParams.get('schelling')).toBe('120-12-16');

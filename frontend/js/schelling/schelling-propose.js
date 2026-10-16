@@ -1,5 +1,7 @@
 // Proposing from the Schelling plan: an on-map tool (OnMapEditor) where the author paints the
 // blocks of the intervention. The plan is the same for everyone; where it applies is the proposal.
+// It opens in the spot of the plan's panel, as that panel's next step; Cancel or Escape goes back
+// to it, and the painted blocks wait there until they are proposed or the page is left.
 // Every street that bounds a painted block becomes a road proposal through the corridor import
 // (schelling-streets.js, corridor-import.js createRoadRecords), so the edge of an intervention is
 // always a street (schelling-parcels.md, "Plan of record").
@@ -13,7 +15,9 @@
     // Painting needs blocks large enough to hit; below this the tool asks for a closer view.
     const MIN_ZOOM = 15;
     const MAX_DRAWN_CELLS = 3000;
-    const state = { session: null, plan: null, selected: new Map(), cells: null, streets: null, layers: null,
+    // `selected` and the code of the plan it was painted on outlive the tool, so leaving and coming
+    // back keeps the blocks; another plan (other settings or another band) starts afresh.
+    const state = { session: null, plan: null, selected: new Map(), selectedOn: null, cells: null, streets: null, layers: null,
         renderer: null, stroke: null, proposing: false, limitHit: false };
     const key = cell => `${cell.i}:${cell.j}`;
 
@@ -207,17 +211,18 @@
         const centre = state.session.map.getCenter();
         const { i, j } = win.SchellingGrid.cellAt(state.plan, centre.lat, centre.lng);
         state.selected = new Map(win.SchellingGrid.superblockOf(state.plan, i, j).cells.slice(0, MAX_BLOCKS).map(cell => [key(cell), cell]));
-        return win.SchellingGrid.superblockOf(state.plan, i, j);
+        state.selectedOn = state.plan.code;
     }
 
-    function superblockOutline(superblock) {
+    // The box around the chosen cells, to frame them.
+    function outlineOf(cells) {
         const grid = win.SchellingGrid;
-        const first = superblock.cells[0];
-        const last = superblock.cells[superblock.cells.length - 1];
-        const west = grid.lonOfLine(state.plan, first.i);
-        const east = grid.lonOfLine(state.plan, last.i + 1);
-        const south = grid.latOfLine(state.plan, first.j);
-        const north = grid.latOfLine(state.plan, last.j + 1);
+        const is = cells.map(cell => cell.i);
+        const js = cells.map(cell => cell.j);
+        const west = grid.lonOfLine(state.plan, Math.min(...is));
+        const east = grid.lonOfLine(state.plan, Math.max(...is) + 1);
+        const south = grid.latOfLine(state.plan, Math.min(...js));
+        const north = grid.latOfLine(state.plan, Math.max(...js) + 1);
         return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] } };
     }
 
@@ -246,6 +251,8 @@
                 setStatus(t('propose.failed', 'Could not propose these roads: {{reason}}', { reason: failed.filter(Boolean).join(' ') || '?' }));
                 return;
             }
+            // Proposed blocks are done with: the next visit starts from the superblock again.
+            state.selected = new Map();
             close();
             win.updateStatus?.(t('propose.done', 'Proposed {{count}} of {{total}} Schelling road networks. Share them as a plan to publish them together.',
                 { count: number(created.length), total: number(records.length) }));
@@ -257,7 +264,7 @@
 
     function wire(root, map) {
         root.querySelector('[data-action="superblock"]').addEventListener('click', () => { selectSuperblockAtCentre(); setStatus(''); draw(); renderSummary(); });
-        root.querySelector('[data-action="clear"]').addEventListener('click', () => { state.selected = new Map(); setStatus(''); draw(); renderSummary(); });
+        root.querySelector('[data-action="clear"]').addEventListener('click', () => { state.selected.clear(); setStatus(''); draw(); renderSummary(); });
         root.querySelector('[data-action="propose"]').addEventListener('click', event => win.BusyControl.track(event.currentTarget, propose));
         const container = map.getContainer();
         container.addEventListener('pointerdown', onPointerDown, true);
@@ -301,10 +308,11 @@
         state.session = session;
         state.plan = plan;
         state.proposing = false;
-        const superblock = selectSuperblockAtCentre();
+        // Blocks painted on this plan before are taken up again; otherwise the superblock here.
+        if (state.selectedOn !== plan.code || !state.selected.size) selectSuperblockAtCentre();
         wire(session.root, session.map);
         localize();
-        session.fitFeature(superblockOutline(superblock));
+        session.fitFeature(outlineOf([...state.selected.values()]));
         draw();
         session.root.querySelector('[data-action="propose"]').focus({ preventScroll: true });
         return true;

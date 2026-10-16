@@ -1,7 +1,9 @@
 // The Schelling plan layer: the meridians-and-parallels plan (parcels/schelling-grid.js) drawn over
-// any map, over a parcel register or where there is none. Its settings live in the Layers sheet and
-// in the address bar (?schelling=, schelling-settings.js), remembered per viewer; "Propose from
-// this plan" opens the painting tool (schelling-propose.js). Drawing only: it never takes clicks.
+// any map, over a parcel register or where there is none. Layers only switches it on; its settings
+// are in its own panel (#schelling-panel), open exactly while the plan is shown, and in the address
+// bar (?schelling=, schelling-settings.js), remembered per viewer. Folding the panel keeps the plan
+// drawn, closing it hides the plan. "Propose from this plan" opens the painting tool
+// (schelling-propose.js) in the panel's spot. Drawing only: the layer never takes clicks.
 (function (win) {
     'use strict';
     if (!win?.document) return;
@@ -53,6 +55,30 @@
         el('showSchellingPlan').checked = state.enabled;
         writeAddress();
         render();
+        el('schelling-panel').hidden = !state.enabled;
+        if (state.enabled) setCollapsed(false);
+        else win.SchellingPropose?.close();
+    }
+
+    // ---- the panel -----------------------------------------------------------------------------
+
+    // The fold control speaks the on-map editors' words, as it is their control.
+    function editorText(key, fallback) {
+        const text = win.i18n?.t?.(`onMapEditor.${key}`);
+        return text && text !== `onMapEditor.${key}` ? text : fallback;
+    }
+
+    // Folding hides the settings only: the plan stays drawn and Propose stays at hand.
+    function setCollapsed(value) {
+        const collapsed = value === true;
+        const toggle = el('schelling-panel-collapse');
+        if (collapsed && el('schelling-panel-body').contains(doc.activeElement)) toggle.focus({ preventScroll: true });
+        el('schelling-panel-body').hidden = collapsed;
+        el('schelling-panel').classList.toggle('is-collapsed', collapsed);
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+        const label = collapsed ? editorText('showControls', 'Show controls') : editorText('hideControls', 'Hide controls');
+        toggle.setAttribute('aria-label', label);
+        toggle.title = label;
     }
 
     const planHere = () => state.planAt(win.SchellingGrid.bandOf(win.map.getCenter().lat));
@@ -109,7 +135,7 @@
         }
     }
 
-    // ---- the Layers sheet section --------------------------------------------------------------
+    // ---- the settings --------------------------------------------------------------------------
 
     function renderStatus(message) {
         const node = el('schelling-plan-status');
@@ -158,18 +184,23 @@
     }
 
     function wire() {
-        el('showSchellingPlan').addEventListener('change', event => setEnabled(event.target.checked));
+        // Switched on from Layers, the plan's panel takes the sheet's place.
+        el('showSchellingPlan').addEventListener('change', event => {
+            setEnabled(event.target.checked);
+            if (!state.enabled) return;
+            win.MapShell?.closeSheet?.({ restoreFocus: false });
+            el('schelling-panel-title').focus({ preventScroll: true });
+        });
+        el('schelling-panel-collapse').addEventListener('click', () => setCollapsed(!el('schelling-panel-body').hidden));
+        el('schelling-panel-close').addEventListener('click', () => setEnabled(false));
         el('schelling-plan-block').addEventListener('input', event => setSettings({ ...state.settings, targetBlockM: Number(event.target.value) }));
         el('schelling-plan-street').addEventListener('input', event => setSettings({ ...state.settings, streetWidthM: Number(event.target.value) }));
         el('schelling-plan-plots').addEventListener('change', event => setSettings({
             ...state.settings, plotLevel: win.SchellingSettings.levelOfDenominator(Number(event.target.value))
         }));
-        el('schelling-plan-propose').addEventListener('click', () => {
-            if (!state.enabled) setEnabled(true);
-            win.SchellingPropose.open();
-        });
+        el('schelling-plan-propose').addEventListener('click', () => win.SchellingPropose.open());
         win.map.on('moveend', () => { render(); renderFacts(); });
-        const translate = () => { syncControls(); render(); };
+        const translate = () => { syncControls(); render(); setCollapsed(el('schelling-panel-body').hidden); };
         win.addEventListener('i18n:translationsLoaded', translate);
         win.i18n?.onChange?.(translate);
     }
@@ -182,6 +213,8 @@
         state.planAt = win.SchellingGrid.plansFor(state.settings);
         state.enabled = !!fromAddress;
         el('showSchellingPlan').checked = state.enabled;
+        el('schelling-panel').hidden = !state.enabled;
+        setCollapsed(false);
         wire();
         // The facts and the drawing read the map centre, which exists once the map has a view.
         win.map.whenReady(() => { syncControls(); render(); });

@@ -6157,6 +6157,8 @@
     "schellingPlan": {
         "title": "Plan de Schelling",
         "toggle": "Mostrar el plan de Schelling",
+        "layerNote": "Sus ajustes y Proponer se abren en su propio panel sobre el mapa.",
+        "closePanel": "Cerrar y ocultar el plan",
         "blockFace": "Separación de calles locales (frente de manzana)",
         "streetWidth": "Ancho de calle local",
         "plots": "Tamaño de parcela",
@@ -6219,7 +6221,7 @@
             "dismissed": "El registro de parcelas no está disponible. Abre las opciones de parcelas para elegir cómo continuar.",
             "retrying": "Reintentando el registro de parcelas…",
             "urlInstalled": "Cargando parcelas desde tu enlace al registro durante esta sesión.",
-            "schellingShown": "El plan de Schelling está dibujado sobre el mapa. Sus ajustes y Proponer están en Capas."
+            "schellingShown": "El plan de Schelling está dibujado sobre el mapa. Sus ajustes y Proponer están en su panel sobre el mapa."
         },
         "options": {
             "later": "Ahora no",
