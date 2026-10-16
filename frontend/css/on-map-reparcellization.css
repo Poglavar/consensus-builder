@@ -185,7 +185,7 @@
 .reparcel-newplots-table th {
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: var(--cb-z-local-2);
     background: var(--cb-surface);
 }
 
@@ -193,7 +193,7 @@
 .reparcel-newplots-table :is(th, td):first-child {
     position: sticky;
     left: 0;
-    z-index: 1;
+    z-index: var(--cb-z-local-1);
     background: var(--cb-surface);
     border-right: 1px solid var(--cb-line);
     max-width: 13rem;
@@ -203,7 +203,7 @@
 
 .reparcel-owners-table th:first-child,
 .reparcel-newplots-table th:first-child {
-    z-index: 3;
+    z-index: var(--cb-z-local-3);
 }
 
 .reparcel-owners-table th,

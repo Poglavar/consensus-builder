@@ -433,9 +433,12 @@
         doc.querySelectorAll('[data-sheet-close]').forEach(button => {
             button.addEventListener('click', () => closeSheet({ restoreFocus: true }));
         });
-        doc.getElementById('start-design-button')?.addEventListener('click', () => {
-            const commands = win.UiCommands;
-            commands?.runCommand('site.draw', commands.createBrowserContext(win));
+        // Shell buttons that name a registry command run it, as the parcel and ground menus do.
+        doc.querySelectorAll('#map-shell-top-right [data-command]').forEach(button => {
+            button.addEventListener('click', () => {
+                const commands = win.UiCommands;
+                commands?.runCommand(button.getAttribute('data-command'), commands.createBrowserContext(win));
+            });
         });
         doc.addEventListener('pointerdown', onDocumentPointerDown, true);
         // On window, not document: window listeners run after every document listener, so a tool

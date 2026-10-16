@@ -157,6 +157,7 @@ describe('rehoused sidebar controls', () => {
                 if (id && (byControl.has(id) || NOT_COMMANDS[id])) continue;
                 if (tagName === 'button' && attr(tag, 'data-sheet-target') !== null) continue; // shell buttons
                 if (tagName === 'button' && attr(tag, 'data-sheet-close') !== null) continue;
+                if (tagName === 'button' && commands.some(c => c.id === attr(tag, 'data-command'))) continue;
                 if (tagName === 'button' && attr(tag, 'data-site-intro-open') !== null) {
                     if (commands.some(c => c.id === 'settings.siteIntro')) continue;
                 }
