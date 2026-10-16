@@ -294,7 +294,7 @@ button.status-log-message {
    and status toast share its width and spacing, so wrapped messages cannot overlap each other. */
 .map-feedback-stack {
     position: absolute;
-    left: 50%;
+    left: var(--map-shell-centre, 50%);
     bottom: var(--map-shell-bottom-clearance);
     transform: translateX(-50%);
     z-index: var(--cb-z-map-chrome);
@@ -1328,7 +1328,6 @@ input.proposal-author-name {
     position: fixed;
     right: 10px;
     bottom: var(--map-shell-bottom-clearance);
-    backdrop-filter: blur(3px);
     border: 1px solid var(--cb-line-strong);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -1350,10 +1349,10 @@ input.proposal-author-name {
 @media (min-width: 768px) {
     #proposal-details-panel {
         top: var(--map-shell-top-clearance);
-        bottom: var(--map-shell-bottom-clearance);
-        height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
-        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
-        min-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
+        bottom: var(--right-dock-bottom);
+        height: calc(100dvh - var(--map-shell-top-clearance) - var(--right-dock-bottom));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--right-dock-bottom));
+        min-height: calc(100dvh - var(--map-shell-top-clearance) - var(--right-dock-bottom));
         overflow-y: auto;
     }
 }

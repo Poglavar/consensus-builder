@@ -787,14 +787,33 @@ function activityScopeLabel(filter) {
 
 let activityRenderToken = 0;
 
+/** The scope chip above the list: what the explorer is narrowed to, hidden when it is not. */
+function showActivityScope(modal, filter) {
+    const scope = modal?.querySelector('[data-activity-scope-chip]');
+    if (!scope) return;
+    const scopeLabel = activityScopeLabel(filter);
+    scope.hidden = !scopeLabel;
+    scope.querySelector('span').textContent = scopeLabel;
+}
+
 async function renderActivityExplorer() {
     if (!document.querySelector('.game-log-modal')) return;
     const token = ++activityRenderToken;
     const filter = effectiveActivityFilter();
+    // A scoped feed is fetched from the server and can take seconds: show the new scope and a
+    // loading line at once, so a drill-down click never looks like it did nothing.
+    const pending = document.querySelector('.game-log-modal');
+    showActivityScope(pending, filter);
+    const pendingStatus = pending.querySelector('[data-activity-live-status]');
+    const pendingContent = document.getElementById('game-log-content');
+    // A cached feed resolves in a microtask, before the next paint, so this never flickers.
+    if (pendingStatus) pendingStatus.textContent = translateGameText('world.activity.loading', 'Loading activity…');
+    pendingContent?.setAttribute('aria-busy', 'true');
     const { events, failures } = await activitySource.load(filter.source, filter);
     // A newer render (typing, filter change, new turn) superseded this one while it awaited.
     const modal = document.querySelector('.game-log-modal');
     if (token !== activityRenderToken || !modal) return;
+    document.getElementById('game-log-content')?.removeAttribute('aria-busy');
     activityExplorerState.failures = failures;
     const visible = events.filter(event => window.AgentActionEngine.matchesActivity(event, filter));
 
@@ -804,10 +823,7 @@ async function renderActivityExplorer() {
             ? translateGameText('gameDialogs.log.sourceFailed', 'Could not load: {{sources}}', { sources: failures.map(failure => `${failure.source} (${failure.error})`).join(', ') })
             : translateGameText('gameDialogs.log.count', '{{count}} events', { count: visible.length });
     }
-    const scope = modal.querySelector('[data-activity-scope-chip]');
-    const scopeLabel = activityScopeLabel(filter);
-    scope.hidden = !scopeLabel;
-    scope.querySelector('span').textContent = scopeLabel;
+    showActivityScope(modal, filter);
     modal.querySelectorAll('[data-activity-filter-field]').forEach(field => {
         const expected = filter[field.dataset.activityFilterField] ?? '';
         if (field.value !== expected) field.value = expected;

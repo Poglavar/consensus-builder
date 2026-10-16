@@ -1,5 +1,4 @@
-/* The section editor temporarily owns the road drawing controls. */
-body.corridor-editor-open #road-drawing-controls,
+/* The section editor temporarily owns the road panel and its drawing controls. */
 body.corridor-editor-open #road-info-panel { display: none; }
 
 /* The corridor cross-section editor: a scale diagram of the street plus one row per lane. Its

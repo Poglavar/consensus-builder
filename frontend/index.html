@@ -1470,16 +1470,6 @@
             </div>
         </div>
 
-            <div id="road-drawing-controls" class="map-editor-toolbar" hidden>
-                <div class="cb-actions">
-                    <button id="undoRoadButton" class="btn" onclick="undoLastRoadOrTrackSegment()"
-                        data-i18n-key="panel.road.undoButton">Undo (U)</button>
-                    <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
-                        data-i18n-key="panel.road.finishButtonShort">Finish</button>
-                    <button type="button" class="btn" onclick="cancelRoadOrTrackDrawing()" data-i18n-key="common.cancel">Cancel</button>
-                </div>
-            </div>
-
         <!-- Road Info Panel -->
         <div id="road-info-panel" class="info-panel right-dock-panel">
             <div class="road-panel-header">
@@ -1508,8 +1498,6 @@
                     onclick="openCorridorImportChooser()"><i class="fas fa-file-import" aria-hidden="true"></i><span
                         data-i18n-key="panel.road.importButton">Import…</span></button>
             </div>
-
-            <!-- Road/Track drawing controls (shown when drawing) -->
 
             <div class="road-metrics-grid">
                 <div class="metric-group">
@@ -1572,6 +1560,18 @@
                             onclick="showAcquiringDifficultyDialog()" aria-label="Help"></i>
                     </div>
                     <div class="metric-value" id="road-acquire-difficulty">—</div>
+                </div>
+            </div>
+            <!-- Undo · Finish · Cancel: the panel's last row while a road or track is drawn (shown by
+                 js/road-drawing.js). Part of the panel, so it docks, minimises and reads with it; the
+                 metrics above scroll and this row stays. -->
+            <div id="road-drawing-controls" class="road-panel-controls" hidden>
+                <div class="cb-actions">
+                    <button id="undoRoadButton" class="btn" onclick="undoLastRoadOrTrackSegment()"
+                        data-i18n-key="panel.road.undoButton">Undo (U)</button>
+                    <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
+                        data-i18n-key="panel.road.finishButtonShort">Finish</button>
+                    <button type="button" class="btn" onclick="cancelRoadOrTrackDrawing()" data-i18n-key="common.cancel">Cancel</button>
                 </div>
             </div>
         </div>

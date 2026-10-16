@@ -83,6 +83,12 @@
     line-height: var(--cb-leading);
 }
 
+/* While a newly scoped feed loads (js/game.js renderActivityExplorer), the old rows fade so the
+   list visibly answers the click before the server does. */
+.game-log-content[aria-busy="true"] {
+    opacity: 0.5;
+}
+
 .activity-actors {
     flex: 1;
     min-height: 0;
@@ -109,9 +115,12 @@
     overflow-wrap: anywhere;
 }
 
-/* The drill-down links under a record are cb-link buttons; this only spaces them. */
-.activity-scope-link {
-    margin-right: 10px;
+/* The drill-down links under a record are cb-link buttons; their row spaces them with a gap
+   (a margin on the link lost to button.cb-link's margin reset and the two labels ran together). */
+.activity-entry-meta .activity-scope-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px var(--cb-space-3);
 }
 
 /* The filter row: base form controls and small buttons (css/primitives.css); this lays them out. */

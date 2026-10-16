@@ -134,10 +134,13 @@ describe('proposal details action footer', () => {
     it.each([
         { proposalId: 'local-1', cadastreParcelIds: [] },
         { proposalId: 'minted-1', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } }
-    ])('keeps Bet on outcome in the shared action footer for every proposal', proposal => {
+    ])('offers Bet on outcome last, on its own row of the shared action footer, for every proposal', proposal => {
         const result = render(proposal);
-        const button = parse(result.footer.innerHTML)('.proposal-primary-actions .btn-bet-proposal');
+        const footer = parse(result.footer.innerHTML);
+        const button = footer('.proposal-bet-actions .btn-bet-proposal');
         expect(button.length).toBe(1);
+        expect(footer('.proposal-primary-actions .btn-bet-proposal').length).toBe(0);
+        expect(footer('button').last().hasClass('btn-bet-proposal')).toBe(true);
         expect(button.text()).toContain('Bet on outcome');
         expect(button.attr('disabled')).toBeUndefined();
         expect(result.footer.innerHTML).toContain(`openProposalOutcomeBet("${proposal.proposalId}")`);

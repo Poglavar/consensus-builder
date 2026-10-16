@@ -167,9 +167,9 @@
 
 #proposal-details-panel:not(.is-minimized) .btn-proposal-details { display: none; }
 /* The second row (Edit cross-section, Before / after, …): however many there are, they split the
-   row into equal parts, whatever their labels. */
-#proposal-details-panel .proposal-context-actions { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin: 8px 0 0; }
-#proposal-details-panel .proposal-context-actions > button { min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: 12px; padding: 6px 8px; white-space: normal; }
+   row into equal parts, whatever their labels. The bet row comes last, under all of them. */
+#proposal-details-panel :is(.proposal-context-actions, .proposal-bet-actions) { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin: 8px 0 0; }
+#proposal-details-panel :is(.proposal-context-actions, .proposal-bet-actions) > button { min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: 12px; padding: 6px 8px; white-space: normal; }
 
 @media (max-width: 767.98px) {
     /* Details is a full-screen reader; the compact card leaves the map and navigation visible. */
@@ -228,7 +228,7 @@
     #proposal-details-panel .proposal-funding-explainer { font-size: 13px; line-height: 1.5; }
     #proposal-details-panel .panel-header__actions button { min-width: 44px; min-height: 44px; }
     #proposal-details-panel .proposal-primary-actions > button,
-    #proposal-details-panel .proposal-context-actions > button { min-height: 44px; }
+    #proposal-details-panel :is(.proposal-context-actions, .proposal-bet-actions) > button { min-height: 44px; }
     #proposal-details-panel > .mobile-dock-sheet-handle { display: none; }
     #proposal-details-panel .panel-body { padding: 16px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); }
     #proposal-details-panel .panel-footer { padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border-radius: 0; }

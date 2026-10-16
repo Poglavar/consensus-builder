@@ -181,7 +181,7 @@
         const actorScope = scope('actorId', event.actor?.id, event.actor?.name || event.actor?.id || tr('actorFallback', 'Actor'));
         const entityDetails = event.entity?.id ? `<span>${escapeHtml(event.entity.type || 'entity')}: ${escapeHtml(event.entity.id)}</span>` : '';
         const proposalScope = proposalId
-            ? `<span>${scope('proposalId', proposalId, tr('scopeProposal', 'All activity on this proposal'))}${scope('parcelSetOf', proposalId, tr('scopeLand', 'All activity on this land'))}</span>`
+            ? `<span class="activity-scope-links">${scope('proposalId', proposalId, tr('scopeProposal', 'All activity on this proposal'))}${scope('parcelSetOf', proposalId, tr('scopeLand', 'All activity on this land'))}</span>`
             : '';
         const modelDetails = event.model
             ? `<span>${escapeHtml(tr('model', 'Model:'))} ${escapeHtml(event.model)}${Number.isFinite(event.modelCostUsd) ? ` · ${escapeHtml(formatUsd(event.modelCostUsd, 4))}` : ''}</span>`

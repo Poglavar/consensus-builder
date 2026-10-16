@@ -120,30 +120,26 @@ describe('mobile dock sheet geometry', () => {
         expect(panel.handle).toBeTruthy();
     });
 
-    it('reports what the open sheet and the drawing bar occupy so the credits stay in the map', () => {
+    it('reports what the open sheet occupies so the credits stay in the map', () => {
         expect(occupiedBottom({ viewportHeight: 844, top: 500 })).toBe(344);
         expect(occupiedBottom({ viewportHeight: 844, top: null })).toBe(0);
         const vars = new Map();
         const container = { style: { setProperty: (k, v) => vars.set(k, v), removeProperty: k => vars.delete(k) } };
         const panel = { box: { top: 500, height: 344 }, getBoundingClientRect() { return this.box; } };
-        const toolbar = { hidden: true, getBoundingClientRect() { return { height: 63 }; } };
         let phone = true;
         const win = {
             innerHeight: 844,
             matchMedia: () => ({ matches: phone }),
             document: {
-                getElementById(id) { return id === 'map-container' ? container : (id === 'road-drawing-controls' ? toolbar : null); },
+                getElementById(id) { return id === 'map-container' ? container : null; },
                 querySelectorAll() { return [panel]; }
             }
         };
         reportOccupancy(win);
         expect(vars.get('--map-sheet-occupied')).toBe('344px');
-        expect(vars.has('--map-editor-toolbar-height')).toBe(false);
-        toolbar.hidden = false;
-        panel.box = { top: 437, height: 344 };
+        panel.box = { top: 437, height: 407 };
         reportOccupancy(win);
         expect(vars.get('--map-sheet-occupied')).toBe('407px');
-        expect(vars.get('--map-editor-toolbar-height')).toBe('63px');
         panel.box = { top: 0, height: 0 }; // closed
         reportOccupancy(win);
         expect(vars.has('--map-sheet-occupied')).toBe(false);

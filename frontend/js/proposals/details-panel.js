@@ -574,7 +574,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-actions proposal-actions-group proposal-primary-actions">
             ${mapActionButtonHtml}
             ${shareButtonHtml}
-            ${betButtonHtml}
             ${forkButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
@@ -1360,7 +1359,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (footer) {
         footer.innerHTML = primaryActionsHtml + (additionalActionsHtml
             ? `<div class="proposal-actions proposal-actions-group proposal-context-actions">${additionalActionsHtml}</div>`
-            : '') + proposalSupportButtonsHtml;
+            : '')
+            + proposalSupportButtonsHtml
+            // Betting is offered last (user decision 2026-10-16): the card is first about the
+            // proposal itself, so the bet sits on its own row under every other action.
+            + (betButtonHtml ? `<div class="proposal-actions proposal-actions-group proposal-bet-actions">${betButtonHtml}</div>` : '');
         const defaultActionButton = footer.querySelector('.proposal-action-default');
         if (defaultActionButton && typeof defaultActionButton.focus === 'function' && !defaultActionButton.disabled) {
             requestAnimationFrame(() => {

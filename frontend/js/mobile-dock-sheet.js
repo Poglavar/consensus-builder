@@ -94,11 +94,8 @@
     //
     // On a phone the Leaflet corners (the basemap credit, the scale bar) sit on the top edge of
     // whichever bottom sheet is open, so they stay in the map (css/map-shell.css reads
-    // --map-sheet-occupied off #map-container). The road panel also sits on the Undo / Finish /
-    // Cancel bar, whose measured height is --map-editor-toolbar-height. Both are reported from
-    // what is on screen (a ResizeObserver on each sheet and on the bar), never from CSS values the
-    // sheet's content decides.
-    const TOOLBAR_ID = 'road-drawing-controls';
+    // --map-sheet-occupied off #map-container). It is reported from what is on screen (a
+    // ResizeObserver on each sheet), never from CSS values the sheet's content decides.
 
     function occupiedBottom({ viewportHeight, top }) {
         if (!Number.isFinite(viewportHeight) || !Number.isFinite(top)) return 0;
@@ -121,10 +118,6 @@
         }
         if (occupied > 0) container.style.setProperty('--map-sheet-occupied', `${occupied}px`);
         else container.style.removeProperty('--map-sheet-occupied');
-        const toolbar = doc.getElementById(TOOLBAR_ID);
-        const toolbarHeight = toolbar && !toolbar.hidden ? Math.round(toolbar.getBoundingClientRect().height) : 0;
-        if (toolbarHeight > 0) container.style.setProperty('--map-editor-toolbar-height', `${toolbarHeight}px`);
-        else container.style.removeProperty('--map-editor-toolbar-height');
     }
 
     function observeOccupancy(win, element) {
@@ -229,13 +222,10 @@
             const desired = Number.parseFloat(panel.style.getPropertyValue('--mobile-dock-sheet-height'));
             if (Number.isFinite(desired)) setHeight(win, panel, desired);
         });
-        const attachToolbar = () => {
-            observeOccupancy(win, win.document.getElementById(TOOLBAR_ID));
-            observeOccupancy(win, win.document.getElementById('proposal-details-panel'));
-        };
+        const attachCard = () => observeOccupancy(win, win.document.getElementById('proposal-details-panel'));
         const onResize = () => { reclamp(); reportOccupancy(win); };
-        if (win.document.readyState === 'loading') win.document.addEventListener('DOMContentLoaded', () => { attach(); attachToolbar(); }, { once: true });
-        else { attach(); attachToolbar(); }
+        if (win.document.readyState === 'loading') win.document.addEventListener('DOMContentLoaded', () => { attach(); attachCard(); }, { once: true });
+        else { attach(); attachCard(); }
         observeAddedPanels(win);
         win.addEventListener?.('resize', onResize);
         win.visualViewport?.addEventListener?.('resize', onResize);

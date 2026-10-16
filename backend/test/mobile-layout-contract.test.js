@@ -83,12 +83,13 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(mapShellCss).not.toContain('--info-panel-mobile-inset: var(--map-mode-strip)');
     });
 
-    it('makes the road panel the full-width bottom block, on the drawing bar, at most half the screen', () => {
+    it('makes the road panel the full-width bottom block on the screen edge, at most half the screen', () => {
         const [block] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#map-container #road-info-panel');
         const body = ruleBody(block, '#map-container #road-info-panel');
-        expect(body).toMatch(/bottom:\s*var\(--map-editor-toolbar-height, 0px\)/);
+        expect(body).toMatch(/bottom:\s*0;/);
         expect(body).toMatch(/height:\s*auto/);
-        expect(body).toMatch(/max-height:\s*calc\(50dvh - var\(--map-editor-toolbar-height, 0px\)\)/);
+        expect(body).toMatch(/max-height:\s*50dvh/);
+        expect(panelsCss + mapShellCss).not.toContain('--map-editor-toolbar-height');
         expect(ruleBody(block, '#road-info-panel \\.mobile-dock-sheet-handle')).toMatch(/display:\s*none/);
     });
 
@@ -104,11 +105,19 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/height:\s*auto/);
     });
 
-    it('keeps every road metric box two lines tall, shares the drawing bar evenly, and shows the map through phone panels', () => {
+    it('keeps every road metric box two lines tall, puts Undo / Finish / Cancel in the road panel as equal parts of its last row, and shows the map through phone panels', () => {
         expect(ruleBody(utilitiesCss, '\\.road-metrics-grid \\.metric-group')).toMatch(/min-height:\s*calc\(2 \* 1\.3em \+ 18px\)/);
-        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '#road-drawing-controls > div');
-        expect(ruleBody(block, '#road-drawing-controls > div')).toMatch(/width:\s*100%/);
-        expect(ruleBody(block, '#road-drawing-controls > div > \\.btn')).toMatch(/max-width:\s*none/);
+        const panel = indexHtml.slice(indexHtml.indexOf('<div id="road-info-panel"'), indexHtml.indexOf('<div id="road-analysis-panel"'));
+        const controls = panel.indexOf('id="road-drawing-controls"');
+        expect(controls).toBeGreaterThan(panel.indexOf('<div class="road-metrics-grid">'));
+        expect(panel.slice(controls)).toMatch(/id="undoRoadButton"[\s\S]*id="finishRoadButton"[\s\S]*cancelRoadOrTrackDrawing/);
+        expect(indexHtml.match(/id="road-drawing-controls"/g)).toHaveLength(1);
+        expect(panel).not.toMatch(/id="road-drawing-controls"[^>]*map-editor-toolbar/);
+        expect(ruleBody(panelsCss, '#road-drawing-controls > \\.cb-actions > \\.btn')).toMatch(/flex:\s*1 1 0/);
+        // the metrics scroll, the controls row does not
+        expect(ruleBody(panelsCss, '#road-info-panel > \\.road-metrics-grid')).toMatch(/overflow-y:\s*auto/);
+        expect(ruleBody(panelsCss, '#road-info-panel\\.visible')).toMatch(/flex-direction:\s*column/);
+        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', 'body .info-panel,');
         expect(ruleBody(block, 'body \\.info-panel,[^{]*')).toMatch(/background:\s*var\(--cb-glass-sheet\)/);
         const tokens = read('css/tokens.css');
         expect(tokens.match(/--cb-glass-sheet:/g)).toHaveLength(2);
@@ -215,7 +224,17 @@ describe('3D and photo view', () => {
         expect(ruleBody(phone, '\\.map-shell-cluster--bottom-right')).toMatch(/background:\s*var\(--cb-glass-veil\)/);
         expect(ruleBody(phone, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/background:\s*transparent/);
         expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).not.toMatch(/background/);
-        expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).toMatch(/left:\s*50%/);
+        // Centred on the map, or on the map left of the dock while a docked panel runs down to the
+        // bottom-right corner (the status line takes the same centre).
+        expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).toMatch(/left:\s*var\(--map-shell-centre, 50%\)/);
+        expect(ruleBody(utilitiesCss, '\\.map-feedback-stack')).toMatch(/left:\s*var\(--map-shell-centre, 50%\)/);
+        const [wide] = mediaBlocksContaining(mapShellCss, '(min-width: 900px)', '--map-shell-centre:');
+        expect(wide).toMatch(/body:has\(#road-info-panel\.visible\)/);
+        expect(wide).toMatch(/--map-shell-centre:\s*calc\(\(100% - var\(--right-dock-width\) - 2 \* var\(--right-dock-gap\)\) \/ 2\)/);
+        const [dock] = mediaBlocksContaining(panelsCss, '(min-width: 900px)', '--right-dock-bottom:');
+        expect(dock).toMatch(/--right-dock-bottom:\s*var\(--right-dock-gap\)/);
+        expect(ruleBody(panelsCss, '#parcel-info-panel')).toMatch(/bottom:\s*var\(--right-dock-bottom\)/);
+        expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/bottom:\s*var\(--right-dock-bottom\)/);
         expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/border-radius:\s*var\(--cb-radius-pill\)/);
     });
 

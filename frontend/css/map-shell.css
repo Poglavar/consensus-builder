@@ -61,10 +61,21 @@
    keeps its bottom edge and the credits and scale bar share the row from the corners. */
 .map-shell-cluster--bottom-right {
     bottom: var(--map-shell-edge);
-    left: 50%;
+    left: var(--map-shell-centre, 50%);
     transform: translateX(-50%);
     align-items: center;
     justify-content: center;
+}
+
+/* A docked panel runs down to the bottom-right corner on a wide map (--right-dock-bottom,
+   css/panels.css), so the pills and the status line centre in the map left of the dock instead
+   of under it. Below 900px the panels stop above the pills and the centre stays the map's. */
+@media (min-width: 900px) {
+    body:has(#parcel-info-panel.visible),
+    body:has(#road-info-panel.visible),
+    body:has(#proposal-details-panel.visible:not(.is-minimized)) {
+        --map-shell-centre: calc((100% - var(--right-dock-width) - 2 * var(--right-dock-gap)) / 2);
+    }
 }
 
 .map-shell-cluster--bottom-right .map-shell-button--labelled {
@@ -129,26 +140,10 @@ details[open] > summary.sheet-section-title::before {
 
 .map-editor-toolbar[hidden] { display: none; }
 
-.map-editor-toolbar-actions,
-#road-drawing-controls > div {
+.map-editor-toolbar-actions {
     display: flex;
     align-items: center;
     gap: var(--cb-space-2);
-}
-
-#road-drawing-controls {
-    margin: 0;
-    padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
-}
-
-#road-drawing-controls > div {
-    justify-content: center;
-}
-
-#road-drawing-controls > div > .btn {
-    flex: 1 1 0;
-    max-width: 240px;
-    margin: 0;
 }
 
 /* Each 2D editor owns the dock while it is active. Its actual finish/cancel actions stay
@@ -242,15 +237,6 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     /* The status line too: one row above the credits, over the open sheet, in the map. */
     #map-container .map-feedback-stack {
         bottom: calc(var(--map-sheet-occupied, var(--map-visible-bottom)) + var(--cb-control-height) + var(--map-shell-gap));
-    }
-
-    /* Undo · Finish · Cancel share the bar's width in three equal parts. */
-    #road-drawing-controls > div {
-        width: 100%;
-    }
-
-    #road-drawing-controls > div > .btn {
-        max-width: none;
     }
 
     /* Orientation: a little of the map shows through every phone panel and sheet

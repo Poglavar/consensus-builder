@@ -28,6 +28,16 @@
 :root {
     --right-dock-width: 400px;
     --right-dock-gap: 10px;
+    /* Where the dock's panels end. On a map wide enough for the bottom pills to sit clear of the
+       column (pills recentre in the map left of it, css/map-shell.css) the panels run down to the
+       screen's bottom-right corner; on a narrower one they stop above the pills. */
+    --right-dock-bottom: var(--map-shell-bottom-clearance);
+}
+
+@media (min-width: 900px) {
+    :root {
+        --right-dock-bottom: var(--right-dock-gap);
+    }
 }
 
 .right-dock-panel {
@@ -161,7 +171,7 @@ from .right-dock-panel — do not re-declare one here.
 */
 #parcel-info-panel {
     position: absolute;
-    bottom: var(--map-shell-bottom-clearance);
+    bottom: var(--right-dock-bottom);
     right: 10px;
     height: 50vh;
     max-height: 50vh;
@@ -226,11 +236,13 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 */
 #road-info-panel {
     position: absolute;
-    bottom: var(--map-shell-bottom-clearance);
+    bottom: var(--right-dock-bottom);
     right: 10px;
     height: auto;
-    max-height: calc(100% - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
-    overflow-y: auto;
+    max-height: calc(100% - var(--map-shell-top-clearance) - var(--right-dock-bottom));
+    /* A column: header, tools, the metrics (which scroll) and the Undo · Finish · Cancel row,
+       which therefore never scrolls out of reach. */
+    overflow: hidden;
     display: none;
     border-radius: 12px;
     box-sizing: border-box;
@@ -238,7 +250,40 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 #road-info-panel.visible {
-    display: block;
+    display: flex;
+    flex-direction: column;
+}
+
+#road-info-panel > * {
+    flex-shrink: 0;
+}
+
+#road-info-panel > .road-metrics-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Undo · Finish · Cancel: the panel's last row, three equal buttons under a rule. */
+#road-info-panel .road-panel-controls {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cb-line);
+}
+
+#road-info-panel .road-panel-controls[hidden] {
+    display: none;
+}
+
+#road-drawing-controls > .cb-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#road-drawing-controls > .cb-actions > .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
 }
 
 #road-info-panel h3 {
@@ -417,12 +462,12 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     padding-bottom: 0;
 }
 
-/* Ensure undo/finish buttons split the row evenly on small screens */
-#road-drawing-controls > div > .btn {
-    flex: 1 1 0;
-    margin: 0;
-    min-width: 0; /* allow shrinking in tight containers */
+#road-info-panel.is-minimized .road-panel-controls {
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
 }
+
 
 /* Parcel info panel now uses .panel-header structure */
 
@@ -447,6 +492,28 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     border-radius: var(--cb-radius-sm);
     padding: var(--cb-space-2);
     box-sizing: border-box;
+}
+
+/* Desktop: the panel's text is chrome-sized (--cb-text-base), not the page's 16px, and the fact
+   boxes pad one step less (user 2026-10-16: the parcel panel read a size larger than the proposal
+   card above it). Phones keep the inherited touch size. */
+@media (min-width: 768px) {
+    #parcel-info-panel .panel-body {
+        font-size: var(--cb-text-base);
+    }
+
+    #parcel-info-panel .parcel-metric-row .metric-group {
+        padding: 6px var(--cb-space-2);
+    }
+
+    #parcel-info-panel .parcel-tabs .cb-tab {
+        font-size: var(--cb-text-md);
+    }
+
+    /* The road panel's metric boxes at the same chrome size (their two-line height is in em). */
+    #road-info-panel .road-metrics-grid {
+        font-size: var(--cb-text-base);
+    }
 }
 
 #parcel-info-panel .metric-label {
@@ -1533,19 +1600,18 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
         height: min(50vh, calc(100dvh - var(--map-shell-top-clearance) - 20px - min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px)));
     }
     
-    /* The road panel is the phone's bottom block while a road is drawn: full width, sitting on
-       the Undo / Finish / Cancel bar that owns the screen's bottom edge (#road-drawing-controls,
-       css/map-shell.css; its measured height is --map-editor-toolbar-height, js/mobile-dock-sheet.js),
-       as tall as its content and never more than half the screen together with that bar. It
-       collapses to its header from the minimise circle, so it has no drag handle. The mode strip
-       hangs from the top-left on phones (css/map.css), so nothing on the left needs clearing. */
+    /* The road panel is the phone's bottom block while a road is drawn: full width, on the
+       screen's bottom edge (the navigation bar stands down while drawing, css/map-shell.css), as
+       tall as its content and never more than half the screen, its own Undo / Finish / Cancel row
+       last. It collapses to its header and that row from the minimise circle, so it has no drag
+       handle. The mode strip hangs from the top-left on phones (css/map.css), so nothing on the
+       left needs clearing. */
     #map-container #road-info-panel {
-        bottom: var(--map-editor-toolbar-height, 0px);
+        bottom: 0;
         width: auto;
         max-width: none;
         height: auto;
-        max-height: calc(50dvh - var(--map-editor-toolbar-height, 0px));
-        overflow-y: auto;
+        max-height: 50dvh;
         border-radius: 12px 12px 0 0;
     }
 
@@ -1555,7 +1621,12 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
     /* A shorter header with smaller margins, so the half-screen sheet shows more metrics. */
     #map-container #road-info-panel {
-        padding: 8px 10px 10px;
+        padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+    }
+
+    #road-info-panel .road-panel-controls {
+        margin-top: 8px;
+        padding-top: 8px;
     }
 
     #road-info-panel .road-panel-header {
