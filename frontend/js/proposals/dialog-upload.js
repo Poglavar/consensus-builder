@@ -810,8 +810,13 @@ function showUploadProposalModal(proposal) {
         }
     });
 
-    // Mint / Connect wallet handler
-    mintButton.addEventListener('click', async () => {
+    // Mint / Connect wallet handler. The button spins until the mint lands (upload, signature,
+    // transaction) and ignores clicks meanwhile, so a slow wallet cannot start a second mint.
+    mintButton.addEventListener('click', () => {
+        if (BusyControl.isBusy(mintButton)) return;
+        BusyControl.track(mintButton, mintOrConnect);
+    });
+    async function mintOrConnect() {
         try {
             // If already minted, block re-mint and surface link
             const existingNft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
@@ -1253,7 +1258,7 @@ function showUploadProposalModal(proposal) {
                 showEphemeralMessage(error.message || tShare('mintError', 'Failed to mint proposal'), 5000, 'error');
             }
         }
-    });
+    }
 
     const modal = showSimpleShareModal({
         title: tShare('shareModalTitle', 'Share one proposal'),

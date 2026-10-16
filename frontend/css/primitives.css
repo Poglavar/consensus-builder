@@ -529,13 +529,30 @@ textarea {
     animation: cb-spin 0.8s linear infinite;
 }
 
+/* The same ring before the label of a control that has no icon to turn. CSS, not an inserted
+   node, so a handler that rewrites the label mid-flight (Mint) keeps it. */
+.cb-busy:not(:has(> i:first-child))::before {
+    content: '';
+    display: inline-block;
+    box-sizing: border-box;
+    width: 1em;
+    height: 1em;
+    margin-right: var(--cb-space-2);
+    vertical-align: -0.125em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: cb-spin 0.8s linear infinite;
+}
+
 @keyframes cb-spin {
     to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .cb-toast__spinner,
-    .cb-busy > i:first-child::after { animation: none; }
+    .cb-busy > i:first-child::after,
+    .cb-busy:not(:has(> i:first-child))::before { animation: none; }
 }
 
 /* ---- Banner ----

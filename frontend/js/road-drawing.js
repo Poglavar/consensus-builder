@@ -4341,10 +4341,13 @@ function finishRoadDrawing() {
         beginApplyIndicator(corridorFinalizationLabel());
         corridorFinishProfile = { started: nowMs(), phases: [] };
         try {
-            // One yield so the indicator is painted BEFORE the synchronous geometry work, which
-            // holds the main thread and would otherwise keep it from ever appearing.
-            await new Promise(resolve => setTimeout(resolve, 0));
-            return await finishRoadDrawingOnce();
+            // Finish itself spins for the build too (not during the review: that is a question).
+            return await window.BusyControl.track(document.getElementById('finishRoadButton'), async () => {
+                // One yield so the indicator is painted BEFORE the synchronous geometry work, which
+                // holds the main thread and would otherwise keep it from ever appearing.
+                await new Promise(resolve => setTimeout(resolve, 0));
+                return finishRoadDrawingOnce();
+            });
         } finally {
             endApplyIndicator();
             reportCorridorFinishProfile();

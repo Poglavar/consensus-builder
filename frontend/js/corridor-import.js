@@ -229,7 +229,13 @@
         const input = global.document && global.document.getElementById('corridorImportInput');
         if (!input || input.dataset.bound) return;
         input.dataset.bound = '1';
-        input.addEventListener('change', () => { const file = input.files && input.files[0]; if (file) importCorridorFile(file, input.dataset.format || undefined); });
+        // The chooser has closed by now, so Import… in the road panel spins while the file lands.
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const button = global.document.getElementById('importRoadsButton');
+            global.BusyControl.track(button, () => importCorridorFile(file, input.dataset.format || undefined));
+        });
     }
     if (global && global.document) {
         if (global.document.readyState === 'loading') global.document.addEventListener('DOMContentLoaded', bindCorridorImportInput);
