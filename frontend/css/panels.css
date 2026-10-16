@@ -365,6 +365,12 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     margin-bottom: 2px;
 }
 
+/* In the metric boxes the label sits beside its value; the 2px under it made a wrapped label's
+   box 2px taller than the fixed two-line height (css/utilities.css .road-metrics-grid). */
+#road-info-panel .road-metrics-grid .metric-group > .metric-label {
+    margin-bottom: 0;
+}
+
 #road-info-panel .metric-label.has-tooltip {
     text-decoration: underline;
     text-decoration-style: dashed;
@@ -1545,6 +1551,38 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
     #road-info-panel .mobile-dock-sheet-handle {
         display: none;
+    }
+
+    /* A shorter header with smaller margins, so the half-screen sheet shows more metrics. */
+    #map-container #road-info-panel {
+        padding: 8px 10px 10px;
+    }
+
+    #road-info-panel .road-panel-header {
+        gap: 6px;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+    }
+
+    #road-info-panel .road-panel-header h3 {
+        font-size: 15px;
+    }
+
+    #road-info-panel .road-panel-actions .close-circle-btn--lg {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        min-height: 34px;
+        font-size: 17px;
+    }
+
+    #road-info-panel .road-panel-tools {
+        margin-bottom: 6px;
+    }
+
+    #road-info-panel .road-metrics-grid {
+        gap: 6px;
+        margin-top: 0;
     }
 
     #block-info-panel {

@@ -243,6 +243,27 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     #map-container .map-feedback-stack {
         bottom: calc(var(--map-sheet-occupied, var(--map-visible-bottom)) + var(--cb-control-height) + var(--map-shell-gap));
     }
+
+    /* Undo · Finish · Cancel share the bar's width in three equal parts. */
+    #road-drawing-controls > div {
+        width: 100%;
+    }
+
+    #road-drawing-controls > div > .btn {
+        max-width: none;
+    }
+
+    /* Orientation: a little of the map shows through every phone panel and sheet
+       (--cb-glass-sheet, css/tokens.css); the bar's own full-screen sheets keep their veil. */
+    body .info-panel,
+    body .map-sheet:not(.map-sheet--dock),
+    body .on-map-editor__panel,
+    body .site-panel,
+    body .map-editor-toolbar {
+        background: var(--cb-glass-sheet);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
 }
 
 .leaflet-bottom {

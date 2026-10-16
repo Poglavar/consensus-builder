@@ -430,6 +430,10 @@ body:has(#selection-tray) .map-feedback-stack {
     border-radius: 8px;
     padding: 8px;
     box-sizing: border-box;
+    /* Every box is two label lines tall whether its label wraps or not: the values change with
+       each point drawn, and a box that grew for a wrapped label and shrank back made the whole
+       grid jump (2026-10-16). */
+    min-height: calc(2 * 1.3em + 18px);
     word-break: break-word;
     display: flex;
     flex-direction: row;

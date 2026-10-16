@@ -104,6 +104,19 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/height:\s*auto/);
     });
 
+    it('keeps every road metric box two lines tall, shares the drawing bar evenly, and shows the map through phone panels', () => {
+        expect(ruleBody(utilitiesCss, '\\.road-metrics-grid \\.metric-group')).toMatch(/min-height:\s*calc\(2 \* 1\.3em \+ 18px\)/);
+        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '#road-drawing-controls > div');
+        expect(ruleBody(block, '#road-drawing-controls > div')).toMatch(/width:\s*100%/);
+        expect(ruleBody(block, '#road-drawing-controls > div > \\.btn')).toMatch(/max-width:\s*none/);
+        expect(ruleBody(block, 'body \\.info-panel,[^{]*')).toMatch(/background:\s*var\(--cb-glass-sheet\)/);
+        const tokens = read('css/tokens.css');
+        expect(tokens.match(/--cb-glass-sheet:/g)).toHaveLength(2);
+        const [panelBlock] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#road-info-panel .road-panel-actions .close-circle-btn--lg');
+        expect(ruleBody(panelBlock, '#road-info-panel \\.road-panel-actions \\.close-circle-btn--lg')).toMatch(/height:\s*34px/);
+        expect(indexHtml).toMatch(/data-i18n-key="panel\.road\.finishButtonShort">Finish<\/button>/);
+    });
+
     it('keeps the credits in the map on the open sheet, one size smaller', () => {
         const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '#map-container .leaflet-bottom');
         expect(ruleBody(block, '#map-container \\.leaflet-bottom')).toMatch(/bottom:\s*var\(--map-sheet-occupied, var\(--map-visible-bottom\)\)/);
