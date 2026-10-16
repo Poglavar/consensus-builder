@@ -89,7 +89,7 @@ body.on-map-editing .map-shell-slot--tray { display: none; }
         top: auto;
         right: var(--cb-space-2);
         bottom: calc(var(--map-shell-bottom-clearance) + var(--cb-space-2));
-        left: var(--map-mode-strip);
+        left: var(--cb-space-2);
         width: auto;
         max-height: min(46dvh, 400px);
         padding: var(--cb-space-2) var(--cb-space-3);

@@ -160,6 +160,30 @@ describe('atomic corridor authoring plan', () => {
         expect(joined[0].nodes[joined[0].nodes.length - 1]).toBe(joined[1].nodes[0]);
     });
 
+    it('plans a new road handed over as its stored record (the draft build projects to the OSM document before the atomic create)', () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
+        const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
+        branch.roadProposal.definition.profile = { strips: [{ type: 'driving', width: 3 }] };
+        branch.roadProposal.definition = osmForm.toRecord(branch.roadProposal.definition);
+        expect(branch.roadProposal.definition.points).toBeUndefined();
+        expect(branch.roadProposal.definition.osm).toBeTruthy();
+
+        const result = plan(branch, [through]);
+
+        const definition = result.proposal.roadProposal.definition;
+        expect(definition.osm).toBeUndefined();
+        expect(definition.points).toHaveLength(1);
+        expect(definition.points[0]).toEqual([P(5, 5), P(0, 5)]);
+        expect(definition.profile.strips[0].width).toBe(3);
+        expect(result.existingChanges).toHaveLength(1);
+        expect(result.junctionRecords).toBe(1);
+        // a loop drawn as one closed stroke is a valid centreline too
+        const loop = corridor(null, [[P(0, 0), P(0, 10), P(10, 10), P(0, 0)]]);
+        loop.roadProposal.definition = osmForm.toRecord(loop.roadProposal.definition);
+        expect(() => plan(loop, [])).not.toThrow();
+    });
+
     it('records the junction and the other road\'s arms in both definitions, and an end-to-end join too', () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]]);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);

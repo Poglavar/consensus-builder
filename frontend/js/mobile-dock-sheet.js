@@ -90,6 +90,47 @@
         return height;
     }
 
+    // ---- What the bottom sheets occupy ----------------------------------------------------------
+    //
+    // On a phone the Leaflet corners (the basemap credit, the scale bar) sit on the top edge of
+    // whichever bottom sheet is open, so they stay in the map (css/map-shell.css reads
+    // --map-sheet-occupied off #map-container). The road panel also sits on the Undo / Finish /
+    // Cancel bar, whose measured height is --map-editor-toolbar-height. Both are reported from
+    // what is on screen (a ResizeObserver on each sheet and on the bar), never from CSS values the
+    // sheet's content decides.
+    const TOOLBAR_ID = 'road-drawing-controls';
+
+    function occupiedBottom({ viewportHeight, top }) {
+        if (!Number.isFinite(viewportHeight) || !Number.isFinite(top)) return 0;
+        return Math.max(0, Math.round(viewportHeight - top));
+    }
+
+    function reportOccupancy(win) {
+        const doc = win.document;
+        const container = doc?.getElementById?.('map-container');
+        if (!container?.style) return;
+        const viewport = viewportHeight(win);
+        let occupied = 0;
+        if (win.matchMedia?.('(max-width: 767.98px)').matches) {
+            doc.querySelectorAll(PANEL_SELECTOR).forEach(panel => {
+                const box = panel.getBoundingClientRect();
+                if (box.height > 0) occupied = Math.max(occupied, occupiedBottom({ viewportHeight: viewport, top: box.top }));
+            });
+        }
+        if (occupied > 0) container.style.setProperty('--map-sheet-occupied', `${occupied}px`);
+        else container.style.removeProperty('--map-sheet-occupied');
+        const toolbar = doc.getElementById(TOOLBAR_ID);
+        const toolbarHeight = toolbar && !toolbar.hidden ? Math.round(toolbar.getBoundingClientRect().height) : 0;
+        if (toolbarHeight > 0) container.style.setProperty('--map-editor-toolbar-height', `${toolbarHeight}px`);
+        else container.style.removeProperty('--map-editor-toolbar-height');
+    }
+
+    function observeOccupancy(win, element) {
+        if (!element || element.__mobileDockSheetSizeObserver || typeof win.ResizeObserver !== 'function') return;
+        element.__mobileDockSheetSizeObserver = new win.ResizeObserver(() => reportOccupancy(win));
+        element.__mobileDockSheetSizeObserver.observe(element);
+    }
+
     function makeHandle(win, panel) {
         const handle = win.document.createElement('button');
         handle.type = 'button';
@@ -157,6 +198,7 @@
             panel.__mobileDockSheetObserver = new win.MutationObserver(() => wirePanel(win, panel));
             panel.__mobileDockSheetObserver.observe(panel, { childList: true });
         }
+        observeOccupancy(win, panel);
     }
 
     function wireAddedPanelNode(win, node) {
@@ -185,14 +227,16 @@
             const desired = Number.parseFloat(panel.style.getPropertyValue('--mobile-dock-sheet-height'));
             if (Number.isFinite(desired)) setHeight(win, panel, desired);
         });
-        if (win.document.readyState === 'loading') win.document.addEventListener('DOMContentLoaded', attach, { once: true });
-        else attach();
+        const attachToolbar = () => observeOccupancy(win, win.document.getElementById(TOOLBAR_ID));
+        const onResize = () => { reclamp(); reportOccupancy(win); };
+        if (win.document.readyState === 'loading') win.document.addEventListener('DOMContentLoaded', () => { attach(); attachToolbar(); }, { once: true });
+        else { attach(); attachToolbar(); }
         observeAddedPanels(win);
-        win.addEventListener?.('resize', reclamp);
-        win.visualViewport?.addEventListener?.('resize', reclamp);
+        win.addEventListener?.('resize', onResize);
+        win.visualViewport?.addEventListener?.('resize', onResize);
     }
 
-    const api = { clamp, limits, sheetHeight, draggedHeight, wirePanel, wireAddedPanelNode, install };
+    const api = { clamp, limits, sheetHeight, draggedHeight, occupiedBottom, reportOccupancy, wirePanel, wireAddedPanelNode, install };
     if (typeof window !== 'undefined') install(window);
     return api;
 });

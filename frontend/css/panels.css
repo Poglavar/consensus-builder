@@ -219,17 +219,17 @@ Road info panel sits in the bottom right corner of the map. Its width comes from
 shared with every other right-hand panel. It used to size to its own content because pinning a width
 clipped the right-hand values in Croatian/Spanish (labels run ~30-40px longer than English) — that is
 handled properly now by .road-metrics-grid, where the label wraps and the value never shrinks, so a
-fixed width costs a taller row rather than a cut-off number. Its height is FIXED: the metrics
-change with every point drawn (a value that wraps its label adds a line), and a panel sized to them
-grew and climbed the map as the road was drawn. Tall enough for the drawing metrics down to Cost and
-Total Estimated Acquiring Difficulty, capped by the dock's column; what goes past it scrolls. On a
-phone the dock sheet's height applies (.right-dock-panel).
+fixed width costs a taller row rather than a cut-off number. Its height FITS ITS CONTENT (2026-10-16:
+a fixed 34rem left a blank third under the metrics): anchored to the bottom, a value that wraps its
+label raises the top edge by one line, and the dock's column caps it; what goes past it scrolls. On
+a phone it is the bottom sheet, up to half the screen (the phone block at the end of this file).
 */
 #road-info-panel {
     position: absolute;
     bottom: var(--map-shell-bottom-clearance);
     right: 10px;
-    height: min(34rem, calc(100% - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
+    height: auto;
+    max-height: calc(100% - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
     overflow-y: auto;
     display: none;
     border-radius: 12px;
@@ -285,6 +285,26 @@ phone the dock sheet's height applies (.right-dock-panel).
     margin: 0;
     padding: 0;
     border-bottom: none;
+}
+
+/* The tools row under the header (Cross-section · width, Import…): two equal buttons sharing one
+   row, the way the metric boxes pair up below them. */
+#road-info-panel .road-panel-tools {
+    margin: 0 0 10px 0;
+    /* Equal heights: a label that wraps to two lines must not leave its neighbour shorter. */
+    align-items: stretch;
+}
+
+#road-info-panel .road-panel-tools .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    /* Icon, label and width wrap as whole words onto a second centred line when the column is
+       too narrow for "Edit cross-section · 7.5 m" on one. */
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    font-size: var(--cb-text-sm);
 }
 
 /* Build palette (js/parcels/ui/proposal-actions.js): everything creatable on the selected
@@ -1507,10 +1527,24 @@ phone the dock sheet's height applies (.right-dock-panel).
         height: min(50vh, calc(100dvh - var(--map-shell-top-clearance) - 20px - min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px)));
     }
     
-    /* Width and the half-screen cap come from .right-dock-panel; only the scroll behaviour is
-       specific to this panel. */
-    #road-info-panel {
+    /* The road panel is the phone's bottom block while a road is drawn: full width, sitting on
+       the Undo / Finish / Cancel bar that owns the screen's bottom edge (#road-drawing-controls,
+       css/map-shell.css; its measured height is --map-editor-toolbar-height, js/mobile-dock-sheet.js),
+       as tall as its content and never more than half the screen together with that bar. It
+       collapses to its header from the minimise circle, so it has no drag handle. The mode strip
+       hangs from the top-left on phones (css/map.css), so nothing on the left needs clearing. */
+    #map-container #road-info-panel {
+        bottom: var(--map-editor-toolbar-height, 0px);
+        width: auto;
+        max-width: none;
+        height: auto;
+        max-height: calc(50dvh - var(--map-editor-toolbar-height, 0px));
         overflow-y: auto;
+        border-radius: 12px 12px 0 0;
+    }
+
+    #road-info-panel .mobile-dock-sheet-handle {
+        display: none;
     }
 
     #block-info-panel {

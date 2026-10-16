@@ -225,26 +225,23 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
 }
 
 @media (max-width: 767.98px) {
-    /* utilities.css reads this inset in its important mobile full-bleed rule so view controls
-       remain reachable while the road editor is open. Other panels default to an inset of zero. */
-    body.corridor-drawing-active #road-info-panel {
-        --info-panel-mobile-inset: var(--map-mode-strip);
-        right: 0;
-        width: auto;
-        max-width: none;
+    /* The Leaflet corners (the basemap credit bottom-left, the scale bar bottom-right) stay in the
+       map while a bottom sheet is open: they sit on the sheet's top edge, which the sheet reports
+       as --map-sheet-occupied on #map-container (js/mobile-dock-sheet.js), and fall back to the
+       bottom bar's row when no sheet is open. The credit's text is the licence's, "OpenStreetMap"
+       (the OSMF attribution guideline asks for the name, not an abbreviation), one size smaller. */
+    #map-container .leaflet-bottom {
+        bottom: var(--map-sheet-occupied, var(--map-visible-bottom));
     }
 
-    /* At a narrow inset the title and cross-section label cannot share one row with the fixed
-       action circles. Keep title + actions together, then give Cross-section its own row. */
-    body.corridor-drawing-active #road-info-panel .road-panel-header {
-        flex-wrap: wrap;
+    .map-credits-control {
+        font-size: var(--cb-text-xs);
+        padding: 2px 6px;
     }
 
-    body.corridor-drawing-active #road-info-panel #editRoadCrossSectionButton {
-        order: 1;
-        flex: 1 0 100%;
-        box-sizing: border-box;
-        white-space: normal;
+    /* The status line too: one row above the credits, over the open sheet, in the map. */
+    #map-container .map-feedback-stack {
+        bottom: calc(var(--map-sheet-occupied, var(--map-visible-bottom)) + var(--cb-control-height) + var(--map-shell-gap));
     }
 }
 
@@ -1111,15 +1108,26 @@ body.app-loading .map-shell-cluster {
     }
 }
 
-/* Compact the profile before the search and the shared controls compete for the same space. */
-@media (max-width: 419.98px) {
+/* Phones: the avatar alone, no name, no link icon. Its ring says whether a wallet is connected
+   (data-wallet on the bubble, js/user-management.js): solid green when it is, a dashed neutral ring
+   when it is not. */
+@media (max-width: 767.98px) {
     #map-container .username-display {
         width: var(--map-shell-button-size);
         min-width: var(--map-shell-button-size);
         padding: 6px;
+        gap: 0;
         justify-content: center;
     }
-    #map-container .username-display .user-avatar { width: 28px; height: 28px; box-sizing: border-box; }
+    #map-container .username-display .user-avatar {
+        width: 28px;
+        height: 28px;
+        box-sizing: border-box;
+        border: 2px dashed var(--cb-line-strong);
+    }
+    #map-container .username-display[data-wallet="connected"] .user-avatar {
+        border: 2px solid var(--cb-success);
+    }
     #map-container .username-display .wallet-status-icon { display: none; }
     #map-container #username-text {
         position: absolute;

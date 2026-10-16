@@ -97,8 +97,21 @@
         return keys;
     }
 
+    // The planner works on the VIEW (stretch fields). A record arriving in its stored shape, the
+    // OSM document alone (roads.md §11), is decoded first: the draft build already projects a new
+    // road into that shape before the atomic create, and the store hands out views.
+    function viewOf(definition) {
+        if (!definition || !definition.osm) return definition;
+        const form = (global && global.__corridorOsmForm)
+            || (typeof require === 'function' ? require('../corridor-osm-form.js') : null);
+        if (!form || typeof form.toView !== 'function') {
+            throw new Error('The corridor record form is unavailable.');
+        }
+        return form.toView(definition);
+    }
+
     function entryFor(record, options = {}) {
-        const definition = cloneValue(definitionOf(record));
+        const definition = viewOf(cloneValue(definitionOf(record)));
         if (!definition) return null;
         const segments = centerlineOf(definition, options);
         if (!segments.length) return null;

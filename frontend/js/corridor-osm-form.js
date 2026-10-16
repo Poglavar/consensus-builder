@@ -295,7 +295,8 @@
                 if (levelOf(a.points[p]) !== levelOf(b.points[p])) return `stretch ${index + 1}, point ${p + 1} level differs`;
                 if (elevationOf((storedRaw[index] || [])[p] || {}) !== elevationOf((decodedRaw[index] || [])[p] || {})) return `stretch ${index + 1}, point ${p + 1} elevation differs`;
             }
-            if (!sameProfile(a.profile, b.profile)) return `stretch ${index + 1} cross-section differs`;
+            // A stretch that says nothing about its cross-section takes the form's default one.
+            if (a.profile && !sameProfile(a.profile, b.profile)) return `stretch ${index + 1} cross-section differs`;
         }
         return null;
     }

@@ -38,6 +38,8 @@ describe('username display HTML', () => {
         vm.runInNewContext(`${escapeSource}\n${declaration(userSource, 'updateUsernameDisplay')}\nupdateUsernameDisplay();`, context);
 
         expect(display.innerHTML).toContain('&lt;img src=x onerror=alert(1)&gt;');
+        // the phone bubble reads the wallet state off the element (css/map-shell.css)
+        expect(display.dataset.wallet).toBe('disconnected');
         expect(display.innerHTML).not.toContain('<span id="username-text"><img');
     });
 });

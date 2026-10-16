@@ -44,6 +44,7 @@ const { checkProposalBinding } = await import('../proposals/binding.js');
 const require = createRequire(import.meta.url);
 const siteHashApi = require('../../frontend/js/proposals/site-hash.js');
 const metricFrame = require('../../frontend/js/metric-frame.js');
+const corridorOsmForm = require('../../frontend/js/corridor-osm-form.js');
 
 // The cadastre revision lookup is all preparation may ask the database; every statement is recorded,
 // and anything else (an INSERT above all: preparing stores nothing) fails the test.
@@ -157,10 +158,14 @@ describe('prepareProposal', () => {
         const db = cadastreDb();
         const broken = road({ points: [A, { lat: Number.NaN, lng: 15.971 }, C], segments: [[A, { lat: Number.NaN, lng: 15.971 }, C]] });
         await expect(prepareProposal(db, broken, { city: 'zagreb', ...sign })).rejects.toMatchObject({ code: 'invalid-site', status: 400 });
-        const widthless = road({ width: undefined });
-        await expect(prepareProposal(db, widthless, { city: 'zagreb', ...sign })).rejects.toMatchObject({ code: 'invalid-site', status: 400 });
         expect(checkProposalBinding).not.toHaveBeenCalled();
         expect(db.statements).toEqual([]);
+        // a road that says nothing about its cross-section is recorded with the class default
+        const widthless = road({ width: undefined });
+        const { proposal } = await prepareProposal(db, widthless, { city: 'zagreb', ...sign });
+        const way = proposal.roadProposal.definition.osm.elements.find(element => element.type === 'way');
+        expect(way.tags.lanes).toBeUndefined();
+        expect(corridorOsmForm.toView(proposal.roadProposal.definition).profile.strips.length).toBeGreaterThan(0);
     });
 
     it('passes a site proposal through, binding the authored site', async () => {

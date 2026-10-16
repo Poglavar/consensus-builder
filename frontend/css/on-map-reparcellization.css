@@ -418,8 +418,8 @@
 @media (max-width: 639.98px) {
     .on-map-editor__tools.reparcel-tools-map {
         top: 68px;
-        left: var(--map-mode-strip, 60px);
-        width: calc(100vw - var(--map-mode-strip, 60px) - 12px);
+        left: 12px;
+        width: calc(100vw - 24px);
         max-height: min(32dvh, 300px);
         padding: 8px;
     }

@@ -118,7 +118,8 @@ describe('land-readjustment UI state', () => {
         expect(source).toContain('data-reparcel-active-mode');
         expect(source).toContain('state.session?.setHint?.(active || null)');
         expect(styles).toContain('.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }');
-        expect(styles).toContain('left: var(--map-mode-strip, 60px);');
+        // Phones: edge to edge, the mode strip hangs from the top-left (css/map.css).
+        expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*left: 12px;[^}]*width: calc\(100vw - 24px\);/);
         expect(styles).toMatch(/\.reparcel-actions \[data-reparcel-cancel\],[\s\S]*?min-width: 0;/);
     });
 });

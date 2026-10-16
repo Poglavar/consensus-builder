@@ -204,8 +204,10 @@ describe('record <-> view (step two: the form is stored, the stretch fields run)
     });
 
     it('refuses to record a road its form would read back differently', () => {
-        // no cross-section at all: the form would read the class default back
-        expect(() => form.toRecord({ points: [[A, B]], segments: [[A, B]] })).toThrow(/cross-section differs/);
+        // no cross-section at all says nothing the form contradicts: the road takes the class default
+        const bare = form.toRecord({ points: [[A, B]], segments: [[A, B]] });
+        expect(bare.osm.elements.find(element => element.type === 'way').tags.lanes).toBeUndefined();
+        expect(form.toView(bare).profile.strips.length).toBeGreaterThan(0);
         expect(form.disagreement(twoStretches(), form.osmFormOf({ ...twoStretches(), segmentProfiles: { s2: strips(18) } }))).toBe('stretch 2 cross-section differs');
         expect(form.disagreement(twoStretches(), form.osmFormOf({ ...twoStretches(), points: [[A, { ...B, level: -2 }], [B, C]], segments: [[A, { ...B, level: -2 }], [B, C]] }))).toBe('stretch 1, point 2 level differs');
         expect(form.disagreement(twoStretches(), form.osmFormOf({ ...twoStretches(), points: [[A, B]], segments: [[A, B]], segmentIds: ['s1'] }))).toMatch(/stretches/);

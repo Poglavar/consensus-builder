@@ -74,24 +74,54 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(mediaBlock(panelsCss, '(max-width: 767.98px)')).toMatch(/--right-dock-width:\s*auto/);
     });
 
-    it('keeps the mobile road editor clear of the mode strip despite the full-bleed panel rule', () => {
-        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', 'body.corridor-drawing-active #road-info-panel');
-        expect(ruleBody(block, 'body\\.corridor-drawing-active #road-info-panel')).toContain('--info-panel-mobile-inset: var(--map-mode-strip);');
+    // 2026-10-16: the strip hangs from the top-left under the search box on phones, so every bottom
+    // sheet runs edge to edge and the strip is always in the upper third of the screen.
+    it('hangs the mode strip from the top clearance on phones, and nothing lifts it from below', () => {
+        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '--map-mode-stack-bottom');
+        expect(ruleBody(block, '(?:^|\\n)\\s*body')).toMatch(/--map-mode-stack-bottom:\s*calc\(var\(--map-shell-top-clearance\)\s*\+\s*276px\)/);
+        expect(selectionTrayCss).not.toMatch(/body:has\(#selection-tray\)\s*\{[^}]*--map-mode-stack-bottom/);
+        expect(mapShellCss).not.toContain('--info-panel-mobile-inset: var(--map-mode-strip)');
     });
 
-    it('wraps the corridor road header so its fixed actions and cross-section control stay visible', () => {
-        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', 'body.corridor-drawing-active #road-info-panel .road-panel-header');
-        expect(ruleBody(block, 'body\\.corridor-drawing-active #road-info-panel \.road-panel-header')).toMatch(/flex-wrap:\s*wrap/);
-        const crossSection = ruleBody(block, 'body\\.corridor-drawing-active #road-info-panel #editRoadCrossSectionButton');
-        expect(crossSection).toMatch(/order:\s*1/);
-        expect(crossSection).toMatch(/flex:\s*1 0 100%/);
-        expect(crossSection).toMatch(/white-space:\s*normal/);
+    it('makes the road panel the full-width bottom block, on the drawing bar, at most half the screen', () => {
+        const [block] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#map-container #road-info-panel');
+        const body = ruleBody(block, '#map-container #road-info-panel');
+        expect(body).toMatch(/bottom:\s*var\(--map-editor-toolbar-height, 0px\)/);
+        expect(body).toMatch(/height:\s*auto/);
+        expect(body).toMatch(/max-height:\s*calc\(50dvh - var\(--map-editor-toolbar-height, 0px\)\)/);
+        expect(ruleBody(block, '#road-info-panel \\.mobile-dock-sheet-handle')).toMatch(/display:\s*none/);
     });
 
-    it('starts the 3D parcel panel right of the strip, not with a gap on the right', () => {
+    it('puts the road tools in one row under the panel header, not in it', () => {
+        const header = indexHtml.slice(indexHtml.indexOf('<div class="road-panel-header">'), indexHtml.indexOf('<div class="cb-actions road-panel-tools">'));
+        expect(header).not.toContain('editRoadCrossSectionButton');
+        expect(header).not.toContain('importRoadsButton');
+        const tools = indexHtml.slice(indexHtml.indexOf('<div class="cb-actions road-panel-tools">'), indexHtml.indexOf('<div class="road-metrics-grid">'));
+        expect(tools).toContain('id="editRoadCrossSectionButton"');
+        expect(tools).toContain('id="importRoadsButton"');
+        expect(ruleBody(panelsCss, '#road-info-panel \\.road-panel-tools \\.btn')).toMatch(/flex:\s*1 1 0/);
+        // the desktop panel fits its content
+        expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/height:\s*auto/);
+    });
+
+    it('keeps the credits in the map on the open sheet, one size smaller', () => {
+        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '#map-container .leaflet-bottom');
+        expect(ruleBody(block, '#map-container \\.leaflet-bottom')).toMatch(/bottom:\s*var\(--map-sheet-occupied, var\(--map-visible-bottom\)\)/);
+        expect(ruleBody(block, '\\.map-credits-control')).toMatch(/font-size:\s*var\(--cb-text-xs\)/);
+    });
+
+    it('shows the avatar alone on phones with a ring that says whether a wallet is connected', () => {
+        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '[data-wallet="connected"]');
+        expect(ruleBody(block, '#map-container \\.username-display \\.user-avatar')).toMatch(/border:\s*2px dashed/);
+        expect(ruleBody(block, '#map-container \\.username-display\\[data-wallet="connected"\\] \\.user-avatar')).toMatch(/border:\s*2px solid var\(--cb-success\)/);
+        expect(ruleBody(block, '#map-container \\.username-display \\.wallet-status-icon')).toMatch(/display:\s*none/);
+        expect(ruleBody(block, '#map-container #username-text')).toMatch(/clip-path/);
+    });
+
+    it('runs the 3D parcel panel edge to edge on phones', () => {
         const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '.three-mode-parcel-panel');
         const body = ruleBody(block, '#three-container \\.three-mode-parcel-panel');
-        expect(body).toMatch(/left:\s*var\(--map-mode-strip\)/);
+        expect(body).toMatch(/left:\s*12px/);
         expect(body).toMatch(/right:\s*12px/);
     });
 });

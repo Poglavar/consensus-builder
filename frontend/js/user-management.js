@@ -901,6 +901,8 @@ function updateUsernameDisplay() {
             ? '<i class="fa-solid fa-link wallet-status-icon connected" title="Wallet connected"></i>'
             : '<i class="fa-solid fa-link-slash wallet-status-icon disconnected" title="Wallet disconnected"></i>';
 
+        // The phone bubble shows the avatar alone and reads the state off this attribute.
+        usernameDisplay.dataset.wallet = isConnected ? 'connected' : 'disconnected';
         // Replace content with avatar, name, and status icon
         usernameDisplay.innerHTML = `
             <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="Avatar" class="user-avatar">

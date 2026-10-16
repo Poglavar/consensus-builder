@@ -1485,16 +1485,9 @@
         <div id="road-info-panel" class="info-panel right-dock-panel">
             <div class="road-panel-header">
                 <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
-                <button type="button" id="editRoadCrossSectionButton" class="btn btn-sm"
-                    onclick="openRoadDrawingCrossSectionEditor()"><i class="fas fa-road" aria-hidden="true"></i><span
-                        data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
-                        class="road-cross-section-width"></span></button>
-                <button type="button" id="importRoadsButton" class="btn btn-sm"
-                    onclick="openCorridorImportChooser()"><i class="fas fa-file-import" aria-hidden="true"></i><span
-                        data-i18n-key="panel.road.importButton">Import…</span></button>
                 <input type="file" id="corridorImportInput" accept=".osm,.json,.xodr" hidden>
                 <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
-                     could not reserve their width and the Cross-section button slid underneath them. -->
+                     could not reserve their width and the title slid underneath them. -->
                 <div class="road-panel-actions">
                     <button type="button" id="road-panel-minimize" class="close-circle-btn close-circle-btn--lg road-panel-minimize"
                         aria-label="Minimize" title="Minimize" aria-expanded="true"
@@ -1504,6 +1497,17 @@
                         data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label"
                         onclick="cancelRoadOrTrackDrawing()">×</button>
                 </div>
+            </div>
+            <!-- The road's tools under the header, one row of equal buttons like the metric boxes
+                 below them: the cross-section editor (with the current width) and the import chooser. -->
+            <div class="cb-actions road-panel-tools">
+                <button type="button" id="editRoadCrossSectionButton" class="btn"
+                    onclick="openRoadDrawingCrossSectionEditor()"><i class="fas fa-road" aria-hidden="true"></i><span
+                        data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
+                        class="road-cross-section-width"></span></button>
+                <button type="button" id="importRoadsButton" class="btn"
+                    onclick="openCorridorImportChooser()"><i class="fas fa-file-import" aria-hidden="true"></i><span
+                        data-i18n-key="panel.road.importButton">Import…</span></button>
             </div>
 
             <!-- Road/Track drawing controls (shown when drawing) -->

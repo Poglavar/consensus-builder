@@ -123,11 +123,6 @@ body:has(#selection-tray) .floating-status {
         justify-content: center;
     }
 
-    /* The tray spans the row the mode strip ends on (css/map.css); the strip steps up over it. */
-    body:has(#selection-tray) {
-        --map-mode-stack-bottom: calc(100dvh - var(--app-safe-area-bottom, 0px) - var(--map-shell-bottom-clearance) - var(--map-shell-button-size) - var(--map-shell-gap));
-    }
-
     .selection-tray {
         gap: 8px;
         max-width: 100%;

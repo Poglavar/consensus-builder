@@ -435,7 +435,7 @@ body.three-mode-active .site-panel {
         top: auto;
         right: 0;
         bottom: 0;
-        left: var(--map-mode-strip);
+        left: 0;
         height: calc(var(--site-sheet-height) + var(--site-safe-bottom));
         padding-bottom: var(--site-safe-bottom);
         border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;

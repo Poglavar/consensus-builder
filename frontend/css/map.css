@@ -50,9 +50,19 @@ body {
     --map-mode-slot-5: calc(var(--map-mode-stack-bottom) - 84px);
     --map-mode-slot-6: calc(var(--map-mode-stack-bottom) - 36px);
 
-    /* The left edge the stack owns: its offset, a 40px button and a 10px gap. On phones every
-       bottom sheet starts right of this, so no panel is ever drawn over (or under) the buttons. */
+    /* The left edge the stack owns: its offset, a 40px button and a 10px gap. The map's own
+       top-left corner starts right of it. */
     --map-mode-strip: calc(var(--map-mode-stack-left) + 50px);
+}
+
+/* Phones: the strip hangs from the top-left under the search box instead of standing on the
+   bottom bar, so it always sits in the upper third of the screen and every bottom sheet can take
+   the bottom half at full width. Same ladder, its bottom moved to where slot 1 meets the top
+   clearance (slot 1 is 276px above the ladder's bottom). */
+@media (max-width: 767.98px) {
+    body {
+        --map-mode-stack-bottom: calc(var(--map-shell-top-clearance) + 276px);
+    }
 }
 
 /* The view strip's three tiles (.map-mode-tile, canonical map chrome): their slot on the left edge.
@@ -459,14 +469,13 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 
 /* On phones there is no horizontal room for the parcel panel (top-left) and the
    Built/Both/Planned controls (top-right) side by side, so the panel docks to the
-   bottom of the 3D view instead. It starts right of the mode-button strip on the LEFT
-   edge (--map-mode-strip) — it used to leave its gap on the right, for buttons that had
-   long since moved, and the buttons sat on top of its first column of text. */
+   bottom of the 3D view instead, edge to edge: the mode strip hangs from the top-left on
+   phones, so the bottom is the panels'. */
 @media (max-width: 767.98px) {
     #three-container .three-mode-parcel-panel {
         top: auto;
         bottom: calc(var(--map-shell-dock-height) + var(--cb-space-3));
-        left: var(--map-mode-strip);
+        left: 12px;
         right: 12px;
         width: auto;
         max-width: 360px;
