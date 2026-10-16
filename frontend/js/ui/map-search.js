@@ -134,11 +134,14 @@
             .catch(error => console.warn('[map-search] world coverage did not load; world places are left out', error));
     }
 
+    // Opens the globe and returns true, or false when there is no world view. The chip spins until
+    // the globe's first frame is up: loading it can take a moment.
     function openWorldView(opts) {
         const shell = win.MapShell;
         if (shell && typeof shell.openWorldView === 'function') {
             close({ blur: true });
-            shell.openWorldView(opts);
+            const opening = win.BusyControl.track(state.chip, () => shell.openWorldView(opts));
+            opening.catch(error => console.error(`[${new Date().toISOString()}] [map-search] the world view failed to open`, error));
             return true;
         }
         return false;

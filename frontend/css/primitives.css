@@ -495,19 +495,47 @@ textarea {
     border: 2px solid currentColor;
     border-right-color: transparent;
     border-radius: 50%;
-    animation: cb-toast-spin 0.8s linear infinite;
+    animation: cb-spin 0.8s linear infinite;
 }
 
 .cb-toast.is-busy .cb-toast__spinner {
     display: inline-block;
 }
 
-@keyframes cb-toast-spin {
+/* A control whose click is still landing (js/ui/busy-control.js): its leading icon turns into the
+   status line's ring. The glyph only goes transparent, so it keeps its width and the label does
+   not move; the ring is centred over it and takes the control's own colour. */
+.cb-busy {
+    cursor: progress;
+}
+
+.cb-busy > i:first-child {
+    position: relative;
+    -webkit-text-fill-color: transparent;
+}
+
+.cb-busy > i:first-child::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    box-sizing: border-box;
+    width: 1em;
+    height: 1em;
+    margin: -0.5em 0 0 -0.5em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: cb-spin 0.8s linear infinite;
+}
+
+@keyframes cb-spin {
     to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .cb-toast__spinner { animation: none; }
+    .cb-toast__spinner,
+    .cb-busy > i:first-child::after { animation: none; }
 }
 
 /* ---- Banner ----
