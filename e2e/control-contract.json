@@ -1761,6 +1761,41 @@
       "controlType": "button"
     },
     {
+      "id": "control-4c39955237e201-1",
+      "source": "index.html",
+      "markup": "<input type=\"file\" id=\"corridorImportInput\" accept=\".osm,.json,.xodr\" hidden>",
+      "interaction": "change",
+      "controlType": "file"
+    },
+    {
+      "id": "control-3cdcd8ac497967-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"road-panel-minimize\" class=\"close-circle-btn close-circle-btn--lg road-panel-minimize\" aria-label=\"Minimize\" title=\"Minimize\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\" onclick=\"toggleRoadInfoPanelMinimized()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d571cc8e478aef-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"\" data-i18n-key=\"panel.road.closeAriaLabel\" data-i18n-attr=\"aria-label\" onclick=\"cancelRoadOrTrackDrawing()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-39ec78729ffa8f-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"editRoadCrossSectionButton\" class=\"btn\" onclick=\"openRoadDrawingCrossSectionEditor()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-af6ec454be502d-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"importRoadsButton\" class=\"btn\" onclick=\"openCorridorImportChooser()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-282ecd81fff1d2-1",
       "source": "index.html",
       "markup": "<button id=\"undoRoadButton\" class=\"btn\" onclick=\"undoLastRoadOrTrackSegment()\" data-i18n-key=\"panel.road.undoButton\">",
@@ -1778,41 +1813,6 @@
       "id": "control-6c025372ef2f69-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"btn\" onclick=\"cancelRoadOrTrackDrawing()\" data-i18n-key=\"common.cancel\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-14060e89458e22-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"editRoadCrossSectionButton\" class=\"btn btn-sm\" onclick=\"openRoadDrawingCrossSectionEditor()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4984e3a09f9210-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"importRoadsButton\" class=\"btn btn-sm\" onclick=\"openCorridorImportPicker()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-87a6ea59185153-1",
-      "source": "index.html",
-      "markup": "<input type=\"file\" id=\"corridorImportInput\" accept=\".xodr\" hidden>",
-      "interaction": "change",
-      "controlType": "file"
-    },
-    {
-      "id": "control-3cdcd8ac497967-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"road-panel-minimize\" class=\"close-circle-btn close-circle-btn--lg road-panel-minimize\" aria-label=\"Minimize\" title=\"Minimize\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\" onclick=\"toggleRoadInfoPanelMinimized()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-d571cc8e478aef-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"\" data-i18n-key=\"panel.road.closeAriaLabel\" data-i18n-attr=\"aria-label\" onclick=\"cancelRoadOrTrackDrawing()\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -3885,6 +3885,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-8c3b21a184da79-1",
+      "source": "js/corridor-import.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
       "id": "control-655d2b64af149d-1",
       "source": "js/ens/ens-name.js",
       "markup": "<button type=\"button\" class=\"cb-link cb-link--quiet ens-name-value\" title=\"${copyLabel}: ${fullName}\"` + ` aria-label=\"${copyLabel}: ${fullName}\"` + ` onclick=\"copyEnsName(${inlineJsArg(name)}, this)\">",
@@ -4866,9 +4871,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-ec18ff90a8e03b-1",
+      "id": "control-94dbf05c6c8fd3-1",
       "source": "js/parcels/ui/proposal-actions.js",
-      "markup": "<button type=\"button\" class=\"cb-tile parcel-build-btn parcel-build-btn--${tool.key}\" onclick=\"${buildHandler}('${tool.key}')\" title=\"${escapeAttr(reason || label)}\"${reason ? ' disabled aria-disabled=\"true\"' : ''}>",
+      "markup": "<button type=\"button\" class=\"cb-tile parcel-build-btn parcel-build-btn--${tool.key}\" onclick=\"BusyControl.track(this, () =>",
       "exhaustiveVariants": true,
       "variants": [
         {
@@ -4877,7 +4882,7 @@
             "parcel-build-btn--buildings"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('buildings')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('buildings'))"
           }
         },
         {
@@ -4886,7 +4891,7 @@
             "parcel-build-btn--row"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('row')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('row'))"
           }
         },
         {
@@ -4895,7 +4900,7 @@
             "parcel-build-btn--parcelBased"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('parcelBased')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('parcelBased'))"
           }
         },
         {
@@ -4904,7 +4909,7 @@
             "parcel-build-btn--single"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('single')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('single'))"
           }
         },
         {
@@ -4913,7 +4918,7 @@
             "parcel-build-btn--reparcellization"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('reparcellization')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('reparcellization'))"
           }
         },
         {
@@ -4922,7 +4927,7 @@
             "parcel-build-btn--park"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('park')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('park'))"
           }
         },
         {
@@ -4931,7 +4936,7 @@
             "parcel-build-btn--square"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('square')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('square'))"
           }
         },
         {
@@ -4940,7 +4945,7 @@
             "parcel-build-btn--lake"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('lake')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('lake'))"
           }
         },
         {
@@ -4949,7 +4954,7 @@
             "parcel-build-btn--offer"
           ],
           "attrs": {
-            "onclick": "startParcelBuildTool('offer')"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('offer'))"
           }
         },
         {
@@ -4959,7 +4964,7 @@
             "parcel-build-btn--buildings"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('buildings')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('buildings'))"
           }
         },
         {
@@ -4969,7 +4974,7 @@
             "parcel-build-btn--row"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('row')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('row'))"
           }
         },
         {
@@ -4979,7 +4984,7 @@
             "parcel-build-btn--parcelBased"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('parcelBased')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('parcelBased'))"
           }
         },
         {
@@ -4989,7 +4994,7 @@
             "parcel-build-btn--single"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('single')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('single'))"
           }
         },
         {
@@ -4999,7 +5004,7 @@
             "parcel-build-btn--reparcellization"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('reparcellization')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('reparcellization'))"
           }
         },
         {
@@ -5009,7 +5014,7 @@
             "parcel-build-btn--park"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('park')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('park'))"
           }
         },
         {
@@ -5019,7 +5024,7 @@
             "parcel-build-btn--square"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('square')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('square'))"
           }
         },
         {
@@ -5029,7 +5034,7 @@
             "parcel-build-btn--lake"
           ],
           "attrs": {
-            "onclick": "SiteTool.build('lake')"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('lake'))"
           }
         }
       ],
@@ -5303,88 +5308,6 @@
       "controlType": "text"
     },
     {
-      "id": "control-bf1b74e30cb12d-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<select data-approval-source>",
-      "interaction": "change",
-      "controlType": "select",
-      "exempt": "The shipped app registers only the Upload JSON rights provider. The source select has no alternative and its reference field stays disabled; registering another provider requires tests for these fields.",
-      "guards": [
-        {
-          "source": "js/proposals/approval-providers.js",
-          "pattern": "\\bregisterSource\\s*\\(",
-          "occurrences": 2
-        },
-        {
-          "source": "js/proposals/approval-providers.js",
-          "includes": "registerSource({ id: 'upload'"
-        },
-        {
-          "pattern": "\\bProposalApprovalSources\\b",
-          "occurrences": 3
-        }
-      ]
-    },
-    {
-      "id": "control-7f8ae50e55c7e9-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"text\" data-approval-reference value=\"${esc(normalized?.rights?.source?.reference || '')}\" autocomplete=\"off\"${selectedSource === 'upload' ? ' disabled' : ''}>",
-      "interaction": "change",
-      "controlType": "text",
-      "exempt": "The shipped app registers only the Upload JSON rights provider. The source select has no alternative and its reference field stays disabled; registering another provider requires tests for these fields.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/approval-providers.js",
-          "pattern": "\\bregisterSource\\s*\\(",
-          "occurrences": 2
-        },
-        {
-          "source": "js/proposals/approval-providers.js",
-          "includes": "registerSource({ id: 'upload'"
-        },
-        {
-          "pattern": "\\bProposalApprovalSources\\b",
-          "occurrences": 3
-        }
-      ]
-    },
-    {
-      "id": "control-a4c23ce2a2672d-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}>",
-      "interaction": "change",
-      "controlType": "file"
-    },
-    {
-      "id": "control-a0ceb95358ecf2-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-import\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7b0b434bcf12e7-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-template\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4caa83ec16a432-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-editor-action=\"approval-remove\"${normalized?.rights ? '' : ' disabled'}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-09ee9264a0a3d5-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<textarea data-approval-lens placeholder=\"${esc(t('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}\">",
-      "interaction": "change",
-      "controlType": "textarea"
-    },
-    {
       "id": "control-a7480327c2bd4c-1",
       "source": "js/proposal-editor-shell.js",
       "markup": "<input type=\"number\" min=\"0\" step=\"any\" data-draft-path=\"fields.offer\" data-draft-number=\"true\" value=\"${escapeHtml(fields.offer ?? 0)}\">",
@@ -5555,13 +5478,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-6ffbb02b779cd6-1",
-      "source": "js/proposals/approval-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"inspect\" data-owner-id=\"${esc(id)}\"${accepted.includes(id) ? ' data-approval-deal-accepted' : ''}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-e325ec9cfed7f8-1",
       "source": "js/proposals/approval-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-approval-action=\"withdraw\" data-owner-id=\"${esc(id)}\">",
@@ -5572,6 +5488,13 @@
       "id": "control-dc0e54f134ecb4-1",
       "source": "js/proposals/approval-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"verify\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6ffbb02b779cd6-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"inspect\" data-owner-id=\"${esc(id)}\"${accepted.includes(id) ? ' data-approval-deal-accepted' : ''}>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5681,6 +5604,137 @@
       "dispatchEvidence": "The local button helper builds every dialog control: the close button, Cancel and Verify in Act for an owner, the verified wallet's Close / Review and accept / Done, and Cancel / Accept / Act for an owner / Close in the Accept review and its receipt.",
       "interaction": "auto",
       "controlType": "dynamic"
+    },
+    {
+      "id": "control-bf1b74e30cb12d-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<select data-approval-source>",
+      "interaction": "change",
+      "controlType": "select",
+      "exempt": "The shipped app registers only the Upload JSON rights provider. The source select has no alternative and its reference field stays disabled; registering another provider requires tests for these fields.",
+      "guards": [
+        {
+          "source": "js/proposals/approval-providers.js",
+          "pattern": "\\bregisterSource\\s*\\(",
+          "occurrences": 2
+        },
+        {
+          "source": "js/proposals/approval-providers.js",
+          "includes": "registerSource({ id: 'upload'"
+        },
+        {
+          "pattern": "\\bProposalApprovalSources\\b",
+          "occurrences": 3
+        }
+      ]
+    },
+    {
+      "id": "control-7f8ae50e55c7e9-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-reference value=\"${esc(normalized?.rights?.source?.reference || '')}\" autocomplete=\"off\"${selectedSource === 'upload' ? ' disabled' : ''}>",
+      "interaction": "change",
+      "controlType": "text",
+      "exempt": "The shipped app registers only the Upload JSON rights provider. The source select has no alternative and its reference field stays disabled; registering another provider requires tests for these fields.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/approval-providers.js",
+          "pattern": "\\bregisterSource\\s*\\(",
+          "occurrences": 2
+        },
+        {
+          "source": "js/proposals/approval-providers.js",
+          "includes": "registerSource({ id: 'upload'"
+        },
+        {
+          "pattern": "\\bProposalApprovalSources\\b",
+          "occurrences": 3
+        }
+      ]
+    },
+    {
+      "id": "control-a4c23ce2a2672d-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}>",
+      "interaction": "change",
+      "controlType": "file"
+    },
+    {
+      "id": "control-a0ceb95358ecf2-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-import\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-7b0b434bcf12e7-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-template\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-4caa83ec16a432-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-editor-action=\"approval-remove\"${normalized?.rights ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-09ee9264a0a3d5-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<textarea data-approval-lens placeholder=\"${esc(t('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}\">",
+      "interaction": "change",
+      "controlType": "textarea"
+    },
+    {
+      "id": "control-7ed6db7682f5a5-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<select data-approval-rule ${attribute} aria-label=\"${esc(label)}\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-e19b924c213238-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-rule data-approval-test-fraction value=\"${esc(fractionText(test))}\" placeholder=\"1/2\" aria-label=\"${esc(t('proposalDrafts.approval.testFraction', 'Fraction'))}\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-36205215699722-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-test-remove\" data-test-index=\"${index}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-71e1f8196ee0b3-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-test-add\"${rules.tests.length >",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-3708b2045166eb-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-rule data-approval-authority-id=\"${index}\" value=\"${esc(value)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-241be07962a1de-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"checkbox\" data-approval-rule data-approval-custom-authority${authorityIds.length ? ' checked' : ''}>",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-c5c8c7647f6d44-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<select data-approval-rule data-approval-regime>",
+      "interaction": "change",
+      "controlType": "select"
     },
     {
       "id": "control-d8cac26345a649-1",
@@ -5824,9 +5878,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-21907053d39201-1",
+      "id": "control-6722faca57f7e8-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} });\">",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5901,9 +5955,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-a311f850e5019a-1",
+      "id": "control-f23a3c9e1fc53a-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-compare-proposal\" aria-pressed=\"${beforeAfter.isActive(proposalKey) ? 'true' : 'false'}\" onclick=\"toggleProposalBeforeAfter(${inlineJsArg(proposalKey)})\">",
+      "markup": "<button type=\"button\" class=\"btn btn-compare-proposal\" aria-pressed=\"${beforeAfter.isActive(proposalKey) ? 'true' : 'false'}\" onclick=\"BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5943,37 +5997,37 @@
       "controlType": "button"
     },
     {
-      "id": "control-aa7d6fda7522c5-1",
+      "id": "control-a2de2b547ac069-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalSupport(${inlineJsArg(proposalKey)}, 'revokePledge')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-62b8e8f70d5258-1",
+      "id": "control-a2de2b547ac069-2",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalSupport(${inlineJsArg(proposalKey)}, 'releaseDonations')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-1d89674c847657-1",
+      "id": "control-a2de2b547ac069-3",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalSupport(${inlineJsArg(proposalKey)}, 'fulfillPledge')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-19783a23aa7e7c-1",
+      "id": "control-a2de2b547ac069-4",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalSupport(${inlineJsArg(proposalKey)}, 'refundMyDonations')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-ae4d00d4e66cd6-1",
+      "id": "control-a2de2b547ac069-5",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalSupport(${inlineJsArg(proposalKey)}, 'voidPledge')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6062,23 +6116,23 @@
       "controlType": "button"
     },
     {
-      "id": "control-13895e2579ae0e-1",
+      "id": "control-a2de2b547ac069-6",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-d7ae1ade500f2a-1",
+      "id": "control-7cd58a403aa32e-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success\" onclick=\"settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0})\">",
+      "markup": "<button type=\"button\" class=\"btn btn-success\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-44374bd55d2d0e-1",
+      "id": "control-a2de2b547ac069-7",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')\">",
+      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6143,6 +6197,13 @@
         }
       ],
       "exhaustiveVariants": true
+    },
+    {
+      "id": "control-e3261ea7078417-1",
+      "source": "js/proposals/dialog-create.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-cd73c88bd50cc9-1",
@@ -6657,7 +6718,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-e3261ea7078417-1",
+      "id": "control-e3261ea7078417-2",
       "source": "js/proposals/dialog-create.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
@@ -6918,7 +6979,7 @@
       ]
     },
     {
-      "id": "control-e3261ea7078417-2",
+      "id": "control-e3261ea7078417-3",
       "source": "js/proposals/dialog-create.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
@@ -7480,6 +7541,29 @@
       "controlType": "button"
     },
     {
+      "id": "control-594478c86ef091-1",
+      "source": "js/proposals/lineage.js",
+      "markup": "<button type=\"button\" class=\"cb-link proposal-lineage__link\" data-lineage-open=\"${esc(entry.lookup)}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a746354019b928-1",
+      "source": "js/proposals/lineage.js",
+      "markup": "root.document.createElement('button')",
+      "variants": [
+        {
+          "name": "open a published source from the Based on row",
+          "classes": [
+            "cb-link",
+            "proposal-based-on-link"
+          ]
+        }
+      ],
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-239cb5eb74b20c-1",
       "source": "js/proposals/list-ui.js",
       "markup": "<button type=\"button\" class=\"btn btn-success btn-sm proposal-buy-btn\" title=\"${buyLabel}\" onclick=\"event.stopPropagation(); claimSaleOffer('${pid}');\">",
@@ -7709,6 +7793,13 @@
       "id": "control-0d0d5155ae910e-1",
       "source": "js/reparcellization.js",
       "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a556d6246b9ace-1",
+      "source": "js/reparcellization.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-approval-setup>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -8787,6 +8878,13 @@
       "exhaustiveVariants": true,
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-238f8889bfb66b-1",
+      "source": "js/ui/map-compare-control.js",
+      "markup": "handle.setAttribute('role', 'slider')",
+      "interaction": "change",
+      "controlType": "slider"
     },
     {
       "id": "control-703271a30f8dda-1",
@@ -10073,99 +10171,6 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-238f8889bfb66b-1",
-      "source": "js/ui/map-compare-control.js",
-      "markup": "handle.setAttribute('role', 'slider')",
-      "interaction": "change",
-      "controlType": "slider"
-    },
-    {
-      "id": "control-594478c86ef091-1",
-      "source": "js/proposals/lineage.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-lineage__link\" data-lineage-open=\"${esc(entry.lookup)}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a746354019b928-1",
-      "source": "js/proposals/lineage.js",
-      "markup": "root.document.createElement('button')",
-      "variants": [
-        {
-          "name": "open a published source from the Based on row",
-          "classes": [
-            "cb-link",
-            "proposal-based-on-link"
-          ]
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e3261ea7078417-3",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a556d6246b9ace-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-approval-setup>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7ed6db7682f5a5-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<select data-approval-rule ${attribute} aria-label=\"${esc(label)}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-e19b924c213238-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"text\" data-approval-rule data-approval-test-fraction value=\"${esc(fractionText(test))}\" placeholder=\"1/2\" aria-label=\"${esc(t('proposalDrafts.approval.testFraction', 'Fraction'))}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-36205215699722-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-test-remove\" data-test-index=\"${index}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-71e1f8196ee0b3-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-test-add\"${rules.tests.length >",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3708b2045166eb-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"text\" data-approval-rule data-approval-authority-id=\"${index}\" value=\"${esc(value)}\" autocomplete=\"off\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-241be07962a1de-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"checkbox\" data-approval-rule data-approval-custom-authority${authorityIds.length ? ' checked' : ''}>",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-c5c8c7647f6d44-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<select data-approval-rule data-approval-regime>",
-      "interaction": "change",
-      "controlType": "select"
     }
   ],
   "variantExclusions": [
