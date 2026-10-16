@@ -6,16 +6,15 @@
 })(typeof window !== 'undefined' ? window : globalThis, function proposalBetEntryFactory(root) {
     'use strict';
 
-    function availability({ nftInfo = null, approvalSetup = false, proposal = {} } = {}) {
+    function availability({ nftInfo = null, approvalSetup = false } = {}) {
         if (approvalSetup) return 'approval';
-        if (proposal.supersededBy || ['executed', 'cancelled', 'expired', 'superseded'].includes(String(proposal.lifecycleStatus || proposal.status || '').toLowerCase())) return 'closed';
         if (!nftInfo?.tokenId) return 'mint';
         const chain = String(nftInfo.chain || nftInfo.chainId || '');
         return chain.startsWith('solana') ? 'pool' : 'chain';
     }
 
     function open({ proposal, nftInfo, approvalSetup, onMint }) {
-        const route = availability({ proposal, nftInfo, approvalSetup });
+        const route = availability({ nftInfo, approvalSetup });
         if (route === 'pool') {
             return root.BetsDialog.open({ proposalAccount: String(nftInfo.tokenId),
                 proposalId: proposal.proposalId, title: proposal.title || proposal.name || '',
@@ -42,8 +41,6 @@
             actions.push({ id: 'mint', label: t('panel.proposal.bet.openMint', 'Open minting options'), role: 'primary', onClick: onMint });
         } else if (route === 'approval') {
             append('p', 'panel.proposal.bet.approval', 'Betting is not available for proposals with ownership and approval rules yet. Those decisions do not settle a betting pool.');
-        } else if (route === 'closed') {
-            append('p', 'ownerAudit.betClosed', 'This proposal is settled, closed or superseded. New bets are unavailable; view existing positions in Bets.');
         } else {
             append('p', 'panel.proposal.bet.chain', 'Betting is currently available only for proposals minted on Solana. This proposal was minted on another chain.');
         }
@@ -52,13 +49,5 @@
             className: 'proposal-bet-help', size: 'md', body, actions });
     }
 
-    function presentation(options, translate) {
-        const route = availability(options);
-        const key = route === 'approval' ? 'panel.proposal.bet.approval' : route === 'closed' ? 'ownerAudit.betClosed' : route === 'mint' ? 'panel.proposal.bet.mintFirst' : route === 'chain' ? 'panel.proposal.bet.chain' : null;
-        const fallback = route === 'approval' ? 'Betting is unavailable for this proposal’s ownership and approval rules.'
-            : route === 'closed' ? 'New bets are unavailable on closed or superseded proposals.'
-            : route === 'mint' ? 'Mint on Solana before betting.' : 'Betting requires a Solana proposal.';
-        return { route, disabled: ['approval', 'closed', 'chain'].includes(route), hint: key ? translate(key, fallback) : '' };
-    }
-    return { availability, presentation, open };
+    return { availability, open };
 });

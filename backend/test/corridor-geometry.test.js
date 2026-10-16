@@ -573,6 +573,15 @@ describe('curvature constraints', () => {
         expect(r).toBeCloseTo(10 * Math.SQRT2, 2);
     });
 
+    it('calculateCurvatureRadius reads doubling back as the tightest bend, not as straight', () => {
+        // Out and back to the start, and back along the same line short of it: both are reversals.
+        expect(calculateCurvatureRadius(LL(0, 0), LL(0, 50), LL(0, 0))).toBe(0);
+        expect(calculateCurvatureRadius(LL(0, 0), LL(0, 50), LL(0, 20))).toBe(0);
+        // A tight reversal is flagged, never waved through as a straight continuation.
+        const back = checkCurvatureConstraint([LL(0, 0), LL(0, 50)], LL(0, 20), 300);
+        expect(back.violatesConstraint || back.wasAdjusted).toBe(true);
+    });
+
     it('checkCurvatureConstraint accepts a straight run and a gentle curve', () => {
         // Fewer than 2 prior points → trivially valid
         expect(checkCurvatureConstraint([LL(0, 0)], LL(0, 10), 300).valid).toBe(true);

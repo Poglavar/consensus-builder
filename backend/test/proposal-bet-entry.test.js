@@ -37,9 +37,9 @@ describe('proposal panel betting entry', () => {
 
     it('opens the pool overview without choosing a side or sending a transaction', () => {
         const { root, entry } = setup();
-        const proposal = { proposalId: 'proposal-1', title: 'Garden', lifecycleStatus: 'Active' };
+        const proposal = { proposalId: 'proposal-1', title: 'Garden', lifecycleStatus: 'Cancelled' };
         entry.open({ proposal, nftInfo: { tokenId: 'account', chain: 'solana-devnet' } });
-        expect(root.BetsDialog.open).toHaveBeenCalledWith({ proposalAccount: 'account', proposalId: 'proposal-1', title: 'Garden', lifecycleStatus: 'Active' });
+        expect(root.BetsDialog.open).toHaveBeenCalledWith({ proposalAccount: 'account', proposalId: 'proposal-1', title: 'Garden', lifecycleStatus: 'Cancelled' });
         expect(root.CbDialog.open).not.toHaveBeenCalled();
     });
 

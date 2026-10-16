@@ -671,8 +671,9 @@ function showProposalDialog(overrides = null) {
         explain: t('modal.createProposal.ownerOffer.explain', 'You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.'),
         recheck: t('modal.createProposal.ownerOffer.recheck', 'Check again')
     };
-    const submitLabel = proposalSaveActionLabel({ replacement: isEditingExisting,
-        onchain: typeof getActiveMintTarget === 'function' && getActiveMintTarget().onchain === true }, t);
+    const submitLabel = isEditingExisting
+        ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+        : t('modal.createProposal.submit', 'Create Proposal');
     const cancelLabel = t('common.cancel', 'Cancel');
 
     const overrideGoal = normalizeGoalKey(proposalDialogOverrides?.goal) || null;
@@ -930,7 +931,6 @@ function showProposalDialog(overrides = null) {
                                     <option value="EUR">EUR</option>
                                     <option value="USD">USD</option>
                                     <option value="ETH">ETH</option>
-                                    <option value="SOL">SOL</option>
                                     <option value="ARS">ARS</option>
                                     <option value="USDC">USDC</option>
                                     <option value="USDT" selected>USDT</option>
@@ -1822,7 +1822,6 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
                             <option value="ETH">ETH</option>
-                            <option value="SOL">SOL</option>
                             <option value="ARS">ARS</option>
                             <option value="USDC">USDC</option>
                             <option value="USDT" selected>USDT</option>

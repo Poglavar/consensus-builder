@@ -1348,8 +1348,9 @@ window.updateGameSectionTitle = updateGameSectionTitle;
  * @param {boolean} autoReinit - Whether to run initializeGame() right after the reset completes.
  */
 async function resetGameState(autoReinit = false) {
-    const message = translateGameText('ownerAudit.resetDisclosure',
-        'Reset this browser’s simulation? This deletes local proposals, AI agents, simulation progress and fictional parcel-owner assignments. Editor drafts and loaded map data are kept. Your current agent’s name, avatar and ID are kept, but its fictional balances, wallet links and proposal history reset. Public/server records, real wallets and on-chain transactions are unchanged. Cancel keeps everything as it is.');
+    const message = autoReinit
+        ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.')
+        : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
 
     // The app's own dialog (js/ui/dialogs.js), never the browser's.
     const confirmed = await window.CbDialog.confirm(message);
@@ -1424,31 +1425,3 @@ async function resetGameState(autoReinit = false) {
         updateStatus(statusMessage);
     }
 }
-
-function showSimulationSetup() {
-    const section = window.MapShell?.revealSection('game');
-    if (!section) {
-        showGameAlert('simulation_unavailable', 'Simulation is unavailable in this city. This does not affect verified owner approval.');
-        return false;
-    }
-    section.open = true;
-    updateSimulationReadiness();
-    return true;
-}
-
-function updateSimulationReadiness() {
-    const status = document.getElementById('simulation-mode-status');
-    if (status) status.textContent = document.getElementById('gameCheckbox')?.checked
-        ? translateGameText('ownerAudit.simulationOn', 'Local simulation enabled — fictional ownership only')
-        : translateGameText('ownerAudit.simulationOff', 'Local simulation is off');
-}
-
-window.showSimulationSetup = showSimulationSetup;
-function initializeSimulationSetup() {
-    document.getElementById('gameCheckbox')?.addEventListener('change', updateSimulationReadiness);
-    document.getElementById('simulation-setup-button')?.addEventListener('click', showSimulationSetup);
-    updateSimulationReadiness();
-    if (new URLSearchParams(window.location.search).has('simulation')) showSimulationSetup();
-}
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeSimulationSetup, { once: true });
-else initializeSimulationSetup();

@@ -1,26 +1,4 @@
 {
-    "ownerAudit": {
-        "openSimulation": "Otvori podešavanja lokalne simulacije",
-        "simulationOff": "Lokalna simulacija je isključena",
-        "simulationOn": "Lokalna simulacija uključena — samo izmišljeno vlasništvo",
-        "simulationRights": "Lokalne radnje Primeni i Glasaj služe istraživanju alternativa u ovom pregledaču. Ne objavljuju odobrenje vlasnika i ne potvrđuju vlasnička prava.",
-        "ownerChecklist": "<li>Poveži novčanik kojim upravljaš.</li><li>Izaberi pouzdano sočivo.</li><li>Učitaj potpuna vlasnička prava za parcele predloga.</li><li>Pre odobrenja preko sočiva proveri prava i svoje ovlašćenje.</li>",
-        "resetDisclosure": "Ponovo pokrenuti simulaciju ovog pregledača? Brišu se lokalni predlozi, AI agenti, napredak i izmišljene dodele vlasništva. Nacrti u uređivaču i podaci mape ostaju. Tvoj agent zadržava ime, avatar i ID, ali mu se poništavaju izmišljena stanja računa, veze sa novčanicima i istorija predloga. Javni zapisi, stvarni novčanici i transakcije na lancu ostaju nepromenjeni. Odustajanje čuva sve.",
-        "referenceStake": "Za 1 USDC",
-        "quoteReference": "Množioci prikazuju novi ulog od 1 USDC. Ukupna isplata uključuje ulog, približna je i menja se sa fondom.",
-        "poolShare": "{{percent}} fonda na Da",
-    "sidePoolShare": "{{percent}} fonda",
-        "independentPools": "Svaki predlog ima nezavisan fond Da/Ne. Procenti prikazuju udeo uloga na Da, a ne procenjene verovatnoće; njihov zbir ne mora biti 100%.",
-        "previewOnly": "Pregledaj ulog bez novčanika. Ukupna isplata uključuje ulog i zavisi od konačnog fonda. Za slanje treba povezan novčanik i otvoren prihvatljiv fond.",
-        "invalidStake": "Unesi pozitivan iznos USDC sa najviše šest decimala.",
-        "totalReturn": "Približna ukupna isplata {{amount}} ako pobedi {{side}} (uključuje ulog)",
-        "connectToBet": "Poveži novčanik za opkladu",
-        "betClosed": "Nove opklade nisu dostupne za zatvorene ili zamenjene predloge. Postojeće uloge pogledaj u Opkladama.",
-        "saveLocalProposal": "Sačuvaj lokalni predlog",
-        "saveLocalVote": "Sačuvaj lokalni glas",
-        "localDraft": "Lokalni nacrt",
-        "localContext": "Samo u ovom pregledaču. Primena menja lokalnu mapu; lokalni glas nije provereno odobrenje vlasnika. Za javni zapis potrebna je zasebna objava ili mintovanje."
-    },
   "onMapEditor": {
     "missingSite": "Ova sačuvana zgrada nema važeću granicu izvorne lokacije pa nije moguće bezbedno uređivati njenu geometriju.",
     "cancel": "Odustani",
@@ -340,9 +318,6 @@
         "notFound": "Ovaj predlog više nije dostupan. Osvežite listu predloga i pokušajte ponovo."
     },
     "proposalDrafts": {
-        "variantLabel": "Varijanta {{id}}",
-        "variantOf": "Varijanta predloga",
-        "variantSaved": "Nova varijanta je sačuvana. Original ostaje sačuvan; Primenjeno označava dizajn na mapi.",
         "title": "Nacrti",
         "entryAria": "Otvori {{count}} sačuvanih nacrta predloga",
         "editorAria": "Uređivač nacrta predloga",
@@ -482,7 +457,6 @@
             "handoffFailedReason": "Uređivač dizajna nije mogao da se otvori: {{reason}}. Lokacija nije promenjena, a nacrt dizajna je sačuvan lokalno."
         },
         "placement": {
-            "blockUnavailable": "Blok zahteva lokaciju koju server može da proveri. Ovu lokaciju nije bilo moguće proveriti pa uređivač nije otvoren. Izbor je sačuvan. Pokušaj sa podržanom lokacijom poput Zagreba ili ponovi pokušaj ako servis podataka nije dostupan.",
             "fixedSite": "Ova vrsta predloga vezana je za izvornu lokaciju i ne može da se premesti.",
             "existingBuilding": "Predlozi za postojeće zgrade zadržavaju tlocrt vezan za izvornu zgradu i ne mogu slobodno da se premeštaju.",
             "invalidSite": "Za slobodno postavljanje potrebna je važeća poligonska lokacija.",
@@ -497,7 +471,6 @@
             "massingOutsideSite": "Masa premeštene zgrade mora u potpunosti da bude unutar nove lokacije."
         },
         "review": {
-            "localNotice": "Čuvanje pravi novi lokalni protivpredlog u ovom pregledaču. Original ostaje nepromenjen. Objava ili mintovanje zasebna je radnja; lokalni glas i primena nisu provereno odobrenje vlasnika.",
             "title": "Pregled promena",
             "immutableNotice": "Objavljivanje stvara novi nepromenljivi predlog. Izvor se ne menja niti uklanja.",
             "newProposal": "Novi predlog",
@@ -547,7 +520,6 @@
             "overlay": "Preklopljeno"
         },
         "actions": {
-            "saveLocalCounterproposal": "Sačuvaj lokalni protivpredlog",
             "close": "Zatvori uređivač",
             "undo": "Opozovi",
             "redo": "Ponovi",
@@ -988,7 +960,7 @@
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u izabrani blok",
-            "singleBuilding": "Zgrada slobodnog oblika",
+            "singleBuilding": "Jedna zgrada",
             "parkButton": "Park",
             "squareButton": "Trg",
             "listTitle": "Lista blokova",
@@ -1227,8 +1199,8 @@
                 "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
-                "single": "Zgrada slobodnog oblika",
-                "reparcel": "Preraspodela zemljišta",
+                "single": "Slobodna zgrada",
+                "reparcel": "Reparcelacija",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
@@ -1882,8 +1854,6 @@
             }
         },
         "road": {
-            "curveTooTight": "Krivina pruge: poluprečnik kroz tri tačke {{measured}} m; potrebno je {{minimum}} m. Pomeri krivinu ili nacrtaj blažu trasu. Crtež je sačuvan.",
-            "curveAdjusted": "Tačka je prilagođena proveri poluprečnika kroz tri tačke od {{radius}} m.",
             "title": "Nacrtaj put",
             "titleTrack": "Nacrtaj prugu",
             "crossSectionButton": "Uredi poprečni presek",
@@ -2045,9 +2015,9 @@
         },
         "track": {
             "speedPickerTitle": "Izaberi brzinu pruge",
-            "speedPickerDescription": "Izaberi projektnu brzinu za proveru krivina kroz tri tačke. Trasa je šematska: ova provera ne potvrđuje neprekidnu železničku krivinu. Pritisni Enter za izabranu brzinu.",
+            "speedPickerDescription": "Izaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš sa podrazumevanom selekcijom.",
             "startDrawing": "Počni crtanje",
-            "minRadius": "Najmanji poluprečnik kroz tri tačke: {{radius}} m",
+            "minRadius": "Minimalni radijus zakrivljenosti {{radius}} m",
             "cancel": "Otkaži",
             "widthLabel": "Širina pruge:"
         },
@@ -2078,7 +2048,7 @@
                     "eyebrow": "Od ideje do predloga",
                     "title": "Učinite promenu vidljivom",
                     "body": "Pretvorite ideju u predlog: preoblikujte parcele, skicirajte ulice i parkove ili dodajte zgrade. Primena nacrta pokazuje kako menja mapu.",
-                    "hint": "Dodirni zemljište i izaberi Predloži ovde ili koristi Dizajn za crtanje lokacije. Zatim uporedi predloge na mapi."
+                    "hint": "Počnite u Alatima, pa uporedite predloge na mapi."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -2140,7 +2110,7 @@
             "cancel": "Otkaži"
         },
         "singleBuilding": {
-            "title": "Zgrada slobodnog oblika",
+            "title": "Slobodna forma",
             "defaultName": "Zgrada {{n}}",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Izaberi zgradu",
@@ -2571,14 +2541,14 @@
                         "station": "Stanica javnog prevoza",
                         "roadTrack": "Put/Pruga",
                         "road-track": "Put/Pruga",
-                        "buildings": "Blok",
-                        "single": "Zgrada slobodnog oblika",
+                        "buildings": "Zgrade",
+                        "single": "Jedna zgrada",
                         "park": "Park",
                         "square": "Trg",
                         "lake": "Jezero",
-                        "urbanRule": "Blok",
-                        "urban-rule": "Blok",
-                        "reparcellization": "Preraspodela zemljišta",
+                        "urbanRule": "Urbano pravilo",
+                        "urban-rule": "Urbano pravilo",
+                        "reparcellization": "Reparcelacija",
                         "row": "Niz",
                         "other": "Ostalo"
                     }
@@ -2620,14 +2590,14 @@
                     "road-track": "Put/Pruga",
                     "road": "Put",
                     "track": "Pruga",
-                    "buildings": "Blok",
-                    "single": "Zgrada slobodnog oblika",
+                    "buildings": "Zgrade",
+                    "single": "Jedna zgrada",
                     "row": "Niz",
                     "park": "Park",
                     "square": "Trg",
                     "lake": "Jezero",
-                    "urban-rule": "Blok",
-                    "reparcellization": "Preraspodela zemljišta",
+                    "urban-rule": "Urbano pravilo",
+                    "reparcellization": "Reparcelacija",
                     "decide-later": "Odluči kasnije",
                     "parcelBased": "Na nivou parcele",
                     "other": "Ostalo"
@@ -3049,21 +3019,21 @@
             "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
                 "purchase": "Kupovina",
-                "urbanRule": "Blok",
+                "urbanRule": "Urbanističko pravilo",
                 "reparcellization": "Reparcelacija",
                 "jointInvestment": "Zajednička investicija"
             },
             "goalOptions": {
                 "asIs": "Bez promene",
-                "buildings": "Blok",
-                "single": "Zgrada slobodnog oblika",
+                "buildings": "Zgrade",
+                "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
                 "roadTrack": "Put/Pruga",
                 "decideLater": "Spoji",
-                "urbanRule": "Blok",
-                "reparcellization": "Preraspodela zemljišta",
+                "urbanRule": "Urbano pravilo",
+                "reparcellization": "Razdeli",
                 "ownershipTransfer": "Prenos vlasništva"
             },
             "goalSections": {
@@ -3246,7 +3216,7 @@
             },
             "optionsSectionTitle": "Opcije",
             "mintTarget": {
-                "offchain": "Samo u ovom pregledaču",
+                "offchain": "Van lanca (samo ovaj pregledač)",
                 "mintsOn": "Kuje se na",
                 "noWalletTooltip": "Novčanik nije povezan; predlog ostaje u ovom pregledaču."
             },
@@ -3366,7 +3336,7 @@
     "blockify": {
         "modal": {
             "mapHint": "Uredite parcele i granice na mapi; u panelu pregledajte vlasništvo i udele.",
-            "title": "Blok",
+            "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify modal",
             "generating": "Generišem zgradu…",
             "done": "Gotovo",
@@ -3598,7 +3568,6 @@
     },
     "reparcellization": {
         "modal": {
-            "publicAllocation": "Dodela za javnu namenu (nije upisani vlasnik)",
             "mapHint": "Uredite granice parcela na mapi; ovde pregledajte vlasništvo i udele.",
             "savedRecipientUnresolved": "Sačuvani primalac izlazne parcele nema odgovarajući doprinos u trenutnim ulazima.",
             "ownerReview": "Pregled vlasnika",
@@ -3621,7 +3590,7 @@
             "applyShares": "Primeni udele",
             "sharesTotal": "Ukupno: {{total}}%",
             "sharesInvalid": "Svaki udeo mora biti pozitivan, a zbir mora iznositi 100%.",
-            "title": "Preraspodela zemljišta",
+            "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
@@ -4796,7 +4765,6 @@
     },
     "alerts": {
         "messages": {
-            "simulation_unavailable": "Simulacija nije dostupna u ovom gradu. Provereno odobrenje vlasnika je zaseban postupak.",
             "a_proposal_with_the_same_parcels_already_exists": "Predlog sa istim parcelama već postoji.",
             "an_identical_proposal_already_exists": "Identičan predlog već postoji.",
             "building_proposal_workflow_is_unavailable": "Tok za predlog zgrade nije dostupan.",
@@ -5240,8 +5208,6 @@
         }
     },
     "structureEditor": {
-    "saveVariant": "Sačuvaj kao varijantu",
-    "variantHint": "Čuvanje pravi novu varijantu i zadržava original. Nova varijanta se primenjuje ako može da se postavi.",
     "titleLake": "Uređivanje granice jezera",
     "instructionsLake": "Prevucite tačke granice da promenite oblik jezera. Dodirnite ivicu da dodate tačku.",
     "lakeBoundaryHint": "Obala i voda prate promene obrisa.",
@@ -5519,9 +5485,7 @@
         }
     },
     "mapShell": {
-        "startDesign": "Dizajn",
-        "startDesignHint": "Nacrtaj lokaciju ili dodirni zemljište i izaberi Predloži ovde",
-        "renderFallback": "Prikaz nije mogao da se pokrene. WebGL možda nije dostupan u ovom pregledaču. Tvoj rad u 2D je sačuvan. Uključi hardversko ubrzanje ili pokušaj u drugom pregledaču koji podržava WebGL.",
+        "viewFailed": "Ovaj prikaz nije mogao da se pokrene. Vraćeni ste na 2D mapu.",
         "layers": "Slojevi",
         "settings": "Podešavanja",
         "proposals": "Predlozi",
@@ -5762,7 +5726,7 @@
         },
         "palette": {
             "readjustNeedsParcels": "Komasacija radi na izabranim parcelama: izaberite ih umesto crtanja lokacije.",
-            "subdivide": "Preraspodela zemljišta",
+            "subdivide": "Parceliši",
             "readjustUnknownCadastre": "Za parcelaciju je potreban katastar koji server ima: za ovo mesto ga nema."
         },
         "plots": {
@@ -5814,7 +5778,6 @@
         "grainNoParcels": "Ovde nema parcela: ovi predlozi stoje na otvorenom tlu, pa nema nastalih parcela za ocenu."
     },
     "parcelCompare": {
-        "rightsUnresolved": "Vlasnička prava i ovlašćenje još treba proveriti.",
         "title": "Poređenje predloga na parceli {{number}}",
         "needTwo": "Za poređenje ovu parcelu moraju da dodiruju bar dva predloga.",
         "pick": "Predlog {{side}}",
@@ -5856,8 +5819,6 @@
             "line": "Parcela {{number}} ({{area}}, {{who}}): {{overlap}} ove parcele"
         },
         "ownership": {
-            "retained": "vlasništvo nepromenjeno",
-            "thirdParty": "navedeni primalac",
             "ceded": "{{area}} → {{destination}}"
         },
         "offer": {
@@ -5886,7 +5847,7 @@
             "structure": "Park / trg / jezero",
             "corridor": "Put / pruga",
             "plots": "Parcele koje postaje",
-            "ceded": "Obuhvaćeno zemljište → vlasništvo",
+            "ceded": "Ustupljeno zemljište → kome",
             "offer": "Ponuda",
             "consentNeeded": "Potrebna vaša saglasnost",
             "parcelAccepted": "Ova parcela prihvatila",
@@ -6094,14 +6055,14 @@
             "openPlan": "Plan nije mogao da se otvori."
         },
         "contest": {
-            "title": "Predlozi za ovo zemljište",
+            "title": "Koji će predlog biti izgrađen?",
             "titleSingle": "Da li će ovaj predlog biti izgrađen?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} i još {{count}}",
             "site": "Nacrtano zemljište",
             "withoutPool": "Bez fonda: {{count}}",
             "olderVersions": "Prethodne verzije: {{count}}",
-            "titlePlans": "Planovi za ovo zemljište",
+            "titlePlans": "Koji će plan biti izgrađen?",
             "titleSinglePlan": "Da li će ovaj plan biti izgrađen?",
             "planCount": "{{count}} plana"
         },

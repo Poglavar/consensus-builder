@@ -42,21 +42,7 @@
         return raw.replace(EMBEDDED_GEOMETRY_ID, (_id, _source, hash) => `G1-${hash.slice(0, 8).toLowerCase()}`);
     }
 
-    function variantSourceId(proposal) {
-        return proposal?.sourceProposalId || proposal?.replacementOfProposalId || null;
-    }
-
-    function title(value, proposal) {
-        const base = text(value, proposal);
-        if (!variantSourceId(proposal)) return base;
-        const id = String(proposal?.proposalId || proposal?.id || '');
-        const key = 'proposalDrafts.variantLabel';
-        const translated = global.i18n?.t?.(key, { id: id.slice(-8) });
-        const label = translated && translated !== key ? translated : `Variant ${id.slice(-8)}`;
-        return `${base} · ${label}`;
-    }
-
-    const api = Object.freeze({ text, parcelLabel, title, variantSourceId });
+    const api = Object.freeze({ text, parcelLabel });
     if (typeof window !== 'undefined') window.ProposalDisplayText = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -236,6 +236,7 @@
     // ---- actions ----------------------------------------------------------------------------
 
     function placeBet(row, side) {
+        if (!walletConnected()) { askForWallet(); return; }
         if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: row.proposalAccount, side });
     }
 
@@ -333,7 +334,6 @@
         button.append(el('strong', 'bets-bet__side', yes ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')));
         if (multiple !== null && multiple !== undefined) {
             button.append(el('span', 'bets-bet__pays', t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })));
-            button.append(el('small', null, t('ownerAudit.referenceStake', 'For 1 USDC')));
         }
         const paysTitle = multiple !== null && multiple !== undefined
             ? ' ' + t('bets.row.paysTitle', '1 USDC on this side pays {{multiple}} USDC if it wins.', { multiple: multiple.toFixed(2) })
@@ -352,7 +352,7 @@
         if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
         if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
-        return t('ownerAudit.poolShare', '{{percent}} Yes pool share', { percent: percentText(row.chanceYes) });
+        return t('bets.row.chance', '{{percent}} chance', { percent: percentText(row.chanceYes) });
     }
 
     function renderRow(row) {
@@ -495,7 +495,7 @@
         // Plans are what a contest is about when it has them; the loose proposals are the also-rans.
         const plans = contest.planCount > 0;
         head.append(el('h3', 'bets-contest__title', contest.proposalCount > 1
-            ? (plans ? t('bets.contest.titlePlans', 'Plans on this land') : t('bets.contest.title', 'Proposals on this land'))
+            ? (plans ? t('bets.contest.titlePlans', 'Which plan gets built?') : t('bets.contest.title', 'Which proposal gets built?'))
             : (plans ? t('bets.contest.titleSinglePlan', 'Does this plan get built?') : t('bets.contest.titleSingle', 'Does this proposal get built?'))));
         const land = el('p', 'bets-contest__land');
         land.title = contest.parcelIds.join(', ');
@@ -505,8 +505,6 @@
             t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(contest.pool) })
         ].join(' · ');
         head.append(land);
-        head.append(el('p', 'bets-row__note', t('ownerAudit.independentPools', 'Each proposal has an independent Yes/No pool. Percentages show the share of stake on Yes, not calibrated probabilities; they need not add up to 100%.')));
-        head.append(el('p', 'bets-row__note', t('ownerAudit.quoteReference', 'Multiples preview a new 1 USDC stake. Returns include that stake, are approximate and change as the pool changes.')));
         article.append(head);
         if (shown.length) {
             const list = el('ul', 'bets-rows');

@@ -450,7 +450,7 @@
                     <label class="proposal-editor-field">
                         <span>${escapeHtml(tDraft('proposalDrafts.fields.currency', 'Currency'))}</span>
                         <select data-draft-path="fields.offerCurrency">
-                            ${['EUR', 'USD', 'ETH', 'SOL', 'ARS', 'USDC', 'USDT'].map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
+                            ${['EUR', 'USD', 'ETH', 'ARS', 'USDC', 'USDT'].map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
                         </select>
                     </label>
                 </div>
@@ -565,9 +565,7 @@
         return `
             <section class="proposal-editor-review">
                 <h3>${escapeHtml(tDraft('proposalDrafts.review.title', 'Review changes'))}</h3>
-                <div class="proposal-editor-review-notice">${escapeHtml(global.getActiveMintTarget?.()?.onchain
-                    ? tDraft('proposalDrafts.review.immutableNotice', 'Publishing creates a new immutable proposal. The source is not changed or removed.')
-                    : tDraft('proposalDrafts.review.localNotice', 'Saving creates a new local counterproposal in this browser. The source stays unchanged. Publishing or minting is a separate action; local votes and map application are not verified owner approval.'))}</div>
+                <div class="proposal-editor-review-notice">${escapeHtml(tDraft('proposalDrafts.review.immutableNotice', 'Publishing creates a new immutable proposal. The source is not changed or removed.'))}</div>
                 <div class="proposal-editor-card">
                     <strong>${escapeHtml(summary?.sourceName || draft.sourceProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
                     <p>${escapeHtml(draft.sourceProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>
@@ -1240,26 +1238,6 @@
         return opened;
     }
 
-    async function blockSiteSupported(adapterKey, site) {
-        if (!['buildings', 'block', 'urban-rule'].includes(adapterKey)) return true;
-        try {
-            const base = global.resolveBackendBaseUrl?.() || global.getBackendBase?.();
-            if (!site || !base || !global.__publishBinding?.createFetchBinding || !global.fetch) throw new Error('binding-unavailable');
-            const binding = await global.__publishBinding.createFetchBinding(global.fetch.bind(global), base)({
-                site, toleranceM: 0, city: currentCityId()
-            });
-            if (!['complete', 'partial', 'none'].includes(binding?.coverage)) throw new Error('unsupported-coverage');
-            return true;
-        } catch (error) {
-            console.warn('[ProposalEditor] Block site preflight refused; selection/site retained', error);
-            const message = tDraft('proposalDrafts.placement.blockUnavailable',
-                'Block designs need a site the server can verify. This site could not be verified, so the editor has not opened. Your selection is kept. Try a supported site such as Zagreb, or retry if the data service is unavailable.');
-            global.updateStatus?.(message);
-            global.showStyledAlert?.(message);
-            return false;
-        }
-    }
-
     // Build-first creation from the parcel panel's Build palette: a fresh draft seeded with the
     // selection opens the type's design tool directly (no create dialog); closing the tool with a
     // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
@@ -1268,8 +1246,6 @@
         if (global.OnMapEditor?.isActive?.()) return false;
         const ids = (parcelIds || []).map(String).filter(Boolean);
         if (!ids.length) return false;
-        const site = siteOfLiveSelection(ids);
-        if (!await blockSiteSupported(adapterKey, site) || global.OnMapEditor?.isActive?.()) return false;
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
             goal: adapterKey,
@@ -1277,7 +1253,7 @@
             adapterKey,
             // The selection's union is the design's site (a block's superparcel): the binding at
             // publish is computed from it, so parcels the rule left without a building stay bound.
-            fields: { name: '', description: '', selectedParcelIds: ids, site, offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids), offer: 0, offerCurrency: 'USDT' },
             editorPayload: {},
             previewGeometry: null
         });
@@ -1440,7 +1416,6 @@
         if (!siteContext || !siteContext.site) {
             return reportSiteDesignStartIssue('siteUnavailable', 'The selected site is unavailable. Select a valid site and try again.');
         }
-        if (!await blockSiteSupported(adapterKey, siteContext.site) || global.OnMapEditor?.isActive?.()) return false;
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
             goal: adapterKey,
@@ -1934,8 +1909,11 @@
             // updateCreateProposalSubmitState() so applying the facets doesn't clobber it.
             const facets = (typeof global !== 'undefined' && global.proposalFacets) || {};
             const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
-            submit.textContent = global.proposalSaveActionLabel({ replacement: !!source, isVote,
-                onchain: global.getActiveMintTarget?.()?.onchain === true }, tDraft);
+            submit.textContent = isVote
+                ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
+                : (source
+                    ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+                    : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
         global.refreshReparcellizationCashTerms?.(global.document?.querySelector?.('.create-proposal-modal'));
@@ -2056,14 +2034,16 @@
         if (!draft?.validation?.valid) {
             return keepAsDraft(draft?.validation?.errors?.[0]?.message || '');
         }
-
-        // A free building can move off part of its starting selection. Name new objects from the
-        // final authoritative binding; leave user names and saved originals untouched.
-        if (autoFields.name && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)
+        // A free building can move off the parcels it started on. A generated name and description
+        // were written from that starting selection, so write them again from the final binding.
+        const boundIds = draft.fields?.cadastreParcelIds || [];
+        if (autoFields.name && boundIds.length && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)
             && typeof global.generateDefaultProposalName === 'function') {
-            const boundIds = draft.fields?.cadastreParcelIds || [];
-            const name = global.generateDefaultProposalName(typeLabel, { parcelIds: boundIds });
-            store.updateDraft(draftId, { fields: { name } }, { recordHistory: false });
+            const renamed = { name: global.generateDefaultProposalName(typeLabel, { parcelIds: boundIds }) };
+            if (autoFields.description && typeof global.generateDefaultProposalDescription === 'function') {
+                renamed.description = global.generateDefaultProposalDescription(typeLabel, renamed.name);
+            }
+            store.updateDraft(draftId, { fields: renamed }, { recordHistory: false });
             draft = store.getDraft(draftId);
         }
 
@@ -2178,7 +2158,7 @@
         } catch (_) { }
         if (landed && (proposal.sourceProposalId || proposal.replacementOfProposalId)
             && typeof global.showEphemeralMessage === 'function') {
-            global.showEphemeralMessage(tDraft('proposalDrafts.variantSaved', 'New variant saved. The original is kept; Applied shows which design is on the map.'), 6000, 'success');
+            global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
         }
         try { if (typeof global.updateShowProposalsButton === 'function') global.updateShowProposalsButton(); } catch (_) { }
         // The drawing seeded the multi-parcel selection, which pops the parcel info panel — hide

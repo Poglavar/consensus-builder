@@ -433,13 +433,6 @@
         doc.querySelectorAll('[data-sheet-close]').forEach(button => {
             button.addEventListener('click', () => closeSheet({ restoreFocus: true }));
         });
-        // Shell buttons that name a registry command run it, as the parcel and ground menus do.
-        doc.querySelectorAll('#map-shell-top-right [data-command]').forEach(button => {
-            button.addEventListener('click', () => {
-                const commands = win.UiCommands;
-                commands?.runCommand(button.getAttribute('data-command'), commands.createBrowserContext(win));
-            });
-        });
         doc.addEventListener('pointerdown', onDocumentPointerDown, true);
         // On window, not document: window listeners run after every document listener, so a tool
         // or dialog that handles Escape first (Measure, Pinpoint, area drawing, the status log)

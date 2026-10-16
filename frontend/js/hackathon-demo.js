@@ -574,8 +574,8 @@
             { label: 'Solana faucet', href: 'https://faucet.solana.com' },
             { label: 'Circle USDC faucet', href: 'https://faucet.circle.com' }
         ]));
-        tryIt.append(node(doc, 'p', 'Without a wallet, open Settings → Open local simulation setup (or Activity → Simulation), enable game mode and review the New Game confirmation. New Game deletes local proposals, agents, progress and fictional parcel ownership; editor drafts and map data remain. Simulation does not grant verified owner rights. Public records and devnet transactions stay unchanged.', 'hd-muted'));
-        tryIt.append(linkRow(doc, [{ label: 'Open the map simulation', href: '/?simulation=1&reduceMotion=1' }]));
+        tryIt.append(node(doc, 'p', 'Without a wallet, open the map, expand Game, turn on game mode and choose New Game. It only resets this browser’s simulation; public records and devnet transactions stay as they are.', 'hd-muted'));
+        tryIt.append(linkRow(doc, [{ label: 'Open the map simulation', href: '/?reduceMotion=1' }]));
         element.append(tryIt);
 
         const refresh = node(doc, 'p', null, 'hd-refresh');

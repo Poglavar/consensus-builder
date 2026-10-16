@@ -282,7 +282,7 @@
         if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
         if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
-        return t('ownerAudit.poolShare', '{{percent}} Yes pool share', { percent: percentText(row.chanceYes) });
+        return t('bets.row.chance', '{{percent}} chance', { percent: percentText(row.chanceYes) });
     }
 
     function landLine(row, contest) {
@@ -385,8 +385,6 @@
             chance.append(bar);
         }
         p.body.append(chance);
-        p.body.append(el('p', 'bets-dialog__copy', t('ownerAudit.quoteReference', 'Multiples preview a new 1 USDC stake. Returns include that stake, are approximate and change as the pool changes.')));
-        p.body.append(el('p', 'bets-dialog__copy', t('ownerAudit.independentPools', 'Each proposal has an independent Yes/No pool. Percentages show the share of stake on Yes, not calibrated probabilities; they need not add up to 100%.')));
 
         const facts = el('dl', 'bets-dialog__facts');
         const fact = (label, value) => { if (!value) return; facts.append(el('dt', null, label), el('dd', null, value)); };
@@ -487,11 +485,11 @@
         const yes = side === 1;
         const multiple = yes ? row.paysYes : row.paysNo;
         const node = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'} bets-dialog__bet`, null, () => {
+            if (!walletConnected()) { askForWallet(); return; }
             renderStake(side);
         });
         node.append(el('strong', 'bets-bet__side', yes ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')));
         if (multiple !== null && multiple !== undefined) node.append(el('span', 'bets-bet__pays', t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })));
-        node.append(el('small', null, t('ownerAudit.referenceStake', 'For 1 USDC')));
         node.title = yes ? t('bets.row.yesTitle', 'Bet that this proposal gets built.') : t('bets.row.noTitle', 'Bet that this proposal does not get built.');
         return node;
     }
@@ -558,7 +556,6 @@
         p.footer.replaceChildren();
 
         if (row.title) p.body.append(el('p', 'bets-dialog__lead', row.title));
-        p.body.append(el('p', 'bets-dialog__copy', t('ownerAudit.previewOnly', 'Preview a stake without a wallet. Total return includes your stake and depends on the final pool. Submitting requires a connected wallet and an open, eligible pool.')));
         p.body.append(el('p', 'bets-dialog__copy', yes ? t('bets.row.yesTitle', 'Bet that this proposal gets built.') : t('bets.row.noTitle', 'Bet that this proposal does not get built.')));
 
         const field = el('label', 'bets-dialog__amount');
@@ -566,7 +563,6 @@
         const input = el('input');
         input.type = 'text'; input.inputMode = 'decimal'; input.autocomplete = 'off'; input.placeholder = '1.00';
         input.setAttribute('data-market-amount', '');
-        input.value = '1';
         field.append(input, el('span', 'proposal-market-currency', 'USDC'));
         p.body.append(field);
 
@@ -599,34 +595,24 @@
             const v = view();
             let amount;
             try { amount = v ? v.parseUsdc(input.value) : null; } catch (_) { amount = null; }
-            if (!amount) {
-                toWin.textContent = t('ownerAudit.invalidStake', 'Enter a positive USDC amount with at most six decimal places.');
-                const submit = p.footer.querySelector('[data-market-submit]');
-                if (submit) submit.disabled = true;
-                return;
-            }
-            const submit = p.footer.querySelector('[data-market-submit]');
-            if (submit) submit.disabled = false;
+            if (!amount) return;
             const prize = m.toWin(sideName(side), row.yesPoolAtomic, row.noPoolAtomic, amount);
             const multiple = m.payoutMultiple(sideName(side), row.yesPoolAtomic, row.noPoolAtomic, amount);
-            toWin.append(el('strong', null, t('ownerAudit.totalReturn', 'Approximate total return {{amount}} if {{side}} wins (includes your stake)', { amount: moneyAtomic(prize), side: sideWord(side) })));
+            toWin.append(el('strong', null, t('bets.dialog.toWin', 'To win about {{amount}} if {{side}} wins', { amount: moneyAtomic(prize), side: sideWord(side) })));
             toWin.append(el('span', null, ` (${t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple === null ? '—' : multiple.toFixed(2) })}). ${t('bets.dialog.toWinNote', 'The final payout follows the pool at settlement.')}`));
         };
         input.addEventListener('input', update);
         input.addEventListener('keydown', event => { if (event.key !== 'Enter') return; event.preventDefault(); submitStake(side); });
 
         const back = button('btn', t('proposalDrafts.actions.back', 'Back'), () => renderOverview());
-        // Keep the action accurate after a wallet connects without replacing the entered preview.
-        const submit = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'}`,
-            t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) }), () => submitStake(side));
+        const submit = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'}`, t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) }), () => submitStake(side));
         submit.setAttribute('data-market-submit', '');
         p.footer.append(back, submit);
         input.focus();
-        update();
 
         // The wallet's balance fills "Max"; a slow or failed read just leaves the chip hidden.
         const chain = bridge();
-        if (walletConnected() && chain && typeof chain.readStakeBalance === 'function' && m) {
+        if (chain && typeof chain.readStakeBalance === 'function' && m) {
             Promise.resolve(chain.readStakeBalance()).then(balance => {
                 if (typeof balance !== 'bigint' || balance <= 0n || !max.isConnected) return;
                 max.dataset.amount = m.formatAtomic(balance);
@@ -641,16 +627,11 @@
         const v = view();
         const row = state.row;
         if (!p || !row || !v) return;
-        if (row.superseded || row.state !== 'open') {
-            setStatus(t('ownerAudit.betClosed', 'New bets are unavailable on closed or superseded proposals.'));
-            return;
-        }
         const input = p.body.querySelector('[data-market-amount]');
         const submit = p.footer.querySelector('[data-market-submit]');
         const rawAmount = input ? input.value : '';
         let amount;
         try { amount = v.parseUsdc(rawAmount); } catch (error) { setStatus(error.message); return; }
-        if (!walletConnected()) { askForWallet(); return; }
         const proposalAccount = state.proposalAccount;
         const wallet = walletAddress() || 'wallet';
         const key = `stake:${proposalAccount}:${wallet}:${sideValue(side)}`;
@@ -717,7 +698,7 @@
             const marketModel = v.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
             if (!marketModel.exists) { pool.remove(); return; }
             const pays = s => (m && typeof m.payoutMultiple === 'function' ? m.payoutMultiple(s, marketModel.yesPool, marketModel.noPool) : null);
-            const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet') : t('ownerAudit.sidePoolShare', '{{percent}} pool share', { percent: percentText(value) }));
+            const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet') : t('bets.row.chance', '{{percent}} chance', { percent: percentText(value) }));
             pool.replaceChildren(el('p', 'proposal-market-placed__title', t('panel.proposal.market.poolNow', 'The pool after your bet')));
             const list = el('dl', 'proposal-market-placed__pool');
             [['yes', t('panel.proposal.market.yesSide', 'Yes · gets built'), marketModel.yesPool, marketModel.yesOdds], ['no', t('panel.proposal.market.noSide', 'No · dropped'), marketModel.noPool, marketModel.noOdds]]
@@ -747,6 +728,7 @@
         const proposalAccount = options && options.proposalAccount ? String(options.proposalAccount) : null;
         if (!proposalAccount) return null;
         const side = options.side === undefined || options.side === null ? null : sideValue(options.side);
+        if (side !== null && !walletConnected()) { askForWallet(); return null; }
         const overlay = mount(options.title || t('panel.proposal.market.historyBet', 'Bet'));
         state.proposalAccount = proposalAccount;
         state.row = null; state.contest = null; state.positions = null;
@@ -760,7 +742,8 @@
         state.contest = found.contest;
         state.positions = await loadPositions(proposalAccount) || state.positions;
         if (state.overlay !== overlay) return overlay;
-        // An older plan version takes no new bet: a link with a side still lands on its overview.
+        // Only an open pool takes a new bet: a link with a side to an older plan version, or to a pool
+        // that is settling or settled, lands on its overview.
         if (side !== null && !state.row.superseded && state.row.state === 'open') renderStake(side); else renderOverview();
         return overlay;
     }

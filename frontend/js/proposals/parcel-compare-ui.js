@@ -230,9 +230,7 @@
             public: t('panel.parcel.dossier.destination.public', 'public'),
             proposer: t('panel.parcel.dossier.destination.proposer', 'the proposer'),
             mapping: t('panel.parcel.dossier.destination.mapping', 'per plan'),
-            undecided: t('panel.parcel.dossier.destination.undecided', 'to be decided'),
-            retained: t('parcelCompare.ownership.retained', 'ownership unchanged'),
-            'third-party': t('parcelCompare.ownership.thirdParty', 'the specified recipient')
+            undecided: t('panel.parcel.dossier.destination.undecided', 'to be decided')
         };
         return labels[destination] || destination || DASH;
     }
@@ -263,9 +261,7 @@
             disclosure: t('panel.parcel.dossier.channel.disclosure', 'Info')
         };
         const needed = c.needed === true ? t('parcelCompare.yes', 'Yes') : (c.needed === false ? t('parcelCompare.no', 'No') : DASH);
-        const lines = c.channel ? [needed, channels[c.channel] || c.channel] : [needed];
-        if (c.needed === true && !c.rightsResolved) lines.push(t('parcelCompare.rightsUnresolved', 'Owner rights and authority still need verification.'));
-        return lines;
+        return c.channel ? [needed, channels[c.channel] || c.channel] : [needed];
     }
 
     const yesNo = value => (value === true ? t('parcelCompare.yes', 'Yes') : (value === false ? t('parcelCompare.no', 'No') : DASH));

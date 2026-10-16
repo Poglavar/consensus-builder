@@ -304,7 +304,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const proposalOwnName = [nameSource.title, nameSource.name, nameSource.proposalName]
             .find(candidate => typeof candidate === 'string' && candidate.trim());
         const headerTitle = proposalOwnName
-            ? window.ProposalDisplayText.title(proposalOwnName.trim(), nameSource)
+            ? displayText(proposalOwnName.trim())
             : tProposal('panel.proposal.title', 'Proposal Details');
         proposalPanelTitle.textContent = headerTitle;
         proposalPanelTitle.title = headerTitle; // tooltip while paused or when the marquee is off
@@ -429,14 +429,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
-    const betEntry = window.ProposalBetEntry.presentation({ proposal: fullProposal || proposal,
-        nftInfo: getProposalNftInfo(fullProposal || proposal),
-        approvalSetup: window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true }, tProposal);
     const betButtonHtml = proposalKey ? `
-        <button type="button" class="btn btn-bet-proposal" ${betEntry.disabled ? 'disabled aria-disabled="true"' : `onclick="openProposalOutcomeBet(${inlineJsArg(proposalKey)})"`} title="${safeAgentText(betEntry.hint)}">
+        <button type="button" class="btn btn-bet-proposal" onclick="openProposalOutcomeBet(${inlineJsArg(proposalKey)})">
             <i class="fas fa-coins" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.betOutcome', 'Bet on outcome')}
         </button>
-        ${betEntry.hint ? `<small class="proposal-bet-prerequisite">${safeAgentText(betEntry.hint)}</small>` : ''}
     ` : '';
 
     // Fork opens a cloned draft's proposal form. Edit geometry below opens its design tool
@@ -609,9 +605,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         } catch (_) { }
         const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
         const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
-        const basedOnLabel = window.ProposalDisplayText.variantSourceId(fullProposal || proposal)
-            ? tProposal('proposalDrafts.variantOf', 'Variant of')
-            : tProposal('panel.proposal.basedOn', 'Based on');
+        const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
         // The source opens in this panel: a script link (button.cb-link), never an external mark.
         const inner = sourceExists
             ? `<button type="button" class="cb-link proposal-based-on-link" onclick="focusProposalDetails(${inlineJsArg(copiedFromId)})">${safeLabel}</button>`
@@ -905,7 +899,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             }
         })() : ''}`;
 
-    const localOnly = !isMinted && !(typeof getSerialProposalId === 'function' && getSerialProposalId(fullProposal));
     const content = `
         <div class="proposal-info">
             ${expiryCountdownHtml}
@@ -919,7 +912,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const ladderLabel = ladder === 'executed' ? tProposal('panel.proposal.lifecycle.executed', 'Executed')
                 : ladder === 'minted' ? tProposal('panel.proposal.lifecycle.minted', 'Minted')
                     : ladder === 'published' ? tProposal('common.lifecycle.published', 'Published')
-                        : tProposal('ownerAudit.localDraft', 'Local draft');
+                        : tProposal('common.lifecycle.draft', 'Draft');
             const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
             const ladderBadge = (isMinted && mintedExplorerUrl)
                 ? `<a class="cb-badge cb-badge--minted cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
@@ -942,7 +935,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="proposal-description-row">
                 ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}
                 ${copiedFromHtml}
-                ${localOnly ? `<p class="proposal-local-context">${safeAgentText(tProposal('ownerAudit.localContext', 'Only in this browser. Applying changes your local map; a local vote is not verified owner approval. Publish or mint separately to share a public record.'))}</p>` : ''}
             </div>
             <div class="proposal-author-row">
                 <div class="metric-label">${tProposal('panel.proposal.metrics.author', 'Author:')}</div>

@@ -1,26 +1,4 @@
 {
-    "ownerAudit": {
-        "openSimulation": "Abrir la configuración de simulación local",
-        "simulationOff": "La simulación local está desactivada",
-        "simulationOn": "Simulación local activada — propiedad ficticia",
-        "simulationRights": "Aplicar y votar localmente permite explorar alternativas en este navegador. No publica aprobaciones ni acredita derechos de propiedad.",
-        "ownerChecklist": "<li>Conecta una cartera que controles.</li><li>Selecciona un lente de confianza.</li><li>Carga los derechos completos de los propietarios de las parcelas de la propuesta.</li><li>Verifica los derechos y tu autorización mediante el lente antes de aprobar.</li>",
-        "resetDisclosure": "¿Reiniciar la simulación de este navegador? Se borrarán propuestas locales, agentes de IA, progreso y asignaciones ficticias de propiedad. Se conservan los borradores del editor y los datos del mapa. Tu agente conserva nombre, avatar e ID, pero se reinician sus saldos ficticios, vínculos de cartera e historial de propuestas. Los registros públicos, carteras reales y transacciones en cadena no cambian. Cancelar conserva todo.",
-        "referenceStake": "Para 1 USDC",
-        "quoteReference": "Los multiplicadores simulan una nueva apuesta de 1 USDC. El retorno incluye esa apuesta, es aproximado y cambia con el fondo.",
-        "poolShare": "{{percent}} del fondo en Sí",
-    "sidePoolShare": "{{percent}} del fondo",
-        "independentPools": "Cada propuesta tiene un fondo Sí/No independiente. Los porcentajes muestran la proporción apostada a Sí, no probabilidades calibradas; no tienen que sumar 100%.",
-        "previewOnly": "Simula una apuesta sin cartera. El retorno total incluye tu apuesta y depende del fondo final. Para enviarla necesitas una cartera conectada y un fondo abierto y habilitado.",
-        "invalidStake": "Introduce un importe positivo en USDC con un máximo de seis decimales.",
-        "totalReturn": "Retorno total aproximado: {{amount}} si gana {{side}} (incluye tu apuesta)",
-        "connectToBet": "Conectar cartera para apostar",
-        "betClosed": "No se admiten nuevas apuestas en propuestas cerradas o sustituidas. Consulta tus posiciones en Apuestas.",
-        "saveLocalProposal": "Guardar propuesta local",
-        "saveLocalVote": "Guardar voto local",
-        "localDraft": "Borrador local",
-        "localContext": "Solo en este navegador. Aplicar cambia el mapa local; un voto local no es una aprobación verificada del propietario. Publica o acuña por separado para compartir un registro público."
-    },
   "onMapEditor": {
     "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
     "cancel": "Cancelar",
@@ -340,9 +318,6 @@
         "notFound": "Esta propuesta ya no está disponible. Actualiza la lista de propuestas e inténtalo de nuevo."
     },
     "proposalDrafts": {
-        "variantLabel": "Variante {{id}}",
-        "variantOf": "Variante de",
-        "variantSaved": "Nueva variante guardada. Se conserva el original; Aplicada indica qué diseño está en el mapa.",
         "title": "Borradores",
         "entryAria": "Abrir {{count}} borrador(es) de propuesta guardados",
         "editorAria": "Editor de borradores de propuestas",
@@ -482,7 +457,6 @@
             "handoffFailedReason": "No se pudo abrir el editor de diseño: {{reason}}. El emplazamiento no ha cambiado y el borrador de diseño se conservó localmente."
         },
         "placement": {
-            "blockUnavailable": "Las manzanas necesitan un ámbito que el servidor pueda verificar. No se pudo verificar este ámbito y el editor no se ha abierto. Se conserva tu selección. Prueba un ámbito compatible, como Zagreb, o vuelve a intentarlo si el servicio de datos no está disponible.",
             "fixedSite": "Este tipo de propuesta tiene un emplazamiento fijo y no se puede mover.",
             "existingBuilding": "Las propuestas de edificios existentes conservan su huella vinculada al edificio y no admiten ubicación libre.",
             "invalidSite": "La ubicación libre necesita un emplazamiento poligonal válido.",
@@ -497,7 +471,6 @@
             "massingOutsideSite": "La masa edificada movida debe quedar completamente dentro del nuevo emplazamiento."
         },
         "review": {
-            "localNotice": "Se guarda una nueva contrapropuesta local en este navegador. El original no cambia. Publicar o acuñar es una acción aparte; votar o aplicar localmente no constituye aprobación verificada del propietario.",
             "title": "Revisar cambios",
             "immutableNotice": "La publicación crea una nueva propuesta inmutable. El origen no se modifica ni se elimina.",
             "newProposal": "Propuesta nueva",
@@ -547,7 +520,6 @@
             "overlay": "Superposición"
         },
         "actions": {
-            "saveLocalCounterproposal": "Guardar contrapropuesta local",
             "close": "Cerrar editor",
             "undo": "Deshacer",
             "redo": "Rehacer",
@@ -868,7 +840,7 @@
             "proposeTitle": "Proponer",
             "addBuildings": "Edificios",
             "addBuildingsTooltip": "Agregar edificios al bloque seleccionado",
-            "singleBuilding": "Edificio de forma libre",
+            "singleBuilding": "Edificio único",
             "parkButton": "Parque",
             "squareButton": "Plaza",
             "listTitle": "Lista de bloques",
@@ -1245,8 +1217,8 @@
                 "rowNeedsTwo": "Las casas en hilera necesitan al menos dos parcelas.",
                 "row": "Casas en hilera",
                 "parcelBased": "Aislada",
-                "single": "Edificio de forma libre",
-                "reparcel": "Reajuste de terrenos",
+                "single": "Edificio libre",
+                "reparcel": "Reparcelación",
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
@@ -1895,8 +1867,6 @@
             }
         },
         "road": {
-            "curveTooTight": "Giro de la vía: radio entre tres puntos de {{measured}} m; se requieren {{minimum}} m. Mueve el giro o dibuja un trazado más suave. Se conserva el dibujo.",
-            "curveAdjusted": "Punto ajustado para cumplir la comprobación del radio de {{radius}} m entre tres puntos.",
             "title": "Dibujar camino",
             "titleTrack": "Dibujar vía",
             "crossSectionButton": "Editar sección transversal",
@@ -2080,9 +2050,9 @@
         },
         "track": {
             "speedPickerTitle": "Elegir velocidad de vía",
-            "speedPickerDescription": "Elige una velocidad de diseño para comprobar los giros entre tres puntos. El trazado es esquemático: esta comprobación no certifica una curva ferroviaria continua. Pulsa Intro para usar la velocidad seleccionada.",
+            "speedPickerDescription": "Selecciona la velocidad máxima para esta vía. Esto determina el radio mínimo de curvatura. Presiona Enter para comenzar con la selección predeterminada.",
             "startDrawing": "Comenzar a dibujar",
-            "minRadius": "Radio mínimo entre tres puntos: {{radius}} m",
+            "minRadius": "Radio mínimo de curvatura {{radius}} m",
             "cancel": "Cancelar",
             "widthLabel": "Ancho de vía:"
         },
@@ -2113,7 +2083,7 @@
                     "eyebrow": "De la idea a la propuesta",
                     "title": "Haz visible el cambio",
                     "body": "Convierte una idea en una propuesta: rediseña parcelas, traza calles y parques o añade edificios. Aplica un borrador para ver cómo cambia el mapa.",
-                    "hint": "Toca un terreno y elige Proponer aquí, o usa Diseñar para dibujar un ámbito. Después compara tus propuestas en el mapa."
+                    "hint": "Empieza en Herramientas y después compara tus propuestas en el mapa."
                 },
                 "consent": {
                     "eyebrow": "Las personas marcan la diferencia",
@@ -2601,14 +2571,14 @@
                         "station": "Estación de transporte",
                         "roadTrack": "Carretera/Vía férrea",
                         "road-track": "Carretera/Vía férrea",
-                        "buildings": "Manzana",
-                        "single": "Edificio de forma libre",
+                        "buildings": "Edificios",
+                        "single": "Edificio único",
                         "park": "Parque",
                         "square": "Plaza",
                         "lake": "Lago",
-                        "urbanRule": "Manzana",
-                        "urban-rule": "Manzana",
-                        "reparcellization": "Reajuste de terrenos",
+                        "urbanRule": "Regla urbana",
+                        "urban-rule": "Regla urbana",
+                        "reparcellization": "Reparcelación",
                         "row": "Hilera",
                         "other": "Otro"
                     }
@@ -2646,14 +2616,14 @@
                     "road-track": "Carretera/Vía férrea",
                     "road": "Carretera",
                     "track": "Vía férrea",
-                    "buildings": "Manzana",
-                    "single": "Edificio de forma libre",
+                    "buildings": "Edificios",
+                    "single": "Edificio único",
                     "row": "Hilera",
                     "park": "Parque",
                     "square": "Plaza",
                     "lake": "Lago",
-                    "urban-rule": "Manzana",
-                    "reparcellization": "Reajuste de terrenos",
+                    "urban-rule": "Regla urbana",
+                    "reparcellization": "Reparcelación",
                     "decide-later": "Decidir después",
                     "parcelBased": "Por parcela",
                     "other": "Otro"
@@ -3079,21 +3049,21 @@
             "ownershipLabel": "Propiedad",
             "proposalTypeOptions": {
                 "purchase": "Compra",
-                "urbanRule": "Manzana",
+                "urbanRule": "Regla urbana",
                 "reparcellization": "Reparcelación",
                 "jointInvestment": "Inversión conjunta"
             },
             "goalOptions": {
                 "asIs": "Sin cambios",
-                "buildings": "Manzana",
-                "single": "Edificio de forma libre",
+                "buildings": "Edificios",
+                "single": "Edificio(s)",
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
                 "roadTrack": "Camino/Tramo",
                 "decideLater": "Fusionar",
-                "urbanRule": "Manzana",
-                "reparcellization": "Reajuste de terrenos",
+                "urbanRule": "Regla urbana",
+                "reparcellization": "Subdividir",
                 "ownershipTransfer": "Transferencia de propiedad"
             },
             "goalSections": {
@@ -3276,7 +3246,7 @@
             },
             "optionsSectionTitle": "Opciones",
             "mintTarget": {
-                "offchain": "Solo en este navegador",
+                "offchain": "Fuera de la cadena (solo en este navegador)",
                 "mintsOn": "Se acuña en",
                 "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
             },
@@ -3369,7 +3339,7 @@
     "blockify": {
         "modal": {
             "mapHint": "Edita las parcelas y sus límites en el mapa; revisa la titularidad y las participaciones en el panel.",
-            "title": "Manzana",
+            "title": "Regla urbana",
             "closeAria": "Cerrar modal de edificios",
             "generating": "Generando edificio…",
             "done": "Listo",
@@ -3599,7 +3569,6 @@
     },
     "reparcellization": {
         "modal": {
-            "publicAllocation": "Asignación para uso público (no es un titular registrado)",
             "mapHint": "Ajusta los límites de las parcelas en el mapa; revisa aquí la titularidad y las participaciones.",
             "savedRecipientUnresolved": "El destinatario guardado de la parcela resultante no tiene una contribución coincidente en las entradas actuales.",
             "ownerReview": "Revisar a un propietario",
@@ -3622,7 +3591,7 @@
             "applyShares": "Aplicar participaciones",
             "sharesTotal": "Total: {{total}}%",
             "sharesInvalid": "Cada participación debe ser positiva y sumar 100%.",
-            "title": "Reajuste de terrenos",
+            "title": "Reparcelación",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "algorithms": {
@@ -4796,7 +4765,6 @@
     },
     "alerts": {
         "messages": {
-            "simulation_unavailable": "La simulación no está disponible en esta ciudad. La aprobación verificada es independiente.",
             "a_proposal_with_the_same_parcels_already_exists": "Ya existe una propuesta con las mismas parcelas.",
             "an_identical_proposal_already_exists": "Ya existe una propuesta idéntica.",
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
@@ -5239,8 +5207,6 @@
         }
     },
     "structureEditor": {
-    "saveVariant": "Guardar como variante",
-    "variantHint": "Se creará una nueva variante y se conservará el original. La variante se aplicará si se puede colocar.",
     "titleLake": "Editor del límite del lago",
     "instructionsLake": "Arrastra los puntos del límite para cambiar la forma del lago. Toca un borde para añadir un punto.",
     "lakeBoundaryHint": "La orilla y el agua se actualizan con el contorno.",
@@ -5518,9 +5484,7 @@
         }
     },
     "mapShell": {
-        "startDesign": "Diseñar",
-        "startDesignHint": "Dibuja un ámbito o toca un terreno y elige Proponer aquí",
-        "renderFallback": "Esta vista no pudo iniciarse. WebGL puede no estar disponible en este navegador. Se conserva tu trabajo en 2D. Activa la aceleración por hardware o prueba otro navegador compatible con WebGL y vuelve a intentarlo.",
+        "viewFailed": "Esta vista no se pudo iniciar. Has vuelto al mapa 2D.",
         "layers": "Capas",
         "settings": "Ajustes",
         "proposals": "Propuestas",
@@ -5759,7 +5723,7 @@
         },
         "palette": {
             "readjustNeedsParcels": "La reparcelación trabaja sobre parcelas seleccionadas: selecciónalas en lugar de dibujar un sitio.",
-            "subdivide": "Reajuste de terrenos",
+            "subdivide": "Parcelar",
             "readjustUnknownCadastre": "Parcelar requiere un catastro que el servidor tenga: no conoce ninguno para este lugar."
         },
         "plots": {
@@ -5810,7 +5774,6 @@
         "grainNoParcels": "Aquí no hay parcelas: estas propuestas están en terreno abierto, así que no hay parcelas resultantes que puntuar."
     },
     "parcelCompare": {
-        "rightsUnresolved": "Falta verificar los derechos y la autorización del propietario.",
         "title": "Comparar propuestas en la parcela {{number}}",
         "needTwo": "Al menos dos propuestas deben tocar esta parcela para compararlas.",
         "pick": "Propuesta {{side}}",
@@ -5852,8 +5815,6 @@
             "line": "Lote {{number}} ({{area}}, {{who}}): {{overlap}} de esta parcela"
         },
         "ownership": {
-            "retained": "propiedad sin cambios",
-            "thirdParty": "el destinatario indicado",
             "ceded": "{{area}} → {{destination}}"
         },
         "offer": {
@@ -5882,7 +5843,7 @@
             "structure": "Parque / plaza / lago",
             "corridor": "Calle / vía",
             "plots": "Lotes en que se convierte",
-            "ceded": "Terreno afectado → propiedad",
+            "ceded": "Terreno cedido → a",
             "offer": "Oferta",
             "consentNeeded": "Requiere su consentimiento",
             "parcelAccepted": "Esta parcela aceptó",
@@ -6090,14 +6051,14 @@
             "openPlan": "No se pudo abrir el plan."
         },
         "contest": {
-            "title": "Propuestas para este terreno",
+            "title": "¿Qué propuesta se construirá?",
             "titleSingle": "¿Se construirá esta propuesta?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
             "site": "Sitio dibujado",
             "withoutPool": "Sin fondo: {{count}}",
             "olderVersions": "Versiones anteriores: {{count}}",
-            "titlePlans": "Planes para este terreno",
+            "titlePlans": "¿Qué plan se construirá?",
             "titleSinglePlan": "¿Se construirá este plan?",
             "planCount": "{{count}} planes"
         },

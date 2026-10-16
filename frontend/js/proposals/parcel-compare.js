@@ -335,15 +335,15 @@
         if (!flow) {
             if (!flowApi.hasFormation(record && record.goal)) return null;
             const parcelFeature = featureOf(parcel.feature);
-            if (!parcelFeature || !hasGround) return { cededM2: null, destination: flowApi.ownershipIntent(record).destination };
+            if (!parcelFeature || !hasGround) return { cededM2: null, destination: flowApi.destinationForGoal(record.goal) };
             try {
                 flow = flowApi.computeOwnershipFlow(record, Array.from(keys).map(id => ({ id, feature: parcelFeature })));
             } catch (_) { flow = null; }
-            if (!flow) return { cededM2: null, destination: flowApi.ownershipIntent(record).destination };
+            if (!flow) return { cededM2: null, destination: flowApi.destinationForGoal(record.goal) };
         }
         const mine = flow.filter(entry => entry && keys.has(String(entry.parcelId)));
         const ceded = mine.reduce((sum, entry) => sum + (num(entry.cededM2) || 0), 0);
-        const destination = flowApi.ownershipIntent(record).destination || mine.map(entry => entry.destination).find(Boolean)
+        const destination = mine.map(entry => entry.destination).find(Boolean)
             || (flowApi.destinationForGoal(record && record.goal)) || null;
         if (!mine.length && !flowApi.hasFormation(record && record.goal)) return null;
         return { cededM2: round(ceded, 1), destination };
@@ -364,13 +364,7 @@
         const keys = parcelKeys(parcel);
         const declared = declaredIds(record);
         const accepted = new Set((Array.isArray(record.acceptedParcelIds) ? record.acceptedParcelIds : []).map(String));
-        const intent = ownershipFlowApi()?.ownershipIntent(record);
-        const suppliedChannel = typeof options.channel === 'string' ? options.channel : null;
-        const channel = suppliedChannel === 'vote' && intent?.transfer === true ? 'acceptance'
-            : suppliedChannel === 'acceptance' && intent?.transfer === false ? 'vote' : suppliedChannel;
-        const approval = global.ProposalApproval || (typeof require === 'function' ? require('./approval.js') : null);
-        let rightsResolved = false;
-        try { rightsResolved = approval?.inspect(record)?.ready === true; } catch (_) { /* malformed rights stay unresolved */ }
+        const channel = typeof options.channel === 'string' ? options.channel : null;
         let owners = null;
         const acceptances = record.ownerAcceptances && typeof record.ownerAcceptances === 'object' ? record.ownerAcceptances : null;
         if (acceptances) {
@@ -385,7 +379,6 @@
         }
         return {
             channel,
-            rightsResolved,
             // Only a binding asks the owner; a site that merely reaches in has no consent channel.
             needed: relation === 'intrudes' ? false : (channel ? channel === 'acceptance' : null),
             parcelAccepted: relation === 'bound' ? declared.some(id => keys.has(id) && accepted.has(id)) : null,

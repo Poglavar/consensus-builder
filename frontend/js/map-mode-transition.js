@@ -8,7 +8,6 @@
     function createController(deps) {
         let epoch = 0;
         let current = null;
-        let workingContext = null;
         let state = { desired: '2d', pending: false };
         const publish = (desired, pending) => {
             state = { desired, pending };
@@ -17,7 +16,6 @@
         function request(mode, options = {}) {
             if (!['2d', 'model', 'photo'].includes(mode)) throw new Error('Unknown map mode: ' + mode);
             if (current && state.desired === mode && !options.focusProposalIds && !options.restoreView) return current.promise;
-            if (mode !== '2d' && state.desired === '2d' && !state.pending) workingContext = deps.captureContext?.();
             if (current) current.abort.abort();
             const abort = new AbortController();
             const id = ++epoch;
@@ -30,8 +28,6 @@
             if (mode === '2d') {
                 deps.leavePhoto({ destination: mode });
                 deps.leaveModel();
-                if (state.pending && workingContext) deps.restoreContext?.(workingContext);
-                workingContext = null;
                 publish(mode, false);
                 entry.promise = Promise.resolve(true);
                 return entry.promise;
@@ -39,33 +35,28 @@
             publish(mode, true);
             if (mode !== 'photo') deps.leavePhoto({ destination: mode });
             entry.promise = (async () => {
+                let failure = null;
                 try {
-                    if (!await deps.loadModel()) throw new Error('Model resources could not load');
-                    if (!live()) return false;
-                    if (!await deps.enterModel(options)) throw new Error('Model view could not start');
-                    if (!live()) return false;
+                    if (!await deps.loadModel() || !live()) return false;
+                    if (!await deps.enterModel(options) || !live()) return false;
                     if (mode === 'photo') {
-                        if (!await deps.loadPhoto()) throw new Error('Aerial resources could not load');
-                        if (!live()) return false;
-                        if (!await deps.enterPhoto(Object.assign({}, options, { modeRequest: ticket }))) throw new Error('Aerial view could not start');
-                        if (!live()) return false;
+                        if (!await deps.loadPhoto() || !live()) return false;
+                        if (!await deps.enterPhoto(Object.assign({}, options, { modeRequest: ticket })) || !live()) return false;
                     }
-                    deps.onEntered?.(mode);
-                    workingContext = null;
                     publish(mode, false);
                     return true;
                 } catch (error) {
-                    if (live()) deps.onError(error, mode);
+                    if (live()) failure = error;
                     return false;
                 } finally {
                     if (live() && state.pending) {
                         deps.leavePhoto({ destination: '2d' });
                         deps.leaveModel();
-                        if (workingContext) deps.restoreContext?.(workingContext);
-                        workingContext = null;
                         publish('2d', false);
                         current = null;
                     }
+                    // Reported once 2D is back, so the teardown's own status cannot overwrite it.
+                    if (failure) deps.onError(failure, mode);
                 }
             })();
             return entry.promise;
