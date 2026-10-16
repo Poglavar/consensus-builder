@@ -74,3 +74,25 @@ it('publishes 2D only after the previous view has restored the map', async () =>
     await controller.request('2d');
     expect(events).toEqual(['photo-left', 'map-restored', 'frame-editor']);
 });
+it('reports a failed entry once, after the view has been torn back to 2D', async () => {
+    const order = [];
+    const { deps, controller } = fixture({
+        enterModel: vi.fn(async () => { throw new Error('WebGL context lost'); }),
+        leaveModel: vi.fn(() => order.push('leave')),
+        onError: vi.fn((error, mode) => order.push(`error:${mode}:${error.message}`))
+    });
+    expect(await controller.request('photo')).toBe(false);
+    expect(controller.getState()).toEqual({ desired: '2d', pending: false });
+    expect(deps.onError).toHaveBeenCalledOnce();
+    expect(order.at(-1)).toBe('error:photo:WebGL context lost');
+    expect(order.indexOf('leave')).toBeLessThan(order.length - 1);
+});
+it('does not report a superseded entry that fails after the user moved on', async () => {
+    const gate = deferred();
+    const { deps, controller } = fixture({ enterModel: vi.fn(async () => { await gate.promise; throw new Error('late'); }) });
+    const first = controller.request('model');
+    await controller.request('2d');
+    gate.resolve();
+    expect(await first).toBe(false);
+    expect(deps.onError).not.toHaveBeenCalled();
+});

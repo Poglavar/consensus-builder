@@ -53,6 +53,37 @@
     color: var(--cb-text-muted);
 }
 
+/* The named agreement scheme and the authority decisions its rules require. */
+.approval-card__regime {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-1) var(--cb-space-2);
+    margin: 0;
+}
+
+.approval-card__regime small {
+    flex-basis: 100%;
+    color: var(--cb-text-muted);
+}
+
+.approval-card__research {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.approval-card__authorities {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.approval-card__authorities [data-approval-authority-state="approved"] { color: var(--cb-success-soft-ink); }
+.approval-card__authorities [data-approval-authority-state="pending"] { color: var(--cb-text-muted); }
+
 .approval-card__meter {
     display: flex;
     flex-direction: column;

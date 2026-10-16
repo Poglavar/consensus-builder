@@ -39,6 +39,7 @@
         "compactness": "Compactness",
         "parcels": "Loaded parcels",
         "measurementNote": "Measured between OSM road centrelines, including street space. Walking time is a perimeter estimate, not a routed walk.",
+        "proposedStreetsNote": "Bounded in part by streets from applied proposals.",
         "rateLimited": "OSM is busy. Retry in {{seconds}} seconds.",
         "loadError": "Could not load OSM roads (HTTP {{status}}). Please retry.",
         "invalidData": "The road source returned invalid data.",
@@ -194,6 +195,153 @@
     },
     "proposalApproval": {
         "ownerLabel": "Owner {{label}}",
+        "leaseholderLabel": "Leaseholder {{label}}",
+        "authorityLabel": "Authority",
+        "authorityLabelLettered": "Authority {{label}}",
+        "rules": {
+            "all": "every one",
+            "and": " and ",
+            "authorityGeneric": "an authority’s approval",
+            "authorityOnly": "Needs only {{authority}}. Owners are heard; their responses do not decide.",
+            "passesWith": "Passes with {{tests}}.",
+            "passesWithAuthority": "Passes with {{tests}}, and needs {{authority}}.",
+            "vacuous": "Nobody to count here, so this test does not block.",
+            "heard": "Heard, not counted",
+            "ownersHeard": "Owners are heard; the authority decides.",
+            "of": {
+                "headcount-owners-all": "of the owners",
+                "headcount-owners-private": "of the private owners",
+                "headcount-leaseholders-all": "of the leaseholders",
+                "headcount-leaseholders-private": "of the private leaseholders",
+                "headcount-owners-and-leaseholders-all": "of the owners and leaseholders together",
+                "headcount-owners-and-leaseholders-private": "of the private owners and leaseholders together",
+                "area-owners-all": "of the area",
+                "area-owners-private": "of the private land",
+                "area-leaseholders-all": "of the leased area",
+                "area-leaseholders-private": "of the privately leased area",
+                "area-owners-and-leaseholders-all": "of the owned and leased area",
+                "area-owners-and-leaseholders-private": "of the private owned and leased area"
+            },
+            "meter": {
+                "headcount-owners-private": "Private owners",
+                "headcount-leaseholders-all": "Leaseholders",
+                "headcount-leaseholders-private": "Private leaseholders",
+                "headcount-owners-and-leaseholders-all": "Owners and leaseholders",
+                "headcount-owners-and-leaseholders-private": "Private owners and leaseholders",
+                "area-owners-private": "Private land",
+                "area-leaseholders-all": "Leased area",
+                "area-leaseholders-private": "Privately leased area",
+                "area-owners-and-leaseholders-all": "Owned and leased area",
+                "area-owners-and-leaseholders-private": "Private owned and leased area"
+            }
+        },
+        "regime": {
+            "research": "Research template",
+            "stage": "What this support is for: {{stage}}",
+            "stages": {
+                "agreement": "a voluntary agreement",
+                "initiative": "starting the procedure (initiative)",
+                "association": "forming the association",
+                "plan": "the readjustment plan",
+                "execution": "carrying out the readjustment"
+            },
+            "families": {
+                "voluntary": "Voluntary agreement",
+                "support-and-authority": "Owner support, then an authority decides",
+                "authority-led": "Authority-led: owners are heard"
+            },
+            "basis": {
+                "area": "surface area",
+                "value": "land value"
+            },
+            "basisArea": "New plots are distributed by area.",
+            "basisValue": "New plots are distributed by land value, so the parcels need land values.",
+            "capPool": "Land not returned to owners is at most {{percent}}% of the pool.",
+            "capOwnerWhenArea": "Distributed by area, no owner gives up more than {{percent}}% of their land.",
+            "capOwner": "No owner gives up more than {{percent}}% of their land.",
+            "check": {
+                "basisOk": "Distributed by {{basis}}, as the scheme requires.",
+                "basisWrong": "The scheme distributes by {{basis}}, but this plan distributes by {{actual}}.",
+                "capOwnerNone": "No owner gives up land.",
+                "capOwnerOk": "The most any owner gives up is {{given}} ({{owner}}); the cap is {{limit}}.",
+                "capOwnerOver": "{{owner}} gives up {{given}} of their land; the cap is {{limit}}.",
+                "capPoolUnknown": "The pool area is unknown, so the {{limit}} cap cannot be checked.",
+                "capPoolOk": "{{given}} of the pool is not returned to owners; the cap is {{limit}}.",
+                "capPoolOver": "{{given}} of the pool is not returned to owners, over the {{limit}} cap."
+            }
+        },
+        "authority": {
+            "approved": "approved: {{role}}",
+            "pending": "pending: {{role}}",
+            "given": "authority approved",
+            "awaited": "authority pending"
+        },
+        "schemes": {
+            "nl-kavelruil": {
+                "name": "Netherlands — voluntary urban land exchange (kavelruil)",
+                "note": "Every party agrees. The exchange is then set down in a notarial deed and registered with the Kadaster; at least three parties take part."
+            },
+            "tw-owner-organized": {
+                "name": "Taiwan — owner-organized urban land readjustment",
+                "authority": "approval by the competent authority",
+                "note": "Counts private owners and private land only. Land for public facilities and costs may take at most 45% of the area (an exception procedure exists)."
+            },
+            "kr-association": {
+                "name": "South Korea — urban development association",
+                "authority": "the designating authority’s authorization of the association",
+                "note": "These tests authorize forming the association; the replotting plan has its own later approval."
+            },
+            "es-ct-basic": {
+                "name": "Catalonia — basic compensation",
+                "authority": "the municipality’s approval of the compensation project",
+                "note": "Owners of more than half the area can start it; owners who do not join have defined roles."
+            },
+            "es-ct-concertacion": {
+                "name": "Catalonia — compensation by agreement (concertación)",
+                "authority": "the municipality’s selection and approval",
+                "note": "Owners of more than a quarter of the area can start it; the municipality then runs a selection."
+            },
+            "es-md-compensation": {
+                "name": "Madrid — compensation by the owners",
+                "authority": "the municipality’s approval",
+                "note": "At least half the area: exactly half is enough here, unlike Catalonia."
+            },
+            "co-readjustment": {
+                "name": "Colombia — urban action unit / land readjustment",
+                "authority": "approval by the municipal planning authority",
+                "note": "Owners of 51% of the committed area; the project also needs more than one participant."
+            },
+            "jp-association": {
+                "name": "Japan — landowners’ association",
+                "authority": "the prefectural governor’s approval",
+                "note": "Three tests at once: owners, leaseholders, and owned plus leased area. Public land is outside them. Land is reallocated by value; reserve land can be sold to fund the works."
+            },
+            "jp-joint": {
+                "name": "Japan — individual or joint implementation",
+                "authority": "the prefectural governor’s approval of the plan",
+                "note": "Every owner and leaseholder consents; some other rights are exempt."
+            },
+            "de-umlegung-new": {
+                "name": "Germany — Umlegung, land developed for the first time",
+                "authority": "the Umlegung authority’s adoption of the readjustment plan",
+                "note": "No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 30% of their land for public facilities (§58); by value, the gain is settled in money."
+            },
+            "de-umlegung-developed": {
+                "name": "Germany — Umlegung, already developed land",
+                "authority": "the Umlegung authority’s decision on the readjustment plan",
+                "note": "No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 10% of their land (§58)."
+            },
+            "tr-article-18": {
+                "name": "Turkey — article 18 readjustment",
+                "authority": "the municipality’s decision on the parcellation plan",
+                "note": "No owner consent is needed. Each holding gives up at most 45% of its area for public uses (DOP); the law applies it per parcel."
+            },
+            "in-gj-tps": {
+                "name": "India, Gujarat — town planning scheme",
+                "authority": "the State government’s sanction of the scheme",
+                "note": "The authority prepares the scheme and hears written objections; final plots are reconstituted by valuation."
+            }
+        },
         "deals": {
             "title": "What each owner puts in and gets",
             "dealOf": "{{owner}}’s deal",
@@ -220,6 +368,7 @@
         "status": {
             "passed": "Enough to pass",
             "pending": "Not enough yet",
+            "authorityPending": "Awaiting the authority",
             "unresolved": "Ownership unresolved"
         },
         "ruleUnanimous": "Every owner must accept.",
@@ -288,7 +437,12 @@
             "needsMore": "More owners must accept after you before it passes.",
             "verifyFirst": "To accept, first confirm with a lens member that your wallet may act for this owner.",
             "notSigned": "The wallet did not sign, so nothing was accepted.",
-            "cashYouPay": "Cash you pay"
+            "cashYouPay": "Cash you pay",
+            "approveAs": "Approve as {{owner}}",
+            "lease": "Lease {{lease}} on {{parcel}}",
+            "heldWith": "held with {{owners}}",
+            "leaseNote": "The plan reallocates ownership. A lease counts toward the approval rules but gets no plot from this plan’s ledger.",
+            "planTitle": "The plan to decide on"
         },
         "receipt": {
             "signed": "Signed by {{signer}} on {{date}}.",
@@ -334,9 +488,6 @@
         "notFound": "This proposal is no longer available. Refresh the proposals list and try again."
     },
     "proposalDrafts": {
-        "variantLabel": "Variant {{id}}",
-        "variantOf": "Variant of",
-        "variantSaved": "New variant saved. The original is kept; Applied shows which design is on the map.",
         "title": "Drafts",
         "entryAria": "Open {{count}} saved proposal draft(s)",
         "editorAria": "Proposal draft editor",
@@ -391,6 +542,32 @@
             "change": "Change…",
             "setUp": "Set up…",
             "apply": "Use this setup",
+            "summaryLeaseholders": ", {{count}} leaseholder(s)",
+            "publicBody": "public body",
+            "leaseRow": "Lease {{lease}} · {{area}}",
+            "rightsNeeded": "The rights file must list {{what}} (parcel-rights/v2); the downloaded template includes them.",
+            "needLeases": "every lease and its holders",
+            "needPublicBodies": "which holders are public bodies",
+            "sources": "Sources:",
+            "researchCaveat": "Checked {{date}}. Comparative research, not legal advice: confirm the current law and the procedure’s own steps (notices, hearings, registration).",
+            "testComparison": "Comparison",
+            "testFraction": "Fraction",
+            "testMeasure": "What is counted",
+            "measureHeadcount": "of the number of",
+            "measureArea": "of the area of",
+            "testOf": "Whose",
+            "ofOwners": "the owners",
+            "ofLeaseholders": "the leaseholders",
+            "ofBoth": "the owners and leaseholders",
+            "testScope": "Which holders",
+            "scopeAll": "all holders",
+            "scopePrivate": "private only",
+            "removeTest": "Remove this test",
+            "noTests": "No owner test: only the authority decides.",
+            "addTest": "Add a test",
+            "authorityId": "Authority (an abstract id; a lens member confirms who acts for it)",
+            "customAuthority": "An authority must also approve",
+            "unknownRegime": "Unknown agreement rules.",
             "explainer": "Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the geometric proposal. Rights describe declared ownership and do not prove authorization.",
             "rightsTitle": "Parcel-owner rights",
             "importHelp": "Import a parcel-rights JSON file, or load it from a registered source. The previous dataset stays in place if import fails.",
@@ -411,14 +588,15 @@
                 "missingRights": "No ownership rights dataset is loaded.",
                 "missingParcels": "Select parcels to check ownership data.",
                 "incompleteRights": "Ownership data is incomplete for one or more selected parcels.",
-                "missingOwners": "No owners are declared for the selected parcels."
+                "missingOwners": "No owners are declared for the selected parcels.",
+                "authorityIsHolder": "An authority id is also a rights holder; give the authority its own id."
             },
             "missingParcels": "Missing selected parcels: {{parcels}}",
             "emptyRights": "The dataset has no parcel rows yet.",
-            "policyTitle": "Approval policy",
-            "policyType": "Policy",
-            "unanimous": "Unanimous",
-            "threshold": "Custom threshold",
+            "policyTitle": "Agreement rules",
+            "policyType": "Rules",
+            "unanimous": "Every owner must agree",
+            "threshold": "Custom rules",
             "ownerThreshold": "Owner-count threshold (fraction)",
             "areaThreshold": "Area threshold (fraction)",
             "ownerRule": "Owner-count rule",
@@ -483,7 +661,6 @@
             "handoffFailedReason": "The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally."
         },
         "placement": {
-            "blockUnavailable": "Block designs need a site the server can verify. This site could not be verified, so the editor has not opened. Your selection is kept. Try a supported site such as Zagreb, or retry if the data service is unavailable.",
             "fixedSite": "This proposal type has a fixed site and cannot be moved.",
             "existingBuilding": "Existing-building proposals keep their source-aware footprint and cannot use free placement.",
             "invalidSite": "A free placement needs a valid polygon site.",
@@ -957,7 +1134,7 @@
             "proposeTitle": "Propose",
             "addBuildings": "Buildings",
             "addBuildingsTooltip": "Add buildings to the selected block",
-            "singleBuilding": "Freeform building",
+            "singleBuilding": "Single building",
             "parkButton": "Park",
             "squareButton": "Square",
             "listTitle": "Blocks list",
@@ -1859,8 +2036,6 @@
             }
         },
         "road": {
-            "curveTooTight": "Track bend: {{measured}} m three-point radius; {{minimum}} m required. Move the bend or use a gentler route. Your drawing is kept.",
-            "curveAdjusted": "Point adjusted to meet the {{radius}} m three-point radius check.",
             "title": "Draw road",
             "titleTrack": "Draw track",
             "crossSectionButton": "Edit cross-section",
@@ -2042,9 +2217,9 @@
         },
         "track": {
             "speedPickerTitle": "Choose track speed",
-            "speedPickerDescription": "Choose a design speed for the three-point bend check. The route is schematic: this check does not certify a continuous rail curve. Press Enter to use the selected speed.",
+            "speedPickerDescription": "Select the maximum speed for this track. This determines the minimum curvature radius. Press Enter to start with the default selection.",
             "startDrawing": "Start drawing",
-            "minRadius": "Minimum three-point radius {{radius}} m",
+            "minRadius": "Minimum curvature radius {{radius}} m",
             "cancel": "Cancel",
             "widthLabel": "Track width:"
         },
@@ -2075,7 +2250,7 @@
                     "eyebrow": "From idea to proposal",
                     "title": "Make change visible",
                     "body": "Turn an idea into a proposal: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.",
-                    "hint": "Tap land and choose Propose here, or use Design to draw a site. Then compare your proposals on the map."
+                    "hint": "Start in Tools, then compare your proposals on the map."
                 },
                 "consent": {
                     "eyebrow": "People make the difference",
@@ -2590,14 +2765,14 @@
                         "station": "Transit station",
                         "roadTrack": "Road/Track",
                         "road-track": "Road/Track",
-                        "buildings": "Block",
-                        "single": "Freeform building",
+                        "buildings": "Buildings",
+                        "single": "Single building",
                         "park": "Park",
                         "square": "Square",
                         "lake": "Lake",
-                        "urbanRule": "Block",
-                        "urban-rule": "Block",
-                        "reparcellization": "Land readjustment",
+                        "urbanRule": "Urban rule",
+                        "urban-rule": "Urban rule",
+                        "reparcellization": "Reparcellization",
                         "row": "Row",
                         "other": "Other"
                     }
@@ -2635,14 +2810,14 @@
                     "road-track": "Road/Track",
                     "road": "Road",
                     "track": "Track",
-                    "buildings": "Block",
-                    "single": "Freeform building",
+                    "buildings": "Buildings",
+                    "single": "Single building",
                     "row": "Row",
                     "park": "Park",
                     "square": "Square",
                     "lake": "Lake",
-                    "urban-rule": "Block",
-                    "reparcellization": "Land readjustment",
+                    "urban-rule": "Urban rule",
+                    "reparcellization": "Reparcellization",
                     "decide-later": "Decide later",
                     "parcelBased": "Parcel-based",
                     "other": "Other"
@@ -3039,21 +3214,21 @@
             "ownershipLabel": "Ownership",
             "proposalTypeOptions": {
                 "purchase": "Purchase",
-                "urbanRule": "Block",
+                "urbanRule": "Urban rule",
                 "reparcellization": "Land readjustment",
                 "jointInvestment": "Joint investment"
             },
             "goalOptions": {
                 "asIs": "No change",
-                "buildings": "Block",
-                "single": "Freeform building",
+                "buildings": "Buildings",
+                "single": "Building(s)",
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
                 "roadTrack": "Road/Track",
                 "decideLater": "Merge",
-                "urbanRule": "Block",
-                "reparcellization": "Land readjustment",
+                "urbanRule": "Urban rule",
+                "reparcellization": "Subdivide",
                 "ownershipTransfer": "Ownership transfer"
             },
             "goalSections": {
@@ -3329,7 +3504,7 @@
     "blockify": {
         "modal": {
             "mapHint": "Edit plots and boundaries on the map; use the panel to review ownership and shares.",
-            "title": "Block",
+            "title": "Urban rule",
             "closeAria": "Close blockify modal",
             "generating": "Generating building…",
             "done": "Done",
@@ -3559,7 +3734,6 @@
     },
     "reparcellization": {
         "modal": {
-            "publicAllocation": "Public use allocation (not a recorded owner)",
             "mapHint": "Adjust plot boundaries on the map; review ownership and shares here.",
             "savedRecipientUnresolved": "Saved output recipient has no matching current input contribution.",
             "ownerReview": "Review one owner",
@@ -5212,8 +5386,6 @@
         }
     },
     "structureEditor": {
-    "saveVariant": "Save as variant",
-    "variantHint": "Saving creates a new variant and keeps the original. The new variant is applied if it can be placed.",
     "titleLake": "Lake boundary editor",
     "instructionsLake": "Drag boundary points to reshape the lake. Tap an edge to add a point.",
     "lakeBoundaryHint": "The shore and water update with the outline.",
@@ -5491,9 +5663,7 @@
         }
     },
     "mapShell": {
-        "startDesign": "Design",
-        "startDesignHint": "Draw a site, or tap land and choose Propose here",
-        "renderFallback": "This view could not start. WebGL may be unavailable in this browser. Your 2D work is kept. Enable hardware acceleration or try another WebGL-capable browser, then retry.",
+        "viewFailed": "This view could not start. You are back on the 2D map.",
         "layers": "Layers",
         "settings": "Settings",
         "proposals": "Proposals",
@@ -5732,7 +5902,7 @@
         },
         "palette": {
             "readjustNeedsParcels": "Land readjustment works on selected parcels: select them instead of drawing a site.",
-            "subdivide": "Land readjustment",
+            "subdivide": "Subdivide",
             "readjustUnknownCadastre": "Subdividing needs a cadastre the server holds: this place has none it knows."
         },
         "plots": {

@@ -1784,16 +1784,125 @@ the tool card covered the land. **All fixed below.**
 ### Still open
 
 - Real-wallet acceptance on 879 (Phantom accounts 2–5), then mint and anchor.
-- **Regime presets (§8), nothing built yet.** The rule model today is an owner-count test and an
-  area test, both required, each strict or inclusive.
-  - Closest: templates that only fill those numbers, with route, stage, version and source. That
-    covers Taiwan (≥ ½ owners and > ½ area) and South Korea (≥ ½ owners and ≥ ⅔ area).
-  - Small model change: allow a single test, for the area-only routes (Catalonia > ½, Madrid ≥ ½,
-    Colombia 51%).
-  - Larger: rights classes for Japan's association route (owners and leaseholders, combined area).
-    Authority conditions for statutory routes (Germany, Turkey, Gujarat). Allocation rules (BauGB
-    §58 caps, value-based distribution).
+- **Regime presets (§8): built in §23** (schemes, leaseholders, public bodies, authorities, caps).
 - Touch drag of a whole segment is untested on a device (pointer events are wired).
 - Lineage for records published before this change stays unresolved where they named local ids.
 - Settlement, jurisdiction templates and per-owner land/cash choices are unchanged (§§20–21, §8).
 
+## 23. Agreement schemes on one engine (2026-10-16)
+
+User framing: what goes in is always land (sometimes land and cash); what comes out is always land
+and cash (zoning rights later). The variation is how the scheme executes and **who gets a vote and
+how**. So the deal stayed as it was (§§17–21) and only the deciding changed: one engine takes
+every scheme of §7, from "everyone agrees" to "the authority decides and owners are heard".
+
+### The rule model
+
+- **Parties.** Abstract holders of ownership or leasehold interests in the declared parcels, plus
+  any authority the rules require. Every party decides the same way: a lens member confirms which
+  party a wallet may act for, the wallet signs the exact terms, anyone re-verifies the receipt
+  (§§18–20). `ownerId` in rights, facts and receipts names a party.
+- **Rights file `parcel-rights/v2`.** Adds `leases` per parcel (`leaseId`, `areaM2` when it is not
+  the whole parcel, `holders` with exact shares) and `publicBodies` (holders a "private only"
+  test leaves out). A v2 file using neither normalizes to v1, so existing rights hash alike; an
+  older reader refuses a v2 file rather than dropping its leases.
+- **Tests.** `{ measure: headcount|area, of: owners|leaseholders|owners+leaseholders,
+  scope: all|private, numerator, denominator, strict }`, at most eight, each counting something
+  different, all required. Heads are distinct parties; area is each parcel's (or lease's) area
+  times the counted holders' shares, counted once all of them approved (a co-owned parcel still
+  needs both). Exact rational arithmetic. A test with nobody to count (no leaseholders) is met and
+  marked vacuous, so it never blocks. Japan's combined denominator is owned area plus leased area,
+  as the statute counts it, not their geometric union.
+- **Authorities.** `authorities: [{ authorityId }]`, at most four; each must approve. An
+  authority-led scheme has no owner test: owners are heard (their acceptances are shown), the
+  authority decides.
+- **Canonical storage.** Rules the older `unanimous` / `threshold` forms can express are stored in
+  those forms, so every proposal published before this keeps its context and consent hash
+  (pinned in `proposal-approval-regimes.test.js` with the hashes recorded before the change, and
+  checked against live proposal 879). `threshold` may now carry one test only (area-only routes).
+  Anything else is `{ type: 'rules', tests, authorities }`.
+- **Schemes** (`proposals/approval-regimes.js`): thirteen templates from §7, each with family
+  (voluntary, support-and-authority, authority-led), stage, tests, authority count, distribution
+  rules and sources, versioned by the date they were checked. A proposal pins `regime: { id,
+  version }`; the pin is accepted only when the policy is exactly the template's rules, and it is
+  part of the approval context, so a later revision of a template never changes what people
+  signed. All templates are labelled research.
+  - Voluntary: Netherlands kavelruil (everyone).
+  - Support and authority: Taiwan (≥½ private owners, >½ private land), South Korea (≥½ owners, ≥⅔
+    area), Catalonia basic (>½ area) and concertación (>¼), Madrid (≥½ area), Colombia (51/100 area),
+    Japan association (≥⅔ private owners, ≥⅔ private leaseholders, ≥⅔ private owned+leased area),
+    Japan joint (every owner and leaseholder).
+  - Authority-led: Germany Umlegung first development (30% per-owner cap by area) and developed land
+    (10%), Turkey art. 18 (by area, 45% per holding), Gujarat TPS (by value).
+- **Distribution rules.** `allocation.basis` (area, value or either) and `cap` (per owner or per
+  pool). `checkAllocation` compares a plan's ledger; `reparcellization-validation.js` fails a plan
+  over a cap (`regime-allocation`), the designer keeps an area-basis scheme on area and lists each
+  rule's verdict under the Ownership and approval row, and the owner review repeats them.
+
+### Where people meet it
+
+- **The setup form** (editor tab, create dialog, designer): *Agreement rules* is a dropdown of
+  *Every owner must agree*, *Custom rules* and the schemes grouped by family. A scheme shows its
+  family, stage, note, distribution rules, what the rights file must list (leases, public bodies;
+  the downloaded template includes them), sources and the research caveat, and an input per
+  required authority (an abstract id). Custom rules are rows: comparison, fraction, heads or area,
+  whose, all or private only, plus an optional authority. The rule reads as one sentence everywhere
+  (`proposals/approval-text.js`).
+- **The Owner acceptance card:** the scheme's name with a *Research template* badge, the rule
+  sentence, one meter per test with what it still needs, owners and area as plain information
+  when no test counts them (*Heard, not counted*), each required authority as approved or pending,
+  and the badge *Awaiting the authority* when owner support is complete.
+- **Parties:** labels are Owner A…, Leaseholder A… and Authority (A… when several). A leaseholder's
+  review lists the lease and says the ledger gives it no plot; an authority's review shows the plan
+  (parcels, owners, leaseholders, plots, area) and reads *Approve as Authority*.
+- **Lens member:** the registry lists leases, public bodies and the authorities competent for each
+  parcel; it refuses a snapshot that differs in any of them (`leases_mismatch`,
+  `public_body_mismatch`, `unknown_authority`, `authority_out_of_scope`) and names an authority
+  wallet's party like an owner's. Relay and chain anchor carry authority receipts unchanged.
+
+### Verification
+
+- **Headless unit tests.** New `proposal-approval-regimes.test.js` (16 tests): v2 rights, canonical
+  compaction, the pre-change hashes (and live proposal 879's), scheme pins, Catalonia/Madrid at
+  exactly half, Taiwan's private scope, Japan's leaseholders and combined area, vacuous tests,
+  authority-led schemes, needs per test, the review for an authority and a tenant, distribution
+  caps in `checkAllocation` and in plan validation, the rule sentences, the lens member's registry
+  refusals, and an authority's decision admitted by the relay and counted. The older approval,
+  review, setup, editor, lens and validation suites were updated to the new shape (`tests[]`
+  instead of two flags, custom rows instead of the two fraction fields); `readjustment-owner-
+  identity` runs `buildOwnerShares` on its own, so the scheme basis is looked up inline there. The
+  i18n ratchets (Title Case, case conflicts, duplicate values, dynamic prefixes) and the control
+  contract (seven new controls, five removed) are clean for these files.
+- **An unapproved full-suite run, twice.** A `sed`-built file list carried a bare `test/` token,
+  which vitest took as a filter matching every file, so the "targeted" run was the whole suite
+  (876 files, 12,391 tests passed, 5 failed: two pre-existing `CustomEvent` errors in files this
+  change does not touch and three 5-second timeouts at load 120) — and it ran a second time
+  before the cause was found. The rule that prevents this is now in the global AGENTS.md.
+- **Targeted headless Playwright.** `land-readjustment-editor` (3), `proposal-approval-lens` (now 9,
+  1 skipped by design) and `proposal-approval` (1): 13 passed. New scenarios: the designer picks
+  Japan's association (details card, rights note, authority field), switches to custom rows, trips
+  and recovers from a bad fraction, then creates under Madrid's scheme; a Catalonia proposal where
+  Owner A's 100 of 175 m² meets the area test, the card reads *Awaiting the authority*, and the
+  municipality's wallet, confirmed by the real lens member process, approves as *Authority*. The
+  editor test now covers pinning a scheme and dropping the pin.
+- **Found while testing:** choosing *Custom rules* from *Every owner must agree* snapped back
+  (the canonical form has no "custom" flag) — custom rules now start from the usual majority; the
+  draft store deep-merges patches, so the editor kept an old scheme pin — the approval config is
+  now written whole; the dropdown listed schemes in reverse.
+- **By hand, headed browser** on the local frontend with the prod API: proposal 879's card renders
+  unchanged on the new engine (same sentence, *Needs 2*, *Needs at least 825 m²*); the editor's
+  Approval tab shows the grouped dropdown, Japan's card and the custom rows; a local copy of 879
+  under Catalonia's scheme shows the scheme line, *Needs more than 590 m²*, *Heard, not counted*
+  and the pending authority; its designer row switched to Turkey's scheme and listed *Distributed
+  by surface area, as the scheme requires* and *The most any owner gives up is 1.1% (Owner B); the
+  cap is 45%*. Nothing was published or deployed.
+
+### Limits
+
+- Allocation by value needs land values on the parcels; without them the designer falls back to
+  area and a value-basis scheme reports the mismatch rather than inventing values.
+- Caps are checked on areas, not values; Taiwan's 45% is per pool, Germany's and Turkey's per owner.
+- A lease's holders approve under the rules but the ledger reallocates ownership only; a scheme
+  that gives leaseholders plots or money is not modelled.
+- Stages are labels: a scheme's initiative, plan and execution steps are not separate proposals.
+- Every template is comparative research checked on 2026-10-11, not legal advice.

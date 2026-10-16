@@ -771,7 +771,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         }
         if (currentProposalPreviewId === proposalId) classes.push('is-previewing');
 
-        const safeTitle = escapeHtml(window.ProposalDisplayText.title(proposal.title || untitledLabel, proposal));
+        const safeTitle = escapeHtml(window.ProposalDisplayText.text(proposal.title || untitledLabel, proposal));
         const safeAuthor = escapeHtml(metrics.author || unknownAuthor);
 
         // Determine applied status. "Applied" is a fact about this map, so a server row that this

@@ -6,7 +6,6 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const Lineage = require('../../frontend/js/proposals/lineage.js');
-const DisplayText = require('../../frontend/js/proposals/display-text.js');
 
 describe('publishedSourceIds', () => {
     it('names a since-published local source by its published record', () => {
@@ -43,15 +42,5 @@ describe('localDerived / mergeDerived', () => {
             ['901', 'Fork B', true, true],
             ['p-a', 'Fork A', false, false]
         ]);
-    });
-});
-
-describe('variant suffix in titles', () => {
-    it('suffixes a version that kept its source name, and no other', () => {
-        const kept = { proposalId: 'c2-abcdefghijklmnop', sourceProposalId: 'c2-src', copiedFromName: 'Plan' };
-        expect(DisplayText.title('Plan', kept)).toBe('Plan · Variant ijklmnop');
-        expect(DisplayText.title('Renamed plan', kept)).toBe('Renamed plan');
-        expect(DisplayText.title('Plan', { proposalId: 'x', sourceProposalId: 'c2-src' })).toBe('Plan');
-        expect(DisplayText.title('Plan', { proposalId: 'x' })).toBe('Plan');
     });
 });

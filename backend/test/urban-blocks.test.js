@@ -127,6 +127,51 @@ describe('OSM block geometry model', () => {
         expect(adjacentLeft.properties.color).not.toBe(adjacentRight.properties.color);
     });
 
+    it('splits a block along an applied proposed street that stops a centimetre short of the roads', () => {
+        // Stored proposal coordinates round to ~1 cm, so the street's ends miss the centrelines.
+        const street = [[0.005, 0.0000001], [0.005, 0.0099999]];
+        const raw = fc(...squareRoads().features, way('proposed', street));
+        expect(model.detectBlocks(raw, bbox, turf).features).toHaveLength(1);
+        const roads = model.withProposedStreets(squareRoads(), [street]);
+        const blocks = model.detectBlocks(roads, bbox, turf).features;
+        expect(blocks).toHaveLength(2);
+        expect(blocks.every(block => block.properties.proposedStreets)).toBe(true);
+        expect(blocks.reduce((sum, block) => sum + block.properties.areaM2, 0))
+            .toBeCloseTo(model.detectBlocks(squareRoads(), bbox, turf).features[0].properties.areaM2, -1);
+        // The roads it meets gain the junction vertex; the rest are the same objects.
+        expect(roads.features[0].geometry.coordinates).toHaveLength(3);
+        expect(model.withProposedStreets(squareRoads(), [])).toEqual(squareRoads());
+    });
+
+    it('keeps the id of the block across the road a proposed street ends on', () => {
+        const wide = [-0.01, -0.01, 0.03, 0.02];
+        // Two blocks sharing a slanted road, so a point projected onto it is collinear only to rounding.
+        const twoBlocks = () => fc(
+            way('a', [[0, 0], [0.01, 0]]), way('b', [[0.01, 0], [0.012, 0.01]]), way('c', [[0.012, 0.01], [0, 0.01]]),
+            way('d', [[0, 0.01], [0, 0]]), way('e', [[0.01, 0], [0.02, 0]]), way('f', [[0.02, 0], [0.02, 0.01]]),
+            way('g', [[0.02, 0.01], [0.012, 0.01]]));
+        const right = blocks => blocks.features.find(block => turf.centerOfMass(block).geometry.coordinates[0] > 0.012);
+        const before = right(model.detectBlocks(twoBlocks(), wide, turf));
+        const roads = model.withProposedStreets(twoBlocks(), [[[0, 0.0031], [0.0107427, 0.0037137]]]);
+        const after = model.detectBlocks(roads, wide, turf);
+        expect(after.features).toHaveLength(3);
+        expect(right(after).geometry.coordinates[0]).toHaveLength(6);
+        expect(right(after).id).toBe(before.id);
+        expect(right(after).properties.proposedStreets).toBe(false);
+    });
+
+    it('leaves a block whole when a proposed street ends more than a metre from any road', () => {
+        const roads = model.withProposedStreets(squareRoads(), [[[0.005, 0.0001], [0.005, 0.0099]]]);
+        expect(model.detectBlocks(roads, bbox, turf).features).toHaveLength(1);
+        expect(model.detectBlocks(roads, bbox, turf).features[0].properties.proposedStreets).toBe(false);
+    });
+
+    it('takes only ground stretches of a proposed centreline', () => {
+        const runs = model.groundRuns([{ lat: 0, lng: 0 }, { lat: 0, lng: 1 }, { lat: 0, lng: 2, level: -1 },
+            { lat: 0, lng: 3, level: 0 }, { lat: 0, lng: 4 }, { lat: 0, lng: 5, level: 1 }]);
+        expect(runs).toEqual([[[0, 0], [1, 0]], [[3, 0], [4, 0]]]);
+    });
+
     it('refuses incomplete road inputs', () => {
         expect(() => model.detectBlocks({ ...squareRoads(), truncated: true }, bbox, turf)).toThrow(/incomplete/i);
         expect(() => model.detectBlocks({ ...squareRoads(), partial: true }, bbox, turf)).toThrow(/incomplete/i);
@@ -188,6 +233,37 @@ describe('urban block view controller', () => {
         expect(view.snapshot()).toMatchObject({ phase: 'off', roads: null });
         expect(fetchRoads).toHaveBeenCalledTimes(3);
         expect(detect).toHaveBeenCalledTimes(2);
+    });
+
+    it('re-detects from the fetched roads, without refetching, when the applied streets change', async () => {
+        const fetchRoads = vi.fn(async () => squareRoads());
+        let extra = [];
+        const detect = vi.fn(async roads => model.detectBlocks(roads, controller.requestBounds(viewport), turf));
+        const view = controller.create({ fetchRoads, detect, onChange: vi.fn(),
+            extendRoads: roads => model.withProposedStreets(roads, extra) });
+        view.setEnabled(true);
+        await view.refresh(viewport);
+        expect(view.snapshot().blocks.features).toHaveLength(1);
+        extra = [[[0.005, 0.0000001], [0.005, 0.0099999]]];
+        await view.redetect();
+        expect(fetchRoads).toHaveBeenCalledTimes(1);
+        expect(view.snapshot()).toMatchObject({ phase: 'ready' });
+        expect(view.snapshot().blocks.features).toHaveLength(2);
+        expect(view.snapshot().roads.features.some(road => road.properties.proposed)).toBe(true);
+    });
+
+    it('leaves re-detection to the load in flight', async () => {
+        let resolve;
+        const fetchRoads = vi.fn(() => new Promise(r => { resolve = r; }));
+        const detect = vi.fn(async () => 'blocks');
+        const view = controller.create({ fetchRoads, detect, onChange: vi.fn() });
+        view.setEnabled(true);
+        const load = view.refresh(viewport);
+        await view.redetect();
+        expect(fetchRoads.mock.calls[0][1].aborted).toBe(false);
+        resolve({ features: [] });
+        await load;
+        expect(detect).toHaveBeenCalledTimes(1);
     });
 
     it('surfaces load and detection errors and allows retry', async () => {

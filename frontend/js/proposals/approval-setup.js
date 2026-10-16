@@ -1,7 +1,9 @@
-// The "Ownership and approval" form: parcel-rights import, the approval rule and the lens. One form
+// The "Ownership and approval" form: parcel-rights import, the agreement rules and the lens. One form
 // for the proposal editor's Approval tab and the create dialog, so a readjustment's owners can be set
 // up while it is being created instead of through a replacement afterwards. It keeps no state: it
-// renders a config and lens and turns the form's controls back into them. Rules live in approval.js.
+// renders a config and lens and turns the form's controls back into them. The rules are chosen as a
+// scheme (approval-regimes.js: voluntary, owner support plus an authority, or authority-led), as
+// "every owner must agree", or as custom tests; rules and counting live in approval.js.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -10,6 +12,9 @@
     'use strict';
 
     const approval = () => root.ProposalApproval || (typeof require === 'function' ? require('./approval.js') : null);
+    const regimes = () => root.ProposalApprovalRegimes || (typeof require === 'function' ? require('./approval-regimes.js') : null);
+    const words = () => root.ProposalApprovalText || (typeof require === 'function' ? require('./approval-text.js') : null);
+    const DEFAULT_AUTHORITY = 'authority-1';
     const MAX_FILE_BYTES = 1024 * 1024;
 
     function t(key, fallback, params = {}) {
@@ -69,17 +74,19 @@
         return { numerator: Number(match[1]), denominator: Number(match[2]) };
     }
 
-    function policyText(policy) {
-        return policy?.type === 'threshold'
-            ? t('proposalDrafts.approval.policyContextThreshold', 'Approval uses owner-count {{owners}} and area {{area}} thresholds.', {
-                owners: fractionText(policy.owners), area: fractionText(policy.area)
-            })
-            : t('proposalDrafts.approval.policyContextUnanimous', 'Every declared owner must approve.');
+    // The rule in words, led by the scheme's name when it is a named one.
+    function policyText(policy, regime = null) {
+        const rule = words().rulesText(policy || { type: 'unanimous' }, t, regime);
+        const name = regime ? words().regimeName(regime, t) : null;
+        return name ? `${name}: ${rule}` : rule;
     }
 
-    function ownerLabel(ownerId, ownerIds) {
-        const raw = approval()?.ownerLabel?.(ownerId, ownerIds) || String(ownerId || '');
-        return t('proposalApproval.ownerLabel', 'Owner {{label}}', { label: raw.replace(/^Owner\s*/, '') });
+    // "Owner A", "Leaseholder A", translated, for the parties a rights file declares.
+    function partyLabel(id, state) {
+        const party = approval().partyOf(id, state);
+        if (!party) return String(id || '');
+        const key = party.kind === 'leaseholder' ? 'proposalApproval.leaseholderLabel' : 'proposalApproval.ownerLabel';
+        return t(key, party.kind === 'leaseholder' ? 'Leaseholder {{label}}' : 'Owner {{label}}', { label: party.letter });
     }
 
     // One line for a summary row: what the rights cover, the rule and the lens, or that none is set.
@@ -89,10 +96,12 @@
             return t('proposalDrafts.approval.summaryNone', 'Not set up yet — owners cannot accept until it is.');
         }
         const owners = new Set(rights.parcels.flatMap(parcel => (parcel.owners || []).map(owner => owner.ownerId))).size;
+        const leaseholders = new Set(rights.parcels.flatMap(parcel => (parcel.leases || []).flatMap(lease => lease.holders.map(holder => holder.ownerId)))).size;
         const keys = lensKeys(lens);
         return [
-            t('proposalDrafts.approval.summaryRights', 'Rights for {{parcels}} parcel(s), {{owners}} owner(s)', { parcels: rights.parcels.length, owners }),
-            policyText(config.policy),
+            t('proposalDrafts.approval.summaryRights', 'Rights for {{parcels}} parcel(s), {{owners}} owner(s)', { parcels: rights.parcels.length, owners })
+                + (leaseholders ? t('proposalDrafts.approval.summaryLeaseholders', ', {{count}} leaseholder(s)', { count: leaseholders }) : ''),
+            policyText(config.policy, config.regime),
             keys.length
                 ? t('proposalDrafts.approval.summaryLens', '{{count}} lens member(s).', { count: keys.length })
                 : t('proposalDrafts.approval.summaryNoLens', 'No lens member yet.')
@@ -109,16 +118,22 @@
         }
         const sourceRows = Array.isArray(rights.parcels) ? rights.parcels : [];
         const ownerIds = [...new Set(sourceRows.flatMap(entry => (entry.owners || []).map(owner => owner.ownerId)))].sort();
+        const leaseholderIds = [...new Set(sourceRows.flatMap(entry => (entry.leases || []).flatMap(lease => lease.holders.map(holder => holder.ownerId))))].sort();
+        const parties = { ownerIds, leaseholderIds, authorityIds: [] };
+        const publicBodies = new Set(rights.publicBodies || []);
+        const holderText = holder => `${esc(partyLabel(holder.ownerId, parties))} · ${esc(holder.ownerId)} · ${esc(holder.share)}${publicBodies.has(holder.ownerId)
+            ? ` · ${esc(t('proposalDrafts.approval.publicBody', 'public body'))}` : ''}`;
         const reasons = {
             'missing-rights': t('proposalDrafts.approval.reason.missingRights', 'No ownership rights dataset is loaded.'),
             'missing-parcels': t('proposalDrafts.approval.reason.missingParcels', 'Select parcels to check ownership data.'),
             'incomplete-rights': t('proposalDrafts.approval.reason.incompleteRights', 'Ownership data is incomplete for one or more selected parcels.'),
-            'missing-owners': t('proposalDrafts.approval.reason.missingOwners', 'No owners are declared for the selected parcels.')
+            'missing-owners': t('proposalDrafts.approval.reason.missingOwners', 'No owners are declared for the selected parcels.'),
+            'authority-is-holder': t('proposalDrafts.approval.reason.authorityIsHolder', 'An authority id is also a rights holder; give the authority its own id.')
         };
         const rows = sourceRows.map(entry => {
-            const ownerList = (entry.owners || []).map(owner =>
-                `${esc(ownerLabel(owner.ownerId, ownerIds))} · ${esc(owner.ownerId)} · ${esc(owner.share)}`
-            ).join('<br>') || esc(t('proposalDrafts.approval.noOwners', 'No owners listed'));
+            const ownerList = ((entry.owners || []).map(holderText).join('<br>') || esc(t('proposalDrafts.approval.noOwners', 'No owners listed')))
+                + (entry.leases || []).map(lease => `<br>${esc(t('proposalDrafts.approval.leaseRow', 'Lease {{lease}} · {{area}}', {
+                    lease: lease.leaseId, area: typeof lease.areaM2 === 'number' ? `${lease.areaM2} m²` : t('parcelCompare.extent.whole', 'Whole parcel') }))}: ${lease.holders.map(holderText).join(', ')}`).join('');
             const area = typeof entry.areaM2 === 'number' ? `${entry.areaM2} m²` : '—';
             const completeness = entry.complete
                 ? t('proposalDrafts.approval.complete', 'Complete')
@@ -148,10 +163,7 @@
             ? normalized.rights.source.provider : 'upload';
         const sourceOptions = sourceList.map(source => option(source.id,
             source.id === 'upload' ? t('proposalDrafts.approval.upload', 'Upload JSON') : (source.label || source.id), selectedSource)).join('');
-        const policy = normalized?.policy || { type: 'unanimous' };
-        const threshold = policy.type === 'threshold' ? policy : {};
         const message = error || configError;
-        const strictValue = rule => (String(rule?.strict) === 'true' ? 'true' : 'false');
         return `
             <section class="proposal-editor-section" data-editor-section="approval">
                 ${heading ? `<h3>${esc(t('proposalDrafts.approval.title', 'Ownership and approval'))}</h3>` : ''}
@@ -172,19 +184,144 @@
                     ${message ? `<div class="proposal-editor-approval-error" role="alert">${esc(message)}</div>` : ''}
                     ${normalized ? previewHtml(normalized, cadastreParcelIds) : `<div class="proposal-editor-approval-error">${esc(t('proposalDrafts.approval.apiMissing', 'Ownership rights support is unavailable.'))}</div>`}
                 </div>
-                <div class="proposal-editor-card">
-                    <h4>${esc(t('proposalDrafts.approval.policyTitle', 'Approval policy'))}</h4>
-                    <p>${esc(policyText(policy))}</p>
-                    <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.policyType', 'Policy'))}</span><select data-approval-policy-type>${option('unanimous', t('proposalDrafts.approval.unanimous', 'Unanimous'), policy.type)}${option('threshold', t('proposalDrafts.approval.threshold', 'Custom threshold'), policy.type)}</select></label>
-                    ${policy.type === 'threshold' ? `<div class="proposal-editor-approval-thresholds">
-                        <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.ownerThreshold', 'Owner-count threshold (fraction)'))}</span><input type="text" data-approval-fraction="owners" value="${esc(fractionText(threshold.owners))}" placeholder="1/2"></label>
-                        <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.areaThreshold', 'Area threshold (fraction)'))}</span><input type="text" data-approval-fraction="area" value="${esc(fractionText(threshold.area))}" placeholder="7/10"></label>
-                        <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.ownerRule', 'Owner-count rule'))}</span><select data-approval-strict="owners">${option('false', t('proposalDrafts.approval.atLeast', 'At least'), strictValue(threshold.owners))}${option('true', t('proposalDrafts.approval.strictlyMore', 'Strictly more than'), strictValue(threshold.owners))}</select></label>
-                        <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.areaRule', 'Area rule'))}</span><select data-approval-strict="area">${option('false', t('proposalDrafts.approval.atLeast', 'At least'), strictValue(threshold.area))}${option('true', t('proposalDrafts.approval.strictlyMore', 'Strictly more than'), strictValue(threshold.area))}</select></label>
-                    </div>` : ''}
-                </div>
+                ${rulesCardHtml(normalized)}
                 <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.lensMembers', 'Lens member keys'))}</span><textarea data-approval-lens placeholder="${esc(t('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}">${esc(lensKeys(lens).join('\n'))}</textarea></label>
             </section>`;
+    }
+
+    // ---- agreement rules ----------------------------------------------------------------------------
+
+    // Which entry of the rules dropdown a config is: a scheme id, "unanimous" or "custom".
+    function ruleChoice(config) {
+        if (config?.regime?.id) return config.regime.id;
+        return !config?.policy || config.policy.type === 'unanimous' ? 'unanimous' : 'custom';
+    }
+
+    // The newest version of each scheme, in catalogue order.
+    const latestRegimes = () => {
+        const seen = new Set();
+        return regimes().list().slice().sort((a, b) => (a.version === b.version ? 0 : a.version < b.version ? 1 : -1))
+            .filter(regime => !seen.has(regime.id) && seen.add(regime.id));
+    };
+
+    function regimeDetailsHtml(template, regime) {
+        const need = regimes().needs(template.tests);
+        const lines = words().allocationLines(template, t);
+        const sources = template.sources.map(source => `<a class="cb-link cb-link--external" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label)}</a>`).join(', ');
+        return `<div class="approval-setup__regime" data-approval-regime-details="${esc(template.id)}">
+            <p><span class="cb-badge approval-setup__research">${esc(t('proposalApproval.regime.research', 'Research template'))}</span> ${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</p>
+            <p>${esc(t(`proposalApproval.schemes.${template.id}.note`, template.text.note))}</p>
+            ${lines.length ? `<ul class="approval-setup__allocation">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>` : ''}
+            ${need.leases || need.publicBodies ? `<p data-approval-rights-needed>${esc(t('proposalDrafts.approval.rightsNeeded', 'The rights file must list {{what}} (parcel-rights/v2); the downloaded template includes them.', {
+                what: [need.leases ? t('proposalDrafts.approval.needLeases', 'every lease and its holders') : null,
+                    need.publicBodies ? t('proposalDrafts.approval.needPublicBodies', 'which holders are public bodies') : null].filter(Boolean).join(t('proposalApproval.rules.and', ' and '))
+            }))}</p>` : ''}
+            <p class="approval-setup__sources">${esc(t('proposalDrafts.approval.sources', 'Sources:'))} ${sources}</p>
+            <p class="approval-setup__caveat">${esc(t('proposalDrafts.approval.researchCaveat', 'Checked {{date}}. Comparative research, not legal advice: confirm the current law and the procedure’s own steps (notices, hearings, registration).', { date: regime?.version || template.version }))}</p>
+        </div>`;
+    }
+
+    // Custom rules: one row per test, "[at least] [2/3] of the [number] of [owners] [all]".
+    function testsEditorHtml(rules) {
+        const select = (attribute, label, options, value) => `<select data-approval-rule ${attribute} aria-label="${esc(label)}">${options.map(([key, text]) => option(key, text, value)).join('')}</select>`;
+        const rows = rules.tests.map((test, index) => `<div class="approval-setup__test" data-approval-test="${index}">
+            ${select('data-approval-test-strict', t('proposalDrafts.approval.testComparison', 'Comparison'), [['false', t('proposalDrafts.approval.atLeast', 'At least')], ['true', t('proposalDrafts.approval.strictlyMore', 'Strictly more than')]], String(test.strict))}
+            <input type="text" data-approval-rule data-approval-test-fraction value="${esc(fractionText(test))}" placeholder="1/2" aria-label="${esc(t('proposalDrafts.approval.testFraction', 'Fraction'))}">
+            ${select('data-approval-test-measure', t('proposalDrafts.approval.testMeasure', 'What is counted'), [['headcount', t('proposalDrafts.approval.measureHeadcount', 'of the number of')], ['area', t('proposalDrafts.approval.measureArea', 'of the area of')]], test.measure)}
+            ${select('data-approval-test-of', t('proposalDrafts.approval.testOf', 'Whose'), [['owners', t('proposalDrafts.approval.ofOwners', 'the owners')], ['leaseholders', t('proposalDrafts.approval.ofLeaseholders', 'the leaseholders')], ['owners+leaseholders', t('proposalDrafts.approval.ofBoth', 'the owners and leaseholders')]], test.of)}
+            ${select('data-approval-test-scope', t('proposalDrafts.approval.testScope', 'Which holders'), [['all', t('proposalDrafts.approval.scopeAll', 'all holders')], ['private', t('proposalDrafts.approval.scopePrivate', 'private only')]], test.scope)}
+            <button type="button" class="btn btn-sm" data-editor-action="approval-test-remove" data-test-index="${index}">${esc(t('proposalDrafts.approval.removeTest', 'Remove this test'))}</button>
+        </div>`).join('');
+        return `<div class="approval-setup__tests" data-approval-tests>${rows || `<p>${esc(t('proposalDrafts.approval.noTests', 'No owner test: only the authority decides.'))}</p>`}
+            <button type="button" class="btn btn-sm" data-editor-action="approval-test-add"${rules.tests.length >= approval().MAX_TESTS ? ' disabled' : ''}>${esc(t('proposalDrafts.approval.addTest', 'Add a test'))}</button></div>`;
+    }
+
+    function rulesCardHtml(normalized) {
+        const policy = normalized?.policy || { type: 'unanimous' };
+        const choice = ruleChoice(normalized);
+        let rules = { tests: [], authorities: [] };
+        try { rules = approval().policyRules(policy); } catch (_) { /* the config error is shown above */ }
+        const template = choice !== 'unanimous' && choice !== 'custom'
+            ? (normalized.regime ? regimes().get(normalized.regime.id, normalized.regime.version) : null) || regimes().latest(choice) : null;
+        const groups = regimes().FAMILIES.map(family => {
+            const entries = latestRegimes().filter(regime => regime.family === family);
+            return entries.length ? `<optgroup label="${esc(words().familyText({ family }, t))}">${entries
+                .map(regime => option(regime.id, t(`proposalApproval.schemes.${regime.id}.name`, regime.text.name), choice)).join('')}</optgroup>` : '';
+        }).join('');
+        const authorityIds = rules.authorities.map(row => row.authorityId);
+        const authorityField = (index, value) => `<label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.authorityId', 'Authority (an abstract id; a lens member confirms who acts for it)'))}</span><input type="text" data-approval-rule data-approval-authority-id="${index}" value="${esc(value)}" autocomplete="off"></label>`;
+        let authorityHtml = '';
+        if (template?.authorities) {
+            authorityHtml = Array.from({ length: template.authorities }, (_, index) => authorityField(index, authorityIds[index] || DEFAULT_AUTHORITY)).join('');
+        } else if (choice === 'custom') {
+            authorityHtml = `<label class="proposal-editor-check"><input type="checkbox" data-approval-rule data-approval-custom-authority${authorityIds.length ? ' checked' : ''}> ${esc(t('proposalDrafts.approval.customAuthority', 'An authority must also approve'))}</label>`
+                + (authorityIds.length ? authorityField(0, authorityIds[0]) : '');
+        }
+        return `<div class="proposal-editor-card" data-approval-rules-card>
+            <h4>${esc(t('proposalDrafts.approval.policyTitle', 'Agreement rules'))}</h4>
+            <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.policyType', 'Rules'))}</span><select data-approval-rule data-approval-regime>
+                ${option('unanimous', t('proposalDrafts.approval.unanimous', 'Every owner must agree'), choice)}${option('custom', t('proposalDrafts.approval.threshold', 'Custom rules'), choice)}${groups}
+            </select></label>
+            <p class="approval-setup__rule" data-approval-rule-text>${esc(policyText(policy, normalized?.regime))}</p>
+            ${template ? regimeDetailsHtml(template, normalized?.regime) : ''}
+            ${choice === 'custom' ? testsEditorHtml(rules) : ''}
+            ${authorityHtml}
+        </div>`;
+    }
+
+    // The rules the form shows, as { policy, regime }. A control the form does not show yet (the test
+    // rows right after switching to Custom, the authority id right after choosing a scheme) is taken
+    // from the current config, so switching never loses what was there.
+    function rulesFromForm(container, current) {
+        const choice = container?.querySelector('[data-approval-regime]')?.value || ruleChoice(current);
+        let currentRules = { tests: [], authorities: [] };
+        try { currentRules = approval().policyRules(current?.policy); } catch (_) { /* replaced below */ }
+        const typedIds = [...(container?.querySelectorAll?.('[data-approval-authority-id]') || [])].map(input => String(input.value || '').trim()).filter(Boolean);
+        const authorityIds = typedIds.length ? typedIds : currentRules.authorities.map(row => row.authorityId);
+        if (choice === 'unanimous') return { policy: { type: 'unanimous' }, regime: null };
+        if (choice === 'custom') {
+            const rows = [...(container?.querySelectorAll?.('[data-approval-test]') || [])];
+            const editing = !!container?.querySelector?.('[data-approval-tests]');
+            let tests = editing ? rows.map(row => ({
+                measure: row.querySelector('[data-approval-test-measure]')?.value,
+                of: row.querySelector('[data-approval-test-of]')?.value,
+                scope: row.querySelector('[data-approval-test-scope]')?.value,
+                strict: row.querySelector('[data-approval-test-strict]')?.value === 'true',
+                ...parseFraction(row.querySelector('[data-approval-test-fraction]')?.value)
+            })) : currentRules.tests;
+            // "Every owner must agree" is itself a rule (all of the owners), and stored as such; custom
+            // rules chosen from it start from the usual majority, so the dropdown does not snap back.
+            const unanimousTest = tests.length === 1 && tests[0].measure === 'headcount' && tests[0].of === 'owners' && tests[0].scope === 'all'
+                && tests[0].numerator === tests[0].denominator && !tests[0].strict;
+            if (!editing && unanimousTest && !currentRules.authorities.length) {
+                tests = [{ measure: 'headcount', of: 'owners', scope: 'all', numerator: 1, denominator: 2, strict: false },
+                    { measure: 'area', of: 'owners', scope: 'all', numerator: 7, denominator: 10, strict: false }];
+            }
+            const box = container?.querySelector?.('[data-approval-custom-authority]');
+            const wantsAuthority = box ? box.checked === true : currentRules.authorities.length > 0;
+            return { policy: { type: 'rules', tests, authorities: wantsAuthority ? [{ authorityId: authorityIds[0] || DEFAULT_AUTHORITY }] : [] }, regime: null };
+        }
+        const template = current?.regime?.id === choice ? regimes().get(choice, current.regime.version) : regimes().latest(choice);
+        if (!template) throw new Error(t('proposalDrafts.approval.unknownRegime', 'Unknown agreement rules.'));
+        const ids = Array.from({ length: template.authorities }, (_, index) => authorityIds[index] || DEFAULT_AUTHORITY);
+        return { policy: regimes().policyOf(template, ids), regime: { id: template.id, version: template.version } };
+    }
+
+    // Add or remove a custom test. The new test is the first kind the rules do not count yet.
+    function withRuleAction(container, config, action, index) {
+        const current = normalizedConfig(config);
+        const { policy } = rulesFromForm(container, current);
+        const tests = policy.type === 'rules' ? policy.tests.slice() : approval().policyRules(policy).tests;
+        if (action === 'approval-test-remove') tests.splice(Number(index), 1);
+        if (action === 'approval-test-add') {
+            const used = new Set(tests.map(test => `${test.measure}:${test.of}:${test.scope}`));
+            const kinds = [['area', 'owners'], ['headcount', 'owners'], ['headcount', 'leaseholders'], ['area', 'owners+leaseholders'], ['headcount', 'owners+leaseholders'], ['area', 'leaseholders']];
+            const next = ['all', 'private'].flatMap(scope => kinds.map(([measure, of]) => ({ measure, of, scope })))
+                .find(test => !used.has(`${test.measure}:${test.of}:${test.scope}`));
+            if (next) tests.push({ ...next, numerator: 1, denominator: 2, strict: false });
+        }
+        const authorities = policy.type === 'rules' ? policy.authorities : [];
+        return approval().normalizeConfig({ ...current, policy: { type: 'rules', tests, authorities }, regime: null });
     }
 
     // ---- reading the form back ------------------------------------------------------------------
@@ -199,20 +336,13 @@
         if (file) file.disabled = source.value !== 'upload';
     }
 
-    // The config with the policy the form now shows. Throws on a malformed fraction, leaving the
-    // caller's config untouched.
+    // The config with the rules the form now shows. Throws on a malformed fraction or rule, leaving
+    // the caller's config untouched.
     function withPolicyFromForm(container, config) {
         const current = normalizedConfig(config);
-        const type = container?.querySelector('[data-approval-policy-type]')?.value || 'unanimous';
-        let policy = { type: 'unanimous' };
-        if (type === 'threshold') {
-            const old = current.policy?.type === 'threshold' ? current.policy : {};
-            const owners = parseFraction(container.querySelector('[data-approval-fraction="owners"]')?.value, old.owners || { numerator: 1, denominator: 2 });
-            const area = parseFraction(container.querySelector('[data-approval-fraction="area"]')?.value, old.area || { numerator: 7, denominator: 10 });
-            const strict = kind => container.querySelector(`[data-approval-strict="${kind}"]`)?.value === 'true';
-            policy = { type: 'threshold', owners: { ...owners, strict: strict('owners') }, area: { ...area, strict: strict('area') } };
-        }
-        return approval().normalizeConfig({ ...current, policy });
+        const { policy, regime } = rulesFromForm(container, current);
+        const { regime: _old, ...rest } = current;
+        return approval().normalizeConfig({ ...rest, policy, ...(regime ? { regime } : {}) });
     }
 
     function lensFromForm(container) {
@@ -247,10 +377,13 @@
         return approval().normalizeConfig({ ...normalizedConfig(config), rights: null });
     }
 
-    function downloadTemplate(parcelIds) {
+    // A rights file to fill in; it has room for leases and public bodies when the rules count them.
+    function downloadTemplate(parcelIds, config = null) {
         const api = approval();
         if (!api?.createTemplate || !root.Blob || !root.URL?.createObjectURL || !root.document) return;
-        const template = api.createTemplate(parcelIds || []);
+        let need = { leases: false, publicBodies: false };
+        try { need = regimes().needs(api.policyRules(normalizedConfig(config)?.policy).tests); } catch (_) { /* a plain template */ }
+        const template = api.createTemplate(parcelIds || [], need);
         const url = root.URL.createObjectURL(new root.Blob([JSON.stringify(template, null, 2)], { type: 'application/json' }));
         const link = root.document.createElement('a');
         link.href = url;
@@ -308,9 +441,19 @@
         render();
         dialog.body.addEventListener('change', event => {
             if (event.target.closest('[data-approval-source]')) { syncSourceControls(dialog.body); return; }
-            // Only switching the policy type changes which fields exist. Re-rendering on every other
-            // edit would replace the field the author has just moved into; those are read on apply.
-            if (!event.target.closest('[data-approval-policy-type]')) return;
+            // Only switching the rules or the custom authority changes which fields exist. Re-rendering
+            // on every other edit would replace the field the author has just moved into; those are
+            // read on apply, and the rule sentence follows them.
+            if (!event.target.closest('[data-approval-regime], [data-approval-custom-authority]')) {
+                if (event.target.closest('[data-approval-rule]')) {
+                    try {
+                        const preview = withPolicyFromForm(dialog.body, state.approvalConfig);
+                        const line = dialog.body.querySelector('[data-approval-rule-text]');
+                        if (line) line.textContent = policyText(preview.policy, preview.regime);
+                    } catch (_) { /* reported on apply */ }
+                }
+                return;
+            }
             try { readForm(); state.error = null; } catch (error) { state.error = error?.message || String(error); }
             render();
         });
@@ -320,7 +463,13 @@
             event.preventDefault();
             // Keep what was typed in the other fields across the re-render an import causes.
             try { readForm(); } catch (_) { /* the lens is kept; a bad fraction is reported on apply */ }
-            if (action === 'approval-template') { downloadTemplate(cadastreParcelIds); return; }
+            if (action === 'approval-template') { downloadTemplate(cadastreParcelIds, state.approvalConfig); return; }
+            if (action === 'approval-test-add' || action === 'approval-test-remove') {
+                try { state.approvalConfig = withRuleAction(dialog.body, state.approvalConfig, action, event.target.closest('[data-test-index]')?.dataset.testIndex); state.error = null; }
+                catch (error) { state.error = error?.message || String(error); }
+                render();
+                return;
+            }
             if (action === 'approval-remove') {
                 state.sequence += 1;
                 state.approvalConfig = withoutRights(state.approvalConfig);
@@ -348,6 +497,6 @@
     return {
         openDialog,
         html, previewHtml, summaryText, policyText, fractionText, parseFraction, lensKeys, lensFromText,
-        normalizedConfig, syncSourceControls, withPolicyFromForm, lensFromForm, importRights, withoutRights, downloadTemplate
+        normalizedConfig, syncSourceControls, withPolicyFromForm, withRuleAction, ruleChoice, lensFromForm, importRights, withoutRights, downloadTemplate
     };
 });

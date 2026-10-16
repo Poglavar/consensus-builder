@@ -799,9 +799,9 @@
     function proposalTypeLabel(goal) {
         const labels = {
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
-            single: 'Freeform building', reparcellization: 'Land readjustment', park: 'Park', square: 'Square', lake: 'Lake',
+            single: 'Freeform building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
             station: 'Transit station',
-            'urban-rule': 'Block', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
+            'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
     }
@@ -1328,7 +1328,7 @@
 
     const reparcellizationAdapter = {
         key: 'reparcellization',
-        label: 'Land readjustment',
+        label: 'Reparcellization',
         sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
         hasDesign: true,
         canEdit(proposal) {

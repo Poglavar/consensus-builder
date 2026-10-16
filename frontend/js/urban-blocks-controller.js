@@ -19,13 +19,16 @@
         return [w - dx, s - dy, e + dx, n + dy];
     }
 
-    function create({ fetchRoads, detect, onChange }) {
-        let version = 0, pending = null;
+    // `extendRoads` adds what the map applies on top of OSM (proposed streets) to the fetched roads;
+    // `redetect` reruns detection on the same fetched roads when that addition changes.
+    function create({ fetchRoads, detect, onChange, extendRoads = roads => roads }) {
+        let version = 0, pending = null, fetched = null;
         let state = { enabled: false, phase: 'off', blocks: null, roads: null, coverage: null, roadCount: 0, error: '' };
         const emit = patch => { state = { ...state, ...patch }; onChange(state); };
         function cancel() { version++; pending?.abort(); pending = null; }
         function setEnabled(enabled) {
             cancel();
+            fetched = null;
             emit({ enabled, phase: enabled ? 'idle' : 'off', blocks: null, roads: null, coverage: null, error: '', roadCount: 0 });
         }
         async function refresh(viewport, force = false) {
@@ -39,22 +42,24 @@
             if (!force && state.phase === 'ready' && contains(state.coverage, viewport.bbox)) return;
             return loadBounds(bbox);
         }
-        async function loadBounds(bbox) {
-            if (!state.enabled) return;
+        function start() {
             cancel();
             const ownVersion = version;
             const controller = new AbortController();
             pending = controller;
-            const current = () => state.enabled && version === ownVersion;
+            return { controller, current: () => state.enabled && version === ownVersion };
+        }
+        async function loadBounds(bbox) {
+            if (!state.enabled) return;
+            fetched = null;
+            const { controller, current } = start();
             emit({ phase: 'roads', blocks: null, roads: null, coverage: null, error: '', roadCount: 0 });
             try {
                 const roads = await fetchRoads(bbox, controller.signal);
                 if (!current()) return;
                 if (roads.partial || roads.truncated) throw new Error('OSM road data is incomplete. Retry or zoom in.');
-                emit({ phase: 'blocks', roadCount: roads.features.length });
-                const blocks = await detect(roads, bbox, controller.signal);
-                if (!current()) return;
-                emit({ phase: 'ready', blocks, roads, coverage: bbox });
+                fetched = { roads, bbox };
+                await detectFetched(controller, current);
             } catch (error) {
                 if (!current()) return;
                 emit({ phase: 'error', blocks: null, roads: null, coverage: null, error: error.message });
@@ -62,7 +67,27 @@
                 if (current()) pending = null;
             }
         }
-        return { setEnabled, refresh, loadBounds, snapshot: () => state };
+        async function detectFetched(controller, current) {
+            const roads = extendRoads(fetched.roads);
+            emit({ phase: 'blocks', roadCount: roads.features.length });
+            const blocks = await detect(roads, fetched.bbox, controller.signal);
+            if (!current()) return;
+            emit({ phase: 'ready', blocks, roads, coverage: fetched.bbox });
+        }
+        // While roads are still loading there is nothing to redo: that load extends them when it lands.
+        async function redetect() {
+            if (!state.enabled || !fetched || !['ready', 'blocks'].includes(state.phase)) return;
+            const { controller, current } = start();
+            try {
+                await detectFetched(controller, current);
+            } catch (error) {
+                if (!current()) return;
+                emit({ phase: 'error', blocks: null, roads: null, coverage: null, error: error.message });
+            } finally {
+                if (current()) pending = null;
+            }
+        }
+        return { setEnabled, refresh, loadBounds, redetect, snapshot: () => state };
     }
     return { create, requestBounds };
 });

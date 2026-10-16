@@ -128,7 +128,7 @@
         return `<li><button type="button" class="cb-link proposal-lineage__link" data-lineage-open="${esc(entry.lookup)}">${esc(title)}</button>${notes ? ` <span class="proposal-lineage__note">${esc(notes)}</span>` : ''}</li>`;
     }
 
-    // The source named by the "Based on / Variant of" row, when this browser does not hold it: a
+    // The source named by the "Based on" row, when this browser does not hold it: a
     // link when it was published, otherwise said to be a draft that was never shared.
     function patchSourceRow(container, source) {
         const name = container && container.querySelector('.proposal-based-on-name');

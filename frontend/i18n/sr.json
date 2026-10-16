@@ -39,6 +39,7 @@
         "compactness": "Kompaktnost",
         "parcels": "Učitane parcele",
         "measurementNote": "Mereno između središnjih linija OSM puteva, uključujući putni prostor. Vreme hoda je procena prema obimu, a ne izračun pešačke rute.",
+        "proposedStreetsNote": "Delimično omeđen ulicama iz primenjenih predloga.",
         "rateLimited": "OSM je zauzet. Pokušajte ponovo za {{seconds}} sekundi.",
         "loadError": "OSM puteve nije moguće učitati (HTTP {{status}}). Pokušajte ponovo.",
         "invalidData": "Izvor puteva vratio je neispravne podatke.",
@@ -194,6 +195,153 @@
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
+        "leaseholderLabel": "Zakupac {{label}}",
+        "authorityLabel": "Nadležni organ",
+        "authorityLabelLettered": "Nadležni organ {{label}}",
+        "rules": {
+            "all": "svih",
+            "and": " i ",
+            "authorityGeneric": "odobrenje nadležnog organa",
+            "authorityOnly": "Potrebno je samo {{authority}}. Vlasnici se saslušavaju; njihovi odgovori ne odlučuju.",
+            "passesWith": "Prolazi uz pristanak: {{tests}}.",
+            "passesWithAuthority": "Prolazi uz pristanak: {{tests}}; potrebno je i {{authority}}.",
+            "vacuous": "Ovde nema koga brojati, pa ovaj uslov ne blokira.",
+            "heard": "Saslušani, ne broje se",
+            "ownersHeard": "Vlasnici se saslušavaju; odlučuje nadležni organ.",
+            "of": {
+                "headcount-owners-all": "vlasnika",
+                "headcount-owners-private": "privatnih vlasnika",
+                "headcount-leaseholders-all": "zakupaca",
+                "headcount-leaseholders-private": "privatnih zakupaca",
+                "headcount-owners-and-leaseholders-all": "vlasnika i zakupaca zajedno",
+                "headcount-owners-and-leaseholders-private": "privatnih vlasnika i zakupaca zajedno",
+                "area-owners-all": "površine",
+                "area-owners-private": "privatnog zemljišta",
+                "area-leaseholders-all": "zakupljene površine",
+                "area-leaseholders-private": "privatno zakupljene površine",
+                "area-owners-and-leaseholders-all": "površine u vlasništvu i zakupu",
+                "area-owners-and-leaseholders-private": "privatne površine u vlasništvu i zakupu"
+            },
+            "meter": {
+                "headcount-owners-private": "Privatni vlasnici",
+                "headcount-leaseholders-all": "Zakupci",
+                "headcount-leaseholders-private": "Privatni zakupci",
+                "headcount-owners-and-leaseholders-all": "Vlasnici i zakupci",
+                "headcount-owners-and-leaseholders-private": "Privatni vlasnici i zakupci",
+                "area-owners-private": "Privatno zemljište",
+                "area-leaseholders-all": "Zakupljena površina",
+                "area-leaseholders-private": "Privatno zakupljena površina",
+                "area-owners-and-leaseholders-all": "Površina u vlasništvu i zakupu",
+                "area-owners-and-leaseholders-private": "Privatna površina u vlasništvu i zakupu"
+            }
+        },
+        "regime": {
+            "research": "Istraživački šablon",
+            "stage": "Za šta je ova podrška: {{stage}}",
+            "stages": {
+                "agreement": "dobrovoljni sporazum",
+                "initiative": "pokretanje postupka (inicijativa)",
+                "association": "osnivanje udruženja",
+                "plan": "plan preraspodele",
+                "execution": "sprovođenje preraspodele"
+            },
+            "families": {
+                "voluntary": "Dobrovoljni sporazum",
+                "support-and-authority": "Podrška vlasnika, zatim odlučuje nadležni organ",
+                "authority-led": "Vodi nadležni organ: vlasnici se saslušavaju"
+            },
+            "basis": {
+                "area": "površini",
+                "value": "vrednosti zemljišta"
+            },
+            "basisArea": "Nove parcele se raspodeljuju prema površini.",
+            "basisValue": "Nove parcele se raspodeljuju prema vrednosti zemljišta, pa parcele moraju imati vrednosti.",
+            "capPool": "Zemljište koje se ne vraća vlasnicima je najviše {{percent}}% fonda.",
+            "capOwnerWhenArea": "Pri raspodeli prema površini nijedan vlasnik ne daje više od {{percent}}% svog zemljišta.",
+            "capOwner": "Nijedan vlasnik ne daje više od {{percent}}% svog zemljišta.",
+            "check": {
+                "basisOk": "Raspodeljeno prema {{basis}}, kako šema traži.",
+                "basisWrong": "Šema raspodeljuje prema {{basis}}, a ovaj plan prema {{actual}}.",
+                "capOwnerNone": "Nijedan vlasnik ne daje zemljište.",
+                "capOwnerOk": "Najviše daje {{owner}}: {{given}}; granica je {{limit}}.",
+                "capOwnerOver": "{{owner}} daje {{given}} svog zemljišta; granica je {{limit}}.",
+                "capPoolUnknown": "Površina fonda nije poznata, pa se granica od {{limit}} ne može proveriti.",
+                "capPoolOk": "{{given}} fonda se ne vraća vlasnicima; granica je {{limit}}.",
+                "capPoolOver": "{{given}} fonda se ne vraća vlasnicima, iznad granice od {{limit}}."
+            }
+        },
+        "authority": {
+            "approved": "odobreno: {{role}}",
+            "pending": "čeka se: {{role}}",
+            "given": "nadležni organ odobrio",
+            "awaited": "čeka se nadležni organ"
+        },
+        "schemes": {
+            "nl-kavelruil": {
+                "name": "Holandija — dobrovoljna urbana zamena zemljišta (kavelruil)",
+                "note": "Sve strane pristaju. Zamena se zatim unosi u javnobeležnički akt i upisuje u Kadaster; učestvuju najmanje tri strane."
+            },
+            "tw-owner-organized": {
+                "name": "Tajvan — urbana preraspodela zemljišta koju organizuju vlasnici",
+                "authority": "odobrenje nadležnog organa",
+                "note": "Broje se samo privatni vlasnici i privatno zemljište. Zemljište za javne sadržaje i troškove sme da zauzme najviše 45% površine (postoji postupak izuzetka)."
+            },
+            "kr-association": {
+                "name": "Južna Koreja — udruženje za urbani razvoj",
+                "authority": "ovlašćenje udruženja od organa koji određuje zonu",
+                "note": "Ovi uslovi odobravaju osnivanje udruženja; plan preraspodele ima sopstveno kasnije odobrenje."
+            },
+            "es-ct-basic": {
+                "name": "Katalonija — osnovna kompenzacija",
+                "authority": "odobrenje projekta kompenzacije od opštine",
+                "note": "Vlasnici više od polovine površine mogu da je pokrenu; vlasnici koji se ne pridruže imaju određene uloge."
+            },
+            "es-ct-concertacion": {
+                "name": "Katalonija — kompenzacija dogovorom (concertación)",
+                "authority": "izbor i odobrenje opštine",
+                "note": "Vlasnici više od četvrtine površine mogu da je pokrenu; opština zatim sprovodi izbor."
+            },
+            "es-md-compensation": {
+                "name": "Madrid — kompenzacija koju sprovode vlasnici",
+                "authority": "odobrenje opštine",
+                "note": "Najmanje polovina površine: ovde je tačno polovina dovoljna, za razliku od Katalonije."
+            },
+            "co-readjustment": {
+                "name": "Kolumbija — jedinica urbanog delovanja / preraspodela zemljišta",
+                "authority": "odobrenje opštinskog organa za planiranje",
+                "note": "Vlasnici 51% obuhvaćene površine; projekat traži i više od jednog učesnika."
+            },
+            "jp-association": {
+                "name": "Japan — udruženje vlasnika zemljišta",
+                "authority": "odobrenje guvernera prefekture",
+                "note": "Tri uslova istovremeno: vlasnici, zakupci i površina u vlasništvu i zakupu. Javno zemljište nije uključeno. Zemljište se preraspodeljuje prema vrednosti; rezervno zemljište može da se proda za finansiranje radova."
+            },
+            "jp-joint": {
+                "name": "Japan — pojedinačno ili zajedničko sprovođenje",
+                "authority": "odobrenje plana od guvernera prefekture",
+                "note": "Pristaju svi vlasnici i zakupci; neka druga prava su izuzeta."
+            },
+            "de-umlegung-new": {
+                "name": "Nemačka — Umlegung, zemljište koje se prvi put uređuje",
+                "authority": "usvajanje plana preraspodele od organa za Umlegung",
+                "note": "Nema glasanja vlasnika: organ nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodeli prema površini nijedan vlasnik ne daje više od 30% svog zemljišta za javne sadržaje (§58); pri raspodeli prema vrednosti dobitak se namiruje novcem."
+            },
+            "de-umlegung-developed": {
+                "name": "Nemačka — Umlegung, već uređeno zemljište",
+                "authority": "odluka organa za Umlegung o planu preraspodele",
+                "note": "Nema glasanja vlasnika: organ nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodeli prema površini nijedan vlasnik ne daje više od 10% svog zemljišta (§58)."
+            },
+            "tr-article-18": {
+                "name": "Turska — preraspodela prema članu 18",
+                "authority": "odluka opštine o planu parcelacije",
+                "note": "Pristanak vlasnika nije potreban. Svaki posed daje najviše 45% svoje površine za javne namene (DOP); zakon to primenjuje po parceli."
+            },
+            "in-gj-tps": {
+                "name": "Indija, Gudžarat — šema urbanističkog planiranja",
+                "authority": "odobrenje šeme od vlade savezne države",
+                "note": "Organ priprema šemu i razmatra pisane prigovore; konačne parcele se oblikuju prema proceni vrednosti."
+            }
+        },
         "deals": {
             "title": "Šta svaki vlasnik unosi i dobija",
             "dealOf": "{{owner}}: šta unosi i dobija",
@@ -220,6 +368,7 @@
         "status": {
             "passed": "Dovoljno za prolaz",
             "pending": "Još nije dovoljno",
+            "authorityPending": "Čeka se nadležni organ",
             "unresolved": "Vlasništvo nije razrešeno"
         },
         "ruleUnanimous": "Svaki vlasnik mora da prihvati.",
@@ -288,7 +437,12 @@
             "needsMore": "Posle vas moraju da prihvate još neki vlasnici da bi predlog prošao.",
             "verifyFirst": "Da biste prihvatili, prvo kod člana sočiva potvrdite da vaš novčanik sme da postupa u ime ovog vlasnika.",
             "notSigned": "Novčanik nije potpisao, pa ništa nije prihvaćeno.",
-            "cashYouPay": "Novac koji plaćate"
+            "cashYouPay": "Novac koji plaćate",
+            "approveAs": "Odobri kao {{owner}}",
+            "lease": "Zakup {{lease}} na {{parcel}}",
+            "heldWith": "zajedno sa {{owners}}",
+            "leaseNote": "Plan preraspodeljuje vlasništvo. Zakup se broji u pravilima odobravanja, ali iz knjige ovog plana ne dobija parcelu.",
+            "planTitle": "Plan o kome se odlučuje"
         },
         "receipt": {
             "signed": "Potpisao {{signer}}, {{date}}.",
@@ -334,9 +488,6 @@
         "notFound": "Ovaj predlog više nije dostupan. Osvežite listu predloga i pokušajte ponovo."
     },
     "proposalDrafts": {
-        "variantLabel": "Varijanta {{id}}",
-        "variantOf": "Varijanta predloga",
-        "variantSaved": "Nova varijanta je sačuvana. Original ostaje sačuvan; Primenjeno označava dizajn na mapi.",
         "title": "Nacrti",
         "entryAria": "Otvori {{count}} sačuvanih nacrta predloga",
         "editorAria": "Uređivač nacrta predloga",
@@ -391,6 +542,32 @@
             "change": "Promeni…",
             "setUp": "Podesi…",
             "apply": "Koristi ovo podešavanje",
+            "summaryLeaseholders": ", {{count}} zakupac(a)",
+            "publicBody": "javni organ",
+            "leaseRow": "Zakup {{lease}} · {{area}}",
+            "rightsNeeded": "Datoteka prava mora da navede {{what}} (parcel-rights/v2); preuzeti šablon ih uključuje.",
+            "needLeases": "svaki zakup i njegove zakupce",
+            "needPublicBodies": "koji su nosioci prava javni organi",
+            "sources": "Izvori:",
+            "researchCaveat": "Provereno {{date}}. Uporedno istraživanje, ne pravni savet: proverite važeći zakon i korake samog postupka (obaveštenja, saslušanja, upis).",
+            "testComparison": "Poređenje",
+            "testFraction": "Udeo",
+            "testMeasure": "Šta se broji",
+            "measureHeadcount": "broja",
+            "measureArea": "površine",
+            "testOf": "Čijih",
+            "ofOwners": "vlasnika",
+            "ofLeaseholders": "zakupaca",
+            "ofBoth": "vlasnika i zakupaca",
+            "testScope": "Koji nosioci",
+            "scopeAll": "svi nosioci",
+            "scopePrivate": "samo privatni",
+            "removeTest": "Ukloni ovaj uslov",
+            "noTests": "Nema uslova za vlasnike: odlučuje samo nadležni organ.",
+            "addTest": "Dodaj uslov",
+            "authorityId": "Nadležni organ (apstraktni ID; član sočiva potvrđuje ko deluje za njega)",
+            "customAuthority": "Mora da odobri i nadležni organ",
+            "unknownRegime": "Nepoznata pravila sporazuma.",
             "explainer": "Otpremite apstraktne podatke o vlasnicima parcela i odredite ko mora da odobri predlog. Ovi podaci su odvojeni od geometrije; njihovo odsustvo ne sprečava pregled geometrijskog predloga. Podaci opisuju prijavljeno vlasništvo, ali ne dokazuju ovlašćenje.",
             "rightsTitle": "Prava vlasnika parcela",
             "importHelp": "Uvezite JSON datoteku sa pravima parcela ili učitajte podatke iz registrovanog izvora. Prethodni skup ostaje sačuvan ako uvoz ne uspe.",
@@ -411,14 +588,15 @@
                 "missingRights": "Nema učitanih podataka o vlasničkim pravima.",
                 "missingParcels": "Izaberite parcele za proveru podataka o vlasništvu.",
                 "incompleteRights": "Podaci o vlasništvu nisu potpuni za jednu ili više izabranih parcela.",
-                "missingOwners": "Za izabrane parcele nisu navedeni vlasnici."
+                "missingOwners": "Za izabrane parcele nisu navedeni vlasnici.",
+                "authorityIsHolder": "ID nadležnog organa je ujedno nosilac prava; dajte organu sopstveni ID."
             },
             "missingParcels": "Nedostaju izabrane parcele: {{parcels}}",
             "emptyRights": "Skup podataka još nema redove parcela.",
-            "policyTitle": "Pravila odobravanja",
-            "policyType": "Pravilo",
-            "unanimous": "Jednoglasno",
-            "threshold": "Prilagođeni pragovi",
+            "policyTitle": "Pravila sporazuma",
+            "policyType": "Pravila",
+            "unanimous": "Svaki vlasnik mora da pristane",
+            "threshold": "Prilagođena pravila",
             "ownerThreshold": "Prag broja vlasnika (razlomak)",
             "areaThreshold": "Prag površine (razlomak)",
             "ownerRule": "Pravilo broja vlasnika",
@@ -483,7 +661,6 @@
             "handoffFailedReason": "Uređivač dizajna nije mogao da se otvori: {{reason}}. Lokacija nije promenjena, a nacrt dizajna je sačuvan lokalno."
         },
         "placement": {
-            "blockUnavailable": "Blok zahteva lokaciju koju server može da proveri. Ovu lokaciju nije bilo moguće proveriti pa uređivač nije otvoren. Izbor je sačuvan. Pokušaj sa podržanom lokacijom poput Zagreba ili ponovi pokušaj ako servis podataka nije dostupan.",
             "fixedSite": "Ova vrsta predloga vezana je za izvornu lokaciju i ne može da se premesti.",
             "existingBuilding": "Predlozi za postojeće zgrade zadržavaju tlocrt vezan za izvornu zgradu i ne mogu slobodno da se premeštaju.",
             "invalidSite": "Za slobodno postavljanje potrebna je važeća poligonska lokacija.",
@@ -988,7 +1165,7 @@
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u izabrani blok",
-            "singleBuilding": "Zgrada slobodnog oblika",
+            "singleBuilding": "Jedna zgrada",
             "parkButton": "Park",
             "squareButton": "Trg",
             "listTitle": "Lista blokova",
@@ -1227,8 +1404,8 @@
                 "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
-                "single": "Zgrada slobodnog oblika",
-                "reparcel": "Preraspodela zemljišta",
+                "single": "Slobodna zgrada",
+                "reparcel": "Reparcelacija",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
@@ -1893,8 +2070,6 @@
             }
         },
         "road": {
-            "curveTooTight": "Krivina pruge: poluprečnik kroz tri tačke {{measured}} m; potrebno je {{minimum}} m. Pomeri krivinu ili nacrtaj blažu trasu. Crtež je sačuvan.",
-            "curveAdjusted": "Tačka je prilagođena proveri poluprečnika kroz tri tačke od {{radius}} m.",
             "title": "Nacrtaj put",
             "titleTrack": "Nacrtaj prugu",
             "crossSectionButton": "Uredi poprečni presek",
@@ -2056,9 +2231,9 @@
         },
         "track": {
             "speedPickerTitle": "Izaberi brzinu pruge",
-            "speedPickerDescription": "Izaberi projektnu brzinu za proveru krivina kroz tri tačke. Trasa je šematska: ova provera ne potvrđuje neprekidnu železničku krivinu. Pritisni Enter za izabranu brzinu.",
+            "speedPickerDescription": "Izaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš sa podrazumevanom selekcijom.",
             "startDrawing": "Počni crtanje",
-            "minRadius": "Najmanji poluprečnik kroz tri tačke: {{radius}} m",
+            "minRadius": "Minimalni radijus zakrivljenosti {{radius}} m",
             "cancel": "Otkaži",
             "widthLabel": "Širina pruge:"
         },
@@ -2089,7 +2264,7 @@
                     "eyebrow": "Od ideje do predloga",
                     "title": "Učinite promenu vidljivom",
                     "body": "Pretvorite ideju u predlog: preoblikujte parcele, skicirajte ulice i parkove ili dodajte zgrade. Primena nacrta pokazuje kako menja mapu.",
-                    "hint": "Dodirni zemljište i izaberi Predloži ovde ili koristi Dizajn za crtanje lokacije. Zatim uporedi predloge na mapi."
+                    "hint": "Počnite u Alatima, pa uporedite predloge na mapi."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -2151,7 +2326,7 @@
             "cancel": "Otkaži"
         },
         "singleBuilding": {
-            "title": "Zgrada slobodnog oblika",
+            "title": "Slobodna forma",
             "defaultName": "Zgrada {{n}}",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Izaberi zgradu",
@@ -2582,14 +2757,14 @@
                         "station": "Stanica javnog prevoza",
                         "roadTrack": "Put/Pruga",
                         "road-track": "Put/Pruga",
-                        "buildings": "Blok",
-                        "single": "Zgrada slobodnog oblika",
+                        "buildings": "Zgrade",
+                        "single": "Jedna zgrada",
                         "park": "Park",
                         "square": "Trg",
                         "lake": "Jezero",
-                        "urbanRule": "Blok",
-                        "urban-rule": "Blok",
-                        "reparcellization": "Preraspodela zemljišta",
+                        "urbanRule": "Urbano pravilo",
+                        "urban-rule": "Urbano pravilo",
+                        "reparcellization": "Reparcelacija",
                         "row": "Niz",
                         "other": "Ostalo"
                     }
@@ -2631,14 +2806,14 @@
                     "road-track": "Put/Pruga",
                     "road": "Put",
                     "track": "Pruga",
-                    "buildings": "Blok",
-                    "single": "Zgrada slobodnog oblika",
+                    "buildings": "Zgrade",
+                    "single": "Jedna zgrada",
                     "row": "Niz",
                     "park": "Park",
                     "square": "Trg",
                     "lake": "Jezero",
-                    "urban-rule": "Blok",
-                    "reparcellization": "Preraspodela zemljišta",
+                    "urban-rule": "Urbano pravilo",
+                    "reparcellization": "Reparcelacija",
                     "decide-later": "Odluči kasnije",
                     "parcelBased": "Na nivou parcele",
                     "other": "Ostalo"
@@ -3060,21 +3235,21 @@
             "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
                 "purchase": "Kupovina",
-                "urbanRule": "Blok",
+                "urbanRule": "Urbanističko pravilo",
                 "reparcellization": "Reparcelacija",
                 "jointInvestment": "Zajednička investicija"
             },
             "goalOptions": {
                 "asIs": "Bez promene",
-                "buildings": "Blok",
-                "single": "Zgrada slobodnog oblika",
+                "buildings": "Zgrade",
+                "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
                 "roadTrack": "Put/Pruga",
                 "decideLater": "Spoji",
-                "urbanRule": "Blok",
-                "reparcellization": "Preraspodela zemljišta",
+                "urbanRule": "Urbano pravilo",
+                "reparcellization": "Razdeli",
                 "ownershipTransfer": "Prenos vlasništva"
             },
             "goalSections": {
@@ -3377,7 +3552,7 @@
     "blockify": {
         "modal": {
             "mapHint": "Uredite parcele i granice na mapi; u panelu pregledajte vlasništvo i udele.",
-            "title": "Blok",
+            "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify modal",
             "generating": "Generišem zgradu…",
             "done": "Gotovo",
@@ -3609,7 +3784,6 @@
     },
     "reparcellization": {
         "modal": {
-            "publicAllocation": "Dodela za javnu namenu (nije upisani vlasnik)",
             "mapHint": "Uredite granice parcela na mapi; ovde pregledajte vlasništvo i udele.",
             "savedRecipientUnresolved": "Sačuvani primalac izlazne parcele nema odgovarajući doprinos u trenutnim ulazima.",
             "ownerReview": "Pregled vlasnika",
@@ -3632,7 +3806,7 @@
             "applyShares": "Primeni udele",
             "sharesTotal": "Ukupno: {{total}}%",
             "sharesInvalid": "Svaki udeo mora biti pozitivan, a zbir mora iznositi 100%.",
-            "title": "Preraspodela zemljišta",
+            "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
@@ -5264,8 +5438,6 @@
         }
     },
     "structureEditor": {
-    "saveVariant": "Sačuvaj kao varijantu",
-    "variantHint": "Čuvanje pravi novu varijantu i zadržava original. Nova varijanta se primenjuje ako može da se postavi.",
     "titleLake": "Uređivanje granice jezera",
     "instructionsLake": "Prevucite tačke granice da promenite oblik jezera. Dodirnite ivicu da dodate tačku.",
     "lakeBoundaryHint": "Obala i voda prate promene obrisa.",
@@ -5543,9 +5715,7 @@
         }
     },
     "mapShell": {
-        "startDesign": "Dizajn",
-        "startDesignHint": "Nacrtaj lokaciju ili dodirni zemljište i izaberi Predloži ovde",
-        "renderFallback": "Prikaz nije mogao da se pokrene. WebGL možda nije dostupan u ovom pregledaču. Tvoj rad u 2D je sačuvan. Uključi hardversko ubrzanje ili pokušaj u drugom pregledaču koji podržava WebGL.",
+        "viewFailed": "Ovaj prikaz nije mogao da se pokrene. Vraćeni ste na 2D mapu.",
         "layers": "Slojevi",
         "settings": "Podešavanja",
         "proposals": "Predlozi",
@@ -5786,7 +5956,7 @@
         },
         "palette": {
             "readjustNeedsParcels": "Komasacija radi na izabranim parcelama: izaberite ih umesto crtanja lokacije.",
-            "subdivide": "Preraspodela zemljišta",
+            "subdivide": "Parceliši",
             "readjustUnknownCadastre": "Za parcelaciju je potreban katastar koji server ima: za ovo mesto ga nema."
         },
         "plots": {

@@ -61,7 +61,6 @@ async function seedReadjustment(page: Page, memberKeys: string | string[], extra
   return page.evaluate(({ parcels, pool, plots, member, extra }) => {
     const w = window as any;
     return w.proposalStorage.addProposal({
-      ...extra,
       title: 'Lens-backed readjustment',
       goal: 'reparcellization',
       lifecycleStatus: 'Active',
@@ -97,7 +96,9 @@ async function seedReadjustment(page: Page, memberKeys: string | string[], extra
           { ownerKey: 'owner-c', cashOffer: 7.5, contributedArea: 12.5 },
           { ownerKey: 'owner-d', cashOffer: 7.5, contributedArea: 12.5 }
         ]
-      }
+      },
+      // Last, so a scenario can replace the approval setup (a scheme with an authority).
+      ...extra
     });
   }, { parcels: PARCELS, pool: POOL, plots: [strip(15.9819, 15.98197), strip(15.98197, 15.98204), strip(15.98204, 15.9821)], member: memberKeys, extra });
 }
@@ -217,8 +218,9 @@ async function startBackendProcess(args: string[], url: string, env: Record<stri
 }
 
 type Signer = { ownerId: string; wallet: string };
-// A dry-run lens member with this rights registry; returns its key and service URL.
-async function startMember(testInfo: TestInfo, signers: Signer[], name = 'lens-member'): Promise<{ memberKey: string; serviceUrl: string }> {
+type Authority = { authorityId: string; parcelIds: string[] };
+// A dry-run lens member with this rights registry (and the authorities it knows); returns its key and service URL.
+async function startMember(testInfo: TestInfo, signers: Signer[], name = 'lens-member', authorities: Authority[] = []): Promise<{ memberKey: string; serviceUrl: string }> {
   const dir = testInfo.outputPath(name);
   mkdirSync(dir, { recursive: true });
   writeFileSync(path.join(dir, 'owners.json'), '[]');
@@ -229,6 +231,7 @@ async function startMember(testInfo: TestInfo, signers: Signer[], name = 'lens-m
       { parcelId: PARCELS.b, areaM2: 50, owners: [{ ownerId: 'owner-b', share: '1/1' }] },
       { parcelId: PARCELS.c, areaM2: 25, owners: [{ ownerId: 'owner-c', share: '1/2' }, { ownerId: 'owner-d', share: '1/2' }] }
     ],
+    ...(authorities.length ? { authorities } : {}),
     signers
   }));
   const port = await freePort();
@@ -529,6 +532,85 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
 
 // Anyone can read each owner's deal from the card: no wallet, no lens member, nothing signed. The
 // owner (or whoever acts for them) goes on from there to the signing review.
+// A real scheme (land-readjustmend.md §23): Catalonia's basic compensation needs more than half the
+// area, then the municipality's approval. Owners are counted by area only, the authority decides
+// through the same lens-backed wallet path, and the card says which of the two is still missing.
+test('a scheme with an authority: owner support by area, then the municipality approves through the lens', async ({ mockApi: page }, testInfo) => {
+  test.setTimeout(120_000);
+  const wallets = { a: wallet(), b: wallet(), c: wallet(), d: wallet(), city: wallet() };
+  const { memberKey, serviceUrl } = await startMember(testInfo, [
+    ...(['a', 'b', 'c', 'd'] as const).map(id => ({ ownerId: `owner-${id}`, wallet: wallets[id].address })),
+    { ownerId: 'ajuntament', wallet: wallets.city.address }
+  ], 'lens-member', [{ authorityId: 'ajuntament', parcelIds: [PARCELS.a, PARCELS.b, PARCELS.c] }]);
+  expect((await (await fetch(`${serviceUrl}/lens/status`)).json()).approval).toMatchObject({ parcels: 3, owners: 4, authorities: 1, signers: 5 });
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members: [{ key: memberKey, kind: 'owner-consent', name: 'Test notary', serviceUrl }] } }));
+  await page.route(/https:\/\/[^/]*tile\.openstreetmap\.org\//, route => route.fulfill({
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eee"/></svg>'
+  }));
+  await installSwitchableWallet(page, wallets);
+  await openCity(page);
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  await establishLocalProfile(page);
+  const version = await page.evaluate(() => (window as any).ProposalApprovalRegimes.latest('es-ct-basic').version);
+  const proposalId = await seedReadjustment(page, memberKey, {
+    approvalConfig: {
+      schema: 'proposal-approval/v1',
+      rights: { schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'register-2026-10' }, parcels: [
+        { parcelId: PARCELS.a, complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/1' }] },
+        { parcelId: PARCELS.b, complete: true, areaM2: 50, owners: [{ ownerId: 'owner-b', share: '1/1' }] },
+        { parcelId: PARCELS.c, complete: true, areaM2: 25, owners: [{ ownerId: 'owner-c', share: '1/2' }, { ownerId: 'owner-d', share: '1/2' }] }
+      ] },
+      policy: { type: 'rules', tests: [{ measure: 'area', of: 'owners', scope: 'all', numerator: 1, denominator: 2, strict: true }], authorities: [{ authorityId: 'ajuntament' }] },
+      regime: { id: 'es-ct-basic', version }
+    }
+  });
+
+  await openLand(page, proposalId);
+  await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Catalonia — basic compensation');
+  await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Research template');
+  await expect(card(page).locator('.approval-card__rule')).toHaveText('Passes with more than 1/2 of the area, and needs the municipality’s approval of the compensation project.');
+  await expect(card(page).locator('[data-approval-meter="area"]')).toContainText('Needs more than 87.5');
+  // Heads are not a test here: owners are shown, not counted.
+  await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('Heard, not counted');
+  await expect(card(page).locator('[data-approval-authority="ajuntament"]')).toHaveAttribute('data-approval-authority-state', 'pending');
+  await expect(card(page)).toContainText('Not enough yet');
+  await screenshot(page, testInfo, 'scheme-card-before');
+
+  // Owner A alone holds 100 of 175 m²: the area test is met and only the authority is missing.
+  await useWallet(page, wallets.a.address);
+  await verifyAndAccept(page, 'a');
+  await expect(card(page).locator('[data-approval-meter="area"]')).toContainText('100');
+  await expect(card(page).locator('[data-approval-awaiting-authority]')).toHaveText('Awaiting the authority');
+  await expect(card(page).locator('[data-approval-outstanding]')).toHaveText('Still to accept: Owner B, Owner C, Owner D');
+
+  // The municipality's wallet is confirmed by the same lens member and approves the whole plan.
+  await useWallet(page, wallets.city.address);
+  await card(page).locator('[data-approval-action="verify"]').click();
+  await dialog(page).locator('[data-approval-verify-submit]').click();
+  await expect(dialog(page).locator('[data-approval-verified]')).toHaveAttribute('data-approval-verified', 'ajuntament');
+  await expect(dialog(page)).toContainText('can act for Authority.');
+  await dialog(page).getByRole('button', { name: 'Review and accept as Authority' }).click();
+  await expect(dialog(page)).toHaveAttribute('data-approval-review', 'ajuntament');
+  await expect(dialog(page).locator('.cb-dialog__title')).toHaveText('Approve as Authority');
+  await expect(dialog(page).locator('[data-approval-plan]')).toContainText('Parcels');
+  await expect(dialog(page)).toContainText('Catalonia — basic compensation');
+  await screenshot(page, testInfo, 'scheme-review-authority');
+  await dialog(page).locator('[data-approval-accept="ajuntament"]').click();
+  await expect(dialog(page)).toHaveAttribute('data-approval-receipt', 'ajuntament');
+  await expect(dialog(page).locator('.cb-dialog__title')).toHaveText('Accepted as Authority');
+  await expect(dialog(page).locator('[data-approval-receipt-progress]')).toContainText('authority approved');
+  await dialog(page).locator('.cb-dialog__footer').getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(card(page)).toContainText('Enough to pass');
+  await expect(card(page).locator('[data-approval-authority="ajuntament"]')).toHaveAttribute('data-approval-authority-state', 'approved');
+  await screenshot(page, testInfo, 'scheme-card-passed');
+
+  const stored = await proposalState(page, proposalId);
+  expect(stored.ownerApprovals.ajuntament).toMatchObject({ ownerId: 'ajuntament', actorId: wallets.city.address, decision: 'approve',
+    evidence: { authority: { member: memberKey, ownerId: 'ajuntament' } } });
+  expect(stored.approvalConfig.regime).toEqual({ id: 'es-ct-basic', version });
+});
+
 test('each owner\'s deal is readable by anyone from the Owner acceptance card', async ({ mockApi: page }, testInfo) => {
   test.setTimeout(60_000);
   const member = wallet().address;

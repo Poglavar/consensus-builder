@@ -8,7 +8,6 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const shellPath = require.resolve('../../frontend/js/proposal-editor-shell.js');
 const saved = new Map();
-const VARIANT_SAVED = 'New variant saved. The original is kept; Applied shows which design is on the map.';
 
 function install(name, value) {
     if (!saved.has(name)) {
@@ -234,10 +233,6 @@ describe('one-click structure creation focus', () => {
         install('openProposalDraftDesign', openProposalDraftDesign);
         install('showEphemeralMessage', vi.fn());
         install('updateStatus', vi.fn());
-        // A Block site is preflighted against the server's binding before the editor opens.
-        install('getBackendBase', () => 'http://backend.test');
-        install('fetch', vi.fn());
-        install('__publishBinding', { createFetchBinding: () => async () => ({ coverage: 'complete' }) });
 
         delete require.cache[shellPath];
         require(shellPath);
@@ -403,7 +398,7 @@ describe('one-click structure creation focus', () => {
 
         expect(showStyledAlert).toHaveBeenCalledOnce();
         expect(showStyledAlert.mock.calls[0][0]).toContain('The live fabric could not be validated.');
-        expect(showEphemeralMessage).not.toHaveBeenCalledWith(VARIANT_SAVED, expect.anything(), 'success');
+        expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
         expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
         expect(selectAndHighlightProposal).not.toHaveBeenCalled();
         expect(releaseEditorSeededMultiSelection).not.toHaveBeenCalled();
@@ -432,7 +427,7 @@ describe('one-click structure creation focus', () => {
 
         expect(result).toBe(proposal.proposalId);
         expect(showStyledAlert.mock.calls[0][0]).toContain('Lake geometry could not be derived.');
-        expect(showEphemeralMessage).not.toHaveBeenCalledWith(VARIANT_SAVED, expect.anything(), 'success');
+        expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
         expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
     });
 
@@ -442,7 +437,7 @@ describe('one-click structure creation focus', () => {
         await globalThis.instantCreateProposalFromDraft('draft-park');
 
         expect(showStyledAlert).not.toHaveBeenCalled();
-        expect(showEphemeralMessage).toHaveBeenCalledWith(VARIANT_SAVED, 6000, 'success');
+        expect(showEphemeralMessage).toHaveBeenCalledWith('Geometry updated.', 4000, 'success');
         expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
     });
 

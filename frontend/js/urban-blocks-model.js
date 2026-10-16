@@ -30,6 +30,95 @@
         return ['yes', 'true', '1'].includes(String(properties.area));
     }
 
+    // An applied proposal's centreline as ground street lines of [lng, lat]: points carrying a level
+    // other than 0 are on a bridge or in a tunnel, so they break the line like OSM's bridge=yes does.
+    function groundRuns(centreline) {
+        const runs = [];
+        let run = [];
+        for (const point of centreline || []) {
+            const ground = !(typeof point?.level === 'number' && Number.isFinite(point.level) && point.level !== 0);
+            if (ground && Number.isFinite(point?.lat) && Number.isFinite(point?.lng)) run.push([point.lng, point.lat]);
+            else { if (run.length >= 2) runs.push(run); run = []; }
+        }
+        if (run.length >= 2) runs.push(run);
+        return runs;
+    }
+
+    // Applied proposed streets join the road network. A street end within SNAP_M of a road moves onto
+    // it and becomes a vertex of that road as well, so noding finds one shared node instead of an end
+    // stopping a fraction of a millimetre short of the centreline, which would leave the block whole.
+    const SNAP_M = 1;
+    function withProposedStreets(roads, streets) {
+        if (!Array.isArray(streets) || !streets.length) return roads;
+        const features = roads.features.slice();
+        const lines = [];
+        features.forEach((road, owner) => {
+            if (!isGroundRoad(road.properties)) return;
+            const type = road.geometry?.type;
+            const parts = type === 'LineString' ? [road.geometry.coordinates] : type === 'MultiLineString' ? road.geometry.coordinates : [];
+            parts.forEach((coords, part) => lines.push({ owner, part, coords: coords.slice() }));
+        });
+        const proposedFrom = lines.length;
+        streets.forEach(coords => {
+            if (!Array.isArray(coords) || coords.length < 2) return;
+            features.push({ type: 'Feature', properties: { highway: 'residential', proposed: true },
+                geometry: { type: 'LineString', coordinates: coords } });
+            lines.push({ owner: features.length - 1, part: 0, coords: coords.map(p => p.slice()) });
+        });
+        const inserts = lines.map(() => []), junctions = [];
+        for (let i = proposedFrom; i < lines.length; i++) {
+            for (const end of [0, lines[i].coords.length - 1]) {
+                const p = lines[i].coords[end];
+                const kx = 111320 * Math.cos(p[1] * Math.PI / 180), ky = 111320;
+                let best = null;
+                lines.forEach((host, h) => {
+                    if (h === i) return;
+                    for (let k = 1; k < host.coords.length; k++) {
+                        const a = host.coords[k - 1], b = host.coords[k];
+                        const dx = (b[0] - a[0]) * kx, dy = (b[1] - a[1]) * ky;
+                        const length2 = dx * dx + dy * dy;
+                        if (!length2) continue;
+                        const t = Math.max(0, Math.min(1, (((p[0] - a[0]) * kx) * dx + ((p[1] - a[1]) * ky) * dy) / length2));
+                        const distance = Math.hypot((a[0] - p[0]) * kx + t * dx, (a[1] - p[1]) * ky + t * dy);
+                        if (distance <= SNAP_M && (!best || distance < best.distance)) best = { distance, h, k, t, a, b };
+                    }
+                });
+                if (!best) continue;
+                const { h, k, t, a, b } = best;
+                const at = t === 0 ? a : t === 1 ? b : [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+                lines[i].coords[end] = at;
+                if (t > 0 && t < 1) { inserts[h].push({ k, t, at }); junctions.push(at); }
+            }
+        }
+        inserts.forEach((list, h) => {
+            if (!list.length) return;
+            const line = lines[h];
+            list.sort((x, y) => x.k - y.k || x.t - y.t);
+            const coords = [];
+            line.coords.forEach((point, k) => {
+                for (const item of list) if (item.k === k) coords.push(item.at);
+                coords.push(point);
+            });
+            line.coords = coords;
+        });
+        // Only roads that gained a junction vertex, and the proposed streets themselves, change.
+        const touched = new Set(lines.filter((line, h) => h >= proposedFrom || inserts[h].length).map(line => line.owner));
+        const rebuilt = new Map();
+        for (const line of lines) {
+            if (!touched.has(line.owner)) continue;
+            if (!rebuilt.has(line.owner)) rebuilt.set(line.owner, []);
+            rebuilt.get(line.owner)[line.part] = line.coords;
+        }
+        for (const [owner, parts] of rebuilt) {
+            const road = features[owner];
+            const geometry = road.geometry.type === 'LineString'
+                ? { type: 'LineString', coordinates: parts[0] }
+                : { type: 'MultiLineString', coordinates: road.geometry.coordinates.map((coords, part) => parts[part] || coords) };
+            features[owner] = { ...road, geometry };
+        }
+        return { ...roads, features, junctions };
+    }
+
     // Noding is necessary before polygonize: a crossing inside either segment must become a
     // shared endpoint. Also split collinear overlaps, then deduplicate the undirected edges.
     function nodeRoads(roads, bbox, turf) {
@@ -44,7 +133,7 @@
             for (const line of lines) for (let i = 1; i < line.length; i++) {
                 const a = coord(line[i - 1]), b = coord(line[i]);
                 if (key(a) === key(b)) continue;
-                segments.push({ a, b, name: road.properties?.name, cuts: [0, 1] });
+                segments.push({ a, b, name: road.properties?.name, proposed: road.properties?.proposed === true, cuts: [0, 1] });
             }
         }
         if (segments.length > 50000) throw new Error('Too many road segments. Zoom in and try again.');
@@ -82,21 +171,26 @@
                 const a = at(cuts[i - 1]), b = at(cuts[i]);
                 if (key(a) === key(b)) continue;
                 const id = edgeKey(a, b);
-                if (!edges.has(id)) edges.set(id, turf.lineString([a, b], { names: [] }));
+                if (!edges.has(id)) edges.set(id, turf.lineString([a, b], { names: [], proposed: false }));
+                if (s.proposed) edges.get(id).properties.proposed = true;
                 if (s.name && !edges.get(id).properties.names.includes(s.name)) edges.get(id).properties.names.push(s.name);
             }
         }
         return edges;
     }
 
-    function ringKey(ring) {
+    function ringKey(ring, junctions = new Set()) {
         // Road way splits or overlaps can insert extra collinear vertices without changing the
         // block. Ignore those in its identity, while retaining them in geometry and street names.
+        // A proposed street's junction lies on its road only to rounding, so the block across that
+        // road, which it passes straight through, keeps its identity within a centimetre (~1e-7°).
         const open = ring.slice(0, -1);
         const points = open.filter((p, i) => {
             const before = sub(p, open[(i - 1 + open.length) % open.length]);
             const after = sub(open[(i + 1) % open.length], p);
-            return Math.abs(cross(before, after)) > 1e-18 || dot(before, after) < 0;
+            const chord = Math.hypot(...sub(open[(i + 1) % open.length], open[(i - 1 + open.length) % open.length]));
+            const tolerance = junctions.has(key(p)) ? 1e-7 * chord : 1e-18;
+            return Math.abs(cross(before, after)) > tolerance || dot(before, after) < 0;
         }).map(key);
         const min = points.reduce((best, p, i) => p < points[best] ? i : best, 0);
         const forward = points.map((_, i) => points[(min + i) % points.length]).join('|');
@@ -122,13 +216,14 @@
         if (!Array.isArray(roads?.features)) throw new Error('Invalid OSM road data.');
         const edges = nodeRoads(roads, bbox, turf);
         if (!edges.size) return turf.featureCollection([]);
+        const junctions = new Set((roads.junctions || []).map(p => key(coord(p))));
         const faces = turf.polygonize(turf.featureCollection([...edges.values()]));
         // Turf 6 emits disconnected nested loops as overlapping shells. Turn each immediate
         // child shell into a hole in its parent so a roundabout/island never paints twice.
         const shells = new Map();
         for (const face of faces.features) {
             const ring = face.geometry.coordinates[0];
-            shells.set(ringKey(ring), turf.polygon([ring]));
+            shells.set(ringKey(ring, junctions), turf.polygon([ring]));
         }
         const polygons = [...shells.values()];
         const sizes = polygons.map(p => turf.area(p));
@@ -148,18 +243,21 @@
             // makes most on-screen blocks complete; open or cut-off blocks simply stay unshaded.
             if (face.geometry.coordinates.some(ring => ring.some(([x, y]) =>
                 x <= bbox[0] + 1e-8 || y <= bbox[1] + 1e-8 || x >= bbox[2] - 1e-8 || y >= bbox[3] - 1e-8))) continue;
-            const shapeKey = face.geometry.coordinates.map(ringKey).sort().join('/');
+            const shapeKey = face.geometry.coordinates.map(ring => ringKey(ring, junctions)).sort().join('/');
             if (seen.has(shapeKey)) continue;
             seen.add(shapeKey);
             const measurement = metrics(face, turf);
             if (measurement.areaM2 < 20) continue;
             const names = new Set();
+            let proposedStreets = false;
             for (const ring of face.geometry.coordinates) for (let i = 1; i < ring.length; i++) {
-                for (const name of edges.get(edgeKey(ring[i - 1], ring[i]))?.properties.names || []) names.add(name);
+                const edge = edges.get(edgeKey(ring[i - 1], ring[i]));
+                for (const name of edge?.properties.names || []) names.add(name);
+                if (edge?.properties.proposed) proposedStreets = true;
             }
             face.id = `osm-block-${hash(shapeKey)}`;
             face.properties = { ...measurement, color: COLORS[parseInt(hash(shapeKey), 16) % COLORS.length],
-                streets: [...names].sort(), source: 'osm-road-centrelines' };
+                streets: [...names].sort(), proposedStreets, source: 'osm-road-centrelines' };
             blocks.push(face);
         }
         // Give adjacent faces distinct colours. The canonical ID order makes this independent
@@ -216,6 +314,6 @@
         return colorBy === 'walk' ? WALK_COLORS[walkBand(feature.properties.walkMinutes, thresholdMinutes)] : feature.properties.color;
     }
 
-    return { detectBlocks, nodeRoads, metrics, loadedParcelCount, isGroundRoad, isRoadArea, targetBlockCount,
+    return { detectBlocks, nodeRoads, groundRuns, withProposedStreets, metrics, loadedParcelCount, isGroundRoad, isRoadArea, targetBlockCount,
         rankBlocks, walkBand, blockColor, WALK_COLORS };
 });

@@ -487,32 +487,17 @@ function attachProposalCurrencyHandlers() {
 
     clearProposalBalanceWatcher();
 
-    // Adapt currency options for Solana: replace ETH with SOL
+    // A connected Solana wallet adds SOL to the choices. It never changes the selected currency:
+    // replacing ETH with SOL, or resetting to USDT here, rewrote a prefilled or chosen offer.
     const solWmCurr = window.solanaWalletManager;
     const solStateCurr = solWmCurr && typeof solWmCurr.getState === 'function' ? solWmCurr.getState() : null;
     const isSolanaCurr = solStateCurr && solStateCurr.status === 'connected'
         && Array.isArray(solStateCurr.accounts) && solStateCurr.accounts.length > 0;
-    if (isSolanaCurr) {
-        // Replace ETH option with SOL
-        const ethOption = Array.from(currencySelect.options).find(opt => opt.value === 'ETH');
-        if (ethOption) {
-            ethOption.value = 'SOL';
-            ethOption.textContent = 'SOL';
-        } else {
-            // Add SOL if ETH wasn't there
-            const hasSol = Array.from(currencySelect.options).some(opt => opt.value === 'SOL');
-            if (!hasSol) {
-                const solOpt = document.createElement('option');
-                solOpt.value = 'SOL';
-                solOpt.textContent = 'SOL';
-                currencySelect.insertBefore(solOpt, currencySelect.options[0]);
-            }
-        }
-    }
-
-    const hasUsdtOption = Array.from(currencySelect.options || []).some(opt => opt && opt.value === 'USDT');
-    if (hasUsdtOption) {
-        currencySelect.value = 'USDT';
+    if (isSolanaCurr && !Array.from(currencySelect.options).some(opt => opt.value === 'SOL')) {
+        const solOpt = document.createElement('option');
+        solOpt.value = 'SOL';
+        solOpt.textContent = 'SOL';
+        currencySelect.insertBefore(solOpt, currencySelect.options[0]);
     }
 
     const balanceEl = ensureProposalOfferBalanceElement();

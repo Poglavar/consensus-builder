@@ -769,9 +769,6 @@
     }
 
     function footerMarkup() {
-        const draft = global.proposalDraftStore?.getDraft?.(state.draftId);
-        const isVariant = !!draft?.sourceProposalId;
-        const saveLabel = isVariant ? t('saveVariant', 'Save as variant') : t('save', 'Save design');
         const error = state.kind === 'lake'
             ? '<p class="structure-geometry-error structure-geometry-footer-error" data-role="lake-error" role="status" aria-live="assertive" hidden></p>'
             : '';
@@ -780,9 +777,8 @@
         const finish = state.kind === 'park'
             ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
             : '';
-        const variantHint = isVariant ? `<p>${t('variantHint', 'Saving creates a new variant and keeps the original. The new variant is applied if it can be placed.')}</p>` : '';
-        return `${error}${variantHint}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
-            <div class="structure-geometry-footer-actions"><button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${saveLabel}</button></div>`;
+        return `${error}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
+            <div class="structure-geometry-footer-actions"><button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div>`;
     }
 
     function updatePanelState() {

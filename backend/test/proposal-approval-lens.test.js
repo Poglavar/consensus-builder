@@ -225,7 +225,7 @@ describe('lens member approval routes', () => {
         expect(() => createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), approvalAttester }))
             .toThrow(/signs as/);
         expect(() => normalizeRegistry({ ...registryJson(), signers: [{ ownerId: 'owner-x', wallet: wallets.a.address }] }))
-            .toThrow(/no registered parcel/);
+            .toThrow(/no registered right or authority/);
     });
 });
 
@@ -330,7 +330,8 @@ describe('four owners across three parcels approve only for themselves', () => {
         use(wallets.c);
         // Two of four owners (50%) but only 100 of 175 m² (57%): parcel C needs both co-owners.
         expect(await context.ProposalApprovalRuntime.decide(item, 'parcel-c', 'owner-c', actor, 'effect-1'))
-            .toMatchObject({ acceptedOwners: 2, ownerThresholdMet: true, acceptedAreaM2: 100, areaThresholdMet: false, passed: false });
+            .toMatchObject({ acceptedOwners: 2, acceptedAreaM2: 100, passed: false,
+                tests: [expect.objectContaining({ measure: 'area', met: false }), expect.objectContaining({ measure: 'headcount', met: true })] });
     });
 
     it('refuses evidence that does not verify before keeping it, and never signs for another wallet', async () => {

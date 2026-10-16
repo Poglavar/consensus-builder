@@ -39,12 +39,13 @@
         const live = fact => now() <= Date.parse(fact.expiresAt);
 
         // Everything a member returned is checked before it is kept: signatures, the member, this
-        // proposal's context and parcels, the wallet as signer, and owners that are in the electorate.
+        // proposal's context and parcels, the wallet as signer, and parties (owners, leaseholders,
+        // required authorities) of this proposal.
         function keep(proposal, memberKey, address, body) {
             const A = approval(), P = proof();
             const contextHash = A.contextHash(proposal);
             const parcelIds = A.contextContent(proposal).cadastreParcelIds;
-            const electorate = A.inspect(proposal).ownerIds;
+            const electorate = A.inspect(proposal).partyIds;
             const { rights, authority } = body || {};
             if (!P.verifyAttestation(rights, P.RIGHTS_SCHEMA) || rights.member !== memberKey || rights.contextHash !== contextHash
                 || A.stableStringify(rights.parcelIds) !== A.stableStringify(parcelIds) || !live(rights)) {

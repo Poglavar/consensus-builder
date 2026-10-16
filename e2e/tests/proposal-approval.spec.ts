@@ -97,6 +97,7 @@ async function assertApprovalChromeFits(page: Page, width: number): Promise<void
 }
 
 test('shared proposal editor imports rights, saves approval policy and forks without old consent', async ({ mockApi: page }, testInfo) => {
+  test.setTimeout(90_000);
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   const actorId = await profileAndAuthority(page);
@@ -137,14 +138,36 @@ test('shared proposal editor imports rights, saves approval policy and forks wit
   await expect(page.locator("[data-editor-section='approval']")).toBeVisible();
   await uploadRights(page, 'updated-rights', 125);
 
-  await selectNativeOption(page.locator('[data-approval-policy-type]'), 'threshold');
-  await expect(page.locator('[data-approval-fraction="owners"]')).toBeVisible();
-  await page.locator('[data-approval-fraction="owners"]').fill('1/2');
-  await page.locator('[data-approval-fraction="area"]').fill('3/4');
-  await selectNativeOption(page.locator('[data-approval-strict="owners"]'), 'true');
-  await selectNativeOption(page.locator('[data-approval-strict="area"]'), 'true');
+  // Custom rules start from the usual majority; rows are in canonical order (area, then owners).
+  await selectNativeOption(page.locator('[data-approval-regime]'), 'custom');
+  const areaRow = page.locator('[data-approval-test="0"]');
+  const ownersRow = page.locator('[data-approval-test="1"]');
+  await expect(ownersRow.locator('[data-approval-test-measure]')).toHaveValue('headcount');
+  await ownersRow.locator('[data-approval-test-fraction]').fill('1/2');
+  await areaRow.locator('[data-approval-test-fraction]').fill('3/4');
+  await selectNativeOption(ownersRow.locator('[data-approval-test-strict]'), 'true');
+  await selectNativeOption(areaRow.locator('[data-approval-test-strict]'), 'true');
   await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft().fields.approvalConfig.policy.area.strict)).toBe(true);
-  await selectNativeOption(page.locator('[data-approval-strict="area"]'), 'false');
+  await selectNativeOption(areaRow.locator('[data-approval-test-strict]'), 'false');
+  // A scheme pins itself; choosing Custom rules again drops the pin and keeps the scheme's tests.
+  await selectNativeOption(page.locator('[data-approval-regime]'), 'es-md-compensation');
+  await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft().fields.approvalConfig.regime?.id)).toBe('es-md-compensation');
+  await expect(page.locator('[data-approval-regime-details="es-md-compensation"]')).toBeVisible();
+  await selectNativeOption(page.locator('[data-approval-regime]'), 'custom');
+  await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft().fields.approvalConfig.regime)).toBeUndefined();
+  await expect(page.locator('[data-approval-test]')).toHaveCount(1);
+  // Back to the majority this test goes on with. A typed fraction is saved on change (the form
+  // re-renders), so flush it before the next click lands on a rebuilt button.
+  const fraction = (index: number) => page.locator(`[data-approval-test="${index}"] [data-approval-test-fraction]`);
+  await fraction(0).fill('3/4');
+  await fraction(0).dispatchEvent('change');
+  await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft().fields.approvalConfig.policy.tests[0].denominator)).toBe(4);
+  await page.locator('[data-editor-action="approval-test-add"]').click();
+  await expect(page.locator('[data-approval-test]')).toHaveCount(2);
+  await fraction(1).fill('1/2');
+  await fraction(1).dispatchEvent('change');
+  await selectNativeOption(page.locator('[data-approval-test="1"] [data-approval-test-strict]'), 'true');
+  await page.locator('[data-approval-custom-authority]').uncheck();
   await page.locator('[data-approval-lens]').fill('e2e-lens\nreviewer-lens');
   await page.locator('[data-approval-lens]').dispatchEvent('change');
   await expect(page.locator('.proposal-editor-autosave')).toContainText('Autosaved locally');
@@ -186,7 +209,7 @@ test('shared proposal editor imports rights, saves approval policy and forks wit
   });
   expect(rightsRowInBody, 'an imported parcel-owner row must be in the mobile editor viewport').toBe(true);
   await screenshot(page, testInfo, 'proposal-approval-mobile-rights-preview-390');
-  const thresholds = page.locator('.proposal-editor-approval-thresholds');
+  const thresholds = page.locator('[data-approval-tests]');
   await thresholds.scrollIntoViewIfNeeded();
   await screenshot(page, testInfo, 'proposal-approval-mobile-policy-thresholds-390');
   await page.locator('[data-approval-lens]').scrollIntoViewIfNeeded();

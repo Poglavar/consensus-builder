@@ -138,7 +138,11 @@ test('Propose turns the selected layout\'s new streets into applied road proposa
   await serveClosedBlocks(page);
   await openLayerUrbanBlocks(page);
   await page.locator('#showUrbanBlocks').check();
-  await page.locator('#urban-block-list button[data-block-id]').first().click();
+  const firstRow = page.locator('#urban-block-list button[data-block-id]').first();
+  const original = await firstRow.getAttribute('data-block-id');
+  const blockIds = () => page.evaluate(() => (window as any).UrbanBlocksView.snapshot().blocks?.features.map((block: any) => block.id) || []);
+  const before = await blockIds();
+  await firstRow.click();
   await page.locator('#urban-block-see-how').click();
   const dialog = page.locator('.urban-block-playground .on-map-editor__panel');
   const propose = dialog.locator('[data-action="propose"]');
@@ -160,6 +164,12 @@ test('Propose turns the selected layout\'s new streets into applied road proposa
     .map((proposal: any) => ({ goal: proposal.goal, title: proposal.title })));
   expect(proposed.every(proposal => proposal.goal === 'road-track')).toBe(true);
   await expect(page.locator('#status')).toContainText(`Proposed ${proposed.length} of`);
+  // The applied streets split the block: it is gone, its pieces replace it, the rest keep their ids.
+  await expect.poll(async () => (await blockIds()).includes(original)).toBe(false);
+  const after = await blockIds();
+  expect(after.length).toBeGreaterThan(before.length);
+  expect(before.filter(id => id !== original).every(id => after.includes(id))).toBe(true);
+  await expect(page.locator('#urban-block-panel-title')).toHaveText('Blocks in this area');
 });
 
 test('OSM block browse, details, fit, copy, collapse, refresh, back, and close buttons work', async ({ mockApi: page, context }) => {

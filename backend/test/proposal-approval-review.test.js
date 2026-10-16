@@ -36,9 +36,12 @@ describe('owner acceptance progress', () => {
     it('reports outstanding owners and co-owned parcels that do not count until every co-owner accepts', () => {
         const progress = review.progress(proposal(), ['owner-a', 'owner-c']);
         expect(progress).toMatchObject({
-            ready: true, totalOwners: 4, acceptedOwners: 2, ownersNeeded: 4,
-            totalAreaM2: 175, acceptedAreaM2: 100, areaNeededM2: 175, passed: false
+            ready: true, totalOwners: 4, acceptedOwners: 2,
+            totalAreaM2: 175, acceptedAreaM2: 100, passed: false, supportMet: false, authorityMet: true
         });
+        // Every owner must accept: one headcount test, needing all four.
+        expect(progress.tests).toEqual([expect.objectContaining({ measure: 'headcount', of: 'owners', scope: 'all', support: 2, total: 4, needed: 4, met: false })]);
+        expect(progress.authorities).toEqual([]);
         expect(progress.outstanding).toEqual([
             { ownerId: 'owner-b', parcelIds: ['parcel-b'] },
             { ownerId: 'owner-d', parcelIds: ['parcel-c'] }
@@ -50,14 +53,15 @@ describe('owner acceptance progress', () => {
         expect(review.progress(proposal(), ['owner-a', 'owner-c', 'owner-d']).coOwned[0].counts).toBe(true);
     });
 
-    it('computes the exact owners a threshold needs, strict or inclusive', () => {
-        expect(review.ownersNeeded(4, threshold([1, 2], [1, 2]))).toBe(2);
-        expect(review.ownersNeeded(4, threshold([1, 2], [1, 2], true))).toBe(3);
-        expect(review.ownersNeeded(3, threshold([2, 3], [1, 2]))).toBe(2);
-        expect(review.ownersNeeded(3, threshold([1, 3], [1, 2], true))).toBe(2);
-        expect(review.ownersNeeded(7, { type: 'unanimous' })).toBe(7);
+    it('computes exactly what each test still needs, strict or inclusive', () => {
+        // Tests come in their canonical order (area before headcount); the UI reorders them for reading.
+        const needs = (accepted, policy) => review.progress(proposal({ policy }), accepted).tests.map(test => [test.measure, test.needed, test.met]);
+        expect(needs(['owner-a'], threshold([1, 2], [1, 2]))).toEqual([['area', 87.5, true], ['headcount', 2, false]]);
+        expect(needs(['owner-a'], threshold([1, 2], [1, 2], true))).toEqual([['area', 87.5, true], ['headcount', 3, false]]);
+        expect(needs(['owner-a'], threshold([2, 3], [1, 2]))).toEqual([['area', 87.5, true], ['headcount', 3, false]]);
+        expect(needs(['owner-a'], threshold([1, 3], [1, 2], true))).toEqual([['area', 87.5, true], ['headcount', 2, false]]);
         const strict = review.progress(proposal({ policy: threshold([1, 2], [7, 10], true) }), ['owner-a']);
-        expect(strict).toMatchObject({ ownersNeeded: 3, areaNeededM2: 122.5, areaStrict: true });
+        expect(strict.tests.map(test => [test.needed, test.strict])).toEqual([[122.5, true], [3, true]]);
     });
 
     it('fails closed when ownership is unresolved', () => {

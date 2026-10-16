@@ -134,18 +134,26 @@ test('ownership and approval set up in the designer lands on the created proposa
   await dialog.locator('[data-approval-file]').setInputFiles({ name: 'rights.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(rights)) });
   await dialog.locator('[data-editor-action="approval-import"]').click();
   await expect(dialog.locator('.proposal-editor-approval-status')).toContainText('Ownership data is complete');
-  await dialog.locator('[data-approval-policy-type]').selectOption('threshold');
-  await dialog.locator('[data-approval-fraction="area"]').fill('7/1x');
+  // A named scheme: its card says what the rights file must hold and which authority decides.
+  await dialog.locator('[data-approval-regime]').selectOption('jp-association');
+  await expect(dialog.locator('[data-approval-regime-details="jp-association"]')).toContainText('every lease and its holders');
+  await expect(dialog.locator('[data-approval-rule-text]')).toContainText('at least 2/3 of the private leaseholders');
+  await dialog.locator('[data-approval-authority-id="0"]').fill('governor');
+  // Custom rules start from the scheme's tests; a malformed fraction is reported without losing what was typed.
+  await dialog.locator('[data-approval-regime]').selectOption('custom');
+  await expect(dialog.locator('[data-approval-test]')).toHaveCount(3);
+  await dialog.locator('[data-approval-test="0"] [data-approval-test-fraction]').fill('7/1x');
   await dialog.locator('[data-approval-lens]').fill('e2e-lens-member');
-  // A malformed fraction is reported without losing what was typed.
   await dialog.locator('[data-action-id="apply"]').click();
   await expect(dialog.locator('[data-approval-apply-error]')).toContainText('fraction');
   await expect(dialog.locator('[data-approval-lens]')).toHaveValue('e2e-lens-member');
-  await dialog.locator('[data-approval-fraction="area"]').fill('7/10');
+  await dialog.locator('[data-approval-test="0"] [data-approval-test-fraction]').fill('7/10');
+  await dialog.locator('[data-approval-regime]').selectOption('es-md-compensation');
+  await expect(dialog.locator('[data-approval-authority-id="0"]')).toHaveValue('governor');
   await dialog.locator('[data-action-id="apply"]').click();
   await expect(dialog).toHaveCount(0);
   await expect(row).toContainText('Rights for 1 parcel(s), 2 owner(s)');
-  await expect(row).toContainText('area 7/10');
+  await expect(row).toContainText('Madrid — compensation by the owners: Passes with at least 1/2 of the area, and needs the municipality’s approval.');
   // The owners now come from the rights file.
   await expect.poll(async () => (await plotRows(page)).join(' ')).toMatch(/Owner A.*Owner B|Owner B.*Owner A/);
 
@@ -156,8 +164,9 @@ test('ownership and approval set up in the designer lands on the created proposa
   const created = await page.evaluate(() => {
     const all = (window as any).proposalStorage.getAllProposals();
     const p = all[all.length - 1];
-    return { rights: p.approvalConfig?.rights?.parcels?.length, policy: p.approvalConfig?.policy?.type, area: p.approvalConfig?.policy?.area,
+    return { rights: p.approvalConfig?.rights?.parcels?.length, policy: p.approvalConfig?.policy, regime: p.approvalConfig?.regime?.id,
       lens: (p.lens || []).map((entry: any) => (typeof entry === 'string' ? entry : entry.address)) };
   });
-  expect(created).toEqual({ rights: 1, policy: 'threshold', area: { numerator: 7, denominator: 10, strict: false }, lens: ['e2e-lens-member'] });
+  expect(created).toEqual({ rights: 1, regime: 'es-md-compensation', lens: ['e2e-lens-member'],
+    policy: { type: 'rules', tests: [{ measure: 'area', of: 'owners', scope: 'all', numerator: 1, denominator: 2, strict: false }], authorities: [{ authorityId: 'governor' }] } });
 });

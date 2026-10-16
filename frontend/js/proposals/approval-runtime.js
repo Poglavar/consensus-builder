@@ -11,14 +11,18 @@
         try { return api().inspect(proposal); }
         catch (error) {
             if (error.code !== 'invalid-proposal-approval') throw error;
-            return { ready: false, reason: 'invalid-rights', ownerIds: [], parcels: [], missingParcelIds: [], error };
+            return { ready: false, reason: 'invalid-rights', ownerIds: [], leaseholderIds: [], authorityIds: [], partyIds: [], publicIds: [], parcels: [], missingParcelIds: [], error };
         }
     }
-    function label(id, ids) {
-        const fallback = api().ownerLabel(id, ids);
-        const letter = fallback.replace(/^Owner\s*/, '');
-        const translated = root.i18n?.t?.('proposalApproval.ownerLabel', { label: letter });
-        return translated && translated !== 'proposalApproval.ownerLabel' ? translated : fallback;
+    // "Owner A", "Leaseholder A" or "Authority", translated. Takes the proposal's inspect() state, or
+    // a plain owner id list where only owners are named.
+    function label(id, idsOrState) {
+        const state = Array.isArray(idsOrState) ? { ownerIds: idsOrState, leaseholderIds: [], authorityIds: [] } : idsOrState;
+        const party = api().partyOf(id, state) || { kind: 'owner', letter: '' };
+        const key = party.kind === 'authority' ? (party.letter ? 'proposalApproval.authorityLabelLettered' : 'proposalApproval.authorityLabel')
+            : party.kind === 'leaseholder' ? 'proposalApproval.leaseholderLabel' : 'proposalApproval.ownerLabel';
+        const translated = root.i18n?.t?.(key, { label: party.letter });
+        return translated && translated !== key ? translated : api().partyLabel(id, state);
     }
     function evidence(proposal, ownerId, actor) {
         return root.ProposalApprovalAuthorities?.resolve(proposal, ownerId, actor) || null;
@@ -60,7 +64,7 @@
         const tally = refresh(proposal, hash);
         const yes = new Set(rights.ready ? validIds(proposal, hash) : []);
         return {
-            ...tally, totalOwners: rights.ready ? rights.ownerIds.length : 0, acceptedOwners: yes.size,
+            ...tally, totalOwners: rights.ready ? rights.ownerIds.length : 0, acceptedOwners: rights.ready ? rights.ownerIds.filter(id => yes.has(id)).length : 0,
             entries: rights.ready ? rights.ownerIds.map(id => ({
                 key: id, displayName: label(id, rights.ownerIds), accepted: yes.has(id),
                 parcelIds: rights.parcels.filter(parcel => parcel.owners.some(owner => owner.ownerId === id)).map(parcel => parcel.parcelId)
@@ -70,9 +74,11 @@
     async function decide(proposal, parcelId, ownerId, actor, hash, withdraw = false, currentHash = () => hash) {
         const rights = inspect(proposal);
         if (!rights.ready) return { error: 'ownership-unresolved' };
-        const parcel = rights.parcels.find(row => row.parcelId === String(parcelId));
+        // A holder decides from one of its parcels (or for a lease only, or as an authority, from none).
+        const parcel = parcelId == null ? null : rights.parcels.find(row => row.parcelId === String(parcelId));
         const id = ownerId || (parcel?.owners.length === 1 ? parcel.owners[0].ownerId : null);
-        if (!id || !parcel?.owners.some(owner => owner.ownerId === id)) return { error: 'unknown-owner' };
+        const onParcel = !!parcel && [...parcel.owners, ...(parcel.leases || []).flatMap(lease => lease.holders)].some(holder => holder.ownerId === id);
+        if (!id || !rights.partyIds.includes(id) || (parcelId != null && !onParcel)) return { error: 'unknown-owner' };
         const authorization = evidence(proposal, id, actor);
         if (!authorization) return { error: 'authority-unresolved' };
         const receipt = { ownerId: id, actorId: authorization.actorId, effectHash: hash, evidence: authorization.evidence,
@@ -89,10 +95,10 @@
         proposal.acceptedParcelIds = result.proposal.acceptedParcelIds;
         return { ...result.tally, ownerId: id };
     }
-    // Owners the current profile can act for right now, through any installed provider.
+    // Parties (owners, leaseholders, authorities) the current profile can act for right now.
     function authorizedOwnerIds(proposal, actor) {
         const rights = inspect(proposal);
-        return rights.ready ? rights.ownerIds.filter(id => !!evidence(proposal, id, actor)) : [];
+        return rights.ready ? rights.partyIds.filter(id => !!evidence(proposal, id, actor)) : [];
     }
     root.ProposalApprovalRuntime = { uses, inspect, state, refresh, summary, decide, label, validIds, authorizedOwnerIds };
 })(typeof window !== 'undefined' ? window : globalThis);

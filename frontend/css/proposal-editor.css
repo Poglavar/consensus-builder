@@ -74,10 +74,70 @@
     overflow-wrap: anywhere;
 }
 
-.proposal-editor-approval-thresholds {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
+/* Agreement rules (proposals/approval-setup.js): the scheme's details, and custom tests as rows. */
+.approval-setup__rule {
+    margin: var(--cb-space-2) 0;
+    color: var(--cb-text-strong);
+    line-height: 1.45;
+}
+
+.approval-setup__regime {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    margin: 0 0 var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
+}
+
+.approval-setup__regime p,
+.approval-setup__allocation {
+    margin: 0;
+}
+
+.approval-setup__allocation {
+    padding-left: var(--cb-space-4);
+}
+
+.approval-setup__research {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.approval-setup__sources,
+.approval-setup__caveat {
+    color: var(--cb-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.approval-setup__tests {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-2);
+}
+
+.approval-setup__test {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-1);
+    width: 100%;
+}
+
+.approval-setup__test select,
+.approval-setup__test input {
+    min-width: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.approval-setup__test input {
+    width: 5.5em;
 }
 
 .proposal-editor-shell.is-open {
@@ -405,8 +465,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
         font-size: var(--cb-text-lg);
     }
 
-    .proposal-editor-grid,
-    .proposal-editor-approval-thresholds {
+    .proposal-editor-grid {
         grid-template-columns: 1fr;
     }
 }
