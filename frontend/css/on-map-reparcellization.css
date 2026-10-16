@@ -326,6 +326,31 @@
     display: none;
 }
 
+/* Ownership and approval: in the designer under the owner ledger, and as a row of the create
+   dialog. A summary line and the button that opens the shared form (proposals/approval-setup.js). */
+.reparcel-approval-setup,
+.reparcel-approval-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--cb-space-1);
+    margin-top: var(--cb-space-2);
+    padding-top: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+.reparcel-approval-setup__summary {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.4;
+}
+
+.reparcel-approval-row__title {
+    color: var(--cb-text-strong);
+    font-weight: var(--cb-weight-semibold);
+}
+
 .cash-offer-cell input.cash-offer-input {
     width: 70px;
     padding: 2px 4px;

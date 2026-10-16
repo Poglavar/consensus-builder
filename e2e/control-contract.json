@@ -5303,36 +5303,36 @@
       "controlType": "text"
     },
     {
-      "id": "control-d90f28a8998776-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"text\" data-approval-fraction=\"owners\" value=\"${escapeHtml(fractionText(threshold.owners))}\" placeholder=\"1/2\">",
+      "id": "control-d1464a9c3e113d-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-fraction=\"owners\" value=\"${esc(fractionText(threshold.owners))}\" placeholder=\"1/2\">",
       "interaction": "change",
       "controlType": "text"
     },
     {
-      "id": "control-8c09d95d92e8d6-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"text\" data-approval-fraction=\"area\" value=\"${escapeHtml(fractionText(threshold.area))}\" placeholder=\"7/10\">",
+      "id": "control-9889459ced8bff-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-fraction=\"area\" value=\"${esc(fractionText(threshold.area))}\" placeholder=\"7/10\">",
       "interaction": "change",
       "controlType": "text"
     },
     {
-      "id": "control-9091943c325397-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-a074bd94e34f5c-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<select data-approval-strict=\"owners\">",
       "interaction": "change",
       "controlType": "select"
     },
     {
-      "id": "control-3707c33340d905-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-7120c2a9620c28-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<select data-approval-strict=\"area\">",
       "interaction": "change",
       "controlType": "select"
     },
     {
-      "id": "control-21ddceb27dc1e0-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-bf1b74e30cb12d-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<select data-approval-source>",
       "interaction": "change",
       "controlType": "select",
@@ -5354,9 +5354,9 @@
       ]
     },
     {
-      "id": "control-2ace10672ddbda-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"text\" data-approval-reference value=\"${escapeHtml(config?.rights?.source?.reference || '')}\" autocomplete=\"off\"${selectedSource === 'upload' ? ' disabled' : ''}>",
+      "id": "control-7f8ae50e55c7e9-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-reference value=\"${esc(normalized?.rights?.source?.reference || '')}\" autocomplete=\"off\"${selectedSource === 'upload' ? ' disabled' : ''}>",
       "interaction": "change",
       "controlType": "text",
       "exempt": "The shipped app registers only the Upload JSON rights provider. The source select has no alternative and its reference field stays disabled; registering another provider requires tests for these fields.",
@@ -5378,44 +5378,44 @@
       ]
     },
     {
-      "id": "control-163d29816ef54b-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-a4c23ce2a2672d-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<input type=\"file\" accept=\"application/json,.json\" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}>",
       "interaction": "change",
       "controlType": "file"
     },
     {
-      "id": "control-b8014a11a36de1-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-a0ceb95358ecf2-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-import\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-731a598dad87ca-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-7b0b434bcf12e7-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-template\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-b27b795494ff18-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-editor-action=\"approval-remove\"${config?.rights ? '' : ' disabled'}>",
+      "id": "control-4caa83ec16a432-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-editor-action=\"approval-remove\"${normalized?.rights ? '' : ' disabled'}>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-bb74f5eba83765-1",
-      "source": "js/proposal-editor-shell.js",
+      "id": "control-247326fea7040f-1",
+      "source": "js/proposals/approval-setup.js",
       "markup": "<select data-approval-policy-type>",
       "interaction": "change",
       "controlType": "select"
     },
     {
-      "id": "control-07525dc1cbc9b7-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<textarea data-approval-lens placeholder=\"${escapeHtml(tDraft('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}\">",
+      "id": "control-09ee9264a0a3d5-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<textarea data-approval-lens placeholder=\"${esc(t('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}\">",
       "interaction": "change",
       "controlType": "textarea"
     },
@@ -10136,6 +10136,20 @@
           ]
         }
       ],
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e3261ea7078417-3",
+      "source": "js/proposals/dialog-create.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a556d6246b9ace-1",
+      "source": "js/reparcellization.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-approval-setup>",
       "interaction": "click",
       "controlType": "button"
     }

@@ -248,6 +248,40 @@ describe('owner focus (what one owner puts in and gets out)', () => {
         expect(layers.focus.map(f => f.properties.parcelId)).toEqual(['A', 'C']);
     });
 
+    it('frames the owner\'s land clear of the panel and starts the divider through it', async () => {
+        const h = harness({ originals: [feature('A'), feature('C', square(16.002, 45.8))] });
+        Object.assign(h.proposal, readjustment(), { cadastreParcelIds: ['A', 'C'] });
+        const fits = [];
+        Object.assign(h.deps.map, {
+            fitBounds: (bounds, options) => fits.push({ bounds, options }),
+            getSize: () => ({ x: 1000, y: 800 }),
+            // A projection where longitude 16.0 is x=200 and each 0.001° is 100 px.
+            latLngToContainerPoint: ([, lng]) => ({ x: 200 + (lng - 16) * 100000, y: 400 })
+        });
+        h.deps.fitPadding = () => ({ paddingTopLeft: [40, 40], paddingBottomRight: [520, 40] });
+        await h.instance.toggle('p-1', { focusOwnerId: 'owner-c' });
+        // Owner C's old parcel C and new plot 2 both sit in [16.002, 16.003].
+        expect(fits).toHaveLength(1);
+        fits[0].bounds.flat().forEach((value, i) => expect(value).toBeCloseTo([45.8, 16.002, 45.801, 16.003][i], 9));
+        expect(fits[0].options).toMatchObject({ paddingBottomRight: [520, 40], animate: false });
+        expect(h.sessions[0].options.percent).toBeCloseTo(45, 6);
+    });
+
+    it('leaves the view alone for a plain comparison', async () => {
+        const h = harness();
+        const fitBounds = vi.fn();
+        h.deps.map.fitBounds = fitBounds;
+        await h.instance.toggle('p-1');
+        expect(fitBounds).not.toHaveBeenCalled();
+        expect(h.sessions[0].options.percent).toBeUndefined();
+    });
+
+    it('focusBounds spans every coordinate and ignores features without geometry', () => {
+        BeforeAfter.focusBounds([feature('A', square(16, 45.8)), { type: 'Feature', geometry: null }, feature('B', square(16.004, 45.802))])
+            .flat().forEach((value, i) => expect(value).toBeCloseTo([45.8, 16, 45.803, 16.005][i], 9));
+        expect(BeforeAfter.focusBounds([])).toBeNull();
+    });
+
     it('opens for one owner: their parcels before, their plots on the live map, and toggles by owner', async () => {
         const h = harness({ originals: [feature('A'), feature('C')] });
         Object.assign(h.proposal, readjustment(), { cadastreParcelIds: ['A', 'C'] });

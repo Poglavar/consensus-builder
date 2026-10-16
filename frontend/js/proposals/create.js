@@ -618,8 +618,13 @@ async function createProposal() {
         ? String(window.pendingProposalDraftId)
         : null;
     const publishingDraft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
-    const publishingDraftFields = publishingDraft?.fields && typeof publishingDraft.fields === 'object'
+    const draftOwnFields = publishingDraft?.fields && typeof publishingDraft.fields === 'object'
         ? publishingDraft.fields : {};
+    // The dialog's own Ownership and approval row (dialog-create.js) is what the author chose last.
+    const dialogApproval = typeof window !== 'undefined' ? window.pendingProposalApprovalSetup : null;
+    const publishingDraftFields = dialogApproval
+        ? { ...draftOwnFields, approvalConfig: dialogApproval.approvalConfig, lens: dialogApproval.lens }
+        : draftOwnFields;
     const markDraftPublishFailed = (error) => {
         if (!publishingDraftId || !window.proposalDraftStore?.getDraft?.(publishingDraftId)) return;
         window.proposalDraftStore.markPublishFailed(publishingDraftId, error);

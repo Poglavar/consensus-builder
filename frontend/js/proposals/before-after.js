@@ -112,6 +112,24 @@
         return { parcelIds, plots };
     }
 
+    // [[south, west], [north, east]] around a set of GeoJSON features, or null. Pure, so the framing
+    // of a focused comparison is testable without Leaflet.
+    function focusBounds(features) {
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        const visit = coords => {
+            if (!Array.isArray(coords)) return;
+            if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+                if (!Number.isFinite(coords[0]) || !Number.isFinite(coords[1])) return;
+                minLng = Math.min(minLng, coords[0]); maxLng = Math.max(maxLng, coords[0]);
+                minLat = Math.min(minLat, coords[1]); maxLat = Math.max(maxLat, coords[1]);
+                return;
+            }
+            coords.forEach(visit);
+        };
+        withGeometry(features).forEach(feature => visit(feature.geometry.coordinates));
+        return Number.isFinite(minLng) ? [[minLat, minLng], [maxLat, maxLng]] : null;
+    }
+
     function create(resolveDependencies) {
         let session = null;
         let activeKey = null;
@@ -189,8 +207,10 @@
             });
             const t = typeof deps.t === 'function' ? deps.t : (_key, fallback) => fallback;
             const L = deps.L;
+            let afterFocus = [];
             // The plots the focused owner receives, outlined on the live ("after") map.
             if (ownerParts && ownerParts.plots.length) {
+                afterFocus = ownerParts.plots;
                 hostLayer = L.geoJSON({ type: 'FeatureCollection', features: ownerParts.plots }, { interactive: false, style: () => FOCUS_AFTER_STYLE }).addTo(deps.map);
             }
             // The plots that came out of the focused parcel, outlined on the live ("after") map.
@@ -198,11 +218,33 @@
                 let plots = [];
                 try { plots = withGeometry(deps.fabric.entriesForCadastre([focusParcelId], { includeCorridors: true })); } catch (_) { plots = []; }
                 if (plots.length) {
+                    afterFocus = plots;
                     hostLayer = L.geoJSON({ type: 'FeatureCollection', features: plots }, { interactive: false, style: () => FOCUS_AFTER_STYLE }).addTo(deps.map);
+                }
+            }
+            // A focused comparison (one owner, or one parcel) is about that land: frame it in the part
+            // of the map the panel leaves free, and start the divider through its middle so "before"
+            // shows the old parcel and "after" the new plots.
+            let percent;
+            const framed = (ownerParts || focusParcelId)
+                ? focusBounds(layers.focus.concat(afterFocus))
+                : null;
+            if (framed && typeof deps.map.fitBounds === 'function') {
+                const padding = (typeof deps.fitPadding === 'function' && deps.fitPadding()) || { paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] };
+                try {
+                    deps.map.fitBounds(framed, { ...padding, maxZoom: 20, animate: false });
+                    const size = deps.map.getSize();
+                    const middle = deps.map.latLngToContainerPoint([(framed[0][0] + framed[1][0]) / 2, (framed[0][1] + framed[1][1]) / 2]);
+                    if (size && size.x > 0 && middle && Number.isFinite(middle.x)) {
+                        percent = Math.min(95, Math.max(5, (middle.x / size.x) * 100));
+                    }
+                } catch (error) {
+                    if (typeof deps.warn === 'function') deps.warn('[before-after] could not frame the focused land', error);
                 }
             }
             session = deps.attach(deps.map, {
                 L,
+                ...(percent === undefined ? {} : { percent }),
                 labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
                 sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison'),
                 // The main map's bottom corners sit under the tab bar; the labels ride the divider.
@@ -303,6 +345,8 @@
                 const record = w.getProposalByIdOrHash(id);
                 return record && record !== proposal ? record : null;
             },
+            // Keep framed land clear of the details panel (proposals/list-ui.js).
+            fitPadding: () => (typeof w.getProposalPanelFitPadding === 'function' ? w.getProposalPanelFitPadding(40) : null),
             buildingPool: () => (Array.isArray(w.buildingFeaturePool) ? w.buildingFeaturePool : []),
             buildingsShown: () => {
                 const box = w.document.getElementById('showBuildings');
@@ -329,5 +373,5 @@
         };
     }
 
-    return { canCompare, beforeLayers, footprintFeatures, ownerFocusParts, create, browserDependencies, PREVIOUS_STYLE, FOCUS_BEFORE_STYLE, FOCUS_AFTER_STYLE };
+    return { canCompare, beforeLayers, footprintFeatures, ownerFocusParts, focusBounds, create, browserDependencies, PREVIOUS_STYLE, FOCUS_BEFORE_STYLE, FOCUS_AFTER_STYLE };
 });

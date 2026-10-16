@@ -1764,11 +1764,35 @@ the tool card covered the land. **All fixed below.**
     `reparcel-button-controls` (node removal). They now expect the carried layout.
   - Reruns of those and of the new specs: 9 passed. No full suite was run.
 
+### Ownership and approval while creating (10-16, later)
+
+- **One form, three places.** The Approval tab's form moved to `proposals/approval-setup.js`: rights
+  import (file or registered source), the rule, the lens. The tabbed editor, the create dialog and
+  the land readjustment designer all use it.
+- **Designer:** an *Ownership and approval* row under the owner ledger shows a one-line summary
+  (or "Not set up yet — owners cannot accept until it is"). *Set up…* opens the form in a dialog.
+  - Applying it re-derives the owners from the rights file. An automatic layout is re-split for
+    them; hand-drawn plots keep their shape and lose owners who are no longer in the file.
+  - Done creates the proposal with the rights, rule and lens: one record, no replacement.
+- **Create dialog:** the same row for a readjustment, carried into the created proposal (and into an
+  editor draft behind the dialog).
+- **Form fixes found while testing:** a malformed fraction is reported without re-rendering, so
+  nothing typed is lost; only switching the policy type re-renders the form.
+- **Show on map** (an owner's deal) and the per-parcel Before / after now zoom to that land, keep
+  it clear of the details panel, and start the divider through its middle.
+
 ### Still open
 
-- Ownership and approval in the create flow (one editor rather than create-then-replace).
 - Real-wallet acceptance on 879 (Phantom accounts 2–5), then mint and anchor.
-- Before/after does not zoom to an owner's focus.
+- **Regime presets (§8), nothing built yet.** The rule model today is an owner-count test and an
+  area test, both required, each strict or inclusive.
+  - Closest: templates that only fill those numbers, with route, stage, version and source. That
+    covers Taiwan (≥ ½ owners and > ½ area) and South Korea (≥ ½ owners and ≥ ⅔ area).
+  - Small model change: allow a single test, for the area-only routes (Catalonia > ½, Madrid ≥ ½,
+    Colombia 51%).
+  - Larger: rights classes for Japan's association route (owners and leaseholders, combined area).
+    Authority conditions for statutory routes (Germany, Turkey, Gujarat). Allocation rules (BauGB
+    §58 caps, value-based distribution).
 - Touch drag of a whole segment is untested on a device (pointer events are wired).
 - Lineage for records published before this change stays unresolved where they named local ids.
 - Settlement, jurisdiction templates and per-owner land/cash choices are unchanged (§§20–21, §8).

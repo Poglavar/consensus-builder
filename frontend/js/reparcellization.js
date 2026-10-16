@@ -69,6 +69,7 @@
         totalArea: 0,
         ownerShares: [],
         approvalConfig: null,
+        approvalLens: [],
         savedOwnerShares: [],
         savedLedgerMetadata: null,
         parcelOwnerIndex: new Map(),
@@ -460,6 +461,8 @@
         state.reviewOwnerKey = '';
         state.shareDraftPending = false;
         state.approvalConfig = null;
+        state.approvalLens = [];
+        state.approvalRowEl = null;
         state.savedOwnerShares = [];
         state.savedLedgerMetadata = null;
         state.parcelOwnerIndex = new Map();
@@ -578,6 +581,11 @@
                             </div>
                             <div class="reparcel-legend-list" data-reparcel-owners-table></div>
                             <div class="reparcel-cashtotal" data-reparcel-cashtotal></div>
+                            <div class="reparcel-approval-setup" data-reparcel-approval>
+                                <h3 class="cb-kicker">${t('proposalDrafts.approval.title', 'Ownership and approval')}</h3>
+                                <p class="reparcel-approval-setup__summary" data-reparcel-approval-summary></p>
+                                <button type="button" class="btn btn-sm" data-reparcel-approval-setup>${t('proposalDrafts.approval.setUp', 'Set up…')}</button>
+                            </div>
                             <div class="reparcel-coverage" data-reparcel-coverage></div>
                             <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
@@ -628,6 +636,8 @@
             btn.addEventListener('click', () => setPlotsTab(btn.getAttribute('data-reparcel-plots-tab')));
         });
         state.coverageEl = root.querySelector('[data-reparcel-coverage]');
+        state.approvalRowEl = root.querySelector('[data-reparcel-approval]');
+        state.approvalRowEl?.querySelector('[data-reparcel-approval-setup]')?.addEventListener('click', openApprovalSetup);
         state.cashTotalEl = root.querySelector('[data-reparcel-cashtotal]');
         state.nodesBtn = root.querySelector('[data-reparcel-nodes]');
         state.undoEditBtn = root.querySelector('[data-reparcel-undo-edit]');
@@ -4136,6 +4146,86 @@
         };
     }
 
+    // ── Ownership and approval ───────────────────────────────────────────
+    // Who owns which parcel (an uploaded rights file), the rule that passes the proposal and the lens
+    // that attests owners. Set here while designing, so a readjustment is created ready for owners to
+    // accept. The form is the editor's Approval tab (proposals/approval-setup.js).
+
+    function updateApprovalRow() {
+        const row = state.approvalRowEl;
+        const setup = window.ProposalApprovalSetup;
+        if (!row || !setup) return;
+        row.hidden = !!state.sitePool;
+        row.querySelector('[data-reparcel-approval-summary]').textContent = setup.summaryText(state.approvalConfig, state.approvalLens);
+        row.querySelector('[data-reparcel-approval-setup]').textContent = state.approvalConfig?.rights
+            ? t('proposalDrafts.approval.change', 'Change…')
+            : t('proposalDrafts.approval.setUp', 'Set up…');
+    }
+
+    function createDialogBehind() {
+        return !!document.querySelector('.create-proposal-modal');
+    }
+
+    function approvalCadastreIds() {
+        const ids = (state.selection?.ids || []).map(String);
+        return [...new Set(ids.map(id => state.cadastreIdsByLiveParcel.get(id) || cadastralIdentityForLiveParcel(id, state.selection)).filter(Boolean).map(String))];
+    }
+
+    function openApprovalSetup() {
+        window.ProposalApprovalSetup?.openDialog({
+            approvalConfig: state.approvalConfig,
+            lens: state.approvalLens,
+            cadastreParcelIds: approvalCadastreIds(),
+            onApply: setup => { applyApprovalSetup(setup).catch(error => console.error('[reparcellization] approval setup failed', error)); }
+        });
+    }
+
+    // The rights file says who the owners are, so applying it re-derives them. An automatic layout
+    // is re-split for the new owners; hand-drawn plots keep their shape, and a plot whose owner is
+    // no longer one of them goes back to unassigned for the author to reassign.
+    async function applyApprovalSetup(setup) {
+        state.approvalConfig = setup.approvalConfig;
+        state.approvalLens = setup.lens;
+        // The create dialog (when one is behind this editor) and the design draft carry the same
+        // setup (dialog-create.js, create.js). Without a dialog nothing is left pending for the next.
+        if (createDialogBehind()) {
+            window.pendingProposalApprovalSetup = { approvalConfig: setup.approvalConfig, lens: setup.lens };
+            if (typeof mountReparcellizationApprovalRow === 'function') mountReparcellizationApprovalRow(document.querySelector('.create-proposal-modal'));
+        }
+        const draft = window.getActiveProposalDesignDraft?.();
+        if (draft && window.proposalDraftStore?.getDraft?.(draft.id)) {
+            window.proposalDraftStore.updateDraft(draft.id, { fields: { approvalConfig: setup.approvalConfig, lens: setup.lens } }, { coalesceKey: 'reparcel-approval' });
+        }
+        const keysOf = shares => shares.filter(entry => !isNoOwnerEntry(entry)).map(entry => entry.ownerKey).sort().join('|');
+        const before = keysOf(state.ownerShares);
+        state.ownerShares = await buildOwnerShares(state.selection);
+        const changed = keysOf(state.ownerShares) !== before;
+        if (changed) {
+            if (state.algorithm === 'sweep-line') {
+                state.slices = computeSweepSlices();
+            } else {
+                const known = new Set(state.ownerShares.map(entry => entry.ownerKey));
+                state.slices = state.slices.map(slice => {
+                    const owners = Array.isArray(slice.owners) ? slice.owners : [];
+                    if (!owners.length || owners.every(owner => known.has(owner.ownerKey))) return slice;
+                    return createUnassignedPlot(slice.geometry, slice.source);
+                });
+            }
+            // The undo history describes owners that no longer exist.
+            if (state.historyCtl) state.historyCtl.clear();
+        }
+        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
+        updateLegend(state.ownerShares);
+        drawPreview();
+        updateCommitState();
+        if (state.nodeEdit.active) renderNodeHandles();
+        updateApprovalRow();
+        setStatus(changed
+            ? t('reparcellization.modal.status.ownersFromRights', 'The owners now come from the rights file: {{count}} owner(s). Check each plot\'s owners.', {
+                count: state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length })
+            : t('reparcellization.modal.status.approvalSaved', 'Ownership and approval saved.'), 'info');
+    }
+
     function persistResult() {
         if (!state.slices.length || !evaluatePlanCompleteness().ok) { updateCommitState(); return false; }
         const payload = currentPlan();
@@ -4790,7 +4880,11 @@
             : null;
         let planPool = null;
         state.sitePool = null;
-        state.approvalConfig = options.approvalConfig || window.getActiveProposalDesignDraft?.()?.fields?.approvalConfig || null;
+        const pendingSetup = createDialogBehind() ? window.pendingProposalApprovalSetup : null;
+        state.approvalConfig = options.approvalConfig || pendingSetup?.approvalConfig
+            || window.getActiveProposalDesignDraft?.()?.fields?.approvalConfig || null;
+        state.approvalLens = options.lens || pendingSetup?.lens
+            || window.getActiveProposalDesignDraft?.()?.fields?.lens || [];
         const pendingPlan = window.pendingReparcellizationPlan || {};
         state.savedOwnerShares = JSON.parse(JSON.stringify(pendingPlan.ownerShares || []));
         state.savedLedgerMetadata = Object.fromEntries(['contributionBasis', 'totalValue', 'poolUnitValue']
@@ -4961,6 +5055,7 @@
             return false;
         }
         await refreshPreview();
+        updateApprovalRow();
         // Manual IS the node/edge system — there are not two manual modes, one with handles and
         // one without. Draw-plot and split-with-line are tools used inside it.
         // The handles are the editor: they are on from the start in every layout, so a boundary

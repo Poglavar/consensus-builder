@@ -460,6 +460,8 @@ function refreshReparcellizationCashTerms(modal) {
         input.closest('.form-group')?.appendChild(hint);
     }
     input.setAttribute('aria-describedby', 'reparcel-cash-terms');
+    // The readjustment's plan has just arrived or changed: its approval row follows it.
+    mountReparcellizationApprovalRow(modal);
 }
 
 // Agreements are a proposal decision, after the geometry editor has finished its layout.
@@ -522,6 +524,75 @@ function mountReparcellizationAgreementOptions(modal) {
         'Cash follows each owner’s compensation in the land readjustment ledger. Review each agreement separately before publishing it.');
     fieldset.append(hint, details);
     modal.querySelector('#proposalOptionsSection').before(fieldset);
+}
+
+// The cadastral parcels a readjustment in this dialog declares: the site's, or the selection's
+// live pieces projected to the cadastre (the same rule createProposal stamps).
+function pendingReadjustmentCadastreIds() {
+    const site = window.pendingProposalSiteContext;
+    if (site?.site && Array.isArray(site.cadastreParcelIds)) return site.cadastreParcelIds.map(String);
+    const plan = window.pendingReparcellizationPlan;
+    const ids = Array.isArray(plan?.parcelIds) && plan.parcelIds.length ? plan.parcelIds
+        : (typeof getCurrentParcelSelectionContext === 'function' ? getCurrentParcelSelectionContext().ids || [] : []);
+    try { return window.LiveParcelFabric.cadastreIdsForParcelIds(ids.map(String)); } catch (_) { return ids.map(String); }
+}
+
+// What the dialog will create the readjustment with: the row's own edit, else the editor draft's.
+function pendingReadjustmentApproval() {
+    if (window.pendingProposalApprovalSetup) return window.pendingProposalApprovalSetup;
+    const draft = window.pendingProposalDraftId && window.proposalDraftStore?.getDraft?.(window.pendingProposalDraftId);
+    return { approvalConfig: draft?.fields?.approvalConfig || null, lens: Array.isArray(draft?.fields?.lens) ? draft.fields.lens : [] };
+}
+
+// "Ownership and approval" for a readjustment being created: who owns which parcel, the rule that
+// passes it and the lens that attests owners, set here rather than through a replacement proposal
+// afterwards. The form is the editor's Approval tab (proposals/approval-setup.js).
+function mountReparcellizationApprovalRow(modal) {
+    if (!modal || !window.pendingReparcellizationPlan || !window.ProposalApprovalSetup) return;
+    const t = getProposalI18nHelper();
+    let row = modal.querySelector('[data-reparcel-approval-row]');
+    if (!row) {
+        row = document.createElement('div');
+        row.className = 'form-group reparcel-approval-row';
+        row.dataset.reparcelApprovalRow = '';
+        const title = document.createElement('span');
+        title.className = 'reparcel-approval-row__title';
+        title.textContent = t('proposalDrafts.approval.title', 'Ownership and approval');
+        const summary = document.createElement('p');
+        summary.className = 'reparcel-agreement-hint';
+        summary.dataset.reparcelApprovalSummary = '';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-sm';
+        button.dataset.reparcelApprovalSetup = '';
+        button.addEventListener('click', () => openReparcellizationApprovalSetup(modal));
+        row.append(title, summary, button);
+        const anchor = modal.querySelector('.reparcel-agreement-options') || modal.querySelector('#proposalOptionsSection');
+        if (!anchor) return;
+        anchor.before(row);
+    }
+    const { approvalConfig, lens } = pendingReadjustmentApproval();
+    row.querySelector('[data-reparcel-approval-summary]').textContent = window.ProposalApprovalSetup.summaryText(approvalConfig, lens);
+    row.querySelector('[data-reparcel-approval-setup]').textContent = approvalConfig?.rights
+        ? t('proposalDrafts.approval.change', 'Change…')
+        : t('proposalDrafts.approval.setUp', 'Set up…');
+}
+
+function openReparcellizationApprovalSetup(modal) {
+    const { approvalConfig, lens } = pendingReadjustmentApproval();
+    window.ProposalApprovalSetup.openDialog({
+        approvalConfig, lens,
+        cadastreParcelIds: pendingReadjustmentCadastreIds(),
+        onApply: setup => {
+            window.pendingProposalApprovalSetup = setup;
+            // An editor draft behind this dialog keeps the same setup, so reopening it agrees.
+            const draftId = window.pendingProposalDraftId;
+            if (draftId && window.proposalDraftStore?.getDraft?.(draftId)) {
+                window.proposalDraftStore.updateDraft(draftId, { fields: { approvalConfig: setup.approvalConfig, lens: setup.lens } }, { coalesceKey: 'create-dialog-approval' });
+            }
+            mountReparcellizationApprovalRow(modal);
+        }
+    });
 }
 
 function showProposalDialog(overrides = null) {
@@ -1545,6 +1616,7 @@ function showProposalDialog(overrides = null) {
 
     refreshReparcellizationCashTerms(modal);
     mountReparcellizationAgreementOptions(modal);
+    mountReparcellizationApprovalRow(modal);
 
     // Focus the default Land use radio (not a text input) to avoid triggering mobile keyboards
     const defaultLandUseRadio = modal.querySelector('input[name="proposalLandUse"]:checked')
@@ -1679,6 +1751,7 @@ function finishProposalDialogClose() {
         }
         window.pendingProposalDraftId = null;
         window.pendingProposalReplacementSource = null;
+        window.pendingProposalApprovalSetup = null;
     }
 
     // If this was a road/track proposal, the multi-parcel selection was seeded just for the modal;

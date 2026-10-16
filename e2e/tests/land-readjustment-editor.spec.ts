@@ -3,7 +3,7 @@
 // one); undo gives the automatic layout back and redo replays the edit; switching to Draw freely keeps
 // the plots and owners that were on the map.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
 import type { Page } from '@playwright/test';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -114,4 +114,50 @@ test('a click on a boundary offers to erase it, and Delete removes a node from i
   await page.keyboard.press('Delete');
   await expect(popup).toHaveCount(0);
   await expect.poll(() => plotRows(page)).not.toEqual(before);
+});
+
+// Ownership and approval is part of designing the readjustment: set up in the designer, it is on
+// the proposal Done creates, with no replacement proposal afterwards.
+test('ownership and approval set up in the designer lands on the created proposal', async ({ mockApi: page }) => {
+  test.setTimeout(90_000);
+  const modal = await openReadjustment(page);
+  const row = modal.locator('[data-reparcel-approval]');
+  await expect(row).toContainText('Not set up yet');
+  await row.locator('[data-reparcel-approval-setup]').click();
+  const dialog = page.locator('.approval-setup-dialog');
+  await expect(dialog).toBeVisible();
+  const rights = {
+    schema: 'parcel-rights/v1',
+    source: { provider: 'upload', reference: 'e2e-register' },
+    parcels: [{ parcelId: PARCEL_ID, complete: true, owners: [{ ownerId: 'owner-a', share: '1/2' }, { ownerId: 'owner-b', share: '1/2' }] }]
+  };
+  await dialog.locator('[data-approval-file]').setInputFiles({ name: 'rights.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(rights)) });
+  await dialog.locator('[data-editor-action="approval-import"]').click();
+  await expect(dialog.locator('.proposal-editor-approval-status')).toContainText('Ownership data is complete');
+  await dialog.locator('[data-approval-policy-type]').selectOption('threshold');
+  await dialog.locator('[data-approval-fraction="area"]').fill('7/1x');
+  await dialog.locator('[data-approval-lens]').fill('e2e-lens-member');
+  // A malformed fraction is reported without losing what was typed.
+  await dialog.locator('[data-action-id="apply"]').click();
+  await expect(dialog.locator('[data-approval-apply-error]')).toContainText('fraction');
+  await expect(dialog.locator('[data-approval-lens]')).toHaveValue('e2e-lens-member');
+  await dialog.locator('[data-approval-fraction="area"]').fill('7/10');
+  await dialog.locator('[data-action-id="apply"]').click();
+  await expect(dialog).toHaveCount(0);
+  await expect(row).toContainText('Rights for 1 parcel(s), 2 owner(s)');
+  await expect(row).toContainText('area 7/10');
+  // The owners now come from the rights file.
+  await expect.poll(async () => (await plotRows(page)).join(' ')).toMatch(/Owner A.*Owner B|Owner B.*Owner A/);
+
+  const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
+  await modal.locator('[data-reparcel-commit]').click();
+  await expect(modal).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(before + 1);
+  const created = await page.evaluate(() => {
+    const all = (window as any).proposalStorage.getAllProposals();
+    const p = all[all.length - 1];
+    return { rights: p.approvalConfig?.rights?.parcels?.length, policy: p.approvalConfig?.policy?.type, area: p.approvalConfig?.policy?.area,
+      lens: (p.lens || []).map((entry: any) => (typeof entry === 'string' ? entry : entry.address)) };
+  });
+  expect(created).toEqual({ rights: 1, policy: 'threshold', area: { numerator: 7, denominator: 10, strict: false }, lens: ['e2e-lens-member'] });
 });
