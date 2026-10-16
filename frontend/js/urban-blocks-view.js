@@ -189,6 +189,14 @@
                     win.showEphemeralMessage(t('linkMissing', 'This block’s outline has changed or is unavailable. Select a block on the map.'));
                 }
             }
+            if (selected) {
+                // A block wholly inside the detected area that is gone was split or merged, by a
+                // street proposed through it or one withdrawn: it must stop being selectable.
+                const current = state.blocks.features.find(block => block.id === selected.id);
+                const [w, s, e, n] = win.turf.bbox(selected), [cw, cs, ce, cn] = state.coverage;
+                if (current) { selected = current; selectedRoads = state.roads; }
+                else if (w > cw && s > cs && e < ce && n < cn) { clearSelection(); showList(); }
+            }
         } else if (!['roads', 'blocks'].includes(state.phase)) {
             // Inspection owns a separate polygon. Framing a large block can cross the loading
             // zoom limit or start another road request without losing the block being inspected.
@@ -199,7 +207,25 @@
         renderList(state, messages[state.phase]);
     }
 
-    const controller = win.UrbanBlocksController.create({ fetchRoads, detect, onChange: render });
+    // Applied road proposals are streets too: a street proposed through a block splits it. Tracks
+    // and designations (no centreline) are not streets, and bridges and tunnels do not split.
+    let streetsKey = '';
+    function proposedStreets() {
+        const proposals = win.proposalStorage?.getAllProposals?.() || [];
+        return proposals.filter(proposal => win.isAppliedCorridorProposal?.(proposal)
+            && !win.corridorIsTrack?.(proposal.roadProposal.definition))
+            .flatMap(proposal => win.corridorCenterlineOf(proposal.roadProposal.definition).flatMap(win.UrbanBlocksModel.groundRuns));
+    }
+    function extendRoads(roads) {
+        const streets = proposedStreets();
+        streetsKey = JSON.stringify(streets);
+        return win.UrbanBlocksModel.withProposedStreets(roads, streets);
+    }
+    function proposedStreetsChanged() {
+        if (JSON.stringify(proposedStreets()) !== streetsKey) controller.redetect();
+    }
+
+    const controller = win.UrbanBlocksController.create({ fetchRoads, detect, onChange: render, extendRoads });
     function viewport() {
         const b = win.map.getBounds();
         return { bbox: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()], zoom: win.map.getZoom() };
@@ -376,6 +402,11 @@
         const note = doc.createElement('p'); note.className = 'urban-block-info-note';
         note.textContent = t('measurementNote', 'Measured between OSM road centrelines, including street space. Walking time is a perimeter estimate, not a routed walk.');
         content.append(note);
+        if (p.proposedStreets) {
+            const proposed = doc.createElement('p'); proposed.className = 'urban-block-info-note';
+            proposed.textContent = t('proposedStreetsNote', 'Bounded in part by streets from applied proposals.');
+            content.append(proposed);
+        }
         return content;
     }
 
@@ -466,6 +497,7 @@
         resizeObserver.observe(el('urban-block-panel'));
         resizeObserver.observe(win.map.getContainer());
         win.addEventListener('parcelFabricCommitted', updateParcelCount);
+        win.addEventListener('appliedCorridorsChanged', proposedStreetsChanged);
         win.addEventListener('hashchange', followSharedLayout);
         win.addEventListener('cityChanged', () => {
             if (linkedBlock?.city && linkedBlock.city !== win.CityConfigManager.getCurrentCityId()) {

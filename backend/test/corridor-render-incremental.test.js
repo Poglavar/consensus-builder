@@ -100,7 +100,9 @@ function environment(proposals) {
         calculateRoadPolygon: () => [[0, 0], [0, 1], [1, 1]],
         // every builder is stubbed, so any frame object serves (corridor-footprint.js frameForDefinition)
         __corridorFootprint: { frameForDefinition: () => ({ latLngToMetric: (lat, lng) => [lng, lat], metricToLatLng: (x, y) => [y, x] }) },
-        requestAnimationFrame: callback => callback()
+        requestAnimationFrame: callback => callback(),
+        CustomEvent,
+        dispatchEvent: vi.fn()
     };
     context.window = context;
     context.globalThis = context;
@@ -131,6 +133,8 @@ describe('keyed applied-corridor render', () => {
         env.context.refreshAppliedCorridorStrips();
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(2);
         expect(env.buildCorridorJunctionSet).toHaveBeenCalledTimes(1);
+        // The street network changed once (the first draw), so the block view hears of it once.
+        expect(env.context.dispatchEvent.mock.calls.map(([event]) => event.type)).toEqual(['appliedCorridorsChanged']);
         expect(env.state.byId.get('a').group).toBe(groupA);
         expect(env.state.junctions.get('a|b@1.000000,1.000000')).toBe(junction);
     });
@@ -170,8 +174,10 @@ describe('keyed applied-corridor render', () => {
         const groupC = env.state.byId.get('c').group;
         proposals[2].applied = false;
         env.buildCorridorStrips.mockClear();
+        env.context.dispatchEvent.mockClear();
         env.context.refreshAppliedCorridorStrips();
         expect(env.buildCorridorStrips).not.toHaveBeenCalled();
+        expect(env.context.dispatchEvent).toHaveBeenCalledTimes(1);
         expect(env.state.byId.has('c')).toBe(false);
         expect(env.state.root.hasLayer(groupC)).toBe(false);
         expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000']);

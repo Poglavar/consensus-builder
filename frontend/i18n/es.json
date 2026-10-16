@@ -39,6 +39,7 @@
         "compactness": "Compacidad",
         "parcels": "Parcelas cargadas",
         "measurementNote": "Medido entre los ejes de las calles OSM, incluido el espacio vial. El tiempo a pie es una estimación del perímetro, no una ruta calculada.",
+        "proposedStreetsNote": "Delimitada en parte por calles de propuestas aplicadas.",
         "rateLimited": "OSM está ocupado. Reintenta en {{seconds}} segundos.",
         "loadError": "No se pudieron cargar las calles OSM (HTTP {{status}}). Reintenta.",
         "invalidData": "La fuente de calles devolvió datos no válidos.",

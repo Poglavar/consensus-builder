@@ -39,6 +39,7 @@
         "compactness": "Compactness",
         "parcels": "Loaded parcels",
         "measurementNote": "Measured between OSM road centrelines, including street space. Walking time is a perimeter estimate, not a routed walk.",
+        "proposedStreetsNote": "Bounded in part by streets from applied proposals.",
         "rateLimited": "OSM is busy. Retry in {{seconds}} seconds.",
         "loadError": "Could not load OSM roads (HTTP {{status}}). Please retry.",
         "invalidData": "The road source returned invalid data.",

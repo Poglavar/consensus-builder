@@ -39,6 +39,7 @@
         "compactness": "Kompaktnost",
         "parcels": "Učitane čestice",
         "measurementNote": "Mjereno između središnjih linija OSM cesta, uključujući cestovni prostor. Vrijeme hoda procjena je prema opsegu, a ne izračun pješačke rute.",
+        "proposedStreetsNote": "Dijelom omeđen ulicama iz primijenjenih prijedloga.",
         "rateLimited": "OSM je zauzet. Pokušajte ponovno za {{seconds}} sekundi.",
         "loadError": "OSM ceste nije moguće učitati (HTTP {{status}}). Pokušajte ponovno.",
         "invalidData": "Izvor cesta vratio je neispravne podatke.",

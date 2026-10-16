@@ -1225,6 +1225,8 @@ function refreshAppliedCorridorStrips() {
         try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
         // Same for the paved/green surround of a freeform building proposal, which is cut the same way.
         try { if (typeof window.updateBuildingGroundLayer === 'function') window.updateBuildingGroundLayer(); } catch (_) { }
+        // Layers built on the street network itself (the OSM block view) re-form from it.
+        window.dispatchEvent(new CustomEvent('appliedCorridorsChanged'));
     }
     renderSelectedCorridorSegmentHighlight();
 
