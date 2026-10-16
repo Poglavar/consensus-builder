@@ -112,7 +112,9 @@
         const viewport = viewportHeight(win);
         let occupied = 0;
         if (win.matchMedia?.('(max-width: 767.98px)').matches) {
-            doc.querySelectorAll(PANEL_SELECTOR).forEach(panel => {
+            // The compact proposal card (not a draggable sheet, but a bottom sheet all the same).
+            const card = doc.querySelector?.('#proposal-details-panel.is-minimized');
+            [...doc.querySelectorAll(PANEL_SELECTOR), ...(card ? [card] : [])].forEach(panel => {
                 const box = panel.getBoundingClientRect();
                 if (box.height > 0) occupied = Math.max(occupied, occupiedBottom({ viewportHeight: viewport, top: box.top }));
             });
@@ -227,7 +229,10 @@
             const desired = Number.parseFloat(panel.style.getPropertyValue('--mobile-dock-sheet-height'));
             if (Number.isFinite(desired)) setHeight(win, panel, desired);
         });
-        const attachToolbar = () => observeOccupancy(win, win.document.getElementById(TOOLBAR_ID));
+        const attachToolbar = () => {
+            observeOccupancy(win, win.document.getElementById(TOOLBAR_ID));
+            observeOccupancy(win, win.document.getElementById('proposal-details-panel'));
+        };
         const onResize = () => { reclamp(); reportOccupancy(win); };
         if (win.document.readyState === 'loading') win.document.addEventListener('DOMContentLoaded', () => { attach(); attachToolbar(); }, { once: true });
         else { attach(); attachToolbar(); }

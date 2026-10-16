@@ -117,6 +117,17 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(indexHtml).toMatch(/data-i18n-key="panel\.road\.finishButtonShort">Finish<\/button>/);
     });
 
+    it('docks the compact proposal card on the bar as a glass sheet with a short centred header', () => {
+        const [block] = mediaBlocksContaining(proposalDetailsCss, '(max-width: 767.98px)', '#proposal-details-panel.right-dock-panel.is-minimized');
+        const card = ruleBody(block, '#proposal-details-panel\\.right-dock-panel\\.is-minimized');
+        expect(card).toMatch(/inset:\s*auto 0 var\(--map-visible-bottom\) 0/);
+        expect(card).toMatch(/background:\s*var\(--cb-glass-sheet\)/);
+        expect(ruleBody(block, '#proposal-details-panel\\.is-minimized \\.panel-header')).toMatch(/align-items:\s*center/);
+        // every button has a border or a colour: the quiet role is outlined with the faint line
+        expect(ruleBody(primitivesCss, '\\.btn-quiet')).toMatch(/border-color:\s*var\(--cb-line\)/);
+        expect(ruleBody(primitivesCss, '\\.btn-quiet')).not.toMatch(/border-color:\s*transparent/);
+    });
+
     it('keeps the credits in the map on the open sheet, one size smaller', () => {
         const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '#map-container .leaflet-bottom');
         expect(ruleBody(block, '#map-container \\.leaflet-bottom')).toMatch(/bottom:\s*var\(--map-sheet-occupied, var\(--map-visible-bottom\)\)/);
@@ -146,7 +157,7 @@ describe('proposal details and compact card on phones', () => {
         expect(reader).toMatch(/inset:\s*0/);
         expect(reader).toMatch(/height:\s*100dvh/);
         expect(mobile).toContain('#proposal-details-panel.right-dock-panel.is-minimized');
-        expect(mobile).toMatch(/inset:\s*auto\s+0\s+var\(--map-shell-bottom-clearance\)\s+0/);
+        expect(mobile).toMatch(/inset:\s*auto\s+0\s+var\(--map-visible-bottom\)\s+0/);
         expect(mobile).not.toMatch(/\.proposal-details-toggle[^}]*display:\s*none/);
         const [desktop] = mediaBlocksContaining(utilitiesCss, '(min-width: 768px)', '#proposal-details-panel.is-minimized');
         expect(desktop).toMatch(/bottom:\s*auto\s*!important/);

@@ -59,7 +59,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   counts in that test may only go down.
 - **Buttons** are one family, `.btn`, with five roles and a surface has one primary: `btn`
   (secondary, outlined) · `btn btn-primary` (filled) · `btn btn-success` (the filled affirmative:
-  Accept, Apply to map) · `btn btn-quiet` (text only) · `btn btn-danger` (outlined red). Modifiers,
+  Accept, Apply to map) · `btn btn-quiet` (tertiary: no fill, the faint line as border; no button is borderless) · `btn btn-danger` (outlined red). Modifiers,
   orthogonal to the role: `btn-sm` (small), `btn-block` (full-width row), `btn-icon` (square,
   icon only, with an `aria-label`). The selected state of any toggle is `aria-pressed="true"`,
   never a class, and has one look (primary-soft fill, primary border). The close control is

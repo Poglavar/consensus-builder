@@ -139,7 +139,8 @@
    .btn          secondary: outlined, on the surface (the default)
    .btn-primary  the one main action of a surface (filled)
    .btn-success  the filled affirmative (Accept, Apply to map)
-   .btn-quiet    text only, for inline and tertiary actions
+   .btn-quiet    tertiary: no fill, the faint line as its border (every button has a border or a
+                 colour, user rule 2026-10-16)
    .btn-danger   destructive: outlined red
    .btn-sm       the small size · .btn-block the full-width row · .btn-icon a square icon-only button
    [aria-pressed="true"]  the one selected look of every toggle: primary-soft fill, primary border.
@@ -215,7 +216,7 @@
 }
 
 .btn-quiet {
-    border-color: transparent;
+    border-color: var(--cb-line);
     background-color: transparent;
 }
 
