@@ -68,7 +68,6 @@
         if (root.roadDrawingMode && mode !== '2d') return false;
         return !root.OnMapEditor || root.OnMapEditor.allowsMode(mode);
     }
-    let requestGeneration = 0;
     const controller = root.__mapModeTransition.createController({
         loadModel: root.__ensure3DModeStack,
         loadPhoto: root.__ensurePhotorealMode,
@@ -76,31 +75,17 @@
         leaveModel: () => root.__threeModeDriver?.exit(),
         enterPhoto: options => root.PhotorealMode.activate(options),
         leavePhoto: options => root.PhotorealMode?.deactivate(options),
-        captureContext: () => {
-            const center = root.map?.getCenter?.();
-            return center ? { center: [center.lat, center.lng], zoom: root.map.getZoom() } : null;
-        },
-        restoreContext: context => root.map?.setView?.(context.center, context.zoom, { animate: false }),
-        onEntered: () => root.__threeModeDriver?.commit?.(),
         onChange: paint,
         onError: (error, mode) => {
-            const failedGeneration = requestGeneration;
-            console.error('[map-mode] Mode transition failed', { mode, error });
-            const key = 'mapShell.renderFallback';
+            console.error(`[${new Date().toISOString()}] [map-mode] Mode transition failed`, { mode, error });
+            const key = 'mapShell.viewFailed';
             const translated = root.i18n?.t?.(key);
-            const message = translated && translated !== key ? translated
-                : 'This view could not start. WebGL may be unavailable in this browser. Your 2D work is kept. Enable hardware acceleration or try another WebGL-capable browser, then retry.';
-            // Run after teardown so a loading status cannot erase the recovery instructions.
-            root.setTimeout(() => {
-                if (failedGeneration !== requestGeneration) return;
-                root.updateStatus?.(message);
-                root.showEphemeralMessage?.(message, 12000, 'warning');
-            }, 0);
+            const message = translated && translated !== key ? translated : 'This view could not start. You are back on the 2D map.';
+            root.showEphemeralMessage?.(message, 8000, 'warning');
         }
     });
     root.requestMapMode = (mode, options) => {
         if (!canRequestMapMode(mode)) return Promise.resolve(false);
-        requestGeneration++;
         return controller.request(mode, options);
     };
     root.enterThreeMode = options => root.requestMapMode('model', options);

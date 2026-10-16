@@ -488,9 +488,6 @@
         "notFound": "Ovaj predlog više nije dostupan. Osvežite listu predloga i pokušajte ponovo."
     },
     "proposalDrafts": {
-        "variantLabel": "Varijanta {{id}}",
-        "variantOf": "Varijanta predloga",
-        "variantSaved": "Nova varijanta je sačuvana. Original ostaje sačuvan; Primenjeno označava dizajn na mapi.",
         "title": "Nacrti",
         "entryAria": "Otvori {{count}} sačuvanih nacrta predloga",
         "editorAria": "Uređivač nacrta predloga",
@@ -664,7 +661,6 @@
             "handoffFailedReason": "Uređivač dizajna nije mogao da se otvori: {{reason}}. Lokacija nije promenjena, a nacrt dizajna je sačuvan lokalno."
         },
         "placement": {
-            "blockUnavailable": "Blok zahteva lokaciju koju server može da proveri. Ovu lokaciju nije bilo moguće proveriti pa uređivač nije otvoren. Izbor je sačuvan. Pokušaj sa podržanom lokacijom poput Zagreba ili ponovi pokušaj ako servis podataka nije dostupan.",
             "fixedSite": "Ova vrsta predloga vezana je za izvornu lokaciju i ne može da se premesti.",
             "existingBuilding": "Predlozi za postojeće zgrade zadržavaju tlocrt vezan za izvornu zgradu i ne mogu slobodno da se premeštaju.",
             "invalidSite": "Za slobodno postavljanje potrebna je važeća poligonska lokacija.",
@@ -1169,7 +1165,7 @@
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u izabrani blok",
-            "singleBuilding": "Zgrada slobodnog oblika",
+            "singleBuilding": "Jedna zgrada",
             "parkButton": "Park",
             "squareButton": "Trg",
             "listTitle": "Lista blokova",
@@ -1408,8 +1404,8 @@
                 "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
-                "single": "Zgrada slobodnog oblika",
-                "reparcel": "Preraspodela zemljišta",
+                "single": "Slobodna zgrada",
+                "reparcel": "Reparcelacija",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
@@ -2074,8 +2070,6 @@
             }
         },
         "road": {
-            "curveTooTight": "Krivina pruge: poluprečnik kroz tri tačke {{measured}} m; potrebno je {{minimum}} m. Pomeri krivinu ili nacrtaj blažu trasu. Crtež je sačuvan.",
-            "curveAdjusted": "Tačka je prilagođena proveri poluprečnika kroz tri tačke od {{radius}} m.",
             "title": "Nacrtaj put",
             "titleTrack": "Nacrtaj prugu",
             "crossSectionButton": "Uredi poprečni presek",
@@ -2237,9 +2231,9 @@
         },
         "track": {
             "speedPickerTitle": "Izaberi brzinu pruge",
-            "speedPickerDescription": "Izaberi projektnu brzinu za proveru krivina kroz tri tačke. Trasa je šematska: ova provera ne potvrđuje neprekidnu železničku krivinu. Pritisni Enter za izabranu brzinu.",
+            "speedPickerDescription": "Izaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš sa podrazumevanom selekcijom.",
             "startDrawing": "Počni crtanje",
-            "minRadius": "Najmanji poluprečnik kroz tri tačke: {{radius}} m",
+            "minRadius": "Minimalni radijus zakrivljenosti {{radius}} m",
             "cancel": "Otkaži",
             "widthLabel": "Širina pruge:"
         },
@@ -2270,7 +2264,7 @@
                     "eyebrow": "Od ideje do predloga",
                     "title": "Učinite promenu vidljivom",
                     "body": "Pretvorite ideju u predlog: preoblikujte parcele, skicirajte ulice i parkove ili dodajte zgrade. Primena nacrta pokazuje kako menja mapu.",
-                    "hint": "Dodirni zemljište i izaberi Predloži ovde ili koristi Dizajn za crtanje lokacije. Zatim uporedi predloge na mapi."
+                    "hint": "Počnite u Alatima, pa uporedite predloge na mapi."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -2332,7 +2326,7 @@
             "cancel": "Otkaži"
         },
         "singleBuilding": {
-            "title": "Zgrada slobodnog oblika",
+            "title": "Slobodna forma",
             "defaultName": "Zgrada {{n}}",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Izaberi zgradu",
@@ -2763,14 +2757,14 @@
                         "station": "Stanica javnog prevoza",
                         "roadTrack": "Put/Pruga",
                         "road-track": "Put/Pruga",
-                        "buildings": "Blok",
-                        "single": "Zgrada slobodnog oblika",
+                        "buildings": "Zgrade",
+                        "single": "Jedna zgrada",
                         "park": "Park",
                         "square": "Trg",
                         "lake": "Jezero",
-                        "urbanRule": "Blok",
-                        "urban-rule": "Blok",
-                        "reparcellization": "Preraspodela zemljišta",
+                        "urbanRule": "Urbano pravilo",
+                        "urban-rule": "Urbano pravilo",
+                        "reparcellization": "Reparcelacija",
                         "row": "Niz",
                         "other": "Ostalo"
                     }
@@ -2812,14 +2806,14 @@
                     "road-track": "Put/Pruga",
                     "road": "Put",
                     "track": "Pruga",
-                    "buildings": "Blok",
-                    "single": "Zgrada slobodnog oblika",
+                    "buildings": "Zgrade",
+                    "single": "Jedna zgrada",
                     "row": "Niz",
                     "park": "Park",
                     "square": "Trg",
                     "lake": "Jezero",
-                    "urban-rule": "Blok",
-                    "reparcellization": "Preraspodela zemljišta",
+                    "urban-rule": "Urbano pravilo",
+                    "reparcellization": "Reparcelacija",
                     "decide-later": "Odluči kasnije",
                     "parcelBased": "Na nivou parcele",
                     "other": "Ostalo"
@@ -3241,21 +3235,21 @@
             "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
                 "purchase": "Kupovina",
-                "urbanRule": "Blok",
+                "urbanRule": "Urbanističko pravilo",
                 "reparcellization": "Reparcelacija",
                 "jointInvestment": "Zajednička investicija"
             },
             "goalOptions": {
                 "asIs": "Bez promene",
-                "buildings": "Blok",
-                "single": "Zgrada slobodnog oblika",
+                "buildings": "Zgrade",
+                "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
                 "roadTrack": "Put/Pruga",
                 "decideLater": "Spoji",
-                "urbanRule": "Blok",
-                "reparcellization": "Preraspodela zemljišta",
+                "urbanRule": "Urbano pravilo",
+                "reparcellization": "Razdeli",
                 "ownershipTransfer": "Prenos vlasništva"
             },
             "goalSections": {
@@ -3558,7 +3552,7 @@
     "blockify": {
         "modal": {
             "mapHint": "Uredite parcele i granice na mapi; u panelu pregledajte vlasništvo i udele.",
-            "title": "Blok",
+            "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify modal",
             "generating": "Generišem zgradu…",
             "done": "Gotovo",
@@ -3790,7 +3784,6 @@
     },
     "reparcellization": {
         "modal": {
-            "publicAllocation": "Dodela za javnu namenu (nije upisani vlasnik)",
             "mapHint": "Uredite granice parcela na mapi; ovde pregledajte vlasništvo i udele.",
             "savedRecipientUnresolved": "Sačuvani primalac izlazne parcele nema odgovarajući doprinos u trenutnim ulazima.",
             "ownerReview": "Pregled vlasnika",
@@ -3813,7 +3806,7 @@
             "applyShares": "Primeni udele",
             "sharesTotal": "Ukupno: {{total}}%",
             "sharesInvalid": "Svaki udeo mora biti pozitivan, a zbir mora iznositi 100%.",
-            "title": "Preraspodela zemljišta",
+            "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
@@ -5445,8 +5438,6 @@
         }
     },
     "structureEditor": {
-    "saveVariant": "Sačuvaj kao varijantu",
-    "variantHint": "Čuvanje pravi novu varijantu i zadržava original. Nova varijanta se primenjuje ako može da se postavi.",
     "titleLake": "Uređivanje granice jezera",
     "instructionsLake": "Prevucite tačke granice da promenite oblik jezera. Dodirnite ivicu da dodate tačku.",
     "lakeBoundaryHint": "Obala i voda prate promene obrisa.",
@@ -5724,9 +5715,7 @@
         }
     },
     "mapShell": {
-        "startDesign": "Dizajn",
-        "startDesignHint": "Nacrtaj lokaciju ili dodirni zemljište i izaberi Predloži ovde",
-        "renderFallback": "Prikaz nije mogao da se pokrene. WebGL možda nije dostupan u ovom pregledaču. Tvoj rad u 2D je sačuvan. Uključi hardversko ubrzanje ili pokušaj u drugom pregledaču koji podržava WebGL.",
+        "viewFailed": "Ovaj prikaz nije mogao da se pokrene. Vraćeni ste na 2D mapu.",
         "layers": "Slojevi",
         "settings": "Podešavanja",
         "proposals": "Predlozi",
@@ -5967,7 +5956,7 @@
         },
         "palette": {
             "readjustNeedsParcels": "Komasacija radi na izabranim parcelama: izaberite ih umesto crtanja lokacije.",
-            "subdivide": "Preraspodela zemljišta",
+            "subdivide": "Parceliši",
             "readjustUnknownCadastre": "Za parcelaciju je potreban katastar koji server ima: za ovo mesto ga nema."
         },
         "plots": {

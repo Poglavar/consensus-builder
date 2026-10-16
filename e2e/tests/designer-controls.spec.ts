@@ -297,7 +297,7 @@ test.describe('Designer controls persist their edits @features', () => {
       await wholeParcelPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    const editor = page.getByRole('region', { name: 'Block' });
+    const editor = page.getByRole('region', { name: 'Urban rule' });
     const manualToggle = editor.locator('#blockify-manual-toggle');
     if (!(await manualToggle.isVisible())) await editor.locator('details.on-map-editor__more-options > summary').click();
     await manualToggle.click();
@@ -543,14 +543,14 @@ test.describe('Designer controls persist their edits @features', () => {
     const target = await visiblePlanPlotPoint(page);
     await page.mouse.click(target.x, target.y);
     await expect(page.locator('.reparcel-owner-popup')).toBeVisible();
-    const publicOwner = page.locator('.reparcel-owner-popup__row').filter({ hasText: /^Public use allocation \(not a recorded owner\)$/ });
+    const publicOwner = page.locator('.reparcel-owner-popup__row').filter({ hasText: /^Public land$/ });
     await expect(publicOwner).toBeVisible();
     await publicOwner.locator('input[type="checkbox"]').check();
     await page.locator('.reparcel-owner-popup__close').click();
     await page.evaluate(() => (window as any).i18n.setLanguage('hr'));
     await page.mouse.click(target.x, target.y);
-    await expect(page.locator('.reparcel-owner-popup')).toContainText('Dodjela za javnu namjenu (nije upisani vlasnik)');
-    await expect(page.locator('.reparcel-owner-popup')).not.toContainText('Public use allocation');
+    await expect(page.locator('.reparcel-owner-popup')).toContainText('Javno zemljište');
+    await expect(page.locator('.reparcel-owner-popup')).not.toContainText('Public land');
     await page.locator('.reparcel-owner-popup__close').click();
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
 

@@ -742,8 +742,9 @@
         state.contest = found.contest;
         state.positions = await loadPositions(proposalAccount) || state.positions;
         if (state.overlay !== overlay) return overlay;
-        // An older plan version takes no new bet: a link with a side still lands on its overview.
-        if (side !== null && !state.row.superseded) renderStake(side); else renderOverview();
+        // Only an open pool takes a new bet: a link with a side to an older plan version, or to a pool
+        // that is settling or settled, lands on its overview.
+        if (side !== null && !state.row.superseded && state.row.state === 'open') renderStake(side); else renderOverview();
         return overlay;
     }
 

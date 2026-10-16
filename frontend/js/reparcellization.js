@@ -3418,8 +3418,7 @@
             swatch.style.background = owner.color;
 
             const nameSpan = document.createElement('span');
-            nameSpan.textContent = reparcellizationUiState.ownerChoiceLabel(owner, PUBLIC_LAND_KEY, t);
-            nameSpan.title = owner.ownerKey;
+            nameSpan.textContent = ownerDisplayName(owner.displayName);
 
             row.appendChild(checkbox);
             row.appendChild(swatch);
@@ -3444,8 +3443,7 @@
                 const row = document.createElement('label');
                 row.className = 'reparcel-share-row';
                 const name = document.createElement('span');
-                name.textContent = reparcellizationUiState.ownerChoiceLabel(owner, PUBLIC_LAND_KEY, t);
-                name.title = owner.ownerKey;
+                name.textContent = ownerDisplayName(owner.displayName);
                 const input = document.createElement('input');
                 input.type = 'number'; input.min = '0'; input.max = '100'; input.step = 'any';
                 input.value = String(Number((owner.share * 100).toFixed(12)));

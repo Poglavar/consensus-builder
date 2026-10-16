@@ -488,9 +488,6 @@
         "notFound": "Ovaj prijedlog više nije dostupan. Osvježite popis prijedloga i pokušajte ponovno."
     },
     "proposalDrafts": {
-        "variantLabel": "Varijanta {{id}}",
-        "variantOf": "Varijanta prijedloga",
-        "variantSaved": "Nova varijanta je spremljena. Izvornik je sačuvan; Primijenjeno označava dizajn na karti.",
         "title": "Skice",
         "entryAria": "Otvori {{count}} spremljenih skica prijedloga",
         "editorAria": "Uređivač skice prijedloga",
@@ -664,7 +661,6 @@
             "handoffFailedReason": "Uređivač dizajna nije se mogao otvoriti: {{reason}}. Lokacija nije promijenjena, a nacrt dizajna sačuvan je lokalno."
         },
         "placement": {
-            "blockUnavailable": "Blok treba lokaciju koju poslužitelj može provjeriti. Ovu lokaciju nije bilo moguće provjeriti pa uređivač nije otvoren. Odabir je sačuvan. Pokušaj s podržanom lokacijom poput Zagreba ili ponovno pokušaj ako podatkovna usluga nije dostupna.",
             "fixedSite": "Ova vrsta prijedloga vezana je uz izvornu lokaciju i ne može se premjestiti.",
             "existingBuilding": "Prijedlozi postojećih zgrada zadržavaju tlocrt vezan uz izvornu zgradu i ne mogu se slobodno premještati.",
             "invalidSite": "Za slobodno postavljanje potrebna je valjana poligonska lokacija.",
@@ -1169,7 +1165,7 @@
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u odabrani blok",
-            "singleBuilding": "Zgrada slobodnog oblika",
+            "singleBuilding": "Jedna zgrada",
             "parkButton": "Park",
             "squareButton": "Trg",
             "listTitle": "Popis blokova",
@@ -1410,8 +1406,8 @@
                 "rowNeedsTwo": "Nizovi kuća trebaju barem dvije čestice.",
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
-                "single": "Zgrada slobodnog oblika",
-                "reparcel": "Preraspodjela zemljišta",
+                "single": "Slobodna zgrada",
+                "reparcel": "Reparcelacija",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
@@ -2074,8 +2070,6 @@
             }
         },
         "road": {
-            "curveTooTight": "Zavoj pruge: polumjer kroz tri točke {{measured}} m; potrebno je {{minimum}} m. Pomakni zavoj ili nacrtaj blažu trasu. Crtež je sačuvan.",
-            "curveAdjusted": "Točka je prilagođena provjeri polumjera kroz tri točke od {{radius}} m.",
             "title": "Nacrtaj cestu",
             "titleTrack": "Nacrtaj prugu",
             "crossSectionButton": "Uredi poprečni presjek",
@@ -2237,9 +2231,9 @@
         },
         "track": {
             "speedPickerTitle": "Odaberi brzinu pruge",
-            "speedPickerDescription": "Odaberi projektnu brzinu za provjeru zavoja kroz tri točke. Trasa je shematska: ova provjera ne potvrđuje kontinuiranu željezničku krivulju. Pritisni Enter za odabranu brzinu.",
+            "speedPickerDescription": "Odaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš s zadanom selekcijom.",
             "startDrawing": "Počni crtanje",
-            "minRadius": "Najmanji polumjer kroz tri točke: {{radius}} m",
+            "minRadius": "Minimalni radijus zakrivljenosti {{radius}} m",
             "cancel": "Odustani",
             "widthLabel": "Širina pruge:"
         },
@@ -2270,7 +2264,7 @@
                     "eyebrow": "Od ideje do prijedloga",
                     "title": "Učinite promjenu vidljivom",
                     "body": "Pretvorite ideju u prijedlog: preoblikujte čestice, skicirajte ulice i parkove ili dodajte zgrade. Primijenite nacrt da vidite kako mijenja kartu.",
-                    "hint": "Dodirni zemljište i odaberi Predloži ovdje ili koristi Dizajn za crtanje lokacije. Zatim usporedi prijedloge na karti."
+                    "hint": "Počnite u Alatima, a zatim usporedite prijedloge na karti."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -2332,7 +2326,7 @@
             "cancel": "Otkaži"
         },
         "singleBuilding": {
-            "title": "Zgrada slobodnog oblika",
+            "title": "Slobodna forma",
             "defaultName": "Zgrada {{n}}",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Odaberi zgradu",
@@ -2763,14 +2757,14 @@
                         "station": "Stanica javnog prijevoza",
                         "roadTrack": "Cesta/Pruga",
                         "road-track": "Cesta/Pruga",
-                        "buildings": "Blok",
-                        "single": "Zgrada slobodnog oblika",
+                        "buildings": "Zgrade",
+                        "single": "Jedna zgrada",
                         "park": "Park",
                         "square": "Trg",
                         "lake": "Jezero",
-                        "urbanRule": "Blok",
-                        "urban-rule": "Blok",
-                        "reparcellization": "Preraspodjela zemljišta",
+                        "urbanRule": "Urbanističko pravilo",
+                        "urban-rule": "Urbanističko pravilo",
+                        "reparcellization": "Reparcelacija",
                         "row": "Niz",
                         "other": "Ostalo"
                     }
@@ -2812,14 +2806,14 @@
                     "road-track": "Cesta/Pruga",
                     "road": "Cesta",
                     "track": "Pruga",
-                    "buildings": "Blok",
-                    "single": "Zgrada slobodnog oblika",
+                    "buildings": "Zgrade",
+                    "single": "Jedna zgrada",
                     "row": "Niz",
                     "park": "Park",
                     "square": "Trg",
                     "lake": "Jezero",
-                    "urban-rule": "Blok",
-                    "reparcellization": "Preraspodjela zemljišta",
+                    "urban-rule": "Urbanističko pravilo",
+                    "reparcellization": "Reparcelacija",
                     "decide-later": "Odluči kasnije",
                     "parcelBased": "Na razini čestice",
                     "other": "Ostalo"
@@ -3241,21 +3235,21 @@
             "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
                 "purchase": "Kupnja",
-                "urbanRule": "Blok",
+                "urbanRule": "Urbanističko pravilo",
                 "reparcellization": "Reparcelacija",
                 "jointInvestment": "Zajedničko ulaganje"
             },
             "goalOptions": {
                 "asIs": "Bez promjene",
-                "buildings": "Blok",
-                "single": "Zgrada slobodnog oblika",
+                "buildings": "Zgrade",
+                "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
                 "roadTrack": "Cesta/Pruga",
                 "decideLater": "Spoji",
-                "urbanRule": "Blok",
-                "reparcellization": "Preraspodjela zemljišta",
+                "urbanRule": "Urbanističko pravilo",
+                "reparcellization": "Razdijeli",
                 "ownershipTransfer": "Prijenos vlasništva"
             },
             "goalSections": {
@@ -3558,7 +3552,7 @@
     "blockify": {
         "modal": {
             "mapHint": "Uredite čestice i granice na karti; u panelu pregledajte vlasništvo i udjele.",
-            "title": "Blok",
+            "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify prozor",
             "generating": "Generiram zgradu…",
             "done": "Gotovo",
@@ -3790,7 +3784,6 @@
     },
     "reparcellization": {
         "modal": {
-            "publicAllocation": "Dodjela za javnu namjenu (nije upisani vlasnik)",
             "mapHint": "Uredite granice čestica na karti; ovdje pregledajte vlasništvo i udjele.",
             "savedRecipientUnresolved": "Spremljeni primatelj izlazne čestice nema odgovarajući doprinos među trenutačnim ulazima.",
             "ownerReview": "Pregled vlasnika",
@@ -3813,7 +3806,7 @@
             "applyShares": "Primijeni udjele",
             "sharesTotal": "Ukupno: {{total}}%",
             "sharesInvalid": "Svaki udio mora biti pozitivan, a zbroj mora iznositi 100%.",
-            "title": "Preraspodjela zemljišta",
+            "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
@@ -5445,8 +5438,6 @@
         }
     },
     "structureEditor": {
-    "saveVariant": "Spremi kao varijantu",
-    "variantHint": "Spremanje stvara novu varijantu i čuva izvornik. Nova varijanta se primjenjuje ako se može postaviti.",
     "titleLake": "Uređivanje granice jezera",
     "instructionsLake": "Povucite točke granice za promjenu oblika jezera. Dodirnite rub za dodavanje točke.",
     "lakeBoundaryHint": "Obala i voda prate promjene obrisa.",
@@ -5724,9 +5715,7 @@
         }
     },
     "mapShell": {
-        "startDesign": "Dizajn",
-        "startDesignHint": "Nacrtaj lokaciju ili dodirni zemljište i odaberi Predloži ovdje",
-        "renderFallback": "Prikaz se nije mogao pokrenuti. WebGL možda nije dostupan u ovom pregledniku. Tvoj rad u 2D je sačuvan. Uključi hardversko ubrzanje ili pokušaj u drugom pregledniku koji podržava WebGL.",
+        "viewFailed": "Ovaj prikaz se nije mogao pokrenuti. Vraćeni ste na 2D kartu.",
         "layers": "Slojevi",
         "settings": "Postavke",
         "proposals": "Prijedlozi",
@@ -5967,7 +5956,7 @@
         },
         "palette": {
             "readjustNeedsParcels": "Komasacija radi na odabranim česticama: odaberite ih umjesto crtanja lokacije.",
-            "subdivide": "Preraspodjela zemljišta",
+            "subdivide": "Parceliraj",
             "readjustUnknownCadastre": "Za parcelaciju je potreban katastar koji poslužitelj ima: za ovo mjesto ga nema."
         },
         "plots": {

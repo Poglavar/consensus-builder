@@ -38,25 +38,6 @@ function loadListUiFunction(name, values) {
     return context.launcher;
 }
 
-function proposalEditorShellFunctionSource(name) {
-    const ast = parse(proposalEditorShellSource, { sourceType: 'script' });
-    let declaration = null;
-    (function find(node) {
-        if (!node || typeof node !== 'object' || declaration) return;
-        if (node.type === 'FunctionDeclaration' && node.id?.name === name) {
-            declaration = node;
-            return;
-        }
-        Object.keys(node).forEach(key => {
-            if (['loc', 'start', 'end'].includes(key)) return;
-            const value = node[key];
-            if (Array.isArray(value)) value.forEach(find); else find(value);
-        });
-    })(ast);
-    expect(declaration, `${name} declaration exists`).toBeTruthy();
-    return proposalEditorShellSource.slice(declaration.start, declaration.end);
-}
-
 function loadProposalEditorShellFunction(name, values, prefix = '') {
     const ast = parse(proposalEditorShellSource, { sourceType: 'script' });
     let declaration = null;
@@ -818,7 +799,7 @@ describe('geometry draft starters respect an incumbent map editor', () => {
             currentCityId: () => 'zagreb',
             proposalLabel: () => 'Building',
             siteDraftFields: () => ({ selectedParcelIds: ['parcel-1'] })
-        }, `let geometryEditCommitDraftId=null; this.getCommitDraftId=()=>geometryEditCommitDraftId;\n${proposalEditorShellFunctionSource('blockSiteSupported')}`);
+        }, `let geometryEditCommitDraftId=null; this.getCommitDraftId=()=>geometryEditCommitDraftId;`);
 
         expect(await start('single', { site: { type: 'Feature' } }, ['parcel-1'])).toBe(false);
         expect(store.createDraft).toHaveBeenCalledOnce();

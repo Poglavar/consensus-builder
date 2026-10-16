@@ -396,7 +396,6 @@ function getProposalAuthorValue(inputId = 'proposalAuthor') {
 const PROPOSAL_TYPE_TRANSLATION_KEYS = {
     'residences': 'modal.createProposal.goalOptions.buildings',
     'single building': 'modal.createProposal.goalOptions.single',
-    'freeform building': 'modal.createProposal.goalOptions.single',
     'building(s)': 'modal.createProposal.goalOptions.single',
     'park': 'modal.createProposal.goalOptions.park',
     'square': 'modal.createProposal.goalOptions.square',
@@ -408,9 +407,7 @@ const PROPOSAL_TYPE_TRANSLATION_KEYS = {
     'road/track': 'modal.createProposal.goalOptions.roadTrack',
     'decide later': 'modal.createProposal.goalOptions.decideLater',
     'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
-    'land readjustment': 'modal.createProposal.goalOptions.reparcellization',
     'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
-    'block': 'modal.createProposal.proposalTypeOptions.urbanRule',
     'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
     'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
     'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
@@ -438,7 +435,7 @@ function generateDefaultProposalName(proposalType, context = {}) {
     const localizedType = localizeProposalTypeLabel(proposalType);
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : ((_k, fallback) => fallback);
     let ids = Array.isArray(context.parcelIds) ? context.parcelIds.filter(Boolean).map(String) : [];
-    if (!Array.isArray(context.parcelIds) && !ids.length && typeof getCurrentParcelSelectionContext === 'function') {
+    if (!ids.length && typeof getCurrentParcelSelectionContext === 'function') {
         // The create dialog names a proposal before the caller knows its parcels: use the selection.
         try { ids = (getCurrentParcelSelectionContext()?.ids || []).filter(Boolean).map(String); } catch (_) { ids = []; }
     }

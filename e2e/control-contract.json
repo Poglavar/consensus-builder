@@ -10094,7 +10094,7 @@
       "markup": "root.document.createElement('button')",
       "variants": [
         {
-          "name": "open a published source from the Variant of row",
+          "name": "open a published source from the Based on row",
           "classes": [
             "cb-link",
             "proposal-based-on-link"
