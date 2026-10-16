@@ -129,6 +129,18 @@ fi
 # Sync frontend/ -> docroot (server-local rsync). Keep dev/deploy artefacts out of the docroot.
 # HMLR routing releases are published by the separate metadata job and must survive frontend deploys.
 mkdir -p "$DOCROOT"
+# Two passes so HTML lands last. nginx serves ?build=deploy-N assets as immutable for a year
+# (backend/nginx/urbangametheory.xyz.nginx.conf); if the new index.html went live before the new
+# scripts, a visitor could fetch an OLD script under the NEW build URL and keep it for a year.
+# Pass 1 adds every changed non-HTML file without deleting anything (old pages still find their
+# files); pass 2 swaps in the HTML and deletes leftovers.
+rsync -a \
+    --exclude='*.html' \
+    --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
+    --exclude='/data/hmlr/' \
+    --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
+    --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
+    "$STAGING_DIR/" "$DOCROOT/"
 rsync -a --delete \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
     --exclude='/data/hmlr/' \
