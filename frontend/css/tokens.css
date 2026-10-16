@@ -29,7 +29,7 @@
     --cb-surface-3: #e5e7eb;        /* pressed rows, dividers on surface-2 */
     --cb-glass: rgba(255, 255, 255, 0.97); /* floating map chrome */
     --cb-glass-veil: rgba(255, 255, 255, 0.72); /* the bottom dock: the map shows through (blurred behind it) */
-    --cb-glass-sheet: rgba(255, 255, 255, 0.86); /* phone panels and sheets: a little of the map shows through, for orientation */
+    --cb-glass-sheet: rgba(255, 255, 255, 0.8); /* every panel and sheet over the map: a little of it shows through, for orientation */
     --cb-text: #1f2937;
     --cb-text-strong: #111827;
     --cb-text-muted: #6b7280;
@@ -220,7 +220,7 @@
     --cb-surface-3: #2a333d;
     --cb-glass: rgba(23, 28, 34, 0.96);
     --cb-glass-veil: rgba(23, 28, 34, 0.74);
-    --cb-glass-sheet: rgba(23, 28, 34, 0.86);
+    --cb-glass-sheet: rgba(23, 28, 34, 0.8);
     --cb-text: #e6e9ee;
     --cb-text-strong: #f5f7fa;
     --cb-text-muted: #9aa4b2;

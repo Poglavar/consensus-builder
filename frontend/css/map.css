@@ -292,7 +292,9 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     width: 232px;
     max-width: calc(100vw - 24px);
     padding: 10px 12px;
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--cb-line-glass);
     border-radius: var(--cb-radius-md);
     box-shadow: var(--cb-shadow-md);
@@ -909,8 +911,9 @@ body.three-mode-active #agent-bubbles-container {
     display: none;
     flex-direction: column;
     padding: 8px 12px 10px;
-    background: var(--cb-glass);
-    backdrop-filter: blur(3px);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--cb-line-strong);
     border-radius: var(--cb-radius-lg);
     box-shadow: var(--cb-shadow-md);

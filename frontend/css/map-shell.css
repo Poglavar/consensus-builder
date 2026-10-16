@@ -133,7 +133,9 @@ details[open] > summary.sheet-section-title::before {
     justify-content: space-between;
     gap: var(--cb-space-3);
     padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-top: 1px solid var(--cb-line);
     font-size: var(--cb-text-sm);
 }
@@ -172,7 +174,9 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     border: 0;
     border-top: 1px solid var(--cb-line);
     border-radius: 0;
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     color: var(--cb-text);
     box-shadow: var(--cb-shadow-md);
     z-index: var(--cb-z-notice);
@@ -239,17 +243,6 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
         bottom: calc(var(--map-sheet-occupied, var(--map-visible-bottom)) + var(--cb-control-height) + var(--map-shell-gap));
     }
 
-    /* Orientation: a little of the map shows through every phone panel and sheet
-       (--cb-glass-sheet, css/tokens.css); the bar's own full-screen sheets keep their veil. */
-    body .info-panel,
-    body .map-sheet:not(.map-sheet--dock),
-    body .on-map-editor__panel,
-    body .site-panel,
-    body .map-editor-toolbar {
-        background: var(--cb-glass-sheet);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-    }
 }
 
 .leaflet-bottom {
@@ -423,7 +416,10 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     max-height: min(var(--sheet-max-height, 70vh), 80vh);
     box-sizing: border-box;
     flex-direction: column;
-    background: var(--cb-surface);
+    /* Every panel over the map lets a little of it through (user rule 2026-10-17; --cb-glass-sheet). */
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--cb-line-glass);
     border-radius: 12px;
     box-shadow: var(--cb-shadow-md);
@@ -488,6 +484,13 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 /* A section inside a sheet: a plain heading over its controls (the accordions are gone; the
    `.accordion-section[data-section]` wrapper stays because code and the city config find it). */
 .map-sheet-body > .accordion-section + .accordion-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--cb-line);
+}
+
+/* The base map row closes the Layers sheet like one more section. */
+.map-sheet-body > .map-sheet-base-map {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid var(--cb-line);

@@ -9,7 +9,9 @@
     flex-direction: column;
     overflow: hidden;
     color: var(--cb-text);
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
     box-shadow: var(--cb-shadow-md);

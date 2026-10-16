@@ -117,8 +117,9 @@ describe('the left-edge mode strip is never covered on phones', () => {
         // the metrics scroll, the controls row does not
         expect(ruleBody(panelsCss, '#road-info-panel > \\.road-metrics-grid')).toMatch(/overflow-y:\s*auto/);
         expect(ruleBody(panelsCss, '#road-info-panel\\.visible')).toMatch(/flex-direction:\s*column/);
-        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', 'body .info-panel,');
-        expect(ruleBody(block, 'body \\.info-panel,[^{]*')).toMatch(/background:\s*var\(--cb-glass-sheet\)/);
+        // The map shows through every panel, on phones as on desktop (one rule per panel, no phone override).
+        expect(ruleBody(panelsCss, '(?:^|\\n)\\.info-panel')).toMatch(/background:\s*var\(--cb-glass-sheet\)/);
+        expect(ruleBody(mapShellCss, '(?:^|\\n)\\.map-sheet')).toMatch(/background:\s*var\(--cb-glass-sheet\)/);
         const tokens = read('css/tokens.css');
         expect(tokens.match(/--cb-glass-sheet:/g)).toHaveLength(2);
         const [panelBlock] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#road-info-panel .road-panel-actions .close-circle-btn--lg');
