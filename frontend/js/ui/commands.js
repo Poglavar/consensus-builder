@@ -403,6 +403,8 @@
             labelKey: 'mapShell.commands.activityExplorer', fallbackLabel: 'Open activity explorer', icon: 'fas fa-wave-square' },
         { id: 'activity.agents', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog', { view: 'actors' }),
             labelKey: 'sidebar.game.showAgents', fallbackLabel: 'Actors', icon: 'fas fa-robot' },
+        { id: 'game.setup', group: 'game', surfaces: ['activity', 'settings'], run: callGlobal('showSimulationSetup'),
+            labelKey: 'ownerAudit.openSimulation', fallbackLabel: 'Open local simulation setup', icon: 'fas fa-gamepad' },
         control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['activity'],
             labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
         { id: 'game.playPause', group: 'game', surfaces: ['activity'], run: callGlobal('toggleGamePlayPause'),

@@ -46,6 +46,25 @@
         return destinationForGoal(goal) !== null;
     }
 
+    // Authored intent, not proof of title or authority. Explicit facets override typology defaults;
+    // missing intent stays unknown for content whose destination cannot be inferred.
+    function ownershipIntent(proposal = {}) {
+        proposal = proposal || {};
+        const mode = proposal.facets?.ownership || proposal.proposalFacets?.ownership
+            || proposal.ownershipTransferProposal?.recipient || null;
+        const destination = { 'no-change': 'retained', 'to-me': 'proposer', 'to-city': 'public',
+            'third-party': 'third-party', 'per-slice': 'mapping' }[mode];
+        if (destination) return { mode, destination, transfer: mode !== 'no-change' };
+        const direction = proposal.ownershipTransferProposal?.direction;
+        if (direction === 'to-me') return { mode: 'to-me', destination: 'proposer', transfer: true };
+        if (direction === 'from-me') return { mode: 'third-party', destination: 'third-party', transfer: true };
+        if (proposal.isVote) return { mode: 'no-change', destination: 'retained', transfer: false };
+        const inferred = destinationForGoal(proposal.goal);
+        if (inferred) return { mode: { proposer: 'to-me', public: 'to-city', mapping: 'per-slice' }[inferred] || null,
+            destination: inferred, transfer: inferred === 'undecided' ? null : true };
+        return { mode: null, destination: null, transfer: null };
+    }
+
     // The flow itself: per crossed base parcel, how much ground the formation takes (m²) and where
     // its ownership goes. `baseParcels` is [{ id, feature }] — the caller's loaded cadastre.
     // Returns [] for content-only proposals and for footprints that touch nothing measurable.
@@ -54,7 +73,8 @@
         const opts = options || {};
         if (!api || !proposal || !Array.isArray(baseParcels)) return [];
         const goal = opts.goal !== undefined ? opts.goal : proposal.goal;
-        const destination = destinationForGoal(goal);
+        if (!hasFormation(goal)) return [];
+        const destination = ownershipIntent({ ...proposal, goal }).destination;
         if (!destination) return [];
         const footprint = api.footprintOf(proposal);
         if (!footprint) return [];
@@ -281,6 +301,7 @@
     const api = {
         DESTINATION_BY_GOAL,
         destinationForGoal,
+        ownershipIntent,
         hasFormation,
         computeOwnershipFlow,
         effectFingerprintOf,

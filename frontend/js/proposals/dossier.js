@@ -100,7 +100,8 @@
         const goal = String(proposal && proposal.goal !== undefined && proposal.goal !== null ? proposal.goal : '').trim();
 
         // Rules are political whatever ground they touch; votes reuse the same channel.
-        if (goal === 'urban-rule' || isVote(proposal)) return 'vote';
+        const intent = flowApi?.ownershipIntent(proposal);
+        if (goal === 'urban-rule' || intent?.transfer === false || (isVote(proposal) && intent?.transfer !== true)) return 'vote';
 
         const flow = Array.isArray(context.flow) ? context.flow : [];
         const mine = flow.find(entry => entry && String(entry.parcelId) === String(parcelRoot));

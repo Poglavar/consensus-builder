@@ -1,4 +1,26 @@
 {
+    "ownerAudit": {
+        "openSimulation": "Abrir la configuración de simulación local",
+        "simulationOff": "La simulación local está desactivada",
+        "simulationOn": "Simulación local activada — propiedad ficticia",
+        "simulationRights": "Aplicar y votar localmente permite explorar alternativas en este navegador. No publica aprobaciones ni acredita derechos de propiedad.",
+        "ownerChecklist": "<li>Conecta una cartera que controles.</li><li>Selecciona un lente de confianza.</li><li>Carga los derechos completos de los propietarios de las parcelas de la propuesta.</li><li>Verifica los derechos y tu autorización mediante el lente antes de aprobar.</li>",
+        "resetDisclosure": "¿Reiniciar la simulación de este navegador? Se borrarán propuestas locales, agentes de IA, progreso y asignaciones ficticias de propiedad. Se conservan los borradores del editor y los datos del mapa. Tu agente conserva nombre, avatar e ID, pero se reinician sus saldos ficticios, vínculos de cartera e historial de propuestas. Los registros públicos, carteras reales y transacciones en cadena no cambian. Cancelar conserva todo.",
+        "referenceStake": "Para 1 USDC",
+        "quoteReference": "Los multiplicadores simulan una nueva apuesta de 1 USDC. El retorno incluye esa apuesta, es aproximado y cambia con el fondo.",
+        "poolShare": "{{percent}} del fondo en Sí",
+    "sidePoolShare": "{{percent}} del fondo",
+        "independentPools": "Cada propuesta tiene un fondo Sí/No independiente. Los porcentajes muestran la proporción apostada a Sí, no probabilidades calibradas; no tienen que sumar 100%.",
+        "previewOnly": "Simula una apuesta sin cartera. El retorno total incluye tu apuesta y depende del fondo final. Para enviarla necesitas una cartera conectada y un fondo abierto y habilitado.",
+        "invalidStake": "Introduce un importe positivo en USDC con un máximo de seis decimales.",
+        "totalReturn": "Retorno total aproximado: {{amount}} si gana {{side}} (incluye tu apuesta)",
+        "connectToBet": "Conectar cartera para apostar",
+        "betClosed": "No se admiten nuevas apuestas en propuestas cerradas o sustituidas. Consulta tus posiciones en Apuestas.",
+        "saveLocalProposal": "Guardar propuesta local",
+        "saveLocalVote": "Guardar voto local",
+        "localDraft": "Borrador local",
+        "localContext": "Solo en este navegador. Aplicar cambia el mapa local; un voto local no es una aprobación verificada del propietario. Publica o acuña por separado para compartir un registro público."
+    },
   "onMapEditor": {
     "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
     "cancel": "Cancelar",
@@ -475,6 +497,7 @@
             "massingOutsideSite": "La masa edificada movida debe quedar completamente dentro del nuevo emplazamiento."
         },
         "review": {
+            "localNotice": "Se guarda una nueva contrapropuesta local en este navegador. El original no cambia. Publicar o acuñar es una acción aparte; votar o aplicar localmente no constituye aprobación verificada del propietario.",
             "title": "Revisar cambios",
             "immutableNotice": "La publicación crea una nueva propuesta inmutable. El origen no se modifica ni se elimina.",
             "newProposal": "Propuesta nueva",
@@ -524,6 +547,7 @@
             "overlay": "Superposición"
         },
         "actions": {
+            "saveLocalCounterproposal": "Guardar contrapropuesta local",
             "close": "Cerrar editor",
             "undo": "Deshacer",
             "redo": "Rehacer",
@@ -3252,7 +3276,7 @@
             },
             "optionsSectionTitle": "Opciones",
             "mintTarget": {
-                "offchain": "Fuera de la cadena (solo en este navegador)",
+                "offchain": "Solo en este navegador",
                 "mintsOn": "Se acuña en",
                 "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
             },
@@ -4772,6 +4796,7 @@
     },
     "alerts": {
         "messages": {
+            "simulation_unavailable": "La simulación no está disponible en esta ciudad. La aprobación verificada es independiente.",
             "a_proposal_with_the_same_parcels_already_exists": "Ya existe una propuesta con las mismas parcelas.",
             "an_identical_proposal_already_exists": "Ya existe una propuesta idéntica.",
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
@@ -5785,6 +5810,7 @@
         "grainNoParcels": "Aquí no hay parcelas: estas propuestas están en terreno abierto, así que no hay parcelas resultantes que puntuar."
     },
     "parcelCompare": {
+        "rightsUnresolved": "Falta verificar los derechos y la autorización del propietario.",
         "title": "Comparar propuestas en la parcela {{number}}",
         "needTwo": "Al menos dos propuestas deben tocar esta parcela para compararlas.",
         "pick": "Propuesta {{side}}",
@@ -5826,6 +5852,8 @@
             "line": "Lote {{number}} ({{area}}, {{who}}): {{overlap}} de esta parcela"
         },
         "ownership": {
+            "retained": "propiedad sin cambios",
+            "thirdParty": "el destinatario indicado",
             "ceded": "{{area}} → {{destination}}"
         },
         "offer": {
@@ -5854,7 +5882,7 @@
             "structure": "Parque / plaza / lago",
             "corridor": "Calle / vía",
             "plots": "Lotes en que se convierte",
-            "ceded": "Terreno cedido → a",
+            "ceded": "Terreno afectado → propiedad",
             "offer": "Oferta",
             "consentNeeded": "Requiere su consentimiento",
             "parcelAccepted": "Esta parcela aceptó",
@@ -6062,14 +6090,14 @@
             "openPlan": "No se pudo abrir el plan."
         },
         "contest": {
-            "title": "¿Qué propuesta se construirá?",
+            "title": "Propuestas para este terreno",
             "titleSingle": "¿Se construirá esta propuesta?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
             "site": "Sitio dibujado",
             "withoutPool": "Sin fondo: {{count}}",
             "olderVersions": "Versiones anteriores: {{count}}",
-            "titlePlans": "¿Qué plan se construirá?",
+            "titlePlans": "Planes para este terreno",
             "titleSinglePlan": "¿Se construirá este plan?",
             "planCount": "{{count}} planes"
         },

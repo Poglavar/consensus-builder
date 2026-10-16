@@ -1,4 +1,26 @@
 {
+    "ownerAudit": {
+        "openSimulation": "Open local simulation setup",
+        "simulationOff": "Local simulation is off",
+        "simulationOn": "Local simulation enabled — fictional ownership only",
+        "simulationRights": "Local Apply and Vote explore alternatives in this browser. They do not publish owner approval or grant verified ownership.",
+        "ownerChecklist": "<li>Connect the wallet you control.</li><li>Select a trusted lens.</li><li>Load complete parcel-owner rights for the proposal.</li><li>Verify those rights and your authority through the lens before approving.</li>",
+        "resetDisclosure": "Reset this browser’s simulation? This deletes local proposals, AI agents, simulation progress and fictional parcel-owner assignments. Editor drafts and loaded map data are kept. Your current agent’s name, avatar and ID are kept, but its fictional balances, wallet links and proposal history reset. Public/server records, real wallets and on-chain transactions are unchanged. Cancel keeps everything as it is.",
+        "referenceStake": "For 1 USDC",
+        "quoteReference": "Multiples preview a new 1 USDC stake. Returns include that stake, are approximate and change as the pool changes.",
+        "poolShare": "{{percent}} Yes pool share",
+    "sidePoolShare": "{{percent}} pool share",
+        "independentPools": "Each proposal has an independent Yes/No pool. Percentages show the share of stake on Yes, not calibrated probabilities; they need not add up to 100%.",
+        "previewOnly": "Preview a stake without a wallet. Total return includes your stake and depends on the final pool. Submitting requires a connected wallet and an open, eligible pool.",
+        "invalidStake": "Enter a positive USDC amount with at most six decimal places.",
+        "totalReturn": "Approximate total return {{amount}} if {{side}} wins (includes your stake)",
+        "connectToBet": "Connect wallet to bet",
+        "betClosed": "New bets are unavailable on closed or superseded proposals. View existing positions in Bets.",
+        "saveLocalProposal": "Save local proposal",
+        "saveLocalVote": "Save local vote",
+        "localDraft": "Local draft",
+        "localContext": "Only in this browser. Applying changes your local map; a local vote is not verified owner approval. Publish or mint separately to share a public record."
+    },
   "onMapEditor": {
     "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
     "cancel": "Cancel",
@@ -475,6 +497,7 @@
             "massingOutsideSite": "The moved block massing must fit entirely inside its new site."
         },
         "review": {
+            "localNotice": "Saving creates a new local counterproposal in this browser. The source stays unchanged. Publishing or minting is a separate action; local votes and map application are not verified owner approval.",
             "title": "Review changes",
             "immutableNotice": "Publishing creates a new immutable proposal. The source is not changed or removed.",
             "newProposal": "New proposal",
@@ -524,6 +547,7 @@
             "overlay": "Overlay"
         },
         "actions": {
+            "saveLocalCounterproposal": "Save local counterproposal",
             "close": "Close editor",
             "undo": "Undo",
             "redo": "Redo",
@@ -3201,7 +3225,7 @@
             },
             "optionsSectionTitle": "Options",
             "mintTarget": {
-                "offchain": "Off-chain (this browser only)",
+                "offchain": "Only in this browser",
                 "mintsOn": "Mints on",
                 "noWalletTooltip": "No wallet connected; the proposal stays in this browser."
             },
@@ -4721,6 +4745,7 @@
     },
     "alerts": {
         "messages": {
+            "simulation_unavailable": "Simulation is unavailable in this city. Verified owner approval is separate.",
             "a_proposal_with_the_same_parcels_already_exists": "A proposal with the same parcels already exists.",
             "an_identical_proposal_already_exists": "An identical proposal already exists.",
             "building_proposal_workflow_is_unavailable": "Building proposal workflow is unavailable.",
@@ -5734,6 +5759,7 @@
         "grainNoParcels": "No parcels here: these proposals stand on open ground, so there are no resulting parcels to score."
     },
     "parcelCompare": {
+        "rightsUnresolved": "Owner rights and authority still need verification.",
         "title": "Compare proposals on parcel {{number}}",
         "needTwo": "At least two proposals must touch this parcel to compare them.",
         "pick": "Proposal {{side}}",
@@ -5775,6 +5801,8 @@
             "line": "Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel"
         },
         "ownership": {
+            "retained": "ownership unchanged",
+            "thirdParty": "the specified recipient",
             "ceded": "{{area}} → {{destination}}"
         },
         "offer": {
@@ -5803,7 +5831,7 @@
             "structure": "Park / square / lake",
             "corridor": "Road / track",
             "plots": "Plots it becomes",
-            "ceded": "Ceded ground → to",
+            "ceded": "Affected ground → ownership",
             "offer": "Offer",
             "consentNeeded": "Your consent needed",
             "parcelAccepted": "This parcel accepted",
@@ -6011,14 +6039,14 @@
             "openPlan": "The plan could not be opened."
         },
         "contest": {
-            "title": "Which proposal gets built?",
+            "title": "Proposals on this land",
             "titleSingle": "Does this proposal get built?",
             "land": "Parcel {{parcel}}",
             "landMore": "Parcel {{parcel}} and {{count}} more",
             "site": "Drawn site",
             "withoutPool": "Without a pool: {{count}}",
             "olderVersions": "Older versions: {{count}}",
-            "titlePlans": "Which plan gets built?",
+            "titlePlans": "Plans on this land",
             "titleSinglePlan": "Does this plan get built?",
             "planCount": "{{count}} plans"
         },

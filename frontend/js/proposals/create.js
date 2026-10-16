@@ -14,6 +14,14 @@ function getProposalCityId() {
     return null;
 }
 
+function proposalSaveActionLabel({ replacement = false, isVote = false, onchain = false }, translate) {
+    const t = translate || ((_key, fallback) => fallback);
+    if (replacement) return onchain ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+        : t('proposalDrafts.actions.saveLocalCounterproposal', 'Save local counterproposal');
+    if (!onchain) return isVote ? t('ownerAudit.saveLocalVote', 'Save local vote') : t('ownerAudit.saveLocalProposal', 'Save local proposal');
+    return isVote ? t('panel.proposal.voting.submit', 'Submit for voting') : t('modal.createProposal.submit', 'Create proposal');
+}
+
 function updateCreateProposalSubmitState() {
     const btn = document.getElementById('createProposalSubmitButton');
     const hint = document.getElementById('proposalGeometryRequirementHint');
@@ -30,11 +38,8 @@ function updateCreateProposalSubmitState() {
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
         const createsReplacement = !!(typeof window !== 'undefined'
             && window.pendingProposalReplacementSource?.proposalId);
-        btn.textContent = createsReplacement
-            ? (t ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : 'Create replacement proposal')
-            : (isVote
-                ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
-                : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal'));
+        btn.textContent = proposalSaveActionLabel({ replacement: createsReplacement, isVote,
+            onchain: typeof getActiveMintTarget === 'function' && getActiveMintTarget().onchain === true }, t);
     }
     if (hint) {
         hint.textContent = (!hasGeometry) ? 'Please add a geometry first.' : '';

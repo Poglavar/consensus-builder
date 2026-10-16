@@ -1,4 +1,26 @@
 {
+    "ownerAudit": {
+        "openSimulation": "Otvori postavke lokalne simulacije",
+        "simulationOff": "Lokalna simulacija je isključena",
+        "simulationOn": "Lokalna simulacija uključena — samo izmišljeno vlasništvo",
+        "simulationRights": "Lokalne radnje Primijeni i Glasaj služe istraživanju alternativa u ovom pregledniku. Ne objavljuju odobrenje vlasnika i ne potvrđuju vlasnička prava.",
+        "ownerChecklist": "<li>Poveži novčanik kojim upravljaš.</li><li>Odaberi pouzdanu leću.</li><li>Učitaj potpuna vlasnička prava za čestice prijedloga.</li><li>Prije odobrenja putem leće provjeri prava i svoju ovlast.</li>",
+        "resetDisclosure": "Ponovno pokrenuti simulaciju ovog preglednika? Brišu se lokalni prijedlozi, AI agenti, napredak i izmišljene dodjele vlasništva. Nacrti u uređivaču i podaci karte ostaju. Tvoj agent zadržava ime, avatar i ID, ali mu se poništavaju izmišljena stanja računa, veze s novčanicima i povijest prijedloga. Javni zapisi, stvarni novčanici i transakcije na lancu ostaju nepromijenjeni. Odustajanje čuva sve.",
+        "referenceStake": "Za 1 USDC",
+        "quoteReference": "Množitelji prikazuju novi ulog od 1 USDC. Ukupna isplata uključuje ulog, približna je i mijenja se s fondom.",
+        "poolShare": "{{percent}} fonda na Da",
+    "sidePoolShare": "{{percent}} fonda",
+        "independentPools": "Svaki prijedlog ima neovisan fond Da/Ne. Postoci prikazuju udio uloga na Da, a ne procijenjene vjerojatnosti; ne moraju zbrojem dati 100%.",
+        "previewOnly": "Pregledaj ulog bez novčanika. Ukupna isplata uključuje ulog i ovisi o konačnom fondu. Za slanje treba povezan novčanik i otvoren prihvatljiv fond.",
+        "invalidStake": "Unesi pozitivan iznos USDC s najviše šest decimala.",
+        "totalReturn": "Približna ukupna isplata {{amount}} ako pobijedi {{side}} (uključuje ulog)",
+        "connectToBet": "Poveži novčanik za okladu",
+        "betClosed": "Nove oklade nisu dostupne za zatvorene ili zamijenjene prijedloge. Postojeće uloge pogledaj u Okladama.",
+        "saveLocalProposal": "Spremi lokalni prijedlog",
+        "saveLocalVote": "Spremi lokalni glas",
+        "localDraft": "Lokalni nacrt",
+        "localContext": "Samo u ovom pregledniku. Primjena mijenja lokalnu kartu; lokalni glas nije provjereno odobrenje vlasnika. Za javni zapis potrebna je zasebna objava ili mintanje."
+    },
   "onMapEditor": {
     "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
     "cancel": "Odustani",
@@ -475,6 +497,7 @@
             "massingOutsideSite": "Masa premještene zgrade mora u cijelosti biti unutar nove lokacije."
         },
         "review": {
+            "localNotice": "Spremanje stvara novi lokalni protuprijedlog u ovom pregledniku. Izvornik ostaje nepromijenjen. Objava ili mintanje zasebna je radnja; lokalni glas i primjena nisu provjereno odobrenje vlasnika.",
             "title": "Pregled promjena",
             "immutableNotice": "Objava stvara novi nepromjenjivi prijedlog. Izvor se ne mijenja niti uklanja.",
             "newProposal": "Novi prijedlog",
@@ -524,6 +547,7 @@
             "overlay": "Preklopljeno"
         },
         "actions": {
+            "saveLocalCounterproposal": "Spremi lokalni protuprijedlog",
             "close": "Zatvori uređivač",
             "undo": "Poništi",
             "redo": "Ponovi",
@@ -3222,7 +3246,7 @@
             },
             "optionsSectionTitle": "Opcije",
             "mintTarget": {
-                "offchain": "Izvan lanca (samo ovaj preglednik)",
+                "offchain": "Samo u ovom pregledniku",
                 "mintsOn": "Kuje se na",
                 "noWalletTooltip": "Novčanik nije povezan; prijedlog ostaje u ovom pregledniku."
             },
@@ -4772,6 +4796,7 @@
     },
     "alerts": {
         "messages": {
+            "simulation_unavailable": "Simulacija nije dostupna u ovom gradu. Provjereno odobrenje vlasnika zaseban je postupak.",
             "a_proposal_with_the_same_parcels_already_exists": "Prijedlog s istim česticama već postoji.",
             "an_identical_proposal_already_exists": "Identičan prijedlog već postoji.",
             "building_proposal_workflow_is_unavailable": "Tok za prijedlog zgrade nije dostupan.",
@@ -5789,6 +5814,7 @@
         "grainNoParcels": "Ovdje nema čestica: ovi prijedlozi stoje na otvorenom tlu, pa nema nastalih čestica za ocjenu."
     },
     "parcelCompare": {
+        "rightsUnresolved": "Vlasnička prava i ovlast još treba provjeriti.",
         "title": "Usporedba prijedloga na čestici {{number}}",
         "needTwo": "Za usporedbu ovu česticu moraju dirati barem dva prijedloga.",
         "pick": "Prijedlog {{side}}",
@@ -5830,6 +5856,8 @@
             "line": "Nova čestica {{number}} ({{area}}, {{who}}): {{overlap}} ove čestice"
         },
         "ownership": {
+            "retained": "vlasništvo nepromijenjeno",
+            "thirdParty": "navedeni primatelj",
             "ceded": "{{area}} → {{destination}}"
         },
         "offer": {
@@ -5858,7 +5886,7 @@
             "structure": "Park / trg / jezero",
             "corridor": "Cesta / pruga",
             "plots": "Nove čestice koje nastaju",
-            "ceded": "Ustupljeno tlo → kome",
+            "ceded": "Zahvaćeno zemljište → vlasništvo",
             "offer": "Ponuda",
             "consentNeeded": "Potrebna vaša suglasnost",
             "parcelAccepted": "Ova čestica prihvatila",
@@ -6066,14 +6094,14 @@
             "openPlan": "Plan se nije mogao otvoriti."
         },
         "contest": {
-            "title": "Koji će prijedlog biti izgrađen?",
+            "title": "Prijedlozi za ovo zemljište",
             "titleSingle": "Hoće li ovaj prijedlog biti izgrađen?",
             "land": "Čestica {{parcel}}",
             "landMore": "Čestica {{parcel}} i još {{count}}",
             "site": "Nacrtano zemljište",
             "withoutPool": "Bez fonda: {{count}}",
             "olderVersions": "Prethodne verzije: {{count}}",
-            "titlePlans": "Koji će plan biti izgrađen?",
+            "titlePlans": "Planovi za ovo zemljište",
             "titleSinglePlan": "Hoće li ovaj plan biti izgrađen?",
             "planCount": "{{count}} plana"
         },

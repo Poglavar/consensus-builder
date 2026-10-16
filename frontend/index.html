@@ -998,6 +998,12 @@
                         <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
                         <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
                     </label>
+                    <p id="simulation-mode-status" role="status" data-i18n-key="ownerAudit.simulationOff">Local simulation is off</p>
+                    <p data-i18n-key="ownerAudit.simulationRights">Local Apply and Vote explore alternatives in this browser. They do not publish owner approval or grant verified ownership.</p>
+                    <ol aria-label="Owner readiness" data-i18n-key="ownerAudit.ownerChecklist" data-i18n-attr="html">
+                        <li>Connect the wallet you control.</li><li>Select a trusted lens.</li>
+                        <li>Load complete parcel-owner rights for the proposal.</li><li>Verify those rights and your authority through the lens before approving.</li>
+                    </ol>
                     <div class="activity-simulation-row">
                         <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
                             aria-pressed="false" onclick="toggleGamePlayPause()">
@@ -1263,6 +1269,7 @@
                         <hr>
                         <div class="info-subsection">
                             <h4 data-i18n-key="sidebar.info.instructionsTitle">Start here</h4>
+                            <button id="simulation-setup-button" type="button" class="btn" data-i18n-key="ownerAudit.openSimulation">Open local simulation setup</button>
                             <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
                                 <strong>Build first, propose second.</strong> New designs appear on the map immediately, so
                                 you can edit, park, compare and share them before adding formal terms. Read the

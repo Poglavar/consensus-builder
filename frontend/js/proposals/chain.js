@@ -487,19 +487,14 @@ function attachProposalCurrencyHandlers() {
 
     clearProposalBalanceWatcher();
 
-    // Adapt currency options for Solana: replace ETH with SOL
+    // Keep the selected denomination. A wallet change is not a currency conversion.
     const solWmCurr = window.solanaWalletManager;
     const solStateCurr = solWmCurr && typeof solWmCurr.getState === 'function' ? solWmCurr.getState() : null;
     const isSolanaCurr = solStateCurr && solStateCurr.status === 'connected'
         && Array.isArray(solStateCurr.accounts) && solStateCurr.accounts.length > 0;
     if (isSolanaCurr) {
-        // Replace ETH option with SOL
-        const ethOption = Array.from(currencySelect.options).find(opt => opt.value === 'ETH');
-        if (ethOption) {
-            ethOption.value = 'SOL';
-            ethOption.textContent = 'SOL';
-        } else {
-            // Add SOL if ETH wasn't there
+        // Add the chain's native currency without replacing a reviewed ETH selection.
+        {
             const hasSol = Array.from(currencySelect.options).some(opt => opt.value === 'SOL');
             if (!hasSol) {
                 const solOpt = document.createElement('option');
@@ -510,11 +505,7 @@ function attachProposalCurrencyHandlers() {
         }
     }
 
-    const hasUsdtOption = Array.from(currencySelect.options || []).some(opt => opt && opt.value === 'USDT');
-    if (hasUsdtOption) {
-        currencySelect.value = 'USDT';
-    }
-
+    console.debug('[proposal-currency] Keep selected denomination', { currency: currencySelect.value });
     const balanceEl = ensureProposalOfferBalanceElement();
     if (!balanceEl) return;
 

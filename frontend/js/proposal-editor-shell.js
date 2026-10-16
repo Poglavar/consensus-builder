@@ -450,7 +450,7 @@
                     <label class="proposal-editor-field">
                         <span>${escapeHtml(tDraft('proposalDrafts.fields.currency', 'Currency'))}</span>
                         <select data-draft-path="fields.offerCurrency">
-                            ${['EUR', 'USD', 'ETH', 'ARS', 'USDC', 'USDT'].map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
+                            ${['EUR', 'USD', 'ETH', 'SOL', 'ARS', 'USDC', 'USDT'].map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
                         </select>
                     </label>
                 </div>
@@ -565,7 +565,9 @@
         return `
             <section class="proposal-editor-review">
                 <h3>${escapeHtml(tDraft('proposalDrafts.review.title', 'Review changes'))}</h3>
-                <div class="proposal-editor-review-notice">${escapeHtml(tDraft('proposalDrafts.review.immutableNotice', 'Publishing creates a new immutable proposal. The source is not changed or removed.'))}</div>
+                <div class="proposal-editor-review-notice">${escapeHtml(global.getActiveMintTarget?.()?.onchain
+                    ? tDraft('proposalDrafts.review.immutableNotice', 'Publishing creates a new immutable proposal. The source is not changed or removed.')
+                    : tDraft('proposalDrafts.review.localNotice', 'Saving creates a new local counterproposal in this browser. The source stays unchanged. Publishing or minting is a separate action; local votes and map application are not verified owner approval.'))}</div>
                 <div class="proposal-editor-card">
                     <strong>${escapeHtml(summary?.sourceName || draft.sourceProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
                     <p>${escapeHtml(draft.sourceProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>
@@ -1932,11 +1934,8 @@
             // updateCreateProposalSubmitState() so applying the facets doesn't clobber it.
             const facets = (typeof global !== 'undefined' && global.proposalFacets) || {};
             const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
-            submit.textContent = isVote
-                ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
-                : (source
-                    ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
-                    : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
+            submit.textContent = global.proposalSaveActionLabel({ replacement: !!source, isVote,
+                onchain: global.getActiveMintTarget?.()?.onchain === true }, tDraft);
             submit.dataset.proposalDraftId = draft.id;
         }
         global.refreshReparcellizationCashTerms?.(global.document?.querySelector?.('.create-proposal-modal'));

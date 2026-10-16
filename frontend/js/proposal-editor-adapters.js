@@ -136,9 +136,10 @@
             offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,
             boundaryAdjustment: proposal?.boundaryAdjustment || null,
-            ownership: proposal?.facets?.ownership || proposal?.proposalFacets?.ownership || null,
-            recipientScope: proposal?.facets?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.recipientScope || null,
-            recipientAddress: proposal?.facets?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.recipientAddress || null,
+            ownership: (global.__ownershipFlow || (typeof require === 'function' ? require('./proposals/ownership-flow.js') : null))
+                ?.ownershipIntent(proposal)?.mode || null,
+            recipientScope: proposal?.facets?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.recipientScope || proposal?.ownershipTransferProposal?.recipientScope || null,
+            recipientAddress: proposal?.facets?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.recipientAddress || proposal?.ownershipTransferProposal?.recipientAddress || null,
             isConditional: proposal?.isConditional === true,
             expiresAt: proposal?.expiresAt || null,
             decayEnabled: proposal?.decayEnabled === true,
