@@ -368,6 +368,30 @@ describe('site-first drafts in the store', () => {
         expect(record.cadastreParcelIds).toEqual([]);
     });
 
+    it('builds a drawn road on bare ground as a view the land check reads (the seam Finish crosses)', () => {
+        // The real road adapter serializes the draft, as the drawing tool's Finish does. It reads
+        // corridor-profile's globals and turf, put on window by the page.
+        Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
+        globalThis.turf = require('@turf/turf');
+        const { registry } = require('../../frontend/js/proposal-editor-adapters.js');
+        const { store } = harness({ adapterRegistry: registry });
+        const segment = [{ lat: 45.8001, lng: 15.9820 }, { lat: 45.8004, lng: 15.9823 }];
+        const draft = store.createDraft({
+            cityId: 'zagreb', goal: 'road-track', proposalType: 'Road',
+            fields: { name: '', parentParcelIds: [] },
+            editorPayload: { kind: 'road', definition: {
+                points: [segment], segments: [segment], segmentIds: [null], width: 10, tunnels: [],
+                polygon: { type: 'Polygon', coordinates: [[[15.98195, 45.80005], [15.98235, 45.80035], [15.98240, 45.80030], [15.98200, 45.80000], [15.98195, 45.80005]]] },
+                metadata: { isCorridor: true, isRoad: true }
+            } }
+        });
+        const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
+        expect(proposal.cadastreParcelIds).toEqual([]);
+        const definition = proposal.roadProposal.definition;
+        expect(definition.points).toEqual([segment]);
+        expect(definition.osm).toBeUndefined();
+    });
+
     it('carries the site and tolerance of a source record into its draft', () => {
         const { store } = harness();
         const draft = store.createDraftFromProposal({ proposalId: 'p-site', goal: 'park', title: 'Park', site: SITE, toleranceM: 0.02, cadastreParcelIds: [] });

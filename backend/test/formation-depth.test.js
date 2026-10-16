@@ -21,18 +21,29 @@ describe('the authored road is its record (roads.md §11)', () => {
     const osmForm = require('../../frontend/js/corridor-osm-form.js');
     const profile = { strips: P.CORRIDOR_PROFILE_PRESETS[10].map(lane => ({ ...lane })) };
 
-    it('projects the stretch fields the editor works on into the OSM document, and nothing else about the road changes', () => {
-        const record = records.stripDerivedRecordData({
+    it('keeps the stretch fields in memory and encodes the OSM document only at the publish boundary', () => {
+        const authored = {
             goal: 'road-track', cadastreParcelIds: [BASE], applied: true,
             roadProposal: { definition: { points: [[A, B]], segments: [[A, B]], profile, width: 10, tunnels: [], metadata: { isRoad: true }, polygon: { type: 'Polygon', coordinates: [] }, surfaceFootprint: {}, demolishedBuildings: [] } }
-        });
-        const definition = record.roadProposal.definition;
-        osmForm.VIEW_FIELDS.forEach(field => expect(definition[field], field).toBeUndefined());
-        expect(definition.osm.elements.filter(element => element.type === 'way')).toHaveLength(1);
-        expect(definition).toMatchObject({ tunnels: [], metadata: { isRoad: true }, polygon: { type: 'Polygon' } });
-        expect(definition.surfaceFootprint).toBeUndefined();
-        expect(osmForm.toView(definition).points).toEqual([[A, B]]);
-        expect(records.stripDerivedRecordData(record).roadProposal.definition).toEqual(definition);
+        };
+        // the in-memory projection (draft build, import, store entry): the view, minus derived data
+        const view = records.stripDerivedRecordData(authored).roadProposal.definition;
+        expect(view.points).toEqual([[A, B]]);
+        expect(view.osm).toBeUndefined();
+        expect(view.surfaceFootprint).toBeUndefined();
+        expect(view.demolishedBuildings).toBeUndefined();
+        // the stored shape: the OSM document and nothing else about the stretches
+        const record = records.encodeRoadRecord(records.stripDerivedRecordData(authored)).roadProposal.definition;
+        osmForm.VIEW_FIELDS.forEach(field => expect(record[field], field).toBeUndefined());
+        expect(record.osm.elements.filter(element => element.type === 'way')).toHaveLength(1);
+        expect(record).toMatchObject({ tunnels: [], metadata: { isRoad: true }, polygon: { type: 'Polygon' } });
+        expect(records.decodeRoadView({ roadProposal: { definition: record } }).roadProposal.definition.points).toEqual([[A, B]]);
+        // the publish body carries the record
+        const published = records.preparePublishRecord(authored).proposal.roadProposal.definition;
+        expect(published.osm).toBeTruthy();
+        expect(published.points).toBeUndefined();
+        // a record handed to the projection is left as it is (it is decoded on load, not here)
+        expect(records.stripDerivedRecordData({ roadProposal: { definition: record } }).roadProposal.definition).toEqual(record);
     });
 
     it('leaves a designation (land, no centre line) as it is', () => {

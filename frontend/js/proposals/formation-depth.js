@@ -148,9 +148,12 @@
                 delete clean.definition.surfaceFootprint;
                 delete clean.definition.demolishedBuildings;
                 delete clean.definition.demolitionScanned;
-                // The authored road is its record (roads.md §11): the OSM document, encoded here
-                // from the stretch fields the editor works on, which are not stored.
-                clean.definition = corridorOsmForm().toRecord(clean.definition);
+                // The road keeps its VIEW here (stretch fields): this projection runs in memory,
+                // between the draft and the store, where every reader expects the view. Only the
+                // two storage boundaries encode the record (encodeRoadRecord: the local store's
+                // row and the publish body); the store decodes on load (decodeRoadView).
+                // 2026-10-16: encoding here made the draft's road a record before the land check
+                // and the junction planner read it, and a drawn road failed at Finish.
             }
             delete clean.childFeatures;
             out[key] = clean;
@@ -186,6 +189,22 @@
             : null;
     }
 
+    // The stored shape of a road (roads.md §11): the OSM document alone under
+    // roadProposal.definition.osm. Applied at the local store's row and the publish body.
+    function encodeRoadRecord(record) {
+        const definition = record && record.roadProposal && record.roadProposal.definition;
+        if (!definition || typeof definition !== 'object') return record;
+        return { ...record, roadProposal: { ...record.roadProposal, definition: corridorOsmForm().toRecord(definition) } };
+    }
+
+    // The running shape: the stretch and cross-section fields decoded from the stored document.
+    // Applied when a record enters the store, before anything reads its geometry.
+    function decodeRoadView(record) {
+        const definition = record && record.roadProposal && record.roadProposal.definition;
+        if (!definition || typeof definition !== 'object' || !definition.osm) return record;
+        return { ...record, roadProposal: { ...record.roadProposal, definition: corridorOsmForm().toView(definition) } };
+    }
+
     function preparePublishRecord(proposal, options) {
         const opts = options || {};
         let out = { ...(proposal || {}) };
@@ -215,7 +234,7 @@
                 violations: [...verdict.violations, { code: 'geometric-parent-resolution-required' }]
             };
         }
-        out = stripDerivedRecordData(out);
+        out = encodeRoadRecord(stripDerivedRecordData(out));
         // Application is local materialization state.  It belongs in the browser's authored log
         // so boot can replay the standing set, but it has no meaning in a portable proposal.
         delete out.applied;
@@ -231,6 +250,8 @@
         conformanceOf,
         findNonCadastralReference,
         stripDerivedRecordData,
+        encodeRoadRecord,
+        decodeRoadView,
         preparePublishRecord,
         scanRecords
     };

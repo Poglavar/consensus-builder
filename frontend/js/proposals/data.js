@@ -228,13 +228,6 @@ function refuseForeignProposal(cityId) {
         { city: label(foreignCity), current: label(manager.getCurrentCityId()) })), { code: 'proposal-in-other-city', cityId: foreignCity });
 }
 
-function corridorOsmFormApi() {
-    const root = typeof window !== 'undefined' ? window : globalThis;
-    if (root && root.__corridorOsmForm) return root.__corridorOsmForm;
-    if (typeof require === 'function') return require('../corridor-osm-form.js');
-    throw new Error('Cannot load proposal: the corridor record form is unavailable.');
-}
-
 function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
@@ -259,7 +252,8 @@ function proposalRecordForPersistence(record) {
         throw new Error(`Cannot persist proposal: ${conflict?.field || conflict?.code || 'cadastral declaration'} is invalid.`);
     }
     const canonical = canonicalizeProposalCadastreAnchors(record);
-    const out = depthApi.stripDerivedRecordData(canonical);
+    // The row holds the road as its record (roads.md §11); the store itself holds the view.
+    const out = depthApi.encodeRoadRecord(depthApi.stripDerivedRecordData(canonical));
     return stripProposalCadastreAliases(out);
 }
 
@@ -1449,6 +1443,9 @@ const proposalStorage = {
             throw new Error('Cannot normalize proposal: the authored-record projection is unavailable.');
         }
         requireExactCadastreAnchors(proposal, 'load');
+        // A loaded road is its record (roads.md §11); what runs is the view decoded from it,
+        // before anything here reads the road's geometry (the land check does).
+        proposal = depthApi.decodeRoadView(proposal);
         // Remote, stored and newly authored records all enter the same strict representation.
         // Local live selection is a separate addProposal option and has already been projected.
         // This function never interprets an alias or asks the live fabric to explain record data.
@@ -1554,9 +1551,6 @@ const proposalStorage = {
             }
             delete rp.parentFeatures;
             delete rp.childFeatures;
-            // A loaded road is its record (roads.md §11); what runs is the view decoded from it:
-            // the stretch and cross-section fields every reader consumes.
-            if (rp.definition && typeof rp.definition === 'object') rp.definition = corridorOsmFormApi().toView(rp.definition);
             proposal.roadProposal = rp;
         }
 

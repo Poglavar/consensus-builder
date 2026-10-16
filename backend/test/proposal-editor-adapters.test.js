@@ -318,14 +318,17 @@ describe('corridor proposal adapter', () => {
         }
     };
 
-    it('serializes the road as its record (roads.md §11), which reads back as the same centerline, profile, tunnels and width', () => {
+    it('serializes the road as its view, which the store row encodes as the record (roads.md §11) and reads back unchanged', () => {
         expect(corridorAdapter.canEdit(proposal)).toBe(true);
         const draft = draftFor(corridorAdapter, proposal);
         const replacement = corridorAdapter.serializeProposal(draft);
         const osmForm = require('../../frontend/js/corridor-osm-form.js');
         const P = require('../../frontend/js/corridor-profile.js');
 
-        const record = replacement.roadProposal.definition;
+        const served = replacement.roadProposal.definition;
+        expect(served.osm).toBeUndefined();
+        expect(served.points).toEqual(proposal.roadProposal.definition.points);
+        const record = osmForm.toRecord(served);
         osmForm.VIEW_FIELDS.forEach(field => expect(record[field], field).toBeUndefined());
         expect(record.osm.elements.filter(element => element.type === 'way')).toHaveLength(1);
         expect(record).toMatchObject({ tunnels: proposal.roadProposal.definition.tunnels, polygon: proposal.roadProposal.definition.polygon, metadata: proposal.roadProposal.definition.metadata });
