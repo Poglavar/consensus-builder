@@ -101,7 +101,9 @@
     function defaultName(city, kind, t) {
         if (kind !== 'building') return city.parcels?.sourceId || city.parcels?.source || city.label;
         const source = city.buildings?.defaultSource || city.buildings?.source || 'gdi';
-        return { osm: 'OpenStreetMap', overture: 'Overture Maps', nyc: 'NYC Open Data', gdi: t('defaultGdi', 'Zagreb 3D model (GDI)') }[source] || source;
+        return { osm: 'OpenStreetMap', overture: 'Overture Maps', 'overture-tiles': 'Overture Maps', nyc: 'NYC Open Data',
+            gdi: t('defaultGdi', 'Zagreb 3D model (GDI)') }[source]
+            || (city.buildings?.defaultSource ? city.buildings.defaultSourceName : city.buildings?.name) || source;
     }
 
     function open(global, kind = 'parcel') {

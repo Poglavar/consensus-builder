@@ -166,6 +166,7 @@
         "software": "Softver otvorenog koda",
         "photo": "Fotografski prikaz",
         "buildings": "3D zgrade",
+        "buildingSource": "Zgrade",
         "none": "Za ovaj grad nije podešen izvor parcela.",
         "description": "Zasluge za mapu i podatke trenutnog grada, kao i softver koji ova aplikacija koristi.",
         "inView": "Parcele u prikazu",
@@ -1187,7 +1188,8 @@
             "showSuggestedLayouts": "Predloženi tlocrti (prizemlje)",
             "showSuggestedLayoutsTooltip": "Prikaži predloženi tlocrt prizemlja u svakoj predloženoj zgradi bez modelovane unutrašnjosti. Crveni isprekidani obrisi su premali za minimalno stepenišno jezgro. Ovo je sugestija, a ne deo predloga.",
             "showOverture": "Overture zgrade (3D model)",
-            "showCustom": "Tvoj izvor zgrada"
+            "showCustom": "Tvoj izvor zgrada",
+            "showCadastre": "Katastarske zgrade"
         },
         "stations": {
             "title": "Stanice",
@@ -5433,6 +5435,7 @@
         },
         "buildingsSource": {
             "osm": "OpenStreetMap zgrade",
+            "overture": "Overture Maps zgrade",
             "estimated": "{{count}} od {{total}} visina procenjeno",
             "partial": "neke možda nedostaju"
         }

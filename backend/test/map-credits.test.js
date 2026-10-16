@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { providerCredits, parcelCredits, creditParts } = require('../../frontend/js/ui/map-credits.js');
+const { providerCredits, parcelCredits, buildingCredits, creditParts } = require('../../frontend/js/ui/map-credits.js');
 
 describe('map credits helpers', () => {
     it('returns linked credits for the active OSM or MapTiler basemap', () => {
@@ -31,6 +31,15 @@ describe('map credits helpers', () => {
         ]);
         expect(parcelCredits({ parcels: { attribution: newCityCredit,
             raster: { attribution: rasterCredit } } })).toEqual([newCityCredit, rasterCredit]);
+    });
+
+    it('credits Overture wherever the buildings are, or may fall back to, its tiles', () => {
+        const cadastre = '<a href="https://example.test/b">City buildings</a>';
+        expect(buildingCredits({ buildings: { source: 'overture-tiles' } })).toEqual([expect.stringContaining('Overture Maps Foundation')]);
+        expect(buildingCredits({ buildings: { source: 'cadastre', attribution: cadastre, fallback: 'overture-tiles' } }))
+            .toEqual([cadastre, expect.stringContaining('OpenStreetMap')]);
+        expect(buildingCredits({ buildings: { source: 'gdi' } })).toEqual([]);
+        expect(buildingCredits({})).toEqual([]);
     });
 
     it('preserves only safe HTTP(S) anchors as links and strips publisher markup', () => {

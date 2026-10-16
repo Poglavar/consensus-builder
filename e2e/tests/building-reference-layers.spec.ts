@@ -112,7 +112,7 @@ test.describe('Building reference layers @features', () => {
     const dgu = page.locator('#showBuildingsDgu');
     await gdi.check();
     await dgu.check();
-    await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
+    await expect.poll(() => page.evaluate(() => ((window as any).buildingFeaturePool || []).some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
 
     const detect = () => page.evaluate(() => {
       const ring = [
@@ -148,7 +148,7 @@ test.describe('Building reference layers @features', () => {
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
     await page.locator('#layers-button').click();
     await page.locator('#showBuildings').check();
-    await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
+    await expect.poll(() => page.evaluate(() => ((window as any).buildingFeaturePool || []).some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
     await expect.poll(() => page.evaluate(() => {
       let found = false;
       (window as any).map.eachLayer((layer: any) => layer.eachLayer?.((child: any) => { if (child.feature?.properties?.object_id === 61075) found = true; }));

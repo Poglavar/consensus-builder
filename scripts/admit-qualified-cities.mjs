@@ -295,7 +295,7 @@ function cityConfigEntry(item) {
         `            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [${center[0]}, ${center[1]}], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },`,
         `            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [${center[0]}, ${center[1]}], fallbackDataset: [${center[1]}, ${center[0]}] },`,
         parcelsLine(descriptor),
-        `            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }`,
+        `            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }`,
         `        },`
     ].join('\n');
 }

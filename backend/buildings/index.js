@@ -5,7 +5,9 @@
 // Adding a city = one new provider file + one line in createBuildingProviders(), OR — for any
 // city that has no bespoke local model — one entry in overture-cities.js, which gets wired to the
 // shared Overture provider automatically below. Every other city, explore included, gets the
-// OpenStreetMap provider (osm-3d.js): OSM is the default source for everybody.
+// OpenStreetMap provider (osm-3d.js) here. The app itself no longer asks for those cities: their
+// config says 'overture-tiles', which the browser reads straight from Overture's public tiles
+// (frontend/js/overture-tiles.js); this provider still answers other callers.
 
 import { createZagrebProvider } from './zagreb-3d.js';
 import { createNycProvider } from './nyc-footprints.js';

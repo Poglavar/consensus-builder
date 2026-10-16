@@ -166,6 +166,7 @@
         "software": "Software de código abierto",
         "photo": "Vista fotográfica",
         "buildings": "Edificios 3D",
+        "buildingSource": "Edificios",
         "none": "No hay una fuente de parcelas configurada para esta ciudad.",
         "description": "Créditos del mapa y los datos de la ciudad actual, además del software utilizado por esta aplicación.",
         "inView": "Parcelas en vista",
@@ -1067,7 +1068,8 @@
             "showSuggestedLayouts": "Distribuciones sugeridas (planta baja)",
             "showSuggestedLayoutsTooltip": "Dibuja una distribución sugerida de la planta baja dentro de cada edificio propuesto sin interior modelado. Los contornos rojos discontinuos son demasiado pequeños para un núcleo de escalera mínimo. Es una sugerencia, no parte de la propuesta.",
             "showOverture": "Edificios de Overture (modelo 3D)",
-            "showCustom": "Tu fuente de edificios"
+            "showCustom": "Tu fuente de edificios",
+            "showCadastre": "Edificios del catastro"
         },
         "stations": {
             "title": "Estaciones",
@@ -5432,6 +5434,7 @@
         },
         "buildingsSource": {
             "osm": "Edificios de OpenStreetMap",
+            "overture": "Edificios de Overture Maps",
             "estimated": "{{count}} de {{total}} alturas estimadas",
             "partial": "pueden faltar algunos"
         }

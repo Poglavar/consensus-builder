@@ -166,6 +166,7 @@
         "software": "Softver otvorenog koda",
         "photo": "Fotografski prikaz",
         "buildings": "3D zgrade",
+        "buildingSource": "Zgrade",
         "none": "Za ovaj grad nije konfiguriran izvor čestica.",
         "description": "Zasluge za kartu i podatke trenutačnog grada te softver koji ova aplikacija koristi.",
         "inView": "Čestice u prikazu",
@@ -1187,7 +1188,8 @@
             "showSuggestedLayouts": "Predloženi tlocrti (prizemlje)",
             "showSuggestedLayoutsTooltip": "Prikaži predloženi tlocrt prizemlja u svakoj predloženoj zgradi bez modelirane unutrašnjosti. Crveni isprekidani obrisi premali su za minimalnu stubišnu jezgru. Ovo je sugestija, a ne dio prijedloga.",
             "showOverture": "Overture zgrade (3D model)",
-            "showCustom": "Tvoj izvor zgrada"
+            "showCustom": "Tvoj izvor zgrada",
+            "showCadastre": "Katastarske zgrade"
         },
         "stations": {
             "title": "Postaje",
@@ -5433,6 +5435,7 @@
         },
         "buildingsSource": {
             "osm": "OpenStreetMap zgrade",
+            "overture": "Overture Maps zgrade",
             "estimated": "{{count}} od {{total}} visina procijenjeno",
             "partial": "neke možda nedostaju"
         }

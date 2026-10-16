@@ -30,6 +30,12 @@ describe('OSM 3D provider', () => {
         expect(byId.w3.z_max).toBeGreaterThan(0);
     });
 
+    it('answers truncated when the polygon is wider than one query, so its area is not claimed as covered', async () => {
+        const provider = createOsmProvider(null, 'lima', { fetchStaged: noStaged, fetchLive: live([building('w1', 10, 10)]) });
+        expect((await provider.footprints(box(9.99, 9.99, 0.05))).truncated).toBe(false);
+        expect((await provider.footprints(box(9.95, 9.95, 0.1))).truncated).toBe(true);
+    });
+
     it('prefers the staged copy over live Overpass', async () => {
         let liveCalls = 0;
         const provider = createOsmProvider({}, 'split', {

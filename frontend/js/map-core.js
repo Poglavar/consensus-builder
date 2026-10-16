@@ -343,24 +343,19 @@ async function loadGdiFootprints(req) {
     return { features: (converted && converted.features) || [], truncated: data && data.truncated === true };
 }
 
-// The per-city provider: the same POST /buildings/footprints the urban-rule editor reads, already
-// in WGS84. Its ids land on `properties.id`, which is exactly what corridor-tunnel's building
-// identity accepts for the non-Zagreb sources — so a road cuts, tunnels under and demolishes these
-// the same way it does GDI objects.
+// The per-city provider: the same /buildings/footprints answer the urban-rule editor reads, already
+// in WGS84, from the backend or straight from Overture's tiles (building-source-client.js). Its ids
+// land on `properties.id`, which is exactly what corridor-tunnel's building identity accepts for the
+// non-Zagreb sources — so a road cuts, tunnels under and demolishes these the same way it does GDI
+// objects.
 async function loadProviderFootprints(bounds, city) {
-    const base = (typeof getBackendBase === 'function') ? getBackendBase() : '';
     const west = bounds.getWest(), south = bounds.getSouth(), east = bounds.getEast(), north = bounds.getNorth();
     const geometry = {
         type: 'Polygon',
         coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
     };
-    const response = await fetch(`${base}/buildings/footprints`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ geometry, city, source: CityConfigManager.getBuildingSourceId?.() })
-    });
-    if (!response.ok) throw new Error('Failed to fetch building footprints');
-    const payload = await response.json();
+    const payload = await window.BuildingSourceClient.request('/buildings/footprints',
+        { geometry, city, source: CityConfigManager.getBuildingSourceId?.() });
     // A city with no footprint capability is not an error and not worth a status line about zero.
     if (!payload || payload.supported === false) return null;
     // The upstream failed outright (OSM throttling, a user's source down): an empty answer here is
@@ -396,7 +391,7 @@ function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false) {
     let origin = 'other';
     try {
         if (fromOsm) origin = 'osm';
-        else if (manager?.getBuildingSourceId?.()) origin = 'custom';
+        else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'custom') origin = 'custom';
         else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'osm') origin = 'osm';
     } catch (_) { /* the generic wording is still true */ }
     settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin }), 'building', retry);

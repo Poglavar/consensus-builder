@@ -178,6 +178,9 @@
     <!-- Turf.js for geometric calculations -->
     <script src="vendor/turf-6.5.0/turf.min.js"></script>
 
+    <!-- PMTiles reader: buildings read in the browser from Overture's public tiles (js/overture-tiles.js) -->
+    <script src="vendor/pmtiles-4.4.1/pmtiles.js"></script>
+
     <!-- Viewport-safe layout helpers -->
     <script>
         window.writeVersionedLocalScripts(['js/viewport-safe-area.js']);
@@ -1858,6 +1861,12 @@
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
             // bundle:end parcel-data-clients
+            // Existing buildings: shared height/extrusion rules, the provider core, Overture's tiles
+            // read in the browser, and the one client every /buildings/* request goes through.
+            'js/building-extrusion.js',
+            'js/footprint-provider.js',
+            'js/overture-tiles.js',
+            'js/building-source-client.js',
             'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js',
             'js/site-intro.js',

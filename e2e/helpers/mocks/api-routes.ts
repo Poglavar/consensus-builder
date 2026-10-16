@@ -2,6 +2,7 @@ import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { sampleProposalsList, makeRoadProposal } from './proposal-data';
 import { fixtureSiteBinding } from './site-binding';
+import { mockOvertureTiles } from './overture-tiles';
 
 const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
   if (resourceType !== 'fetch' && resourceType !== 'xhr') {
@@ -75,6 +76,9 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
     return route.fulfill({ json: { type: 'FeatureCollection', features: [] } });
   });
+  // Last, so it answers before '**/buildings**' (newest route first): the archive URL ends in
+  // buildings.pmtiles. Cities on Overture's tiles read an empty archive instead of the real CDN.
+  await mockOvertureTiles(page);
 }
 
 export async function mockHealthRoute(page: Page): Promise<void> {

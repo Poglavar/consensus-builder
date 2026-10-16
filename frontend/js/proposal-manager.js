@@ -1779,15 +1779,6 @@ const ProposalManager = {
             return prefetched;
         }
 
-        const backendBase = (() => {
-            try {
-                if (typeof getBackendBase === 'function') {
-                    const base = getBackendBase();
-                    if (base && typeof base === 'string') return base.replace(/\/$/, '');
-                }
-            } catch (_) { }
-            return 'https://api.urbangametheory.xyz';
-        })();
         const city = (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId)
             ? CityConfigManager.getCurrentCityId() : undefined;
 
@@ -1803,13 +1794,8 @@ const ProposalManager = {
             const chunk = regions.slice(index, index + PREFETCH_CHUNK);
             try {
                 profile.requests += 1;
-                const response = await fetch(`${backendBase}/buildings/under`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                    body: JSON.stringify({ regions: chunk, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
-                });
-                if (!response.ok) { console.warn('[replay] bulk building fetch HTTP', response.status); continue; }
-                const payload = await response.json();
+                const payload = await window.BuildingSourceClient.request('/buildings/under',
+                    { regions: chunk, city, source: window.CityConfigManager?.getBuildingSourceId?.() });
                 if (!payload || payload.supported === false || payload.truncated === true) {
                     if (payload && payload.truncated) console.warn('[replay] bulk building fetch truncated — falling back per proposal');
                     continue;

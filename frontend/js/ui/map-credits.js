@@ -15,6 +15,7 @@
         ['Turf', 'https://turfjs.org/'],
         ['Font Awesome Free', 'https://fontawesome.com/license/free'],
         ['pako', 'https://github.com/nodeca/pako'],
+        ['PMTiles', 'https://github.com/protomaps/PMTiles'],
         ['leaflet-image', 'https://github.com/mapbox/leaflet-image'],
         ['ethers', 'https://docs.ethers.org/'],
         ['Solana web3.js', 'https://github.com/solana-foundation/solana-web3.js']
@@ -53,6 +54,18 @@
     function parcelCredits(city) {
         const parcels = city?.parcels || {};
         return [...new Set([parcels.attribution, parcels.raster?.attribution].filter(Boolean))];
+    }
+    // Overture's buildings carry OpenStreetMap's licence (ODbL) and credit their other contributors.
+    const OVERTURE_BUILDINGS_CREDIT = '<a href="https://overturemaps.org/">Overture Maps Foundation</a> buildings · '
+        + '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Esri Community Maps, '
+        + 'Google Open Buildings, Microsoft ML Buildings · <a href="https://opendatacommons.org/licenses/odbl/">ODbL</a>';
+    // Credits for the city's working set of buildings: its own attribution, and Overture's whenever
+    // the buildings are (or may fall back to) Overture's tiles.
+    function buildingCredits(city) {
+        const buildings = city?.buildings || {};
+        const credits = [buildings.attribution];
+        if (buildings.source === 'overture-tiles' || buildings.fallback === 'overture-tiles') credits.push(OVERTURE_BUILDINGS_CREDIT);
+        return credits.filter(Boolean);
     }
     function providerCredits(key) { return providers[key] || providers.openstreetmap; }
     // The source behind the parcels in view as display lines ({ text, label?, url?, html?, strong? }),
@@ -167,6 +180,8 @@
                 row(tr('parcel', 'Parcel source for ' + city.label, { city: city.label }),
                     credits.length ? credits : [tr('none', 'No parcel source configured for this city.')]);
             }
+            const cityBuildings = buildingCredits(city);
+            if (cityBuildings.length) row(tr('buildingSource', 'Buildings'), cityBuildings);
             const buildings = doc.querySelector('.three-mode-source-note:not([hidden])');
             if (buildings?.textContent) row(tr('buildings', '3D buildings'), [buildings.textContent]);
             const photo = doc.querySelector('.photoreal-attribution.visible');
@@ -204,5 +219,5 @@
         root.ParcelSourceInView?.subscribe?.(() => renderDetails());
         return { refresh: renderControl };
     }
-    return Object.freeze({ install, creditParts, parcelCredits, providerCredits, inViewLines });
+    return Object.freeze({ install, creditParts, parcelCredits, buildingCredits, providerCredits, inViewLines });
 });

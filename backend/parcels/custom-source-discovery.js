@@ -152,7 +152,7 @@ function buildingHeightFields(fields) {
     const list = Array.isArray(fields) ? fields : [];
     const named = re => list.find(field => IDENTIFIER.test(String(field?.name || field?.fieldName || '')) && re.test(compactName(field)));
     const height = named(/^(height|heightm|heightft|measuredheight|bldgheight|buildingheight|roofheight|heightroof|hoehe|visina|altura|hauteur|hgt)$/);
-    const levels = named(/^(levels|buildinglevels|floors|numfloors|nofloors|numberoffloors|storeys|stories|etaze|brojetaza|geschosse|anzahlgeschosse|pisos|niveaux)$/);
+    const levels = named(/^(levels|buildinglevels|floors|numfloors|nofloors|numberoffloors|storeys|stories|etaze|brojetaza|geschosse|anzahlgeschosse|pisos|npisos|numpisos|numeropisos|connpisos|niveaux)$/);
     const heightField = height ? (height.name || height.fieldName) : undefined;
     const levelsField = levels ? (levels.name || levels.fieldName) : undefined;
     return {

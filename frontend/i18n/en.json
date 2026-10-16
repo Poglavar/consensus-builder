@@ -166,6 +166,7 @@
         "software": "Open-source software",
         "photo": "Photo view",
         "buildings": "3D buildings",
+        "buildingSource": "Buildings",
         "none": "No parcel source configured for this city.",
         "description": "Map and data credits for the current city, plus the software used by this app.",
         "inView": "Parcels in view",
@@ -1156,7 +1157,8 @@
             "showSuggestedLayouts": "Suggested layouts (ground floor)",
             "showSuggestedLayoutsTooltip": "Draw a suggested ground-floor layout inside each proposed building without a modelled interior. Red dashed outlines are too small for a minimum stair core. A suggestion, not part of the proposal.",
             "showOverture": "Overture buildings (3D model)",
-            "showCustom": "Your building source"
+            "showCustom": "Your building source",
+            "showCadastre": "Cadastre buildings"
         },
         "stations": {
             "title": "Stations",
@@ -5381,6 +5383,7 @@
         },
         "buildingsSource": {
             "osm": "OpenStreetMap buildings",
+            "overture": "Overture Maps buildings",
             "estimated": "{{count}} of {{total}} heights estimated",
             "partial": "some may be missing"
         }

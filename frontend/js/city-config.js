@@ -369,7 +369,7 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'osm'
+                source: 'overture-tiles'
             },
             sidebar: {
                 disabledSections: ['roads', 'areaMonitor']
@@ -409,7 +409,7 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'osm'
+                source: 'overture-tiles'
             },
             sidebar: {
                 // Disable Parcel blocks, Buildings, and Roads for Buenos Aires
@@ -449,7 +449,7 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'osm'
+                source: 'overture-tiles'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -479,7 +479,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         norfolk: {
@@ -501,7 +501,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         quebec: {
@@ -523,7 +523,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         point_cook: {
@@ -545,7 +545,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         mansa: {
@@ -567,7 +567,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         chingola: {
@@ -589,7 +589,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         madadeni: {
@@ -611,7 +611,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         kabwe: {
@@ -633,7 +633,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         rennes: {
@@ -655,7 +655,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         cinco_ranch: {
@@ -677,7 +677,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         cannes: {
@@ -699,7 +699,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         rustenburg: {
@@ -721,7 +721,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         tours: {
@@ -743,7 +743,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         nancy: {
@@ -765,7 +765,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         maurepas: {
@@ -787,7 +787,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         orleans: {
@@ -809,7 +809,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         burien: {
@@ -831,7 +831,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gismaps.kingcounty.gov/parcelviewer2/">City of Seattle GIS · King County parcel boundaries</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         livingstone: {
@@ -853,7 +853,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         dale_city: {
@@ -875,7 +875,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         dijon: {
@@ -897,7 +897,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         clermont_ferrand: {
@@ -919,7 +919,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         reims: {
@@ -941,7 +941,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         le_havre: {
@@ -963,7 +963,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         lens: {
@@ -985,7 +985,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         surprise: {
@@ -1007,7 +1007,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         angers: {
@@ -1029,7 +1029,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         cork: {
@@ -1051,7 +1051,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann · freehold title boundaries only · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         sakhrol: {
@@ -1073,7 +1073,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         laveen: {
@@ -1095,7 +1095,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         caen: {
@@ -1117,7 +1117,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         le_mans: {
@@ -1139,7 +1139,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         metz: {
@@ -1161,7 +1161,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         homestead: {
@@ -1183,7 +1183,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about">Miami-Dade County GIS, Property Appraiser parcels. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         brest: {
@@ -1205,7 +1205,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         nimes: {
@@ -1227,7 +1227,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         kwanobuhle: {
@@ -1249,7 +1249,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         annecy: {
@@ -1271,7 +1271,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         dallas_au: {
@@ -1293,7 +1293,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         gatineau: {
@@ -1315,7 +1315,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         coalbrook: {
@@ -1337,7 +1337,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         limoges: {
@@ -1359,7 +1359,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         amiens: {
@@ -1381,7 +1381,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         mpumalanga: {
@@ -1403,7 +1403,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         stellenbosch: {
@@ -1425,7 +1425,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         pau: {
@@ -1447,7 +1447,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         troyes: {
@@ -1469,7 +1469,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         valenciennes: {
@@ -1491,7 +1491,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         campbelltown: {
@@ -1513,7 +1513,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         trois_rivieres: {
@@ -1535,7 +1535,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         repentigny: {
@@ -1557,7 +1557,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         bayonne: {
@@ -1579,7 +1579,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         sainte_foy: {
@@ -1601,7 +1601,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         poitiers: {
@@ -1623,7 +1623,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         montoya: {
@@ -1645,7 +1645,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://opendata.elpasotexas.gov/">El Paso public parcel reference map · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         kafue: {
@@ -1667,7 +1667,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         jerusalem_za: {
@@ -1689,7 +1689,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         le_mee_sur_seine: {
@@ -1711,7 +1711,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         sherbrooke: {
@@ -1733,7 +1733,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         dunkirk: {
@@ -1755,7 +1755,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         cambridge_park: {
@@ -1777,7 +1777,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         langwarrin: {
@@ -1799,7 +1799,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         lakeside: {
@@ -1821,7 +1821,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         aix_en_provence: {
@@ -1843,7 +1843,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         annemasse: {
@@ -1865,7 +1865,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         lorient: {
@@ -1887,7 +1887,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         poissy: {
@@ -1909,7 +1909,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         nassau_bay: {
@@ -1931,7 +1931,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         avondale: {
@@ -1953,7 +1953,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         valence: {
@@ -1975,7 +1975,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         avignon: {
@@ -1997,7 +1997,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         galway: {
@@ -2019,7 +2019,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann · freehold title boundaries only · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         henderson: {
@@ -2041,7 +2041,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1">Clark County Assessor / GISMO · parcel reference polygons</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         saint_jean_sur_richelieu: {
@@ -2063,7 +2063,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         manassas_park: {
@@ -2085,7 +2085,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         calais: {
@@ -2107,7 +2107,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         swords: {
@@ -2129,7 +2129,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann · freehold title boundaries only · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         saint_constant: {
@@ -2151,7 +2151,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         mankweng: {
@@ -2173,7 +2173,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         boulogne_sur_mer: {
@@ -2195,7 +2195,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         melton: {
@@ -2217,7 +2217,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         rosedale: {
@@ -2239,7 +2239,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1">City of Bakersfield GIS · cadastral parcel APN references · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         ekangala: {
@@ -2261,7 +2261,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         chartres: {
@@ -2283,7 +2283,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         beziers: {
@@ -2305,7 +2305,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         asbury_park: {
@@ -2327,7 +2327,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://nj.gov/njgin/edata/parcels/">New Jersey Office of Information Technology, Office of GIS (NJOGIS). Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         terrebonne: {
@@ -2349,7 +2349,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         atascocita: {
@@ -2371,7 +2371,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         douai: {
@@ -2393,7 +2393,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         meridian: {
@@ -2415,7 +2415,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7">Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         mumbwa: {
@@ -2437,7 +2437,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         ajaccio: {
@@ -2459,7 +2459,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         arras: {
@@ -2481,7 +2481,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         cherbourg_en_cotentin: {
@@ -2503,7 +2503,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         bohlokong: {
@@ -2525,7 +2525,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         saint_brieuc: {
@@ -2547,7 +2547,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         brits: {
@@ -2569,7 +2569,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         ezakheni: {
@@ -2591,7 +2591,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         cary: {
@@ -2613,7 +2613,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.nconemap.gov/pages/parcels">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         pittsville: {
@@ -2635,7 +2635,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         greenspoint: {
@@ -2657,7 +2657,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         pakenham: {
@@ -2679,7 +2679,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         sugarland_run: {
@@ -2701,7 +2701,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         bussy_saint_georges: {
@@ -2723,7 +2723,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         prairie_oaks: {
@@ -2745,7 +2745,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.saccounty.gov/">Sacramento County GIS. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         matsulu: {
@@ -2767,7 +2767,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         saint_jerome: {
@@ -2789,7 +2789,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         khuma: {
@@ -2811,7 +2811,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General · DFFE hosted Erven · adapted</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         saint_nazaire: {
@@ -2833,7 +2833,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         // END qualification admission 2026-10-11 round2
@@ -2858,7 +2858,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.utah.gov/products/sgid/cadastre/parcels/">Utah Geospatial Resource Center and local government. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         surrey: {
@@ -2881,7 +2881,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.surrey.ca/services-payments/online-services/maps-cosmos">City of Surrey cadastral lots</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         bologna: {
@@ -2904,7 +2904,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer">Comune di Bologna — Sistema Informativo Territoriale</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         geneva: {
@@ -2927,7 +2927,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://sitg.ge.ch/donnees/cad-parcelle-mensu">République et canton de Genève - Département du territoire / SITG</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         hamilton: {
@@ -2950,7 +2950,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json">City of Hamilton; Teranet data received February 9, 2024.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         nice: {
@@ -2973,7 +2973,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur">Métropole Nice Côte d’Azur / Direction de l’Information Géographique; service attribution DGFIP 2025; layer attribution DGFIP 2020.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         escondido: {
@@ -2996,7 +2996,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 0.75,
                 attribution: '<a href="https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0">City of Escondido</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         stockton: {
@@ -3019,7 +3019,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1">San Jouquin County CD/GIS & City of Stockton IT/GIS; Data Steward: San Joaquin County Assessor\'s Office</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         pittsburgh: {
@@ -3042,7 +3042,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1">Allegheny County DCS-GIS parcel boundaries</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         pasto: {
@@ -3065,7 +3065,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29">Instituto Geográfico Agustín Codazzi - IGAC; Alcaldía de Pasto Geoportal</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         riverside: {
@@ -3088,7 +3088,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86">City of Riverside cadastral parcels</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         grenoble: {
@@ -3111,7 +3111,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         longueuil: {
@@ -3134,7 +3134,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geohub.longueuil.quebec/">Ville de Longueuil · municipal Cadastre</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         wazirabad: {
@@ -3157,7 +3157,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35">Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         buffalo: {
@@ -3180,7 +3180,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www3.erie.gov/gis/internet-mapping">Erie County Office of GIS</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         oshawa: {
@@ -3203,7 +3203,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf">City of Oshawa GIS</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         arlington: {
@@ -3226,7 +3226,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 0.75,
                 attribution: '<a href="https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2">City of Arlington, Texas GIS / OpenData</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         brno: {
@@ -3249,7 +3249,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer">GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         hammond: {
@@ -3272,7 +3272,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 0.75,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=18b6b08c8c7e403cbd9451360c8f5a61">Lake County Surveyor\'s Office; parcel fabric maintained by Lake County Auditor\'s Office.</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         takasaki: {
@@ -3295,7 +3295,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip">Takasaki City parcel-number map polygons</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         wiesbaden: {
@@ -3318,7 +3318,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs">Hessen simplified ALKIS cadastral parcels</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         gdansk: {
@@ -3341,7 +3341,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&amp;request=GetCapabilities&amp;version=2.0.0">Urząd Miejski w Gdańsku — EGiB</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         sosnowiec: {
@@ -3364,7 +3364,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/">Sosnowiec municipal EGiB parcel polygons</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         montpellier: {
@@ -3387,7 +3387,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.montpellier3m.fr/dataset/cadastre-de-montpellier">Montpellier municipal PCI cadastral parcels</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         // END qualification admission 2026-10-11
@@ -3462,7 +3462,18 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9">IDECA/UAECD lots · Dec 2021 · CAR mirror</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: {
+                // The cadastre's own buildings (IDECA/UAECD "Construcción": 2.37 M footprints, each with
+                // its storey count), read live through the building-source adapter from a public ArcGIS
+                // copy: UAECD's own server does not answer from outside Colombia, and this copy was
+                // uploaded by a university account (last edited 2022-08). Overture's tiles stand in
+                // wherever it fails or has nothing (outside Bogotá D.C.).
+                source: 'cadastre',
+                sourceId: 'building.eyJhZGFwdGVyIjoiYXJjZ2lzIiwiZW5kcG9pbnQiOiJodHRwczovL3NlcnZpY2VzLmFyY2dpcy5jb20vZGVRU2IwR243Z0RQZjN1Vi9hcmNnaXMvcmVzdC9zZXJ2aWNlcy9Db25zdHJ1Y2Npb25lc19Cb2dvdGFfRENfdmlzdGEvRmVhdHVyZVNlcnZlci8wIiwiY2l0eUlkcyI6WyJib2dvdGEiXSwibWV0cmljU3JpZCI6MzI2MTgsImlkRmllbGQiOiJGSUQiLCJvYmplY3RJZEZpZWxkIjoiRklEIiwiaWRUeXBlIjoiaW50ZWdlciIsIm91dEZpZWxkcyI6WyJGSUQiLCJDT05OUElTT1MiXSwia2luZCI6ImJ1aWxkaW5nIiwibGV2ZWxzRmllbGQiOiJDT05OUElTT1MiLCJpZFByZWZpeCI6IkNVU1RPTS1CLTU4YzIyNzVhOTAyMTg3N2U5NjllLSJ9',
+                fallback: 'overture-tiles',
+                name: 'IDECA/UAECD Construcción',
+                attribution: '<a href="https://services.arcgis.com/deQSb0Gn7gDPf3uV/arcgis/rest/services/Construcciones_Bogota_DC_vista/FeatureServer/0">IDECA/UAECD buildings · 2022 copy</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
+            },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3480,7 +3491,7 @@
                 sourceId: 'cn-shenzhen-land-certain', idPrefix: 'CN-SZ-LANDCERTAIN-',
                 requiresBackend: true, ownership: false, liveRadiusKm: 1,
                 attribution: 'Shenzhen Municipal Planning and Natural Resources Bureau · public cadastral-map service' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['areaMonitor'] },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['areaMonitor'] },
             parcelBuilder: null
         },
         tbilisi: {
@@ -3502,7 +3513,7 @@
                     params: { LR_ID: 261415 }, attribution: '<a href="https://ms.gov.ge/msmap/">NAPR · MSDA</a>' },
                 attribution: '<a href="https://ms.gov.ge/msmap/">NAPR · MSDA</a> · Parcel lookup on click'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: null
         },
@@ -3520,7 +3531,7 @@
                 sourceId: 'tr-tkgm-parselsorgu-api', idPrefix: 'TR-TKGM-',
                 parcelNumberField: 'parselNo', requiresBackend: true, ownership: false, liveRadiusKm: 0.1,
                 attribution: 'TKGM · parcel lookup on click' },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: null
         },
@@ -3552,7 +3563,7 @@
                 liveRadiusKm: 15,
                 attribution: '<a href="https://open.toronto.ca/dataset/property-boundaries/">City of Toronto Property Boundary</a> · <a href="https://open.toronto.ca/open-data-license/">Open Government Licence – Toronto</a>'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3577,7 +3588,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55">Gouvernement du Québec · cadastre rénové</a> · indicative geometry only; no legal value'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3609,7 +3620,7 @@
                 liveRadiusKm: 15,
                 attribution: '<a href="https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about">County of Los Angeles · Assessor parcels · accessed Oct 2, 2026</a> · <a href="https://egis-lacounty.hub.arcgis.com/pages/terms-of-use">Terms of use</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3641,7 +3652,7 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about">Miami-Dade County GIS · Property Appraiser parcels · data terms</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3673,7 +3684,7 @@
                 liveRadiusKm: 2,
                 attribution: '<a href="https://opendata.dc.gov/datasets/DCGIS::tax-lots">District of Columbia · DCGIS tax lots</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3705,7 +3716,7 @@
                 liveRadiusKm: 15,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP · Parcellaire Express · data &amp; updates</a> · <a href="https://www.data.gouv.fr/pages/legal/licences/etalab-2.0">Licence Ouverte 2.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3737,7 +3748,7 @@
                 liveRadiusKm: 20,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871">State of Victoria · DTP · Vicmap Parcel</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3769,7 +3780,7 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about">City of Cape Town · Land Parcels · data terms</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3801,7 +3812,7 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3833,7 +3844,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb">Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen</a> · <a href="https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik">reuse terms</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3864,7 +3875,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3895,7 +3906,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://data.sf.gov/d/acdm-wktn">City and County of San Francisco · DataSF</a> · <a href="https://opendatacommons.org/licenses/pddl/1-0/">PDDL 1.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3926,7 +3937,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7">Land Berlin · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3958,7 +3969,7 @@
                 liveRadiusKm: 6,
                 attribution: '<a href="https://www.landsd.gov.hk/en/index.html"><img src="/assets/parcel-sources/landsd-logo.svg" alt="Lands Department" style="height:24px;width:auto;vertical-align:middle"></a> · Map from Lands Department · © Government of the Hong Kong SAR / <a href="https://portal.csdi.gov.hk/csdi-webpage/doc/TNC">CSDI</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -3990,7 +4001,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP · Parcellaire Express · data &amp; updates</a> · <a href="https://www.data.gouv.fr/pages/legal/licences/etalab-2.0">Licence Ouverte 2.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4021,7 +4032,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4052,7 +4063,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4083,7 +4094,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4115,7 +4126,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://cadastre.andf.bj/">ANDF e-Foncier cadastral parcels</a> · <a href="https://andf.bj/cadastre/">publisher conditions</a> · verified Cotonou samples · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4147,7 +4158,7 @@
                 liveRadiusKm: 5,
                 attribution: '<a href="https://ninacad.sprdf.ml/">SPRDF / NINACAD · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4170,7 +4181,7 @@
                 dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-13101">MOJ / Geospatial Information Center · 2026</a> · Tokyo Chiyoda ward public-coordinate sheets only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4193,7 +4204,7 @@
                 dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-23101">MOJ / Geospatial Information Center · 2026</a> · Nagoya Chikusa ward public-coordinate sheets only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4216,7 +4227,7 @@
                 dataVersion: '2026', requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.geospatial.jp/ckan/dataset/aigid-moj-27128">MOJ / Geospatial Information Center · 2026</a> · Osaka Chuo ward public-coordinate sheets only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4241,7 +4252,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4264,7 +4275,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://geosampa.prefeitura.sp.gov.br/">GeoSampa / Prefeitura do Município de São Paulo</a> · <a href="https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx">data and source conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4289,7 +4300,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9">NSW Spatial Services / Department of Customer Service</a> · <a href="https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions">publisher conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4314,7 +4325,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21">SEDAPAL Lima lots</a> · adapted · source conditions apply'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4339,7 +4350,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0">GGPEN Luanda property polygons</a> · adapted · source conditions apply'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4364,7 +4375,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 12,
                 attribution: '<a href="https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0">Parcels_Mtendere_East — Lusaka_parcels_creation (ArcGIS Online)</a> · unofficial 28-polygon Mtendere East sample · publisher and source terms unverified'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4389,7 +4400,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4414,7 +4425,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4437,7 +4448,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 25,
                 attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4460,7 +4471,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 25,
                 attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4483,7 +4494,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 0.35,
                 attribution: '<a href="https://settlement.gov.bd/">Bangladesh Directorate of Land Records and Surveys</a> · Dhamsona BDS Sheet 001 draft survey only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4506,7 +4517,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 5,
                 attribution: '<a href="https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0">City of Montgomery GIS · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4529,7 +4540,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://juneau.org/finance/assessor-office">City and Borough of Juneau GIS · publisher &amp; conditions</a> · identified parcels; unassigned records excluded · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4552,7 +4563,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 10,
                 attribution: '<a href="https://mcassessor.maricopa.gov/">Maricopa County Assessor&apos;s Office · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4575,7 +4586,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://gis.arkansas.gov/">Arkansas GIS Office · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4598,7 +4609,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://data.saccounty.gov/">Sacramento County GIS · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4621,7 +4632,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0">Connecticut GIS Office · publisher &amp; conditions</a> · identified assessment parcel groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4644,7 +4655,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0">State of Delaware FirstMap (Delaware Geospatial Data Exchange) · publisher &amp; conditions</a> · Kent County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4667,7 +4678,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11">Fulton County GIS · publisher &amp; conditions</a> · Fulton County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4690,7 +4701,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25">Hawaii Statewide GIS Program · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4713,7 +4724,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7">Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County · publisher &amp; conditions</a> · Ada County assessment parcel groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4736,7 +4747,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2">City of Springfield GIS · publisher &amp; conditions</a> · city assessment parcel groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4759,7 +4770,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://catalog.data.gov/dataset/tax-parcel">EBRGIS; East Baton Rouge Parish Assessor&#x27;s Office; Department of Information Services · publisher &amp; conditions</a> · tax-account parcel groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4782,7 +4793,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://mainegeolibrary-maine.hub.arcgis.com/maps/maine::maine-parcels-organized-towns-feature/about">Maine GeoLibrary with voluntarily submitted municipality-maintained parcel data · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4805,7 +4816,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://annapolis.gov/2324/GIS-and-Maps">City of Annapolis GIS · publisher &amp; conditions</a> · city development layer · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4828,7 +4839,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson">City of Boston GIS / Assessing · publisher &amp; conditions</a> · fee parcel polygons only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4851,7 +4862,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.in.gov/gis/geoinsights/posts/data-harvest/">Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap · publisher &amp; conditions</a> · Marion County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4874,7 +4885,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0">Iowa Department of Homeland Security &amp; Emergency Management; University of Iowa public mirror · publisher &amp; conditions</a> · 2017 snapshot · assessment parcel groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4897,7 +4908,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1">Ingham County Equalization parcel data; public publisher Ingham County Drain Office · publisher &amp; conditions</a> · Ingham County · 2025 data · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4920,7 +4931,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 8,
                 attribution: '<a href="https://www.stpaul.gov/departments/planning-and-economic-development/maps-and-data">Ramsey County GIS · publisher &amp; conditions</a> · Ramsey County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4943,7 +4954,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://www.colecounty.org/424/GISMapping">Cole County GIS / Jefferson City (JCMO_ADMIN) · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4966,7 +4977,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://www.msl.mt.gov/geoinfo/msdi/cadastral/">Montana Department of Revenue and county GIS offices; integrated by Montana State Library · publisher &amp; conditions</a> · Identified parcels; rows without a native ID omitted · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -4989,7 +5000,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=1da5644990874ff2857daffa043b3617">City of Lincoln / Lancaster County (CountyCityPub) · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5012,7 +5023,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.granit.unh.edu/">New Hampshire GRANIT / NH Department of Environmental Services · publisher &amp; conditions</a> · Identified parcels; ambiguous native key omitted · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5035,7 +5046,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://nj.gov/njgin/edata/parcels/">New Jersey Office of Information Technology, Office of GIS (NJOGIS) · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5058,7 +5069,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.santafecountynm.gov/growth-management/gis">Santa Fe County GIS Division · publisher &amp; conditions</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5081,7 +5092,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://gis.ny.gov/parcel-polygon-metadata">New York State Office of Information Technology Services, Geospatial Services; contributing counties · publisher &amp; conditions</a> · Albany County · 2024 data, published May 2026 · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5104,7 +5115,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.nconemap.gov/pages/parcels">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors · publisher &amp; conditions</a> · Wake County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5128,7 +5139,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.nconemap.gov/pages/parcels">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors · publisher &amp; conditions</a> · Wake County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5152,7 +5163,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
                 attribution: '<a href="https://entebhoomi.kerala.gov.in/web/ilms/map">Kerala Survey and Land Records Department / NIC Kerala · Ente Bhoomi</a> · Manikkal village coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5176,7 +5187,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
                 attribution: '<a href="https://entebhoomi.kerala.gov.in/web/ilms/map">Kerala Survey and Land Records Department / NIC Kerala · Ente Bhoomi</a> · Thiruvankulam village coverage only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5200,7 +5211,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
                 attribution: '<a href="https://entebhoomi.kerala.gov.in/web/ilms/map">Kerala Survey and Land Records Department / NIC Kerala · Ente Bhoomi</a> · Iravipuram village coverage only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5224,7 +5235,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://tpvd.openprp.in/ctpvd/index.html">Gujarat TPVD final planning plots · publisher &amp; conditions</a> · Ahmedabad Municipal Corporation (AMC) Final town-planning plots only · partial coverage; not ownership or current-title evidence · registration/currentness unverified'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5248,7 +5259,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://tpvd.openprp.in/ctpvd/index.html">Gujarat TPVD final planning plots · publisher &amp; conditions</a> · Surat Municipal Corporation Final plots only · partial coverage; not ownership or current-title evidence · registration/currentness unverified'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5271,7 +5282,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.gis.nd.gov/parcel-program">North Dakota Information Technology / ND GIS Hub · publisher &amp; conditions</a> · Burleigh County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5294,7 +5305,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS">Franklin County Auditor, GIS · publisher &amp; conditions</a> · Franklin County coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5317,7 +5328,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.co.marion.or.us/AO">Marion County Assessor and GIS · publisher &amp; conditions</a> · Marion County coverage; West Salem excluded · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5340,7 +5351,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.nashville.gov/departments/planning/mapping-and-gis">Metro Nashville GIS · publisher &amp; conditions</a> · Davidson County; Bounded capital-area acceptance does not establish full county coverage or currency. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5363,7 +5374,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0">City of Austin / Travis Central Appraisal District · publisher &amp; conditions</a> · City of Austin official TCAD parcel layer; Travis County capital-area scope. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5386,7 +5397,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://gis.utah.gov/products/sgid/cadastre/parcels/">Utah Geospatial Resource Center and local government · publisher &amp; conditions</a> · Official source; bounded capital-area checks do not establish full jurisdictional coverage. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5409,7 +5420,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.montpelier-vt.org/528/Maps-GIS">Vermont Center for Geographic Information / local municipalities · publisher &amp; conditions</a> · 2025 assessment accounts · may include multiple lots; unidentified shapes excluded · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5432,7 +5443,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.rva.gov/index.php/assessor-real-estate/gismapping">Virginia Geographic Information Network / Virginia Department of Emergency Management · publisher &amp; conditions</a> · Official source; bounded capital-area checks do not establish full jurisdictional coverage. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5455,7 +5466,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 4,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=7816480981d44f8fbc30a326144d32e1">Nevada Division of Water Resources / State Demographer · publisher &amp; conditions</a> · State compilation · source date January 2026 · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5478,7 +5489,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0">West Virginia GIS Technical Center / county assessors · publisher &amp; conditions</a> · Tax Year 2023 · assessment mapping · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5501,7 +5512,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2">Laramie County · publisher &amp; conditions</a> · Laramie County assessment parcels · unidentified shapes excluded · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5524,7 +5535,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/info/iteminfo">Woolpert / Richland and Lexington County tax-parcel data · publisher &amp; conditions</a> · Partial source: 456 polygons · update year not established · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5547,7 +5558,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0">City of Harrisburg GIS / Dauphin County Tax Assessment · publisher &amp; conditions</a> · September 2026 · complete native PID parcel groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5570,7 +5581,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer">Mississippi Department of Environmental Quality / Hinds County Tax Assessor / Tristate Consulting · publisher &amp; conditions</a> · MDEQ Hinds County compilation · update year not established · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5593,7 +5604,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0">Wisconsin State Cartographer’s Office / Dane County · publisher &amp; conditions</a> · V12 2026 compilation · Dane County · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5616,7 +5627,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4">Thurston County · publisher &amp; conditions</a> · Active assessor-property footprints · may include multiple lots · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5639,7 +5650,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=bab934a85fe94f1d885dcaa6b3f16229">City of Providence GIS · publisher &amp; conditions</a> · 2011–2018 canopy-study mirror · identified CAMA-link groups · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5662,7 +5673,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=0647430cc90e435093e9d064cb22481f">Tallahassee-Leon County Planning Department / TLCGIS · publisher &amp; conditions</a> · November 2025 parcel-based mirror · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5685,7 +5696,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://snco.gov/ap/mapping.php">Shawnee County Appraiser GIS and Mapping Division · publisher &amp; conditions</a> · Shawnee County assessment parcels · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5708,7 +5719,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://geoportal.gisqatar.org.qa/printpin/">Centre for GIS, Qatar · publisher &amp; conditions</a> · Current approved plots only; 73 ended records excluded. Doha viewports verified; broader national viewport coverage not asserted. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5731,7 +5742,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Esil district only; partial Astana coverage · native cadastral numbers; ownership and boundary update dates unestablished'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5754,7 +5765,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://gis.dda.gov.ae/dis/">Dubai Development Authority · publisher &amp; conditions</a> · Official public-viewer plot layer; Dubai Marina area verified. Other emirates are separate sources. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5777,7 +5788,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://maps.dls.gov.jo/dlsweb/">Department of Lands and Survey, Jordan · publisher &amp; conditions</a> · Partial identified parcels. Central Amman verified. All source components for each native DLS parcel key are read before publication. · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5800,7 +5811,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4">Muscat Municipality · publisher &amp; conditions</a> · Mutrah identified new-number plots only; partial Muscat coverage · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5823,7 +5834,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://franklincountypva.com/">Franklin County Property Valuation Administrator / Schneider Geospatial · publisher &amp; conditions</a> · Identified Franklin County PVA map parcel groups; mixed record years, current boundary date unestablished · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5846,7 +5857,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=244ff1c03cf34c459092e10142b13b01">Oklahoma County Assessor · publisher &amp; conditions</a> · Oklahoma County assessment parcels; other Oklahoma City counties excluded · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5869,7 +5880,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.arcgis.com/home/item.html?id=c8dcdb4426b6464d908fed8ca24d4900">ISG (Missouri River Long Distance Trail project) · publisher &amp; conditions</a> · ISG third-party parcel mirror · 2023 snapshot · identified parcels only · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5892,7 +5903,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0">Harris County Appraisal District / Harris County GIS · publisher &amp; conditions</a> · Harris County identified account parcels; other Houston counties excluded · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5915,7 +5926,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15">IPPUC / Prefeitura de Curitiba · publisher &amp; conditions</a> · Curitiba municipal cadastral lots with fiscal identifiers · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5938,7 +5949,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3">Prefeitura do Recife · publisher &amp; conditions</a> · Recife identified municipal lots; complete components for each lot code · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5961,7 +5972,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 6,
                 attribution: '<a href="https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17">eThekwini Municipality, Corporate GIS · publisher &amp; conditions</a> · eThekwini municipal cadastral parcels; central Durban verified · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -5984,7 +5995,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; western entry area verified · update year unestablished'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6007,7 +6018,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; Ennerdale entry area verified · update year unestablished'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6030,7 +6041,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; Cosmo City entry area verified · update year unestablished'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6053,7 +6064,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://gis.berryict.com/gis/gis/ama/propertyidentification.php">Accra Metro property app · Berry ICT host · conditions</a> · Partial app-PID footprints; official authority and legal cadastral meaning unconfirmed'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6076,7 +6087,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46">CGS North West Erven · publisher &amp; conditions</a> · Surveyed approved parcels; Mboloko entry area verified; sampled records 2017-10-13; currentness and registration unestablished'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
                 parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
             },
@@ -6100,7 +6111,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://nairobimaps.com/">Nairobi Maps</a> · <a href="https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html">parcel outlines</a>. Public commercial outlines are for geometry references only; source registry numbers and ownership are unavailable.'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6132,7 +6143,7 @@
                 liveRadiusKm: 0.1,
                 attribution: '<a href="https://maps.ktimatologio.gr/">Hellenic Cadastre (Ktimatologio) active cadastral layer</a> · Athens-center sample only; broader coverage and currentness unverified'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6160,7 +6171,7 @@
                 liveRadiusKm: 3,
                 attribution: '<a href="https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0">BOFINET Gaborone city plots</a> · verified bounded samples · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6188,7 +6199,7 @@
                 liveRadiusKm: 3,
                 attribution: '<a href="https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11">Mangaung Cadastre 2025 — Bloemfontein</a> · verified bounded samples · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6216,7 +6227,7 @@
                 liveRadiusKm: 3,
                 attribution: '<a href="https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1">City of Tshwane registered surveyed parcels — Pretoria</a> · verified bounded samples · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6239,7 +6250,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://kataster.bev.gv.at/">BEV cadastral vector tiles</a> · CC BY 4.0 · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6262,7 +6273,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://wis.gov.me/geoportal">Montenegro Water Administration cadastral parcels</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6285,7 +6296,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://mappeonline.pa.sm/maps/prgmobile/">San Marino public cadastral land</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6308,7 +6319,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK cadastral map</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6331,7 +6342,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.linz.govt.nz/layer/50823-nz-primary-parcels/">LINZ primary parcels — public ArcGIS publication</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6354,7 +6365,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.beiruturbanlab.com/ar/Details/666/municipal-beirut-basemap-available-for-download">Beirut Urban Lab municipal parcel basemap</a> · ODbL · 2019 research basemap'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6377,7 +6388,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3">Thimphu Thromde Taba plot polygons (status unverified)</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6400,7 +6411,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://survey.gov.bn/">Brunei Survey Department G1_GDBD CADAS</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6424,7 +6435,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.govmap.gov.il/">Govmap public cadastral parcel rows</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6448,7 +6459,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.govmap.gov.il/">Govmap public cadastral parcel rows</a> · bounded public sample · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6471,7 +6482,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://opendataphilly.org/datasets/department-of-records-property-parcels/">Philadelphia Department of Records active ground parcels</a> · active ground parcels · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6494,7 +6505,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1">Clark County Assessor parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6517,7 +6528,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1">Macao DSCC Cad_lote cadastral reference polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6540,7 +6551,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.sangis.org/">SanGIS unstacked parcel reference polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6563,7 +6574,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://topovision.pmsg.rj.gov.br/">São Gonçalo municipal cadastral lots (GeoServer WFS)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6586,7 +6597,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://api.hamburg.de/datasets/v1/alkis_vereinfacht">Hamburg simplified ALKIS cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6609,7 +6620,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gbra.maps.arcgis.com/home/item.html?id=ddc97094771f45be81fc6cd4842a1901">San Antonio Bexar CAD parcels · public 2022 archive</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6632,7 +6643,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.dallascounty.org/departments/pubworks/GIS.php">City of Dallas certified tax parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6655,7 +6666,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0">City of Oakland GIS parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6678,7 +6689,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gismaps.kingcounty.gov/parcelviewer2/">Seattle GIS King County parcel boundaries</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6701,7 +6712,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://opengis.mesaaz.gov/">City of Mesa GIS parcel boundaries</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6724,7 +6735,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer">Fort Lauderdale ground tax-parcel boundaries</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6747,7 +6758,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro — Madrid, Barcelona and Valencia</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6770,7 +6781,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General public Erven polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6793,7 +6804,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.ekurhuleni.gov.za/">City of Ekurhuleni municipal stands — Tembisa sample</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6816,7 +6827,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101">Vitória municipal Lote — central reference</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6839,7 +6850,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.imip.org.mx/sigem/">IMIP Ciudad Juárez municipal Predios</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6862,7 +6873,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.calgary.ca/Government/Current-Year-Property-Assessments-Parcel-/4bsw-nn7w">Calgary assessed registered-parcel geometries</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6885,7 +6896,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items/0b4f7e3e-ac2e-4f32-b523-a974c6209e3f">Rosario municipal parcel Section 9</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6908,7 +6919,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.data.mn.gov/maps/hennepin%3A%3Acounty-parcels/about">Hennepin County Parcels (Metropolitan Council public layer)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6931,7 +6942,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.linz.govt.nz/layer/50772-nz-primary-parcels/">LINZ primary parcels — public ArcGIS publication</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6954,7 +6965,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287">Lands Department CSDI Lot polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -6977,7 +6988,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7000,7 +7011,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7023,7 +7034,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7046,7 +7057,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html">Baden-Württemberg LGL ALKIS cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7069,7 +7080,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://frankfurt.de/themen/planen-bauen-und-wohnen/planen/geoinformationen">Frankfurt municipal ALKIS cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7092,7 +7103,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.pcpao.gov/learn-about/FAQs">Pinellas County public Land Polygon parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7115,7 +7126,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.detroitmi.gov/maps/detroitmi::parcels-2">Detroit Office of the Assessor current parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7138,7 +7149,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General public Erven polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7161,7 +7172,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7184,7 +7195,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45">JUPEM Penang cadastral lots (Forestry GIS host)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7207,7 +7218,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160">Thessaloniki public cadastral parcels (KAEK)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7230,7 +7241,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia">Bizkaia public cadastral Parcelas</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7253,7 +7264,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office">Milwaukee County public cadastral polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7276,7 +7287,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://msip.krakow.pl/dataset/1562">Kraków MSIP public EGiB parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7299,7 +7310,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.fresnocountyca.gov/Departments/Assessor/Mapping">Fresno County public parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7322,7 +7333,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.winnipeg.ca/Assessment-Taxation-Corporate/Assessment-Parcels/d4mq-wa44">Winnipeg public assessment parcel footprints</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7345,7 +7356,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729">Hong Kong Lands Department CSDI lots</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7368,7 +7379,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://lis.pulse.gop.pk/">Punjab PULSE Okara cadastral reference polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7391,7 +7402,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Zambia NSDI ZILMIS lot polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7414,7 +7425,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7437,7 +7448,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.sitr.regione.sicilia.it/">Sicilia SITR public cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7460,7 +7471,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7483,7 +7494,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7506,7 +7517,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://opendata.elpasotexas.gov/">City of El Paso GIS Parcels (EPCAD source, GIS OID namespace)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7529,7 +7540,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://pbcpao.gov/departments/gis.htm">Palm Beach County Property Appraiser parcel polygons using service OID</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7552,7 +7563,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://nowa.mapa.lodz.pl/dla-profesjonalistow/">Łódź municipal EGiB cadastral parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7575,7 +7586,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geopoz.poznan.pl/">Poznań municipal EGiB cadastral parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7598,7 +7609,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.geodaten.sachsen.de/alkis-wfs-4968.html">GeoSN Saxony simplified ALKIS cadastral parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7621,7 +7632,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.geodaten.sachsen.de/alkis-wfs-4968.html">GeoSN Saxony simplified ALKIS cadastral parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7644,7 +7655,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/">Joinville SIMGeo municipal cadastral lot polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7667,7 +7678,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Netherlands Kadaster / PDOK cadastral map</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7690,7 +7701,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45">JUPEM Penang cadastral lots (Forestry GIS host)</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7713,7 +7724,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer">Juiz de Fora SISURB municipal cadastral lots</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7736,7 +7747,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela">Ayuntamiento de Málaga municipal parcel polygons</a> · CC BY 4.0 · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7759,7 +7770,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer">City of Bakersfield cadastral parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7785,7 +7796,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://webmap.ocpafl.org/search">Orange County Property Appraiser assessment parcel polygons</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7808,7 +7819,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann freehold title boundaries only</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7831,7 +7842,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geolatvija.lv/">State Land Service of Latvia / Geolatvija cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7854,7 +7865,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://gsavalik.envir.ee/geoserver/kataster/wfs">Estonian Land and Spatial Development Board / public cadastral WFS cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7877,7 +7888,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.inspire-geoportal.lt/geoserver/cp/ows">Lithuanian INSPIRE Geoportal / National Land Service cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7900,7 +7911,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://geo.jundiai.sp.gov.br/geojundiai/">Município de Jundiaí / GeoJundiaí cadastral parcels</a> · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'overture-tiles' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -7933,9 +7944,10 @@
                 requiresBackend: false
             },
             buildings: {
-                // OpenStreetMap, the default for every city without its own source (backend
-                // buildings/osm-3d.js): live Overpass anywhere on Earth.
-                source: 'osm'
+                // Overture Maps, the default for every city without its own source: read in the
+                // browser from Overture's public tiles anywhere on Earth (js/overture-tiles.js).
+                // It holds OpenStreetMap's buildings plus Esri, Google and Microsoft footprints.
+                source: 'overture-tiles'
             },
             sidebar: {
                 // Everything that needs parcels; Measure, Activity and Settings stay. Proposals and
@@ -7954,7 +7966,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.9872907396255, -1.55381600364981], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.9872907396255, -1.55381600364981], fallbackDataset: [-1.55381600364981, 54.9872907396255] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         oxford: {
             id: 'oxford', wupCityCode: '5278',
@@ -7963,7 +7975,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7487806598031, -1.2342485885213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7487806598031, -1.2342485885213], fallbackDataset: [-1.2342485885213, 51.7487806598031] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         cardiff: {
             id: 'cardiff', wupCityCode: '2001',
@@ -7972,7 +7984,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4941598754672, -3.18365738997209], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4941598754672, -3.18365738997209], fallbackDataset: [-3.18365738997209, 51.4941598754672] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bristol: {
             id: 'bristol', wupCityCode: '3110',
@@ -7981,7 +7993,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4622070766796, -2.56948973765957], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4622070766796, -2.56948973765957], fallbackDataset: [-2.56948973765957, 51.4622070766796] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         stoke_on_trent: {
             id: 'stoke_on_trent', wupCityCode: '3890',
@@ -7990,7 +8002,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0159155643046, -2.17437344168429], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.0159155643046, -2.17437344168429], fallbackDataset: [-2.17437344168429, 53.0159155643046] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bournemouth: {
             id: 'bournemouth', wupCityCode: '4108',
@@ -7999,7 +8011,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7377349576354, -1.90482883545276], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7377349576354, -1.90482883545276], fallbackDataset: [-1.90482883545276, 50.7377349576354] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leeds: {
             id: 'leeds', wupCityCode: '4425',
@@ -8008,7 +8020,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.80098765836, -1.64273048308533], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.80098765836, -1.64273048308533], fallbackDataset: [-1.64273048308533, 53.80098765836] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         coventry: {
             id: 'coventry', wupCityCode: '4647',
@@ -8017,7 +8029,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4197855108422, -1.50597012431852], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4197855108422, -1.50597012431852], fallbackDataset: [-1.50597012431852, 52.4197855108422] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         southampton: {
             id: 'southampton', wupCityCode: '4684',
@@ -8026,7 +8038,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9183161488384, -1.39571519357], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9183161488384, -1.39571519357], fallbackDataset: [-1.39571519357, 50.9183161488384] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sheffield: {
             id: 'sheffield', wupCityCode: '4792',
@@ -8035,7 +8047,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3706060761954, -1.45914222195097], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.3706060761954, -1.45914222195097], fallbackDataset: [-1.45914222195097, 53.3706060761954] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nottingham: {
             id: 'nottingham', wupCityCode: '5220',
@@ -8044,7 +8056,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.9581733581744, -1.18066491650301], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.9581733581744, -1.18066491650301], fallbackDataset: [-1.18066491650301, 52.9581733581744] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         middlesbrough: {
             id: 'middlesbrough', wupCityCode: '5250',
@@ -8053,7 +8065,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.560753928282, -1.26260886474088], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.560753928282, -1.26260886474088], fallbackDataset: [-1.26260886474088, 54.560753928282] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         portsmouth: {
             id: 'portsmouth', wupCityCode: '5388',
@@ -8062,7 +8074,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8299919480642, -1.08350256594045], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8299919480642, -1.08350256594045], fallbackDataset: [-1.08350256594045, 50.8299919480642] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leicester: {
             id: 'leicester', wupCityCode: '5469',
@@ -8071,7 +8083,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6309139939256, -1.125767851843], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6309139939256, -1.125767851843], fallbackDataset: [-1.125767851843, 52.6309139939256] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         brighton: {
             id: 'brighton', wupCityCode: '6034',
@@ -8080,7 +8092,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.832718747559, -0.232087060115579], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.832718747559, -0.232087060115579], fallbackDataset: [-0.232087060115579, 50.832718747559] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hull: {
             id: 'hull', wupCityCode: '6053',
@@ -8089,7 +8101,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7628896052307, -0.354103477578705], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.7628896052307, -0.354103477578705], fallbackDataset: [-0.354103477578705, 53.7628896052307] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         southend_on_sea: {
             id: 'southend_on_sea', wupCityCode: '6431',
@@ -8098,7 +8110,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5551240047725, 0.668467014701583], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5551240047725, 0.668467014701583], fallbackDataset: [0.668467014701583, 51.5551240047725] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: '<a href="https://use-land-property-data.service.gov.uk/datasets/inspire">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mongu: {
             id: 'mongu', wupCityCode: '104',
@@ -8107,7 +8119,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-15.2698331723381, 23.1518886178753], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-15.2698331723381, 23.1518886178753], fallbackDataset: [23.1518886178753, -15.2698331723381] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         la_rochelle: {
             id: 'la_rochelle', wupCityCode: '1469',
@@ -8116,7 +8128,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [46.1625399538636, -1.16258542365523], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [46.1625399538636, -1.16258542365523], fallbackDataset: [-1.16258542365523, 46.1625399538636] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         luanshya: {
             id: 'luanshya', wupCityCode: '2025',
@@ -8125,7 +8137,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-13.1437301508279, 28.4228139265333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-13.1437301508279, 28.4228139265333], fallbackDataset: [28.4228139265333, -13.1437301508279] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         encinitas: {
             id: 'encinitas', wupCityCode: '2660',
@@ -8134,7 +8146,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [33.0602781384953, -117.267811873962], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [33.0602781384953, -117.267811873962], fallbackDataset: [-117.267811873962, 33.0602781384953] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-sangis-parcels-reference', idPrefix: 'US-CA-SANGIS-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'SanGIS / County of San Diego · unstacked reference parcel polygons' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lenasia: {
             id: 'lenasia', wupCityCode: '3855',
@@ -8143,7 +8155,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-26.3478558274038, 27.876034282466], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-26.3478558274038, 27.876034282466], fallbackDataset: [27.876034282466, -26.3478558274038] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         vosman: {
             id: 'vosman', wupCityCode: '4800',
@@ -8152,7 +8164,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-25.8573418214821, 29.1180026432058], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-25.8573418214821, 29.1180026432058], fallbackDataset: [29.1180026432058, -25.8573418214821] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         acireale: {
             id: 'acireale', wupCityCode: '5104',
@@ -8161,7 +8173,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [37.6049746892746, 15.1470464254041], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [37.6049746892746, 15.1470464254041], fallbackDataset: [15.1470464254041, 37.6049746892746] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'it-sicilia-sitr-cadastral-parcels', idPrefix: 'IT-SICILIA-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Regione Siciliana SITR · cadastral-reference polygons · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lindberg: {
             id: 'lindberg', wupCityCode: '6345',
@@ -8170,7 +8182,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.6471024349277, -97.1431006262883], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.6471024349277, -97.1431006262883], fallbackDataset: [-97.1431006262883, 32.6471024349277] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'arlington-tax-parcels', idPrefix: 'US-TX-ARLINGTON-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'City of Arlington, Texas GIS / OpenData' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         buenaventura_lakes: {
             id: 'buenaventura_lakes', wupCityCode: '7367',
@@ -8179,7 +8191,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.3522565261019, -81.3782104985266], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.3522565261019, -81.3782104985266], fallbackDataset: [-81.3782104985266, 28.3522565261019] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'orlando-ocpa-arcgis', idPrefix: 'US-ORANGE-COUNTY-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Orange County Property Appraiser · assessment parcel references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         alafaya: {
             id: 'alafaya', wupCityCode: '7468',
@@ -8188,7 +8200,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.5645463354798, -81.1884381841486], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.5645463354798, -81.1884381841486], fallbackDataset: [-81.1884381841486, 28.5645463354798] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'orlando-ocpa-arcgis', idPrefix: 'US-ORANGE-COUNTY-PARCEL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Orange County Property Appraiser · assessment parcel references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lackawanna: {
             id: 'lackawanna', wupCityCode: '8193',
@@ -8197,7 +8209,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.8429861120278, -78.8135507251543], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.8429861120278, -78.8135507251543], fallbackDataset: [-78.8135507251543, 42.8429861120278] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ny-erie-parcels', idPrefix: 'US-NY-ERIE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Erie County Office of GIS' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tung_chung: {
             id: 'tung_chung', wupCityCode: '11554',
@@ -8206,7 +8218,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.2862518536, 113.942260841835], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.2862518536, 113.942260841835], fallbackDataset: [113.942260841835, 22.2862518536] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hk-landsd-csdi-lot', idPrefix: 'HK-LANDSD-CSDI-LOT-CSUID-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hong Kong Lands Department · CSDI Lots · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         aachen: {
             id: 'aachen', wupCityCode: '58',
@@ -8215,7 +8227,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7798266066411, 6.10963543428455], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7798266066411, 6.10963543428455], fallbackDataset: [6.10963543428455, 50.7798266066411] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         szczecin: {
             id: 'szczecin', wupCityCode: '71',
@@ -8224,7 +8236,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4353064484097, 14.5350485616163], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4353064484097, 14.5350485616163], fallbackDataset: [14.5350485616163, 53.4353064484097] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         liepaja: {
             id: 'liepaja', wupCityCode: '85',
@@ -8233,7 +8245,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [56.512130385031, 21.0132738810649], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [56.512130385031, 21.0132738810649], fallbackDataset: [21.0132738810649, 56.512130385031] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lv-vzd-geolatvija-vraa-wfs', idPrefix: 'LV-VZD-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'State Land Service of Latvia / Geolatvija · cadastral references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         klaipeda: {
             id: 'klaipeda', wupCityCode: '87',
@@ -8242,7 +8254,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.6958163069443, 21.1516808865547], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.6958163069443, 21.1516808865547], fallbackDataset: [21.1516808865547, 55.6958163069443] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lt-inspire-cp-wfs', idPrefix: 'LT-INSP-CADASTRAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ioannina: {
             id: 'ioannina', wupCityCode: '99',
@@ -8251,7 +8263,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.661766124509, 20.8488973626991], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.661766124509, 20.8488973626991], fallbackDataset: [20.8488973626991, 39.661766124509] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gr-ktimatologio-active-parcels-arcgis', idPrefix: 'GR-ATHENS-KAEK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ashkelon: {
             id: 'ashkelon', wupCityCode: '118',
@@ -8260,7 +8272,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.6704500086532, 34.5726448021409], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.6704500086532, 34.5726448021409], fallbackDataset: [34.5726448021409, 31.6704500086532] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bruges: {
             id: 'bruges', wupCityCode: '226',
@@ -8269,7 +8281,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2050163863974, 3.22000581359789], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2050163863974, 3.22000581359789], fallbackDataset: [3.22000581359789, 51.2050163863974] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         stargard: {
             id: 'stargard', wupCityCode: '241',
@@ -8278,7 +8290,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3382279105169, 15.030564201468], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.3382279105169, 15.030564201468], fallbackDataset: [15.030564201468, 53.3382279105169] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tartu: {
             id: 'tartu', wupCityCode: '267',
@@ -8287,7 +8299,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [58.3707823955219, 26.7215611740785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [58.3707823955219, 26.7215611740785], fallbackDataset: [26.7215611740785, 58.3707823955219] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ee-maaamet-kataster-wfs', idPrefix: 'EE-KATASTER-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Estonian Land and Spatial Development Board / public cadastral WFS · cadastral references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ashdod: {
             id: 'ashdod', wupCityCode: '285',
@@ -8296,7 +8308,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.7987303087695, 34.65004462462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.7987303087695, 34.65004462462], fallbackDataset: [34.65004462462, 31.7987303087695] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         christchurch: {
             id: 'christchurch', wupCityCode: '336',
@@ -8305,7 +8317,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-43.5242720408165, 172.621043454784], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-43.5242720408165, 172.621043454784], fallbackDataset: [172.621043454784, -43.5242720408165] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kortrijk: {
             id: 'kortrijk', wupCityCode: '385',
@@ -8314,7 +8326,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8375977978937, 3.28211721466875], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8375977978937, 3.28211721466875], fallbackDataset: [3.28211721466875, 50.8375977978937] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         krefeld: {
             id: 'krefeld', wupCityCode: '389',
@@ -8323,7 +8335,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3332048663585, 6.57862288660859], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3332048663585, 6.57862288660859], fallbackDataset: [6.57862288660859, 51.3332048663585] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gorzow_wielkopolski: {
             id: 'gorzow_wielkopolski', wupCityCode: '399',
@@ -8332,7 +8344,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7429409230698, 15.2389393766615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.7429409230698, 15.2389393766615], fallbackDataset: [15.2389393766615, 52.7429409230698] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         daugavpils: {
             id: 'daugavpils', wupCityCode: '420',
@@ -8341,7 +8353,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.8797490625731, 26.5364228926285], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.8797490625731, 26.5364228926285], fallbackDataset: [26.5364228926285, 55.8797490625731] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lv-vzd-geolatvija-vraa-wfs', idPrefix: 'LV-VZD-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'State Land Service of Latvia / Geolatvija · cadastral references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         larissa: {
             id: 'larissa', wupCityCode: '422',
@@ -8350,7 +8362,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.6319994376837, 22.418368874792], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.6319994376837, 22.418368874792], fallbackDataset: [22.418368874792, 39.6319994376837] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gr-ktimatologio-active-parcels-arcgis', idPrefix: 'GR-ATHENS-KAEK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ghent: {
             id: 'ghent', wupCityCode: '531',
@@ -8359,7 +8371,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.054687121172, 3.73169926424364], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.054687121172, 3.73169926424364], fallbackDataset: [3.73169926424364, 51.054687121172] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bocholt: {
             id: 'bocholt', wupCityCode: '534',
@@ -8368,7 +8380,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.837162361442, 6.61679793943415], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.837162361442, 6.61679793943415], fallbackDataset: [6.61679793943415, 51.837162361442] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zielona_gora: {
             id: 'zielona_gora', wupCityCode: '544',
@@ -8377,7 +8389,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9373160500613, 15.5023625952977], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9373160500613, 15.5023625952977], fallbackDataset: [15.5023625952977, 51.9373160500613] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         panevezys: {
             id: 'panevezys', wupCityCode: '559',
@@ -8386,7 +8398,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.7321711890858, 24.3528850529477], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.7321711890858, 24.3528850529477], fallbackDataset: [24.3528850529477, 55.7321711890858] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lt-inspire-cp-wfs', idPrefix: 'LT-INSP-CADASTRAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         haifa: {
             id: 'haifa', wupCityCode: '583',
@@ -8395,7 +8407,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.812430848624, 35.0251596262198], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.812430848624, 35.0251596262198], fallbackDataset: [35.0251596262198, 32.812430848624] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lower_hutt: {
             id: 'lower_hutt', wupCityCode: '629',
@@ -8404,7 +8416,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-41.2116311605753, 174.915386248703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-41.2116311605753, 174.915386248703], fallbackDataset: [174.915386248703, -41.2116311605753] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leiden: {
             id: 'leiden', wupCityCode: '674',
@@ -8413,7 +8425,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1673646768043, 4.4726761074768], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1673646768043, 4.4726761074768], fallbackDataset: [4.4726761074768, 52.1673646768043] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         koszalin: {
             id: 'koszalin', wupCityCode: '685',
@@ -8422,7 +8434,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.19411056018, 16.1902100834576], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.19411056018, 16.1902100834576], fallbackDataset: [16.1902100834576, 54.19411056018] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         palmerston_north: {
             id: 'palmerston_north', wupCityCode: '763',
@@ -8431,7 +8443,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-40.352703279079, 175.614308591725], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-40.352703279079, 175.614308591725], fallbackDataset: [175.614308591725, -40.352703279079] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         aalst: {
             id: 'aalst', wupCityCode: '804',
@@ -8440,7 +8452,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9435433390796, 4.03960887199254], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9435433390796, 4.03960887199254], fallbackDataset: [4.03960887199254, 50.9435433390796] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zoetermeer: {
             id: 'zoetermeer', wupCityCode: '806',
@@ -8449,7 +8461,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0580064519999, 4.50259377674063], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0580064519999, 4.50259377674063], fallbackDataset: [4.50259377674063, 52.0580064519999] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lubin: {
             id: 'lubin', wupCityCode: '816',
@@ -8458,7 +8470,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3979869466992, 16.1963940635763], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3979869466992, 16.1963940635763], fallbackDataset: [16.1963940635763, 51.3979869466992] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         netanya: {
             id: 'netanya', wupCityCode: '844',
@@ -8467,7 +8479,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.3143145554001, 34.8598375549541], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.3143145554001, 34.8598375549541], fallbackDataset: [34.8598375549541, 32.3143145554001] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hamilton_nz: {
             id: 'hamilton_nz', wupCityCode: '888',
@@ -8476,7 +8488,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-37.7752941478825, 175.273989779784], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-37.7752941478825, 175.273989779784], fallbackDataset: [175.273989779784, -37.7752941478825] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sint_niklaas: {
             id: 'sint_niklaas', wupCityCode: '926',
@@ -8485,7 +8497,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1653252425065, 4.14783441472725], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1653252425065, 4.14783441472725], fallbackDataset: [4.14783441472725, 51.1653252425065] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         legnica: {
             id: 'legnica', wupCityCode: '937',
@@ -8494,7 +8506,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2058512284457, 16.1741221611038], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2058512284457, 16.1741221611038], fallbackDataset: [16.1741221611038, 51.2058512284457] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chania: {
             id: 'chania', wupCityCode: '951',
@@ -8503,7 +8515,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [35.508865587634, 24.0224198967439], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [35.508865587634, 24.0224198967439], fallbackDataset: [24.0224198967439, 35.508865587634] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gr-ktimatologio-active-parcels-arcgis', idPrefix: 'GR-ATHENS-KAEK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hadera: {
             id: 'hadera', wupCityCode: '961',
@@ -8512,7 +8524,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.4372849491784, 34.9185599229164], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.4372849491784, 34.9185599229164], fallbackDataset: [34.9185599229164, 32.4372849491784] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heemskerk: {
             id: 'heemskerk', wupCityCode: '1043',
@@ -8521,7 +8533,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4875107568307, 4.64912920315651], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4875107568307, 4.64912920315651], fallbackDataset: [4.64912920315651, 52.4875107568307] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         slupsk: {
             id: 'slupsk', wupCityCode: '1053',
@@ -8530,7 +8542,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.4636975832782, 17.0213199178476], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.4636975832782, 17.0213199178476], fallbackDataset: [17.0213199178476, 54.4636975832782] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rehovot: {
             id: 'rehovot', wupCityCode: '1075',
@@ -8539,7 +8551,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.8958134072658, 34.8097538728296], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.8958134072658, 34.8097538728296], fallbackDataset: [34.8097538728296, 31.8958134072658] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         papakura: {
             id: 'papakura', wupCityCode: '1120',
@@ -8548,7 +8560,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-37.0379819273102, 174.906818249879], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-37.0379819273102, 174.906818249879], fallbackDataset: [174.906818249879, -37.0379819273102] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nantes: {
             id: 'nantes', wupCityCode: '1152',
@@ -8557,7 +8569,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.2226716545731, -1.55741025412737], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.2226716545731, -1.55741025412737], fallbackDataset: [-1.55741025412737, 47.2226716545731] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         haarlem: {
             id: 'haarlem', wupCityCode: '1158',
@@ -8566,7 +8578,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3821638892441, 4.64006831462338], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.3821638892441, 4.64006831462338], fallbackDataset: [4.64006831462338, 52.3821638892441] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         pila: {
             id: 'pila', wupCityCode: '1167',
@@ -8575,7 +8587,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1513682979439, 16.7464328052244], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.1513682979439, 16.7464328052244], fallbackDataset: [16.7464328052244, 53.1513682979439] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         glenfield: {
             id: 'glenfield', wupCityCode: '1232',
@@ -8584,7 +8596,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-36.769531623771, 174.735780487087], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-36.769531623771, 174.735780487087], fallbackDataset: [174.735780487087, -36.769531623771] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hoofddorp: {
             id: 'hoofddorp', wupCityCode: '1267',
@@ -8593,7 +8605,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3054351617886, 4.66703282561631], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.3054351617886, 4.66703282561631], fallbackDataset: [4.66703282561631, 52.3054351617886] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leszno: {
             id: 'leszno', wupCityCode: '1275',
@@ -8602,7 +8614,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8427843893659, 16.5773027600746], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8427843893659, 16.5773027600746], fallbackDataset: [16.5773027600746, 51.8427843893659] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         otumoetai: {
             id: 'otumoetai', wupCityCode: '1338',
@@ -8611,7 +8623,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-37.6995938088887, 176.14886316288], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-37.6995938088887, 176.14886316288], fallbackDataset: [176.14886316288, -37.6995938088887] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         dordrecht: {
             id: 'dordrecht', wupCityCode: '1373',
@@ -8620,7 +8632,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8143926922208, 4.67469211847365], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8143926922208, 4.67469211847365], fallbackDataset: [4.67469211847365, 51.8143926922208] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hurth: {
             id: 'hurth', wupCityCode: '1375',
@@ -8629,7 +8641,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8574852314233, 6.89340663734576], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8574852314233, 6.89340663734576], fallbackDataset: [6.89340663734576, 50.8574852314233] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         daliyat_al_karmel: {
             id: 'daliyat_al_karmel', wupCityCode: '1400',
@@ -8638,7 +8650,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.7014534889277, 35.0558952294538], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.7014534889277, 35.0558952294538], fallbackDataset: [35.0558952294538, 32.7014534889277] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mechelen: {
             id: 'mechelen', wupCityCode: '1474',
@@ -8647,7 +8659,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.025998805418, 4.48126862657754], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.025998805418, 4.48126862657754], fallbackDataset: [4.48126862657754, 51.025998805418] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         alphen_aan_den_rijn: {
             id: 'alphen_aan_den_rijn', wupCityCode: '1475',
@@ -8656,7 +8668,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1332574588064, 4.65782890208914], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1332574588064, 4.65782890208914], fallbackDataset: [4.65782890208914, 52.1332574588064] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tira: {
             id: 'tira', wupCityCode: '1502',
@@ -8665,7 +8677,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.2342787180447, 34.9544323813687], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.2342787180447, 34.9544323813687], fallbackDataset: [34.9544323813687, 32.2342787180447] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         alkmaar: {
             id: 'alkmaar', wupCityCode: '1571',
@@ -8674,7 +8686,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6522439366888, 4.78238265594386], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6522439366888, 4.78238265594386], fallbackDataset: [4.78238265594386, 52.6522439366888] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leuven: {
             id: 'leuven', wupCityCode: '1572',
@@ -8683,7 +8695,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8812852650943, 4.70774709568462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8812852650943, 4.70774709568462], fallbackDataset: [4.70774709568462, 50.8812852650943] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         marl: {
             id: 'marl', wupCityCode: '1573',
@@ -8692,7 +8704,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6681556413441, 7.10509206272269], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6681556413441, 7.10509206272269], fallbackDataset: [7.10509206272269, 51.6681556413441] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wroclaw: {
             id: 'wroclaw', wupCityCode: '1580',
@@ -8701,7 +8713,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1052197969447, 17.0226844994164], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1052197969447, 17.0226844994164], fallbackDataset: [17.0226844994164, 51.1052197969447] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rosh_haayin: {
             id: 'rosh_haayin', wupCityCode: '1597',
@@ -8710,7 +8722,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.105795719819, 34.9640712304425], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.105795719819, 34.9640712304425], fallbackDataset: [34.9640712304425, 32.105795719819] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gouda: {
             id: 'gouda', wupCityCode: '1664',
@@ -8719,7 +8731,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.020062520535, 4.71398619919552], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.020062520535, 4.71398619919552], fallbackDataset: [4.71398619919552, 52.020062520535] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gniezno: {
             id: 'gniezno', wupCityCode: '1673',
@@ -8728,7 +8740,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5344430787909, 17.6064312677703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5344430787909, 17.6064312677703], fallbackDataset: [17.6064312677703, 52.5344430787909] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kafr_yasif: {
             id: 'kafr_yasif', wupCityCode: '1688',
@@ -8737,7 +8749,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.9538350684818, 35.1826472209271], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.9538350684818, 35.1826472209271], fallbackDataset: [35.1826472209271, 32.9538350684818] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         remscheid: {
             id: 'remscheid', wupCityCode: '1756',
@@ -8746,7 +8758,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1817871834151, 7.2043470437967], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1817871834151, 7.2043470437967], fallbackDataset: [7.2043470437967, 51.1817871834151] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wejherowo: {
             id: 'wejherowo', wupCityCode: '1763',
@@ -8755,7 +8767,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.6054036640665, 18.2391802227089], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.6054036640665, 18.2391802227089], fallbackDataset: [18.2391802227089, 54.6054036640665] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         beersheba: {
             id: 'beersheba', wupCityCode: '1864',
@@ -8764,7 +8776,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.2545180899882, 34.7869140000578], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.2545180899882, 34.7869140000578], fallbackDataset: [34.7869140000578, 31.2545180899882] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wollongong: {
             id: 'wollongong', wupCityCode: '1898',
@@ -8773,7 +8785,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-34.3954725106608, 150.8905776549], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-34.3954725106608, 150.8905776549], fallbackDataset: [150.8905776549, -34.3954725106608] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'au-nsw-six-cadastre-lot', idPrefix: 'AU-NSW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         purmerend: {
             id: 'purmerend', wupCityCode: '1927',
@@ -8782,7 +8794,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5033693716876, 4.96148509531992], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5033693716876, 4.96148509531992], fallbackDataset: [4.96148509531992, 52.5033693716876] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hagen: {
             id: 'hagen', wupCityCode: '1928',
@@ -8791,7 +8803,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3659087620314, 7.46735353305389], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3659087620314, 7.46735353305389], fallbackDataset: [7.46735353305389, 51.3659087620314] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gdynia: {
             id: 'gdynia', wupCityCode: '1935',
@@ -8800,7 +8812,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.5322041862711, 18.5076341710355], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.5322041862711, 18.5076341710355], fallbackDataset: [18.5076341710355, 54.5322041862711] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         taibe: {
             id: 'taibe', wupCityCode: '1947',
@@ -8809,7 +8821,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.2649299482491, 35.0081305909969], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.2649299482491, 35.0081305909969], fallbackDataset: [35.0081305909969, 32.2649299482491] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hoorn: {
             id: 'hoorn', wupCityCode: '2008',
@@ -8818,7 +8830,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6558213441406, 5.06975918263357], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6558213441406, 5.06975918263357], fallbackDataset: [5.06975918263357, 52.6558213441406] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ostrow_wielkopolski: {
             id: 'ostrow_wielkopolski', wupCityCode: '2014',
@@ -8827,7 +8839,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6497384459528, 17.8138050881419], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6497384459528, 17.8138050881419], fallbackDataset: [17.8138050881419, 51.6497384459528] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         munster: {
             id: 'munster', wupCityCode: '2088',
@@ -8836,7 +8848,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9527203351823, 7.6263298998742], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9527203351823, 7.6263298998742], fallbackDataset: [7.6263298998742, 51.9527203351823] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         umm_al_fahm: {
             id: 'umm_al_fahm', wupCityCode: '2105',
@@ -8845,7 +8857,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.5239214711844, 35.1523058461333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.5239214711844, 35.1523058461333], fallbackDataset: [35.1523058461333, 32.5239214711844] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         unna: {
             id: 'unna', wupCityCode: '2167',
@@ -8854,7 +8866,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5396885168331, 7.65878768202864], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5396885168331, 7.65878768202864], fallbackDataset: [7.65878768202864, 51.5396885168331] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         inowroclaw: {
             id: 'inowroclaw', wupCityCode: '2172',
@@ -8863,7 +8875,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7902336993022, 18.2590588435053], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.7902336993022, 18.2590588435053], fallbackDataset: [18.2590588435053, 52.7902336993022] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         modiin_maccabim_reut: {
             id: 'modiin_maccabim_reut', wupCityCode: '2184',
@@ -8872,7 +8884,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.8986246886273, 35.0077621307069], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.8986246886273, 35.0077621307069], fallbackDataset: [35.0077621307069, 31.8986246886273] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         livermore: {
             id: 'livermore', wupCityCode: '2218',
@@ -8881,7 +8893,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [37.678488891042, -121.767840355486], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [37.678488891042, -121.767840355486], fallbackDataset: [-121.767840355486, 37.678488891042] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-calfire-statewide-parcels', idPrefix: 'US-CA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rouen: {
             id: 'rouen', wupCityCode: '2239',
@@ -8890,7 +8902,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.4334014958952, 1.08426580718412], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.4334014958952, 1.08426580718412], fallbackDataset: [1.08426580718412, 49.4334014958952] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ludenscheid: {
             id: 'ludenscheid', wupCityCode: '2244',
@@ -8899,7 +8911,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2199872933547, 7.63018199810285], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2199872933547, 7.63018199810285], fallbackDataset: [7.63018199810285, 51.2199872933547] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kalisz: {
             id: 'kalisz', wupCityCode: '2249',
@@ -8908,7 +8920,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7549404064184, 18.0833173060179], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7549404064184, 18.0833173060179], fallbackDataset: [18.0833173060179, 51.7549404064184] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bussum: {
             id: 'bussum', wupCityCode: '2319',
@@ -8917,7 +8929,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2773118416372, 5.16304422962181], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2773118416372, 5.16304422962181], fallbackDataset: [5.16304422962181, 52.2773118416372] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         iserlohn: {
             id: 'iserlohn', wupCityCode: '2320',
@@ -8926,7 +8938,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3791903656589, 7.68570083680636], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3791903656589, 7.68570083680636], fallbackDataset: [7.68570083680636, 51.3791903656589] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tczew: {
             id: 'tczew', wupCityCode: '2325',
@@ -8935,7 +8947,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.0908371715605, 18.7843364944908], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.0908371715605, 18.7843364944908], fallbackDataset: [18.7843364944908, 54.0908371715605] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hilversum: {
             id: 'hilversum', wupCityCode: '2395',
@@ -8944,7 +8956,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2216945481736, 5.17282299607963], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2216945481736, 5.17282299607963], fallbackDataset: [5.17282299607963, 52.2216945481736] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         opole: {
             id: 'opole', wupCityCode: '2401',
@@ -8953,7 +8965,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.6681692860732, 17.9404125955347], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.6681692860732, 17.9404125955347], fallbackDataset: [17.9404125955347, 50.6681692860732] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         almere: {
             id: 'almere', wupCityCode: '2470',
@@ -8962,7 +8974,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.377455091164, 5.24278468537167], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.377455091164, 5.24278468537167], fallbackDataset: [5.24278468537167, 52.377455091164] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hamm: {
             id: 'hamm', wupCityCode: '2471',
@@ -8971,7 +8983,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6789688105277, 7.78773684717369], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6789688105277, 7.78773684717369], fallbackDataset: [7.78773684717369, 51.6789688105277] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         torun: {
             id: 'torun', wupCityCode: '2476',
@@ -8980,7 +8992,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0245852712266, 18.6212481126872], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.0245852712266, 18.6212481126872], fallbackDataset: [18.6212481126872, 53.0245852712266] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zeist: {
             id: 'zeist', wupCityCode: '2544',
@@ -8989,7 +9001,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0897846498778, 5.23582173112321], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0897846498778, 5.23582173112321], fallbackDataset: [5.23582173112321, 52.0897846498778] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         grudziadz: {
             id: 'grudziadz', wupCityCode: '2549',
@@ -8998,7 +9010,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4788249167263, 18.7571110836073], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4788249167263, 18.7571110836073], fallbackDataset: [18.7571110836073, 53.4788249167263] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         s_hertogenbosch: {
             id: 's_hertogenbosch', wupCityCode: '2615',
@@ -9007,7 +9019,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7066884581067, 5.31629111142042], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7066884581067, 5.31629111142042], fallbackDataset: [5.31629111142042, 51.7066884581067] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         elblag: {
             id: 'elblag', wupCityCode: '2620',
@@ -9016,7 +9028,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.1668551128978, 19.4103120545885], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.1668551128978, 19.4103120545885], fallbackDataset: [19.4103120545885, 54.1668551128978] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         amersfoort: {
             id: 'amersfoort', wupCityCode: '2682',
@@ -9025,7 +9037,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1691038816767, 5.39728040800154], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1691038816767, 5.39728040800154], fallbackDataset: [5.39728040800154, 52.1691038816767] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wloclawek: {
             id: 'wloclawek', wupCityCode: '2687',
@@ -9034,7 +9046,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6505942526297, 19.0626658622382], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6505942526297, 19.0626658622382], fallbackDataset: [19.0626658622382, 52.6505942526297] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lelystad: {
             id: 'lelystad', wupCityCode: '2749',
@@ -9043,7 +9055,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5058770190195, 5.47327676910043], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5058770190195, 5.47327676910043], fallbackDataset: [5.47327676910043, 52.5058770190195] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         siegen: {
             id: 'siegen', wupCityCode: '2750',
@@ -9052,7 +9064,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8899005634816, 8.02247385221933], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8899005634816, 8.02247385221933], fallbackDataset: [8.02247385221933, 50.8899005634816] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rybnik: {
             id: 'rybnik', wupCityCode: '2754',
@@ -9061,7 +9073,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.099180479429, 18.5383788655106], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.099180479429, 18.5383788655106], fallbackDataset: [18.5383788655106, 50.099180479429] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         eindhoven: {
             id: 'eindhoven', wupCityCode: '2813',
@@ -9070,7 +9082,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4432163203009, 5.45844256201511], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4432163203009, 5.45844256201511], fallbackDataset: [5.45844256201511, 51.4432163203009] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         freiburg_im_breisgau: {
             id: 'freiburg_im_breisgau', wupCityCode: '2814',
@@ -9079,7 +9091,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.0006635061131, 7.83778338402154], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.0006635061131, 7.83778338402154], fallbackDataset: [7.83778338402154, 48.0006635061131] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jastrzebie_zdroj: {
             id: 'jastrzebie_zdroj', wupCityCode: '2818',
@@ -9088,7 +9100,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.9518257086113, 18.5908434066578], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.9518257086113, 18.5908434066578], fallbackDataset: [18.5908434066578, 49.9518257086113] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         oss: {
             id: 'oss', wupCityCode: '2876',
@@ -9097,7 +9109,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7661201043065, 5.52895010311022], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7661201043065, 5.52895010311022], fallbackDataset: [5.52895010311022, 51.7661201043065] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gliwice: {
             id: 'gliwice', wupCityCode: '2881',
@@ -9106,7 +9118,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.2974825733379, 18.6726701509765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.2974825733379, 18.6726701509765], fallbackDataset: [18.6726701509765, 50.2974825733379] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         veenendaal: {
             id: 'veenendaal', wupCityCode: '2937',
@@ -9115,7 +9127,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0224599462408, 5.55574016955085], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0224599462408, 5.55574016955085], fallbackDataset: [5.55574016955085, 52.0224599462408] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gutersloh: {
             id: 'gutersloh', wupCityCode: '2938',
@@ -9124,7 +9136,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9044262053087, 8.38418745049793], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9044262053087, 8.38418745049793], fallbackDataset: [8.38418745049793, 51.9044262053087] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ede: {
             id: 'ede', wupCityCode: '2997',
@@ -9133,7 +9145,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0353765306542, 5.65323487609329], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0353765306542, 5.65323487609329], fallbackDataset: [5.65323487609329, 52.0353765306542] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         helmond: {
             id: 'helmond', wupCityCode: '3056',
@@ -9142,7 +9154,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4711841170888, 5.66069182320304], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4711841170888, 5.66069182320304], fallbackDataset: [5.66069182320304, 51.4711841170888] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         pabianice: {
             id: 'pabianice', wupCityCode: '3061',
@@ -9151,7 +9163,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6609967628735, 19.3534282663508], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6609967628735, 19.3534282663508], fallbackDataset: [19.3534282663508, 51.6609967628735] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         leeuwarden: {
             id: 'leeuwarden', wupCityCode: '3115',
@@ -9160,7 +9172,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2003327872053, 5.80785745182904], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.2003327872053, 5.80785745182904], fallbackDataset: [5.80785745182904, 53.2003327872053] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nijmegen: {
             id: 'nijmegen', wupCityCode: '3173',
@@ -9169,7 +9181,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8273681725996, 5.82030557604345], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8273681725996, 5.82030557604345], fallbackDataset: [5.82030557604345, 51.8273681725996] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bielefeld: {
             id: 'bielefeld', wupCityCode: '3174',
@@ -9178,7 +9190,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0195333690261, 8.54753242156078], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0195333690261, 8.54753242156078], fallbackDataset: [8.54753242156078, 52.0195333690261] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tychy: {
             id: 'tychy', wupCityCode: '3178',
@@ -9187,7 +9199,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.1188429468754, 18.987175031002], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.1188429468754, 18.987175031002], fallbackDataset: [18.987175031002, 50.1188429468754] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         maastricht: {
             id: 'maastricht', wupCityCode: '3230',
@@ -9196,7 +9208,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8485108833663, 5.69710839005175], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8485108833663, 5.69710839005175], fallbackDataset: [5.69710839005175, 50.8485108833663] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         arnhem: {
             id: 'arnhem', wupCityCode: '3285',
@@ -9205,7 +9217,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9720027817995, 5.91461730519761], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9720027817995, 5.91461730519761], fallbackDataset: [5.91461730519761, 51.9720027817995] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         herford: {
             id: 'herford', wupCityCode: '3286',
@@ -9214,7 +9226,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1186742740275, 8.67431041713781], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1186742740275, 8.67431041713781], fallbackDataset: [8.67431041713781, 52.1186742740275] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         plock: {
             id: 'plock', wupCityCode: '3289',
@@ -9223,7 +9235,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5430998887522, 19.7195485490596], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5430998887522, 19.7195485490596], fallbackDataset: [19.7195485490596, 52.5430998887522] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         apeldoorn: {
             id: 'apeldoorn', wupCityCode: '3340',
@@ -9232,7 +9244,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2088941318488, 5.97243707164198], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2088941318488, 5.97243707164198], fallbackDataset: [5.97243707164198, 52.2088941318488] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         russelsheim_am_main: {
             id: 'russelsheim_am_main', wupCityCode: '3341',
@@ -9241,7 +9253,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.990515288114, 8.43382940878915], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.990515288114, 8.43382940878915], fallbackDataset: [8.43382940878915, 49.990515288114] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zwolle: {
             id: 'zwolle', wupCityCode: '3393',
@@ -9250,7 +9262,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5132062071371, 6.09243811399258], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5132062071371, 6.09243811399258], fallbackDataset: [6.09243811399258, 52.5132062071371] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         karlsruhe: {
             id: 'karlsruhe', wupCityCode: '3394',
@@ -9259,7 +9271,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.0084967221897, 8.4011625005132], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.0084967221897, 8.4011625005132], fallbackDataset: [8.4011625005132, 49.0084967221897] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bielsko_biala: {
             id: 'bielsko_biala', wupCityCode: '3397',
@@ -9268,7 +9280,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.8178778643515, 19.0423255904236], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.8178778643515, 19.0423255904236], fallbackDataset: [19.0423255904236, 49.8178778643515] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heerlen: {
             id: 'heerlen', wupCityCode: '3446',
@@ -9277,7 +9289,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9001389828976, 5.99426673932929], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9001389828976, 5.99426673932929], fallbackDataset: [5.99426673932929, 50.9001389828976] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mannheim: {
             id: 'mannheim', wupCityCode: '3447',
@@ -9286,7 +9298,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.485482134892, 8.47482558079509], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.485482134892, 8.47482558079509], fallbackDataset: [8.47482558079509, 49.485482134892] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         piotrkow_trybunalski: {
             id: 'piotrkow_trybunalski', wupCityCode: '3449',
@@ -9295,7 +9307,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4086733870137, 19.6836162711193], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4086733870137, 19.6836162711193], fallbackDataset: [19.6836162711193, 51.4086733870137] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         deventer: {
             id: 'deventer', wupCityCode: '3499',
@@ -9304,7 +9316,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2589851524138, 6.17977057589214], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2589851524138, 6.17977057589214], fallbackDataset: [6.17977057589214, 52.2589851524138] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         olsztyn: {
             id: 'olsztyn', wupCityCode: '3502',
@@ -9313,7 +9325,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7665732876546, 20.4978271160328], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.7665732876546, 20.4978271160328], fallbackDataset: [20.4978271160328, 53.7665732876546] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         groningen: {
             id: 'groningen', wupCityCode: '3552',
@@ -9322,7 +9334,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2187480982514, 6.5694015697624], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.2187480982514, 6.5694015697624], fallbackDataset: [6.5694015697624, 53.2187480982514] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         paderborn: {
             id: 'paderborn', wupCityCode: '3553',
@@ -9331,7 +9343,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7199802103556, 8.75710708517565], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7199802103556, 8.75710708517565], fallbackDataset: [8.75710708517565, 51.7199802103556] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tomaszow_mazowiecki: {
             id: 'tomaszow_mazowiecki', wupCityCode: '3555',
@@ -9340,7 +9352,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5340194073462, 20.0135606379077], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5340194073462, 20.0135606379077], fallbackDataset: [20.0135606379077, 51.5340194073462] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         almelo: {
             id: 'almelo', wupCityCode: '3605',
@@ -9349,7 +9361,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3551248247847, 6.65940688231402], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.3551248247847, 6.65940688231402], fallbackDataset: [6.65940688231402, 52.3551248247847] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hengelo: {
             id: 'hengelo', wupCityCode: '3656',
@@ -9358,7 +9370,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2689917662346, 6.80085741213038], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2689917662346, 6.80085741213038], fallbackDataset: [6.80085741213038, 52.2689917662346] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         giessen: {
             id: 'giessen', wupCityCode: '3657',
@@ -9367,7 +9379,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5871854112385, 8.67930634779687], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5871854112385, 8.67930634779687], fallbackDataset: [8.67930634779687, 50.5871854112385] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         warszawa_warsaw: {
             id: 'warszawa_warsaw', wupCityCode: '3660',
@@ -9376,7 +9388,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2229170530915, 21.0008161096485], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2229170530915, 21.0008161096485], fallbackDataset: [21.0008161096485, 52.2229170530915] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         enschede: {
             id: 'enschede', wupCityCode: '3707',
@@ -9385,7 +9397,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2156183904437, 6.88434157506402], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2156183904437, 6.88434157506402], fallbackDataset: [6.88434157506402, 52.2156183904437] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         darmstadt: {
             id: 'darmstadt', wupCityCode: '3708',
@@ -9394,7 +9406,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.8775164874442, 8.65106829046502], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.8775164874442, 8.65106829046502], fallbackDataset: [8.65106829046502, 49.8775164874442] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         legionowo: {
             id: 'legionowo', wupCityCode: '3710',
@@ -9403,7 +9415,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4039665953965, 20.9252703477092], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4039665953965, 20.9252703477092], fallbackDataset: [20.9252703477092, 52.4039665953965] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heidelberg: {
             id: 'heidelberg', wupCityCode: '3756',
@@ -9412,7 +9424,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.3910185824291, 8.6720920591206], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.3910185824291, 8.6720920591206], fallbackDataset: [8.6720920591206, 49.3910185824291] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kielce: {
             id: 'kielce', wupCityCode: '3758',
@@ -9421,7 +9433,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8750758566059, 20.6275441266407], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8750758566059, 20.6275441266407], fallbackDataset: [20.6275441266407, 50.8750758566059] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wolomin: {
             id: 'wolomin', wupCityCode: '3805',
@@ -9430,7 +9442,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.342697415251, 21.2337346051155], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.342697415251, 21.2337346051155], fallbackDataset: [21.2337346051155, 52.342697415251] },
             parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         pforzheim: {
             id: 'pforzheim', wupCityCode: '3849',
@@ -9439,7 +9451,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.8884978124238, 8.69418460384127], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.8884978124238, 8.69418460384127], fallbackDataset: [8.69418460384127, 48.8884978124238] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         radom: {
             id: 'radom', wupCityCode: '3851',
@@ -9448,7 +9460,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3964628828514, 21.1526507651136], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3964628828514, 21.1526507651136], fallbackDataset: [21.1526507651136, 51.3964628828514] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hanau: {
             id: 'hanau', wupCityCode: '3895',
@@ -9457,7 +9469,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.1192991264763, 8.92227699927494], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.1192991264763, 8.92227699927494], fallbackDataset: [8.92227699927494, 50.1192991264763] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nowy_sacz: {
             id: 'nowy_sacz', wupCityCode: '3897',
@@ -9466,7 +9478,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.6140452924349, 20.6998999214814], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.6140452924349, 20.6998999214814], fallbackDataset: [20.6998999214814, 49.6140452924349] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         davis: {
             id: 'davis', wupCityCode: '3926',
@@ -9475,7 +9487,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [38.553067679527, -121.743239448172], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [38.553067679527, -121.743239448172], fallbackDataset: [-121.743239448172, 38.553067679527] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-calfire-statewide-parcels', idPrefix: 'US-CA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tarnow: {
             id: 'tarnow', wupCityCode: '3942',
@@ -9484,7 +9496,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.0164917071665, 20.9877709077343], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.0164917071665, 20.9877709077343], fallbackDataset: [20.9877709077343, 50.0164917071665] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sindelfingen: {
             id: 'sindelfingen', wupCityCode: '3984',
@@ -9493,7 +9505,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.6952777912253, 9.00720562643213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.6952777912253, 9.00720562643213], fallbackDataset: [9.00720562643213, 48.6952777912253] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lomza: {
             id: 'lomza', wupCityCode: '3986',
@@ -9502,7 +9514,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1714002876591, 22.0646901929271], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.1714002876591, 22.0646901929271], fallbackDataset: [22.0646901929271, 53.1714002876591] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gerlingen: {
             id: 'gerlingen', wupCityCode: '4027',
@@ -9511,7 +9523,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.8110813845571, 9.09691074394977], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.8110813845571, 9.09691074394977], fallbackDataset: [9.09691074394977, 48.8110813845571] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         elk: {
             id: 'elk', wupCityCode: '4029',
@@ -9520,7 +9532,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.8234849792281, 22.3576680534356], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.8234849792281, 22.3576680534356], fallbackDataset: [22.3576680534356, 53.8234849792281] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         madera: {
             id: 'madera', wupCityCode: '4056',
@@ -9529,7 +9541,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [36.9636127025836, -120.063186461836], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [36.9636127025836, -120.063186461836], fallbackDataset: [-120.063186461836, 36.9636127025836] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-calfire-statewide-parcels', idPrefix: 'US-CA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         siedlce: {
             id: 'siedlce', wupCityCode: '4072',
@@ -9538,7 +9550,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1656867656902, 22.2767061227765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1656867656902, 22.2767061227765], fallbackDataset: [22.2767061227765, 52.1656867656902] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         suwalki: {
             id: 'suwalki', wupCityCode: '4115',
@@ -9547,7 +9559,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.1043061997561, 22.9331027875897], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.1043061997561, 22.9331027875897], fallbackDataset: [22.9331027875897, 54.1043061997561] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         stalowa_wola: {
             id: 'stalowa_wola', wupCityCode: '4157',
@@ -9556,7 +9568,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5664297325734, 22.0568167437462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5664297325734, 22.0568167437462], fallbackDataset: [22.0568167437462, 50.5664297325734] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kassel: {
             id: 'kassel', wupCityCode: '4197',
@@ -9565,7 +9577,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3151466598024, 9.48755550595054], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3151466598024, 9.48755550595054], fallbackDataset: [9.48755550595054, 51.3151466598024] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rzeszow: {
             id: 'rzeszow', wupCityCode: '4199',
@@ -9574,7 +9586,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.0320723876861, 22.0039593163143], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.0320723876861, 22.0039593163143], fallbackDataset: [22.0039593163143, 50.0320723876861] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         heilbronn: {
             id: 'heilbronn', wupCityCode: '4238',
@@ -9583,7 +9595,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.1519115615472, 9.21652129447529], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.1519115615472, 9.21652129447529], fallbackDataset: [9.21652129447529, 49.1519115615472] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lublin: {
             id: 'lublin', wupCityCode: '4280',
@@ -9592,7 +9604,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2411675205158, 22.5517979898529], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2411675205158, 22.5517979898529], fallbackDataset: [22.5517979898529, 51.2411675205158] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         przemysl: {
             id: 'przemysl', wupCityCode: '4318',
@@ -9601,7 +9613,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.7865703940357, 22.7720844417991], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.7865703940357, 22.7720844417991], fallbackDataset: [22.7720844417991, 49.7865703940357] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         reutlingen: {
             id: 'reutlingen', wupCityCode: '4354',
@@ -9610,7 +9622,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.494515205626, 9.2093446638816], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.494515205626, 9.2093446638816], fallbackDataset: [9.2093446638816, 48.494515205626] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zamosc: {
             id: 'zamosc', wupCityCode: '4356',
@@ -9619,7 +9631,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7217702281141, 23.2609637553334], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7217702281141, 23.2609637553334], fallbackDataset: [23.2609637553334, 50.7217702281141] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chelm: {
             id: 'chelm', wupCityCode: '4394',
@@ -9628,7 +9640,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1343001957731, 23.4775917479072], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1343001957731, 23.4775917479072], fallbackDataset: [23.4775917479072, 51.1343001957731] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         constance: {
             id: 'constance', wupCityCode: '4430',
@@ -9637,7 +9649,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.6744214989573, 9.17309580098738], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.6744214989573, 9.17309580098738], fallbackDataset: [9.17309580098738, 47.6744214989573] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fulda: {
             id: 'fulda', wupCityCode: '4504',
@@ -9646,7 +9658,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5519779322862, 9.69246242762928], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5519779322862, 9.69246242762928], fallbackDataset: [9.69246242762928, 50.5519779322862] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         toulon: {
             id: 'toulon', wupCityCode: '4540',
@@ -9655,7 +9667,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [43.1183148051142, 5.91190474692264], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [43.1183148051142, 5.91190474692264], fallbackDataset: [5.91190474692264, 43.1183148051142] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ravensburg: {
             id: 'ravensburg', wupCityCode: '4689',
@@ -9664,7 +9676,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.7945532106953, 9.62553797821608], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.7945532106953, 9.62553797821608], fallbackDataset: [9.62553797821608, 47.7945532106953] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         strasbourg: {
             id: 'strasbourg', wupCityCode: '4832',
@@ -9673,7 +9685,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.5776653862353, 7.74205726308135], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.5776653862353, 7.74205726308135], fallbackDataset: [7.74205726308135, 48.5776653862353] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ulm: {
             id: 'ulm', wupCityCode: '4833',
@@ -9682,7 +9694,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.3989825933644, 9.98693462795703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.3989825933644, 9.98693462795703], fallbackDataset: [9.98693462795703, 48.3989825933644] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hazel_dell: {
             id: 'hazel_dell', wupCityCode: '5217',
@@ -9691,7 +9703,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [45.6532383734832, -122.569426017328], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [45.6532383734832, -122.569426017328], fallbackDataset: [-122.569426017328, 45.6532383734832] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wa-watech-statewide-parcels', idPrefix: 'US-WA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bellevue: {
             id: 'bellevue', wupCityCode: '5413',
@@ -9700,7 +9712,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.6694577413674, -122.166399898028], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.6694577413674, -122.166399898028], fallbackDataset: [-122.166399898028, 47.6694577413674] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wa-watech-statewide-parcels', idPrefix: 'US-WA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         yakima: {
             id: 'yakima', wupCityCode: '5440',
@@ -9709,7 +9721,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [46.5950341911278, -120.53759265329], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [46.5950341911278, -120.53759265329], fallbackDataset: [-120.53759265329, 46.5950341911278] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wa-watech-statewide-parcels', idPrefix: 'US-WA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zwickau: {
             id: 'zwickau', wupCityCode: '5472',
@@ -9718,7 +9730,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7132491597848, 12.4833751663692], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7132491597848, 12.4833751663692], fallbackDataset: [12.4833751663692, 50.7132491597848] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GeoSN Saxony ALKIS parcel geometry · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chemnitz: {
             id: 'chemnitz', wupCityCode: '5551',
@@ -9727,7 +9739,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8270132341809, 12.9110519091696], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8270132341809, 12.9110519091696], fallbackDataset: [12.9110519091696, 50.8270132341809] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GeoSN Saxony ALKIS parcel geometry · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         anchorage: {
             id: 'anchorage', wupCityCode: '5571',
@@ -9736,7 +9748,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [61.2001872597905, -149.82840565615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [61.2001872597905, -149.82840565615], fallbackDataset: [-149.82840565615, 61.2001872597905] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ak-statewide-parcels-agol', idPrefix: 'US-AK-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Alaska local governments; compiled ArcGIS Online layer AK_Parcels. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         layton: {
             id: 'layton', wupCityCode: '5788',
@@ -9745,7 +9757,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.1024668531369, -112.008818127792], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.1024668531369, -112.008818127792], fallbackDataset: [-112.008818127792, 41.1024668531369] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ut-ugrc-statewide-parcels', idPrefix: 'US-UT-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Utah Geospatial Resource Center and Utah counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ogden: {
             id: 'ogden', wupCityCode: '5810',
@@ -9754,7 +9766,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.2172850013019, -111.961087851707], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.2172850013019, -111.961087851707], fallbackDataset: [-111.961087851707, 41.2172850013019] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ut-ugrc-statewide-parcels', idPrefix: 'US-UT-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Utah Geospatial Resource Center and Utah counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         boulder: {
             id: 'boulder', wupCityCode: '6089',
@@ -9763,7 +9775,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [40.0140689394027, -105.261838065455], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [40.0140689394027, -105.261838065455], fallbackDataset: [-105.261838065455, 40.0140689394027] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-co-oit-statewide-parcels', idPrefix: 'US-COLORADO-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Colorado Governor\'s Office of Information Technology GIS and contributing counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         greeley: {
             id: 'greeley', wupCityCode: '6165',
@@ -9772,7 +9784,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [40.4065900589356, -104.71555057375], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [40.4065900589356, -104.71555057375], fallbackDataset: [-104.71555057375, 40.4065900589356] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-co-oit-statewide-parcels', idPrefix: 'US-COLORADO-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Colorado Governor\'s Office of Information Technology GIS and contributing counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         south_central: {
             id: 'south_central', wupCityCode: '6665',
@@ -9781,7 +9793,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [45.7817768816123, -108.549285709368], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [45.7817768816123, -108.549285709368], fallbackDataset: [-108.549285709368, 45.7817768816123] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-mt-helena-parcels', idPrefix: 'US-MT-HELENA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Montana Department of Revenue and county GIS offices; integrated by Montana State Library. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         urbandale: {
             id: 'urbandale', wupCityCode: '7009',
@@ -9790,7 +9802,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.6149025063095, -93.6594933902087], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.6149025063095, -93.6594933902087], fallbackDataset: [-93.6594933902087, 41.6149025063095] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ia-des-moines-parcels', idPrefix: 'US-IA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bradenton: {
             id: 'bradenton', wupCityCode: '7093',
@@ -9799,7 +9811,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.461361061327, -82.582711212242], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.461361061327, -82.582711212242], fallbackDataset: [-82.582711212242, 27.461361061327] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sarasota: {
             id: 'sarasota', wupCityCode: '7107',
@@ -9808,7 +9820,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.3213005254979, -82.5086315166656], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.3213005254979, -82.5086315166656], fallbackDataset: [-82.5086315166656, 27.3213005254979] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bayonet_point: {
             id: 'bayonet_point', wupCityCode: '7120',
@@ -9817,7 +9829,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.2700137222575, -82.7070769589785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.2700137222575, -82.7070769589785], fallbackDataset: [-82.7070769589785, 28.2700137222575] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tampa: {
             id: 'tampa', wupCityCode: '7159',
@@ -9826,7 +9838,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.0030986140797, -82.4702888424246], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.0030986140797, -82.4702888424246], fallbackDataset: [-82.4702888424246, 28.0030986140797] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fargo: {
             id: 'fargo', wupCityCode: '7198',
@@ -9835,7 +9847,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [46.8614438595037, -96.8024909909751], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [46.8614438595037, -96.8024909909751], fallbackDataset: [-96.8024909909751, 46.8614438595037] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-nd-gishub-statewide-parcels', idPrefix: 'US-ND-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'North Dakota GIS Hub State Parcel Program and North Dakota counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ventura_bay: {
             id: 'ventura_bay', wupCityCode: '7211',
@@ -9844,7 +9856,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.9100995716056, -82.3147524355478], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.9100995716056, -82.3147524355478], fallbackDataset: [-82.3147524355478, 27.9100995716056] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lakeland: {
             id: 'lakeland', wupCityCode: '7250',
@@ -9853,7 +9865,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.0176498923629, -81.9426377334415], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.0176498923629, -81.9426377334415], fallbackDataset: [-81.9426377334415, 28.0176498923629] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         forest_city: {
             id: 'forest_city', wupCityCode: '7419',
@@ -9862,7 +9874,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.6545129049095, -81.4377636401185], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.6545129049095, -81.4377636401185], fallbackDataset: [-81.4377636401185, 28.6545129049095] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         port_saint_lucie: {
             id: 'port_saint_lucie', wupCityCode: '7528',
@@ -9871,7 +9883,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.2987598439619, -80.357237726397], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.2987598439619, -80.357237726397], fallbackDataset: [-80.357237726397, 27.2987598439619] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         saint_johns_park: {
             id: 'saint_johns_park', wupCityCode: '7540',
@@ -9880,7 +9892,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.2820297974115, -81.7388077386963], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.2820297974115, -81.7388077386963], fallbackDataset: [-81.7388077386963, 30.2820297974115] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         holiday_hill: {
             id: 'holiday_hill', wupCityCode: '7573',
@@ -9889,7 +9901,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.3432082180442, -81.5857638197135], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.3432082180442, -81.5857638197135], fallbackDataset: [-81.5857638197135, 30.3432082180442] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jacksonville_beach: {
             id: 'jacksonville_beach', wupCityCode: '7584',
@@ -9898,7 +9910,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.3079308989275, -81.4038356066191], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.3079308989275, -81.4038356066191], fallbackDataset: [-81.4038356066191, 30.3079308989275] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kenosha: {
             id: 'kenosha', wupCityCode: '7828',
@@ -9907,7 +9919,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.5784858065008, -87.8410657652837], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.5784858065008, -87.8410657652837], fallbackDataset: [-87.8410657652837, 42.5784858065008] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wi-v12-statewide-parcels', idPrefix: 'US-WI-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Wisconsin State Cartographer\'s Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         racine: {
             id: 'racine', wupCityCode: '7837',
@@ -9916,7 +9928,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.7232104953445, -87.8044867117979], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.7232104953445, -87.8044867117979], fallbackDataset: [-87.8044867117979, 42.7232104953445] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wi-v12-statewide-parcels', idPrefix: 'US-WI-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Wisconsin State Cartographer\'s Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ludlow: {
             id: 'ludlow', wupCityCode: '7855',
@@ -9925,7 +9937,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.1283327727324, -84.5943579148481], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.1283327727324, -84.5943579148481], fallbackDataset: [-84.5943579148481, 39.1283327727324] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fort_wayne: {
             id: 'fort_wayne', wupCityCode: '7913',
@@ -9934,7 +9946,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.0690939195421, -85.1300955495992], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.0690939195421, -85.1300955495992], fallbackDataset: [-85.1300955495992, 41.0690939195421] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-in-indianamap-statewide-parcels', idPrefix: 'US-IN-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IndianaMap / Indiana Geographic Information Office and Indiana counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         greensboro: {
             id: 'greensboro', wupCityCode: '7969',
@@ -9943,7 +9955,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [36.0643485281769, -79.7946139332298], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [36.0643485281769, -79.7946139332298], fallbackDataset: [-79.7946139332298, 36.0643485281769] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-nc-onemap-statewide-parcels', idPrefix: 'US-NC-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NC OneMap, NC Center for Geographic Information and Analysis, and North Carolina counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         toledo: {
             id: 'toledo', wupCityCode: '7983',
@@ -9952,7 +9964,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.6697459831271, -83.5721153382202], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.6697459831271, -83.5721153382202], fallbackDataset: [-83.5721153382202, 41.6697459831271] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         firestone_park: {
             id: 'firestone_park', wupCityCode: '8053',
@@ -9961,7 +9973,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.0591020042923, -81.487870623553], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.0591020042923, -81.487870623553], fallbackDataset: [-81.487870623553, 41.0591020042923] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         euclid: {
             id: 'euclid', wupCityCode: '8060',
@@ -9970,7 +9982,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.510843325213, -81.57541713518], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.510843325213, -81.57541713518], fallbackDataset: [-81.57541713518, 41.510843325213] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fairland: {
             id: 'fairland', wupCityCode: '8158',
@@ -9979,7 +9991,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.0669362280002, -76.9540592052469], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.0669362280002, -76.9540592052469], fallbackDataset: [-76.9540592052469, 39.0669362280002] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-md-imap-statewide-parcel-boundaries', idPrefix: 'US-MD-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         columbia_md: {
             id: 'columbia_md', wupCityCode: '8165',
@@ -9988,7 +10000,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.2048448908618, -76.8403726722015], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.2048448908618, -76.8403726722015], fallbackDataset: [-76.8403726722015, 39.2048448908618] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-md-imap-statewide-parcel-boundaries', idPrefix: 'US-MD-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wilmington: {
             id: 'wilmington', wupCityCode: '8228',
@@ -9997,7 +10009,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.7459671684999, -75.5615080662526], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.7459671684999, -75.5615080662526], fallbackDataset: [-75.5615080662526, 39.7459671684999] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-de-firstmap-statewide-parcels', idPrefix: 'US-DE-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'State of Delaware FirstMap and Delaware counties. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         springfield_ma: {
             id: 'springfield_ma', wupCityCode: '8463',
@@ -10006,7 +10018,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.1113118931937, -72.5784998231599], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.1113118931937, -72.5784998231599], fallbackDataset: [-72.5784998231599, 42.1113118931937] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         worcester: {
             id: 'worcester', wupCityCode: '8469',
@@ -10015,7 +10027,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.2597734886551, -71.8070882719052], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.2597734886551, -71.8070882719052], fallbackDataset: [-71.8070882719052, 42.2597734886551] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fall_river: {
             id: 'fall_river', wupCityCode: '8481',
@@ -10024,7 +10036,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.6955271095878, -71.1534456550269], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.6955271095878, -71.1534456550269], fallbackDataset: [-71.1534456550269, 41.6955271095878] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lowell: {
             id: 'lowell', wupCityCode: '8505',
@@ -10033,7 +10045,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.6417314473143, -71.3181810964044], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.6417314473143, -71.3181810964044], fallbackDataset: [-71.3181810964044, 42.6417314473143] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lawrence: {
             id: 'lawrence', wupCityCode: '8517',
@@ -10042,7 +10054,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.7075937387977, -71.1639769493182], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.7075937387977, -71.1639769493182], fallbackDataset: [-71.1639769493182, 42.7075937387977] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lynn: {
             id: 'lynn', wupCityCode: '8523',
@@ -10051,7 +10063,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.4692858620628, -70.9553412983168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.4692858620628, -70.9553412983168], fallbackDataset: [-70.9553412983168, 42.4692858620628] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         czestochowa: {
             id: 'czestochowa', wupCityCode: '3002',
@@ -10060,7 +10072,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8076252950718, 19.1134120802074], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8076252950718, 19.1134120802074], fallbackDataset: [19.1134120802074, 50.8076252950718] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         belchatow: {
             id: 'belchatow', wupCityCode: '3344',
@@ -10069,7 +10081,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3600738693611, 19.3733696862117], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3600738693611, 19.3733696862117], fallbackDataset: [19.3733696862117, 51.3600738693611] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mumbai: {
             id: 'mumbai', wupCityCode: '7945',
@@ -10078,7 +10090,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.12248075999, 72.8833426320986], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.12248075999, 72.8833426320986], fallbackDataset: [72.8833426320986, 19.12248075999] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 26, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sirsa: {
             id: 'sirsa', wupCityCode: '6392',
@@ -10087,7 +10099,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.536704378771, 75.035515266935], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.536704378771, 75.035515266935], fallbackDataset: [75.035515266935, 29.536704378771] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sirsa-outlines', idPrefix: 'IN-HR-HSAC2-SIRSA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hisar: {
             id: 'hisar', wupCityCode: '7285',
@@ -10096,7 +10108,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.150778973288602, 75.75211620569911], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.150778973288602, 75.75211620569911], fallbackDataset: [75.75211620569911, 29.150778973288602] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-hisar-outlines', idPrefix: 'IN-HR-HSAC2-HISAR-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kaithal: {
             id: 'kaithal', wupCityCode: '7670',
@@ -10105,7 +10117,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.7995897199337, 76.4055225188099], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.7995897199337, 76.4055225188099], fallbackDataset: [76.4055225188099, 29.7995897199337] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kaithal-outlines', idPrefix: 'IN-HR-HSAC2-KAITHAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ambala: {
             id: 'ambala', wupCityCode: '7788',
@@ -10114,7 +10126,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.380225522836298, 76.8141196644984], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.380225522836298, 76.8141196644984], fallbackDataset: [76.8141196644984, 30.380225522836298] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-ambala-outlines', idPrefix: 'IN-HR-HSAC2-AMBALA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jind: {
             id: 'jind', wupCityCode: '7797',
@@ -10123,7 +10135,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.3176729893746, 76.3185369205235], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.3176729893746, 76.3185369205235], fallbackDataset: [76.3185369205235, 29.3176729893746] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-jind-outlines', idPrefix: 'IN-HR-HSAC2-JIND-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhiwani: {
             id: 'bhiwani', wupCityCode: '7878',
@@ -10132,7 +10144,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.7971298761814, 76.1384878765419], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.7971298761814, 76.1384878765419], fallbackDataset: [76.1384878765419, 28.7971298761814] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-bhiwani-outlines', idPrefix: 'IN-HR-HSAC2-BHIWANI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kurukshetra: {
             id: 'kurukshetra', wupCityCode: '7952',
@@ -10141,7 +10153,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.9674026272771, 76.8569110935626], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.9674026272771, 76.8569110935626], fallbackDataset: [76.8569110935626, 29.9674026272771] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kurukshetra-outlines', idPrefix: 'IN-HR-HSAC2-KURUKSHETRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rohtak: {
             id: 'rohtak', wupCityCode: '8085',
@@ -10150,7 +10162,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.8730362473323, 76.5954147246247], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.8730362473323, 76.5954147246247], fallbackDataset: [76.5954147246247, 28.8730362473323] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rohtak-outlines', idPrefix: 'IN-HR-HSAC2-ROHTAK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         panipat: {
             id: 'panipat', wupCityCode: '8162',
@@ -10159,7 +10171,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.400963638737302, 76.98281629834831], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.400963638737302, 76.98281629834831], fallbackDataset: [76.98281629834831, 29.400963638737302] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-panipat-outlines', idPrefix: 'IN-HR-HSAC2-PANIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sonipat: {
             id: 'sonipat', wupCityCode: '8337',
@@ -10168,7 +10180,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.9827143736227, 77.03440734666691], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.9827143736227, 77.03440734666691], fallbackDataset: [77.03440734666691, 28.9827143736227] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sonipat-outlines', idPrefix: 'IN-HR-HSAC2-SONIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         palwal: {
             id: 'palwal', wupCityCode: '8691',
@@ -10177,7 +10189,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.141468469378, 77.3328111663979], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.141468469378, 77.3328111663979], fallbackDataset: [77.3328111663979, 28.141468469378] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-palwal-outlines', idPrefix: 'IN-HR-HSAC2-PALWAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chirand: {
             id: 'chirand', wupCityCode: '10969',
@@ -10186,7 +10198,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.7481087475537, 84.8804993475657], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.7481087475537, 84.8804993475657], fallbackDataset: [84.8804993475657, 25.7481087475537] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra-ground', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhavnagar: {
             id: 'bhavnagar', wupCityCode: '6440',
@@ -10195,7 +10207,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [21.76805, 72.14945], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [21.76805, 72.14945], fallbackDataset: [72.14945, 21.76805] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncscm-czmp-survey-plots', idPrefix: 'IN-GJ-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         vapi: {
             id: 'vapi', wupCityCode: '7770',
@@ -10204,7 +10216,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.40655, 72.90785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.40655, 72.90785], fallbackDataset: [72.90785, 20.40655] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncscm-czmp-survey-plots', idPrefix: 'IN-GJ-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         vasai_virar: {
             id: 'vasai_virar', wupCityCode: '7917',
@@ -10213,7 +10225,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.41325, 72.82985], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.41325, 72.82985], fallbackDataset: [72.82985, 19.41325] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         panvel: {
             id: 'panvel', wupCityCode: '8148',
@@ -10222,7 +10234,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.04165, 73.10615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.04165, 73.10615], fallbackDataset: [73.10615, 19.04165] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kozhikode: {
             id: 'kozhikode', wupCityCode: '9587',
@@ -10231,7 +10243,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.19465, 75.84215], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.19465, 75.84215], fallbackDataset: [75.84215, 11.19465] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ponnani: {
             id: 'ponnani', wupCityCode: '9663',
@@ -10240,7 +10252,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [10.57075, 76.05195], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [10.57075, 76.05195], fallbackDataset: [76.05195, 10.57075] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         thiruvananthapuram: {
             id: 'thiruvananthapuram', wupCityCode: '10013',
@@ -10249,7 +10261,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [8.46953, 76.93828], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [8.46953, 76.93828], fallbackDataset: [76.93828, 8.46953] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         colachel: {
             id: 'colachel', wupCityCode: '10081',
@@ -10258,7 +10270,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [8.26132, 77.18283], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [8.26132, 77.18283], fallbackDataset: [77.18283, 8.26132] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-ncscm-czmp-survey-plots', idPrefix: 'IN-TN-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chennai: {
             id: 'chennai', wupCityCode: '10747',
@@ -10267,7 +10279,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [13.0878, 80.2785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [13.0878, 80.2785], fallbackDataset: [80.2785, 13.0878] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-ncscm-czmp-survey-plots', idPrefix: 'IN-TN-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kakinada: {
             id: 'kakinada', wupCityCode: '11081',
@@ -10276,7 +10288,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [16.98045, 82.22035], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [16.98045, 82.22035], fallbackDataset: [82.22035, 16.98045] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-ncscm-czmp-survey-plots', idPrefix: 'IN-AP-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         visakhapatnam: {
             id: 'visakhapatnam', wupCityCode: '11255',
@@ -10285,7 +10297,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [17.69725, 83.22115], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [17.69725, 83.22115], fallbackDataset: [83.22115, 17.69725] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-ncscm-czmp-survey-plots', idPrefix: 'IN-AP-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         karnal: {
             id: 'karnal', wupCityCode: '8099',
@@ -10294,7 +10306,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.683358416672, 77.0241809146046], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.683358416672, 77.0241809146046], fallbackDataset: [77.0241809146046, 29.683358416672] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-karnal-outlines', idPrefix: 'IN-HR-HSAC2-KARNAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rewari: {
             id: 'rewari', wupCityCode: '8316',
@@ -10303,7 +10315,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.194482321657, 76.62843094297341], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.194482321657, 76.62843094297341], fallbackDataset: [76.62843094297341, 28.194482321657] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rewari-outlines', idPrefix: 'IN-HR-HSAC2-REWARI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mangaluru: {
             id: 'mangaluru', wupCityCode: '9265',
@@ -10312,7 +10324,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [12.89765, 74.83355], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [12.89765, 74.83355], fallbackDataset: [74.83355, 12.89765] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-ncscm-czmp-ground', idPrefix: 'IN-KA-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Karnataka. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         thalassery: {
             id: 'thalassery', wupCityCode: '9497',
@@ -10321,7 +10333,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.67935, 75.55185], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.67935, 75.55185], fallbackDataset: [75.55185, 11.67935] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         puducherry: {
             id: 'puducherry', wupCityCode: '10741',
@@ -10330,7 +10342,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.92255, 79.81165], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.92255, 79.81165], fallbackDataset: [79.81165, 11.92255] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-py-ncscm-czmp-ground', idPrefix: 'IN-PY-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Puducherry. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         barharia: {
             id: 'barharia', wupCityCode: '10755',
@@ -10339,7 +10351,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.3601802570443, 84.4656501175913], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.3601802570443, 84.4656501175913], fallbackDataset: [84.4656501175913, 26.3601802570443] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-manjha-ground', idPrefix: 'IN-BR-MB-MANJHA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         masrakh: {
             id: 'masrakh', wupCityCode: '10911',
@@ -10348,7 +10360,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.1235979448259, 84.7958100370138], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.1235979448259, 84.7958100370138], fallbackDataset: [84.7958100370138, 26.1235979448259] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-masrakh-ground', idPrefix: 'IN-BR-MB-MASRAKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chhapra: {
             id: 'chhapra', wupCityCode: '10917',
@@ -10357,7 +10369,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.7832172997632, 84.7523408466032], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.7832172997632, 84.7523408466032], fallbackDataset: [84.7523408466032, 25.7832172997632] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra-ground', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kotwali: {
             id: 'kotwali', wupCityCode: '11477',
@@ -10366,7 +10378,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.1134775298077, 87.0693959423189], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.1134775298077, 87.0693959423189], fallbackDataset: [87.0693959423189, 25.1134775298077] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-goradih-ground', idPrefix: 'IN-BR-MB-GORADIH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         munger: {
             id: 'munger', wupCityCode: '11363',
@@ -10375,7 +10387,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.33947, 86.48067], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.33947, 86.48067], fallbackDataset: [86.48067, 25.33947] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         srinagar: {
             id: 'srinagar', wupCityCode: '1967',
@@ -10384,7 +10396,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [34.14251, 74.82934], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [34.14251, 74.82934], fallbackDataset: [74.82934, 34.14251] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-jk-lris-khasra-tiles', idPrefix: 'IN-JK-LRIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'J&K Land Records Information System khasra maps (landrecords.jk.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jammu: {
             id: 'jammu', wupCityCode: '3577',
@@ -10393,7 +10405,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.71807, 74.85718999999999], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.71807, 74.85718999999999], fallbackDataset: [74.85718999999999, 32.71807] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-jk-lris-khasra-tiles', idPrefix: 'IN-JK-LRIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'J&K Land Records Information System khasra maps (landrecords.jk.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         anand: {
             id: 'anand', wupCityCode: '6960',
@@ -10402,7 +10414,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.55099, 72.94366], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.55099, 72.94366], fallbackDataset: [72.94366, 22.55099] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncog-tiles', idPrefix: 'IN-GJ-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Gujarat cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         udaipur: {
             id: 'udaipur', wupCityCode: '6990',
@@ -10411,7 +10423,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [24.58311, 73.70953], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [24.58311, 73.70953], fallbackDataset: [73.70953, 24.58311] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-rj-ncog-tiles', idPrefix: 'IN-RJ-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Rajasthan cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         vadodara: {
             id: 'vadodara', wupCityCode: '7337',
@@ -10420,7 +10432,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.30803, 73.18349], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.30803, 73.18349], fallbackDataset: [73.18349, 22.30803] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncog-tiles', idPrefix: 'IN-GJ-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Gujarat cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rasoi: {
             id: 'rasoi', wupCityCode: '8430',
@@ -10429,7 +10441,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.8271, 77.08399], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.8271, 77.08399], fallbackDataset: [77.08399, 28.8271] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-dl-gsdl-tiles', idPrefix: 'IN-DL-GSDL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Geospatial Delhi Limited khasra maps (gsdl.org.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         malegaon: {
             id: 'malegaon', wupCityCode: '8697',
@@ -10438,7 +10450,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.55619, 74.53214], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.55619, 74.53214], fallbackDataset: [74.53214, 20.55619] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hapur: {
             id: 'hapur', wupCityCode: '8730',
@@ -10447,7 +10459,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.73099, 77.76106], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.73099, 77.76106], fallbackDataset: [77.76106, 28.73099] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ujjain: {
             id: 'ujjain', wupCityCode: '8820',
@@ -10456,7 +10468,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.17678, 75.79203], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.17678, 75.79203], fallbackDataset: [75.79203, 23.17678] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         indore: {
             id: 'indore', wupCityCode: '8886',
@@ -10465,7 +10477,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.69918, 75.85567], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.69918, 75.85567], fallbackDataset: [75.85567, 22.69918] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ahmednagar: {
             id: 'ahmednagar', wupCityCode: '8893',
@@ -10474,7 +10486,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.11567, 74.72795], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.11567, 74.72795], fallbackDataset: [74.72795, 19.11567] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kolhapur: {
             id: 'kolhapur', wupCityCode: '8925',
@@ -10483,7 +10495,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [16.69067, 74.2379], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [16.69067, 74.2379], fallbackDataset: [74.2379, 16.69067] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sangli: {
             id: 'sangli', wupCityCode: '9007',
@@ -10492,7 +10504,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [16.85178, 74.60587], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [16.85178, 74.60587], fallbackDataset: [74.60587, 16.85178] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gwalior: {
             id: 'gwalior', wupCityCode: '9121',
@@ -10501,7 +10513,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.21757, 78.17678], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.21757, 78.17678], fallbackDataset: [78.17678, 26.21757] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         dharwad: {
             id: 'dharwad', wupCityCode: '9189',
@@ -10510,7 +10522,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [15.45055, 75.00913], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [15.45055, 75.00913], fallbackDataset: [75.00913, 15.45055] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-kgis-tiles', idPrefix: 'IN-KA-KGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhopal: {
             id: 'bhopal', wupCityCode: '9213',
@@ -10519,7 +10531,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.23991, 77.42391], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.23991, 77.42391], fallbackDataset: [77.42391, 23.23991] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         farrukhabad: {
             id: 'farrukhabad', wupCityCode: '9349',
@@ -10528,7 +10540,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.38944, 79.6071], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.38944, 79.6071], fallbackDataset: [79.6071, 27.38944] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         davanagere: {
             id: 'davanagere', wupCityCode: '9475',
@@ -10537,7 +10549,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [14.45816, 75.91845], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [14.45816, 75.91845], fallbackDataset: [75.91845, 14.45816] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-kgis-tiles', idPrefix: 'IN-KA-KGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hardoi: {
             id: 'hardoi', wupCityCode: '9485',
@@ -10546,7 +10558,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.39404, 80.13208], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.39404, 80.13208], fallbackDataset: [80.13208, 27.39404] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nanded: {
             id: 'nanded', wupCityCode: '9521',
@@ -10555,7 +10567,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.15958, 77.31427], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.15958, 77.31427], fallbackDataset: [77.31427, 19.15958] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ballari: {
             id: 'ballari', wupCityCode: '9701',
@@ -10564,7 +10576,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [15.14251, 76.92076], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [15.14251, 76.92076], fallbackDataset: [76.92076, 15.14251] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-kgis-tiles', idPrefix: 'IN-KA-KGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fatehpur: {
             id: 'fatehpur', wupCityCode: '9797',
@@ -10573,7 +10585,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.90518, 80.80773], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.90518, 80.80773], fallbackDataset: [80.80773, 25.90518] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jabalpur: {
             id: 'jabalpur', wupCityCode: '9851',
@@ -10582,7 +10594,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.17368, 79.93486], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.17368, 79.93486], fallbackDataset: [79.93486, 23.17368] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         coimbatore: {
             id: 'coimbatore', wupCityCode: '9895',
@@ -10591,7 +10603,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [10.98782, 76.97956], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [10.98782, 76.97956], fallbackDataset: [76.97956, 10.98782] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         satna: {
             id: 'satna', wupCityCode: '9969',
@@ -10600,7 +10612,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [24.5736, 80.83787], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [24.5736, 80.83787], fallbackDataset: [80.83787, 24.5736] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tiruppur: {
             id: 'tiruppur', wupCityCode: '10021',
@@ -10609,7 +10621,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.11168, 77.34312], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.11168, 77.34312], fallbackDataset: [77.34312, 11.11168] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         faizabad: {
             id: 'faizabad', wupCityCode: '10065',
@@ -10618,7 +10630,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.77457, 82.16537000000001], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.77457, 82.16537000000001], fallbackDataset: [82.16537000000001, 26.77457] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sultanpur: {
             id: 'sultanpur', wupCityCode: '10097',
@@ -10627,7 +10639,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.25846, 82.08081], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.25846, 82.08081], fallbackDataset: [82.08081, 26.25846] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         erode: {
             id: 'erode', wupCityCode: '10121',
@@ -10636,7 +10648,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.3664, 77.71108], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.3664, 77.71108], fallbackDataset: [77.71108, 11.3664] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gyanpur: {
             id: 'gyanpur', wupCityCode: '10281',
@@ -10645,7 +10657,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.30548, 82.43381], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.30548, 82.43381], fallbackDataset: [82.43381, 25.30548] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         mehdawal: {
             id: 'mehdawal', wupCityCode: '10311',
@@ -10654,7 +10666,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.96987, 83.11209000000001], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.96987, 83.11209000000001], fallbackDataset: [83.11209000000001, 26.96987] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gorakhpur: {
             id: 'gorakhpur', wupCityCode: '10399',
@@ -10663,7 +10675,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.76432, 83.3817], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.76432, 83.3817], fallbackDataset: [83.3817, 26.76432] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jianpur: {
             id: 'jianpur', wupCityCode: '10427',
@@ -10672,7 +10684,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.17732, 83.25448], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.17732, 83.25448], fallbackDataset: [83.25448, 26.17732] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         azamgarh: {
             id: 'azamgarh', wupCityCode: '10429',
@@ -10681,7 +10693,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.06242, 83.17996], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.06242, 83.17996], fallbackDataset: [83.17996, 26.06242] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         vellore: {
             id: 'vellore', wupCityCode: '10445',
@@ -10690,7 +10702,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [12.93128, 79.13938], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [12.93128, 79.13938], fallbackDataset: [79.13938, 12.93128] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chauri_chaura: {
             id: 'chauri_chaura', wupCityCode: '10479',
@@ -10699,7 +10711,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.63855, 83.57778], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.63855, 83.57778], fallbackDataset: [83.57778, 26.63855] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         dohrighat: {
             id: 'dohrighat', wupCityCode: '10481',
@@ -10708,7 +10720,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.29384, 83.49962], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.29384, 83.49962], fallbackDataset: [83.49962, 26.29384] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tirupati: {
             id: 'tirupati', wupCityCode: '10489',
@@ -10717,7 +10729,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [13.62843, 79.43088], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [13.62843, 79.43088], fallbackDataset: [79.43088, 13.62843] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-apsac-tiles', idPrefix: 'IN-AP-APSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'APSAC cadastral maps (apsac.ap.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         saidpur: {
             id: 'saidpur', wupCityCode: '10501',
@@ -10726,7 +10738,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.550880000000003, 83.21689], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.550880000000003, 83.21689], fallbackDataset: [83.21689, 25.550880000000003] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhore: {
             id: 'bhore', wupCityCode: '10681',
@@ -10735,7 +10747,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.42586, 84.18041], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.42586, 84.18041], fallbackDataset: [84.18041, 26.42586] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         dighwara: {
             id: 'dighwara', wupCityCode: '10889',
@@ -10744,7 +10756,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.92209, 84.85027], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.92209, 84.85027], fallbackDataset: [84.85027, 25.92209] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ekangar_sarai: {
             id: 'ekangar_sarai', wupCityCode: '11117',
@@ -10753,7 +10765,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.22131, 85.23557], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.22131, 85.23557], fallbackDataset: [85.23557, 25.22131] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bibhutpur: {
             id: 'bibhutpur', wupCityCode: '11221',
@@ -10762,7 +10774,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.73947, 86.1123], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.73947, 86.1123], fallbackDataset: [86.1123, 25.73947] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rourkela: {
             id: 'rourkela', wupCityCode: '11301',
@@ -10771,7 +10783,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.23844, 84.85513], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.23844, 84.85513], fallbackDataset: [84.85513, 22.23844] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         asarganj: {
             id: 'asarganj', wupCityCode: '11415',
@@ -10780,7 +10792,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.09546, 86.66972], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.09546, 86.66972], fallbackDataset: [86.66972, 25.09546] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         dhanbad: {
             id: 'dhanbad', wupCityCode: '11445',
@@ -10789,7 +10801,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.77136, 86.41461], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.77136, 86.41461], fallbackDataset: [86.41461, 23.77136] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-jh-jsac-tiles', idPrefix: 'IN-JH-JSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Jharkhand Space Applications Centre cadastral maps (gis.jharkhand.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         brahmapur: {
             id: 'brahmapur', wupCityCode: '11467',
@@ -10798,7 +10810,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.30992, 84.79202], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.30992, 84.79202], fallbackDataset: [84.79202, 19.30992] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         asansol: {
             id: 'asansol', wupCityCode: '11531',
@@ -10807,7 +10819,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.69795, 86.91141], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.69795, 86.91141], fallbackDataset: [86.91141, 23.69795] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         siliguri: {
             id: 'siliguri', wupCityCode: '11561',
@@ -10816,7 +10828,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.71109, 88.43178999999999], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.71109, 88.43178999999999], fallbackDataset: [88.43178999999999, 26.71109] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         cuttack: {
             id: 'cuttack', wupCityCode: '11569',
@@ -10825,7 +10837,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.46494, 85.8789], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.46494, 85.8789], fallbackDataset: [85.8789, 20.46494] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhubaneshwar: {
             id: 'bhubaneshwar', wupCityCode: '11573',
@@ -10834,7 +10846,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.28854, 85.82895], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.28854, 85.82895], fallbackDataset: [85.82895, 20.28854] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         choudwar: {
             id: 'choudwar', wupCityCode: '11581',
@@ -10843,7 +10855,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.49967, 85.93307], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.49967, 85.93307], fallbackDataset: [85.93307, 20.49967] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jalpaiguri: {
             id: 'jalpaiguri', wupCityCode: '11623',
@@ -10852,7 +10864,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.52752, 88.71379], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.52752, 88.71379], fallbackDataset: [88.71379, 26.52752] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kharagpur: {
             id: 'kharagpur', wupCityCode: '11711',
@@ -10861,7 +10873,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.33021, 87.31294], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.33021, 87.31294], fallbackDataset: [87.31294, 22.33021] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         krishnanagar: {
             id: 'krishnanagar', wupCityCode: '11829',
@@ -10870,7 +10882,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.39808, 88.49602], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.39808, 88.49602], fallbackDataset: [88.49602, 23.39808] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
     };
 
@@ -11075,7 +11087,8 @@
         const building = window.ParcelSourceSettings?.choiceForCity?.(id, window, 'building');
         if (!building) return config;
         return { ...config, buildings: { ...(config.buildings || {}), source: 'custom', sourceId: building.id,
-            name: building.name, defaultSource: config.buildings?.source || 'gdi' } };
+            name: building.name, fallback: undefined, attribution: undefined, defaultSource: config.buildings?.source || 'gdi',
+            defaultSourceName: config.buildings?.name } };
     }
 
     function getBuildingSourceId() {
@@ -11361,7 +11374,8 @@
         const text = row('showBuildings')?.querySelector('[data-i18n-key]');
         if (!text) return;
         const key = source === 'osm' ? 'sidebar.buildings.showOsm'
-            : source === 'overture' ? 'sidebar.buildings.showOverture'
+            : source === 'overture' || source === 'overture-tiles' ? 'sidebar.buildings.showOverture'
+            : source === 'cadastre' ? 'sidebar.buildings.showCadastre'
             : source === 'custom' ? 'sidebar.buildings.showCustom'
             : 'sidebar.buildings.showGdi';
         text.setAttribute('data-i18n-key', key);

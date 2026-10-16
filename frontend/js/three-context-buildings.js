@@ -144,11 +144,6 @@
         return mesh;
     }
 
-    function getBackendBase() {
-        try { return (typeof window.getBackendBase === 'function') ? window.getBackendBase() : ''; }
-        catch (_) { return ''; }
-    }
-
     // Idempotent loader. Repeated calls with the same coarse query bbox are no-ops.
     // - contextGroup: a THREE.Group already attached to the scene.
     // - opts.geometry: GeoJSON Geometry (EPSG:4326) — typically the proposal's outer shape.
@@ -172,13 +167,8 @@
         try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         let payload;
         try {
-            const r = await fetch(`${getBackendBase()}/buildings/near`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ geometry: opts.geometry, buffer_meters: bufferMeters, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
-            });
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            payload = await r.json();
+            payload = await window.BuildingSourceClient.request('/buildings/near',
+                { geometry: opts.geometry, buffer_meters: bufferMeters, city, source: window.CityConfigManager?.getBuildingSourceId?.() });
         } catch (e) {
             console.warn('[ContextBuildings3D] /buildings/near fetch failed:', e);
             // Reset key so a later attempt can retry.

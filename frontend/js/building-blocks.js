@@ -3376,11 +3376,6 @@ async function exitToParametricMode() {
 // building becomes its own Feature with its own properties.height, so a proposal is naturally
 // multiple 3D objects.
 
-function getBackendBaseForBlockify() {
-    try { return (typeof window.getBackendBase === 'function') ? window.getBackendBase() : ''; }
-    catch (_) { return ''; }
-}
-
 // Union of ALL block parcels as the footprint query area. Deliberately not lastSuperparcel —
 // that one is reduced to the single largest polygon for ring generation, which would drop
 // buildings on disjoint parcels.
@@ -3402,14 +3397,8 @@ function ensureExistingFootprints() {
     if (!geometry) return Promise.resolve(null);
     let city;
     try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
-    existingFootprintsPromise = fetch(`${getBackendBaseForBlockify()}/buildings/footprints`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ geometry, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
-    }).then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-    }).then(payload => {
+    existingFootprintsPromise = window.BuildingSourceClient.request('/buildings/footprints',
+        { geometry, city, source: window.CityConfigManager?.getBuildingSourceId?.() }).then(payload => {
         if (!payload || payload.supported === false) return null;
         existingFootprints = (payload.footprints || []).filter(f => f && f.geometry);
         return existingFootprints;

@@ -5090,12 +5090,18 @@
     function updateBuildingsSourceNote() {
         if (!buildingsSourceNoteEl) return;
         const info = nearbyBuildingsProvenance;
-        if (!info || (info.source !== 'osm-3d' && info.source !== 'custom-3d')) { buildingsSourceNoteEl.hidden = true; return; }
+        if (!info || !['osm-3d', 'custom-3d', 'overture-tiles-3d'].includes(info.source)) { buildingsSourceNoteEl.hidden = true; return; }
         const heights = info.heights || { measured: 0, levels: 0, estimated: 0 };
         const total = heights.measured + heights.levels + heights.estimated;
-        const parts = [info.source === 'custom-3d'
-            ? threeI18n('sidebar.buildings.showCustom', 'Your building source')
-            : threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')];
+        // A server source is the person's own, or the city's own survey (Bogotá's cadastre).
+        const citySource = window.CityConfigManager?.getCurrentCityConfig?.()?.buildings?.source;
+        const parts = [info.source === 'overture-tiles-3d'
+            ? threeI18n('threeMode.buildingsSource.overture', 'Overture Maps buildings')
+            : info.source === 'custom-3d' && citySource === 'cadastre'
+                ? threeI18n('sidebar.buildings.showCadastre', 'Cadastre buildings')
+                : info.source === 'custom-3d'
+                    ? threeI18n('sidebar.buildings.showCustom', 'Your building source')
+                    : threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')];
         if (heights.estimated > 0) {
             parts.push(threeI18n('threeMode.buildingsSource.estimated', '{{count}} of {{total}} heights estimated',
                 { count: heights.estimated, total }).replace('{{count}}', heights.estimated).replace('{{total}}', total));
@@ -5145,19 +5151,14 @@
 
         nearbyProposalBuildingsFetching = true;
         updateBuildingsLoader();
-        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        // The 3D building source is city-specific (resolved server-side from this id).
+        // The 3D building source is city-specific: resolved server-side from this id, or read in the
+        // browser from Overture's tiles (building-source-client.js).
         let city;
         try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        fetch(`${base}/buildings/near`, {
-            signal,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry, buffer_meters: buffer, city, source: window.CityConfigManager?.getBuildingSourceId?.() })
-        })
-            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+        window.BuildingSourceClient.request('/buildings/near',
+            { geometry, buffer_meters: buffer, city, source: window.CityConfigManager?.getBuildingSourceId?.() }, { signal })
             .then(payload => {
                 if (!current()) return;
                 const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];

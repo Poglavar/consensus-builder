@@ -24,7 +24,7 @@ describe('new city parcel source configs', () => {
             expect(city.projection.metricCrs).toBeUndefined();
             expect(city.parcels.attribution).toContain('href=');
             // OpenStreetMap is the default building source for every city without its own.
-            expect(city.buildings.source).toBe('osm');
+            expect(city.buildings.source).toBe('overture-tiles');
         }
         expect(manager.getCityConfig('savar').map.defaultZoom).toBe(19);
         for (const city of ['london', 'manchester']) {

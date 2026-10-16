@@ -27,6 +27,18 @@ describe('building source discovery', () => {
         expect(queryIds).not.toHaveBeenCalled();
     });
 
+    it("reads the storey count of Bogotá's cadastre buildings (IDECA/UAECD CONNPISOS)", async () => {
+        const bogotaLayer = async () => response({ objectIdField: 'FID', fields: [
+            { name: 'FID', type: 'esriFieldTypeOID' },
+            { name: 'CONCODIGO', type: 'esriFieldTypeString' },
+            { name: 'CONNPISOS', type: 'esriFieldTypeInteger' }
+        ] });
+        const createSource = vi.fn(() => ({ queryBounds: async () => ({ complete: true, features: [{ id: 'B-1', geometry: polygon, properties: {} }] }) }));
+        const result = await discoverCustomBuildingSource({ url: arcgisUrl, city: 'bogota', metricSrid: 32618, bbox }, { fetchImpl: bogotaLayer, createSource });
+        expect(result.descriptor).toMatchObject({ idField: 'FID', levelsField: 'CONNPISOS' });
+        expect(result.descriptor.outFields).toContain('CONNPISOS');
+    });
+
     it('still refuses the same layer as a parcel source', async () => {
         const createSource = vi.fn(() => ({ queryBounds: async () => ({ complete: true, features: [] }) }));
         await expect(discoverCustomParcelSource({ url: arcgisUrl, city: 'zagreb', metricSrid: 32633, bbox }, { fetchImpl: buildingLayer, createSource }))

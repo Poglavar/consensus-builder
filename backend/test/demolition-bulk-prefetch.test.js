@@ -192,6 +192,8 @@ describe('the manager end to end: prefetch returns exact apply options', () => {
         globalThis.__demolitionPrefetch = prefetchApi;
         globalThis.getBackendBase = () => 'http://backend.test';
         globalThis.CityConfigManager = { getCurrentCityId: () => 'sibenik' };
+        // Building requests go through the browser's one client (Šibenik's source is the backend's).
+        globalThis.BuildingSourceClient = require('../../frontend/js/building-source-client.js');
         globalThis.proposalStorage = { getAllProposals: () => [] };
         vi.spyOn(console, 'warn').mockImplementation(() => { });
     });
@@ -199,6 +201,7 @@ describe('the manager end to end: prefetch returns exact apply options', () => {
     afterEach(() => {
         globalThis.window = saved.window; globalThis.fetch = saved.fetch; globalThis.turf = saved.turf;
         delete globalThis.getBackendBase; delete globalThis.CityConfigManager; delete globalThis.proposalStorage;
+        delete globalThis.BuildingSourceClient;
         delete globalThis.__demolitionPrefetch;
         delete globalThis.demolishBuildingsUnderFootprint;
         vi.restoreAllMocks();
