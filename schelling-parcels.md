@@ -10,6 +10,87 @@ The screen that offers it is `frontend/js/parcels/ground-fallback.js`; the geome
 `frontend/js/parcels/schelling-grid.js`, a pure module with no network, no Leaflet and no randomness,
 so it runs the same in the browser and under node (`backend/test/schelling-grid.test.js`).
 
+**Status (2026-10-16):** what follows the plan below describes what is built today, the fallback
+ground. Work continues on branch `schelling-plan`, which turns it into a plan layer you can propose
+from anywhere. This section is the living plan; update it as steps finish.
+
+## Plan of record (2026-10-16)
+
+### Decisions
+
+- **A plan, not ground.** Schelling stops being a parcel source that replaces the register. It
+  becomes a map layer in every city, drawn over the real map and real parcels, with defaults and
+  its own settings (not an on/off toggle). The parcel-source path (`schellingSource`, its
+  `installSource`/`sessionStorage` restore, `MP:` ids standing in as parcels) is removed: a proposal
+  declared on `MP:` ids cannot publish, because the declaration must equal the server's binding
+  against the real cadastre (`PARCEL-OPTIONAL.md` rule 3). Where there is no register, proposals
+  bind as open ground, which is built. The fallback screen's Schelling option turns the layer on.
+- **A Schelling grid is not a grid.** Both may exist, as separate tools on one pipeline, strictly
+  apart:
+
+  | | Schelling grid | Grid |
+  |---|---|---|
+  | Frame | the graticule: meridians and parallels, anchored at whole degrees | the author's: origin, rotation, spacings in metres |
+  | Fixed | the arterial lattice: the arcsecond step nearest 1 km, 30 m arterials | nothing |
+  | Settings | local street division, local street width, plot size | everything |
+  | Moving | not possible; a moved Schelling network becomes a grid | free: drag, rotate |
+  | Identity | every street, block and plot has an id anyone can derive from the plan code | the proposal's own |
+  | Provenance | `schelling-point` | `grid` |
+
+  Arterial spacing and width therefore leave the Schelling settings; they are settings of the grid.
+- **Alignment is possible, not mandatory.** Two Schelling proposals always meet on the same
+  arterials because the lattice is global; nothing enforces reuse of a shared street. Different
+  proposals are aligned by hand (Move network, below) or not at all.
+- **Roads first, blocks are what roads leave.** Roads are the only takers
+  (`parcel-arrangement.js`), so blocks are never proposed; streets are road proposals and plots are
+  a subdivision (open ground) or a land readjustment layout (real parcels).
+
+### Proposed, to confirm
+
+- **The intervention boundary is a set of cells.** Schelling fixes the lattice; where it applies is
+  the proposal, the part people argue and bet about. The author paints Schelling blocks on and off;
+  drawing a polygon is a quick way to paint (a block is in when its centre is inside); "this
+  superblock" is the default selection; helpers may pre-clear blocks with existing buildings, roads
+  or water. The output is the chosen blocks and every street that bounds one, so the edge of an
+  intervention is always a street: no partial blocks, no streets ending mid-block. A cap on blocks
+  per proposal (start at one superblock, 64 blocks) holds until a large network is measured.
+- **Move network** for unpublished road proposals: drag moves the whole connected network, a handle
+  rotates it about its centre, land and declared parcels re-derive as for a node drag. Only the
+  proposal's own network, never existing city roads; a size cap applies. Moving a Schelling network
+  switches its provenance to `grid`, with a notice, and Undo returns it.
+- **Plot rule** (from the codex exploration of 2026-10-11): plots face the north and south streets
+  of their block, the two rows meet on the block's middle parallel, and each row's frontage is halved
+  k times. Every block has a street on both sides, so no tie-break is needed, corners included.
+  Default 1/16 block (k = 3): about 13.6 × 52 m at 46°N. A larger plot is exactly two neighbours.
+  Plot id: block id + row + halving path, e.g. `B:i:j/N/011`.
+
+### Steps
+
+1. **Layer.** Schelling plan layer in the layers panel with a settings panel: fixed values shown
+   read-only with their reason; local street division, local street width and plot size
+   adjustable; show arterials / local streets / blocks / plots. Settings in the address bar so a
+   link shows what its author saw, remembered per viewer. Remove the parcel-source path.
+2. **Propose roads.** Pick cells, then Propose: the bounding streets become an OSM form with
+   arterial and local tags at exact widths (neither 30 m nor 12 m is a preset), through the corridor
+   import (`recordsFromImport` → `createCorridorProposalAtomically`, as the block playground's
+   Propose streets), one record per connected network, applied and ready to share as a plan.
+   `UrbanBlocksPropose.importForm` takes one tag set today and needs per-way tags.
+3. **Propose plots.** The plot rule as a layout: in Subdivide on open ground (pool = the site,
+   plots to public land, execution through a lens verdict), and as a Layout option in land
+   readjustment on real parcels, entered from the layer ("Subdivide / readjust this block") or from
+   the LR editor.
+4. **Move network** for draft road networks.
+5. **Grid tool** on the same pipeline with a free frame.
+
+### Open questions
+
+- On real parcels a Schelling block cuts through parcels, while a readjustment reforms whole
+  parcels: the pool must be every parcel the block touches, and what lies outside the block comes
+  back as plots too.
+- Whether a readjustment can pool the pieces left by a road proposal that has not executed.
+- What a superblock's interior (about 49 crossings and 28 T junctions at 8 × 8) costs as one road
+  record; measure before raising the cap.
+
 ## When the visitor sees it
 
 The official register is always attempted first. The fallback screen appears only when a viewport
