@@ -18,7 +18,10 @@ describe('durable image classification stage',()=>{
   const selection=calls.find(([sql])=>sql.includes('SELECT DISTINCT ON'));
   expect(selection[0]).toContain('NOT EXISTS(SELECT 1 FROM floor_plan.image_task');
   expect(selection[0].indexOf('NOT EXISTS')).toBeLessThan(selection[0].indexOf('ORDER BY'));
-  expect(selection[0]).toContain("'listingOwned',true");
+  // Owned asset URLs are expanded per listing and joined to targets by URL, never tested pairwise by containment.
+  expect(selection[0]).toContain(`asset @> '{"listingOwned":true}'`);
+  expect(selection[0]).toContain('JOIN floor_plan.target t ON t.url=o.asset_url');
+  expect(selection[0]).not.toContain('l.asset_urls @>');
   expect(selection[0]).toContain('b.bytes_available');
   expect(selection[1]).toEqual(['opereta.hr',null,IMAGE_PROCESSOR,1]);
   expect(calls.find(([sql])=>sql.includes('INSERT INTO floor_plan.image_task'))[1])

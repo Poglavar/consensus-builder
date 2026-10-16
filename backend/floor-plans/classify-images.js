@@ -7,8 +7,9 @@ import { runBatchStage } from './batch-worker.js';
 import { eligibleListingSql } from './source-policy.js';
 
 const HOST_SQL=`regexp_replace(lower(split_part(l.url,'/',3)),'^www\\.','')`;
-const OWNED_SQL=`${eligibleListingSql()}
- AND EXISTS(SELECT 1 FROM floor_plan.target lt WHERE lt.url=l.url AND lt.current_sha256 IS NOT NULL)
+const LISTING_SQL=`${eligibleListingSql()}
+ AND EXISTS(SELECT 1 FROM floor_plan.target lt WHERE lt.url=l.url AND lt.current_sha256 IS NOT NULL)`;
+const OWNED_SQL=`${LISTING_SQL}
  AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))`;
 const RASTER_SQL=`lower(split_part(b.media_type,';',1)) IN ('image/jpeg','image/png','image/webp','image/avif')`;
 
@@ -76,12 +77,15 @@ export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadl
    classificationId:task.id,confirmed:reading.discardConfirmed,confidence:reading.confidence});
   if(['discarded','retained','already_discarded'].includes(disposition.status)) reused++;
  }
- const rows=(await db.query(`SELECT DISTINCT ON (t.current_sha256) t.current_sha256 AS sha256,t.url AS source_url
-  FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256
-  JOIN floor_plan.listing l ON ${OWNED_SQL}
+ // Expand each eligible listing's owned asset URLs before joining targets: the planner cannot estimate the
+ // eligibility filter, and testing containment on every target×listing pair took 75 s at 475 located listings.
+ const rows=(await db.query(`WITH owned AS MATERIALIZED (SELECT l.url AS listing_url,asset->>'url' AS asset_url
+   FROM floor_plan.listing l CROSS JOIN LATERAL jsonb_array_elements(l.asset_urls) asset
+   WHERE asset @> '{"listingOwned":true}' AND ${LISTING_SQL} AND ($1::text IS NULL OR ${HOST_SQL}=$1))
+  SELECT DISTINCT ON (t.current_sha256) t.current_sha256 AS sha256,t.url AS source_url
+  FROM owned o JOIN floor_plan.target t ON t.url=o.asset_url JOIN floor_plan.blob b ON b.sha256=t.current_sha256
   WHERE t.kind='asset' AND b.bytes_available AND ${RASTER_SQL}
-   AND ($1::text IS NULL OR ${HOST_SQL}=$1)
-   AND ($2::text[] IS NULL OR t.url=ANY($2::text[]) OR l.url=ANY($2::text[]))
+   AND ($2::text[] IS NULL OR t.url=ANY($2::text[]) OR o.listing_url=ANY($2::text[]))
    AND NOT EXISTS(SELECT 1 FROM floor_plan.image_task it
     WHERE it.source_sha256=t.current_sha256 AND it.processor=$3)
   ORDER BY t.current_sha256,t.url LIMIT $4`,[site,urls,IMAGE_PROCESSOR,limit])).rows;
