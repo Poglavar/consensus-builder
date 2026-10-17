@@ -45,6 +45,18 @@ describe('publishFields', () => {
         expect(fields.expiresAt).toBe(null);
     });
 
+    it('confirms a local record under the plan\'s kind, keeping a deal\'s own money and a sale offer a deal', () => {
+        const { confirmedRecordFields, needsTerms } = require('../../frontend/js/proposals/publish-terms.js');
+        expect(confirmedRecordFields({ offer: 900, offerCurrency: 'EUR' }, 'community-vote', { now: NOW }))
+            .toMatchObject({ kind: 'community-vote', offer: null, voteExpiryDays: 365, termsConfirmed: true });
+        expect(confirmedRecordFields({ offer: 900, offerCurrency: 'EUR' }, 'owner-deal', { now: NOW }))
+            .toMatchObject({ kind: 'owner-deal', offer: 900, offerCurrency: 'EUR', termsConfirmed: true });
+        expect(confirmedRecordFields({ goal: 'ownership-transfer-from-me', offer: 50 }, 'community-vote', { now: NOW }).kind).toBe('owner-deal');
+        expect(needsTerms({})).toBe(true);
+        expect(needsTerms({ termsConfirmed: true })).toBe(false);
+        expect(needsTerms({ serverProposalId: '9' }, { isPublished: r => !!r.serverProposalId })).toBe(false);
+    });
+
     it('refuses a vote for an owner\'s sale offer, and an unknown kind', () => {
         expect(() => publishFields({ kind: 'community-vote' }, { saleOffer: true })).toThrow(/owner deal/);
         expect(publishFields({ kind: 'owner-deal', offer: 10 }, { saleOffer: true }).kind).toBe('owner-deal');

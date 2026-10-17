@@ -6859,6 +6859,13 @@
     {
       "id": "control-a9e7f6ba35b5c1-1",
       "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement(input)",
+      "interaction": "change",
+      "controlType": "input"
+    },
+    {
+      "id": "control-a9e7f6ba35b5c1-2",
+      "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('input')",
       "interaction": "change",
       "controlType": "input",
@@ -6879,7 +6886,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-a9e7f6ba35b5c1-2",
+      "id": "control-a9e7f6ba35b5c1-3",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('input')",
       "interaction": "change",
@@ -6893,7 +6900,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-a9e7f6ba35b5c1-3",
+      "id": "control-a9e7f6ba35b5c1-4",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('input')",
       "interaction": "change",
@@ -6922,7 +6929,7 @@
       ]
     },
     {
-      "id": "control-a9e7f6ba35b5c1-4",
+      "id": "control-a9e7f6ba35b5c1-5",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('input')",
       "interaction": "change",

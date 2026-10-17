@@ -2663,6 +2663,17 @@ textarea.proposal-description-input {
     padding: 0 14px 10px;
 }
 
+/* Share entire plan: "Who decides?" once for the plan, on the panel's 14px gutter. */
+.share-plan-kind {
+    padding: 0 14px 10px;
+}
+
+.share-plan-kind__hint {
+    margin: var(--cb-space-1) 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
 /* A segmented control rather than a dropdown: three options that are switched between constantly
    should cost one click, not two. */
 .share-plan-mode-switch {

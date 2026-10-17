@@ -995,7 +995,9 @@
     // "Create proposal" on an existing map object: skip the editor entirely and go straight to
     // the create dialog, prefilled from the object. On submit the object is absorbed into the
     // proposal that replaces it (see createProposal), so one thing remains on the map.
-    async function proposeExistingProposal(proposalIdOrHash) {
+    // `options.afterCreate(proposalId)` runs once the dialog has saved: Share uses it to share the
+    // record the publish step produced (proposal-kinds.md).
+    async function proposeExistingProposal(proposalIdOrHash, options = {}) {
         // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) return null;
@@ -1004,7 +1006,7 @@
         if (!draft) return null;
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
         closeProposalEditorShell();
-        return stageProposalDraftForPublishing(draft.id);
+        return stageProposalDraftForPublishing(draft.id, options);
     }
 
     function createNewProposalDraft(options = {}) {
@@ -1657,7 +1659,7 @@
         if (description) description.value = fields.description || '';
     }
 
-    async function stageProposalDraftForPublishing(draftId) {
+    async function stageProposalDraftForPublishing(draftId, options = {}) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft?.(draftId) || null;
         if (draft && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
@@ -1749,6 +1751,7 @@
             acquisitionMode: fields.acquisitionMode || null,
             siteContext,
             prefill,
+            afterCreate: typeof options.afterCreate === 'function' ? options.afterCreate : null,
             copySource: draft.sourceProposalId ? { proposalId: draft.sourceProposalId, name: global.pendingProposalReplacementSource.name } : null,
             geometryPreset: seeded ? {
                 statusText: tDraft('proposalDrafts.publish.geometryReady', 'Geometry attached from the draft'),

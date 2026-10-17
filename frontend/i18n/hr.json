@@ -3010,6 +3010,7 @@
                 "copyUrlButton": "Kopiraj URL",
                 "sharePlanButton": "Podijeli cijeli plan (svi primijenjeni prijedlozi)…",
                 "plan": {
+                    "kindHint": "Vrijedi za prijedloge u ovom planu čiji uvjeti nikad nisu odabrani; ostali zadržavaju svoje.",
                     "uploadAncestorsMissing": "Uključite ove nadređene prijedloge u plan: {{list}}",
                     "title": "Podijeli plan",
                     "fetching": "Preuzimanje prijedloga #{{id}}…",

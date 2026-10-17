@@ -3019,6 +3019,7 @@
                 "copyUrlButton": "Copy URL",
                 "sharePlanButton": "Share the whole plan instead (all applied proposals)…",
                 "plan": {
+                    "kindHint": "Applies to the proposals in this plan whose terms were never chosen; the rest keep their own.",
                     "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
                     "title": "Share plan",
                     "fetching": "Fetching proposal #{{id}}…",

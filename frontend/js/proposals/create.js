@@ -537,6 +537,9 @@ function updateProposalNameAndDescription(proposalType, forceUpdate = false) {
 async function createProposal() {
     console.debug('[createProposal] START - Create proposal button clicked');
     const startTime = performance.now();
+    // Read before the dialog closes: what the caller wants done with the saved record.
+    const afterCreate = (typeof proposalDialogOverrides !== 'undefined' && typeof proposalDialogOverrides?.afterCreate === 'function')
+        ? proposalDialogOverrides.afterCreate : null;
     const t = getProposalI18nHelper();
     const publishingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
         ? String(window.pendingProposalDraftId)
@@ -1958,6 +1961,7 @@ async function createProposal() {
             setTimeout(() => {
                 hideWaitingPopupSafe();
             }, 500);
+            if (afterCreate) afterCreate(proposalId);
         };
 
         console.debug('[createProposal] All proposal creation steps complete, opening details. Total elapsed:', (performance.now() - startTime).toFixed(2), 'ms');

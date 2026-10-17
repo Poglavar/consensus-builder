@@ -3041,6 +3041,7 @@
                 "copyUrlButton": "Copiar URL",
                 "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
                 "plan": {
+                    "kindHint": "Se aplica a las propuestas de este plan cuyos términos nunca se eligieron; las demás conservan los suyos.",
                     "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
                     "title": "Compartir plan",
                     "fetching": "Obteniendo propuesta #{{id}}…",

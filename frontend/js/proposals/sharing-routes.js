@@ -239,6 +239,18 @@ function shareSingleProposal(proposalIdOrProposal) {
             return;
         }
 
+        // Sharing publishes, and publishing has one step (proposal-kinds.md): a local proposal
+        // whose terms were never chosen opens the create dialog (kind, terms, mint) first, and the
+        // record it saves is what gets shared.
+        const terms = window.ProposalPublishTerms;
+        if (terms.needsTerms(proposal, { isPublished: record => window.isPublishedProposalRecord?.(record) === true })
+            && typeof window.proposeExistingProposal === 'function') {
+            window.proposeExistingProposal(getProposalKey(proposal) || proposal.proposalId, {
+                afterCreate: savedId => shareSingleProposal(savedId)
+            });
+            return;
+        }
+
         // If the proposal is already minted, still show the full share modal
         // (the upload modal handles minted state in the mint row UI)
 

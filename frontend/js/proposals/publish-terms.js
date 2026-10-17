@@ -64,5 +64,19 @@
         return fields;
     }
 
-    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields });
+    /** Whether a record still needs its terms chosen before it leaves the device. */
+    function needsTerms(record, { isPublished = () => false } = {}) {
+        return !!record && record.termsConfirmed !== true && !isPublished(record);
+    }
+
+    /**
+     * A local record's terms confirmed under one kind, as Share entire plan does for every proposal
+     * it carries: the record's own money terms stay for an owner deal, a vote drops them.
+     */
+    function confirmedRecordFields(record, kind, { now = Date.now() } = {}) {
+        const saleOffer = kinds().isOwnerSaleOffer(record);
+        return { ...publishFields({ ...record, kind: saleOffer ? 'owner-deal' : kind }, { now, saleOffer }), termsConfirmed: true };
+    }
+
+    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, confirmedRecordFields });
 });

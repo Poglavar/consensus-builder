@@ -865,6 +865,45 @@ function showSharePlanPanel(options) {
         filterRow.appendChild(modeWrap);
         panelContent.appendChild(filterRow);
 
+        // Who decides, asked once for the whole plan (proposal-kinds.md): every proposal in it whose
+        // terms were never chosen is uploaded under this kind; proposals with terms keep theirs.
+        const kindApi = window.ProposalKind;
+        let planKind = kindApi.DEFAULT_PUBLISH_KIND;
+        const kindRow = document.createElement('div');
+        kindRow.className = 'share-plan-kind';
+        const kindHeading = document.createElement('div');
+        kindHeading.className = 'cb-kicker';
+        kindHeading.id = 'sharePlanKindHeading';
+        kindHeading.textContent = t('modal.createProposal.kind.heading', 'Who decides?');
+        const kindGroup = document.createElement('div');
+        kindGroup.className = 'cb-segmented';
+        kindGroup.setAttribute('role', 'radiogroup');
+        kindGroup.setAttribute('aria-labelledby', kindHeading.id);
+        const kindLabels = {
+            'owner-deal': t('modal.createProposal.kind.ownerDeal', 'Owner deal'),
+            'owner-vote': t('modal.createProposal.kind.ownerVote', 'Owner vote'),
+            'community-vote': t('modal.createProposal.kind.communityVote', 'Community vote')
+        };
+        kindApi.KINDS.forEach(kind => {
+            const option = document.createElement('label');
+            option.className = 'cb-segmented__option proposal-radio';
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'sharePlanKind';
+            input.value = kind;
+            input.checked = kind === planKind;
+            input.addEventListener('change', () => { if (input.checked) planKind = kind; });
+            const text = document.createElement('span');
+            text.textContent = kindLabels[kind];
+            option.append(input, text);
+            kindGroup.appendChild(option);
+        });
+        const kindHint = document.createElement('p');
+        kindHint.className = 'share-plan-kind__hint';
+        kindHint.textContent = tShare('plan.kindHint', 'Applies to the proposals in this plan whose terms were never chosen; the rest keep their own.');
+        kindRow.append(kindHeading, kindGroup, kindHint);
+        panelContent.appendChild(kindRow);
+
         const container = document.createElement('div');
         container.className = 'share-plan-panel-body';
         panelContent.appendChild(container);
@@ -1527,6 +1566,16 @@ function showSharePlanPanel(options) {
                 uploadState.set(key, { uploaded: false, uploading: true, serverId: getServerProposalId(proposal) });
                 updateRowState(key);
                 try {
+                    // Terms never chosen: the plan's kind confirms them before the record leaves.
+                    const publishTerms = window.ProposalPublishTerms;
+                    if (publishTerms.needsTerms(proposal, { isPublished: record => window.isPublishedProposalRecord?.(record) === true })) {
+                        const confirmed = publishTerms.confirmedRecordFields(proposal, planKind);
+                        const stored = proposalStorage.getProposal(key);
+                        Object.assign(proposal, confirmed);
+                        if (stored && stored !== proposal) Object.assign(stored, confirmed);
+                        proposalStorage._indexProposal?.(stored || proposal);
+                        proposalStorage.save?.();
+                    }
                     const result = await uploadProposalToServer(proposal);
                     if (!result.ok) {
                         throw new Error(result.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));
