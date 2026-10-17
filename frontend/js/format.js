@@ -157,40 +157,28 @@
         return dateFormatter(localeFor(options.lang), fmt).format(date);
     }
 
-    function groupSeparator(lang) {
-        const part = numberFormatter(localeFor(lang), {}).formatToParts(11111).find(p => p.type === 'group');
-        return part ? part.value : ',';
+    function separators(lang) {
+        const parts = numberFormatter(localeFor(lang), { minimumFractionDigits: 1 }).formatToParts(11111.5);
+        const of = type => (parts.find(p => p.type === type) || {}).value;
+        return { group: of('group') || ',', decimal: of('decimal') || '.' };
     }
 
-    // The number a person typed, read in the UI language: "1.234,5" (hr) and "1,234.5" (en) are
-    // both 1234.5. A lone "." or "," counts as grouping only where it is the language's group
-    // separator followed by exactly three digits; otherwise it is the decimal point, so "0.5" is
-    // a half in Croatian too and "0,5" in English. Spaces group digits. Empty text is null, text
-    // that is not a number NaN, never 0.
+    // The number a person typed, read by the UI language's own rules, the same ones numbers are
+    // shown with: "1.234,5" in Croatian and "1,234.5" in English are both 1234.5, and "2.500" is
+    // 2500 in Croatian, 2.5 in English. Spaces group digits too. Nothing is guessed: text that does
+    // not follow the language's rules is NaN (the caller refuses it), empty text is null, never 0.
     function parseDecimal(text, options = {}) {
         if (isFiniteNumber(text)) return text;
-        const raw = String(text === null || text === undefined ? '' : text).replace(/[\s\u00a0\u202f']/g, '');
+        const raw = String(text === null || text === undefined ? '' : text).replace(/[\s\u00a0\u202f]/g, '');
         if (!raw) return null;
-        if (/[^\d.,]/.test(raw)) return NaN;
-        const dots = raw.split('.').length - 1;
-        const commas = raw.split(',').length - 1;
-        let normalized = raw;
-        if (dots && commas) {
-            const decimal = raw.lastIndexOf('.') > raw.lastIndexOf(',') ? '.' : ',';
-            if (raw.indexOf(decimal) !== raw.lastIndexOf(decimal)) return NaN;
-            const [whole, fraction] = raw.split(decimal);
-            const groups = whole.split(decimal === '.' ? ',' : '.');
-            if (groups.slice(1).some(g => g.length !== 3)) return NaN;
-            normalized = groups.join('') + '.' + fraction;
-        } else if (dots || commas) {
-            const parts = raw.split(dots ? '.' : ',');
-            const grouped = parts.length > 2
-                || ((dots ? '.' : ',') === groupSeparator(options.lang) && parts[1].length === 3 && /^[1-9]/.test(parts[0]));
-            if (grouped && parts.slice(1).some(g => g.length !== 3)) return NaN;
-            normalized = grouped ? parts.join('') : parts.join('.');
-        }
-        const value = Number(normalized);
-        return /\d/.test(normalized) && Number.isFinite(value) ? value : NaN;
+        const { group, decimal } = separators(options.lang);
+        const [whole, fraction, extra] = raw.split(decimal);
+        if (extra !== undefined) return NaN;
+        const groups = whole.split(group);
+        if (groups.length > 1 && (!groups[0] || groups[0].length > 3 || groups.slice(1).some(g => g.length !== 3))) return NaN;
+        const digits = groups.join('');
+        if (!/^\d*$/.test(digits) || !/^\d*$/.test(fraction || '') || !(digits || fraction)) return NaN;
+        return Number(`${digits || '0'}.${fraction || '0'}`);
     }
 
     return Object.freeze({

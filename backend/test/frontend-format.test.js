@@ -94,28 +94,38 @@ describe('dates', () => {
 });
 
 describe('CbFormat.parseDecimal (typed amounts)', () => {
-    it('reads a fraction whichever separator the person typed', () => {
-        expect(CbFormat.parseDecimal('0.5', { lang: 'hr' })).toBe(0.5);
-        expect(CbFormat.parseDecimal('0,5', { lang: 'en' })).toBe(0.5);
-        expect(CbFormat.parseDecimal('1,5', { lang: 'hr' })).toBe(1.5);
-        expect(CbFormat.parseDecimal('0.5', { lang: 'en' })).toBe(0.5);
-    });
-
-    it('reads grouping in the UI language', () => {
-        expect(CbFormat.parseDecimal('1.000', { lang: 'hr' })).toBe(1000);
-        expect(CbFormat.parseDecimal('1,000', { lang: 'en' })).toBe(1000);
+    it('reads what was typed by the UI language\'s own rules, the ones numbers are shown with', () => {
+        expect(CbFormat.parseDecimal('2.500', { lang: 'hr' })).toBe(2500);
+        expect(CbFormat.parseDecimal('2.500', { lang: 'en' })).toBe(2.5);
+        expect(CbFormat.parseDecimal('2,5', { lang: 'hr' })).toBe(2.5);
         expect(CbFormat.parseDecimal('1.234,5', { lang: 'hr' })).toBe(1234.5);
         expect(CbFormat.parseDecimal('1,234.5', { lang: 'en' })).toBe(1234.5);
         expect(CbFormat.parseDecimal('1 234,5', { lang: 'hr' })).toBe(1234.5);
         expect(CbFormat.parseDecimal('1.000.000', { lang: 'hr' })).toBe(1000000);
+        expect(CbFormat.parseDecimal('0.5', { lang: 'en' })).toBe(0.5);
+        expect(CbFormat.parseDecimal(',5', { lang: 'hr' })).toBe(0.5);
     });
 
-    it('gives null for nothing and NaN for what is not a number, never 0', () => {
+    it('refuses what the language\'s rules do not allow instead of guessing', () => {
+        expect(CbFormat.parseDecimal('0.5', { lang: 'hr' })).toBeNaN();
+        expect(CbFormat.parseDecimal('2,5', { lang: 'en' })).toBeNaN();
+        expect(CbFormat.parseDecimal('1.2.3', { lang: 'en' })).toBeNaN();
+        expect(CbFormat.parseDecimal('12,34', { lang: 'en' })).toBeNaN();
+        expect(CbFormat.parseDecimal('abc', { lang: 'en' })).toBeNaN();
+        expect(CbFormat.parseDecimal('.', { lang: 'en' })).toBeNaN();
+    });
+
+    it('gives null for nothing, never 0', () => {
         expect(CbFormat.parseDecimal('', { lang: 'en' })).toBe(null);
         expect(CbFormat.parseDecimal(null, { lang: 'en' })).toBe(null);
-        expect(CbFormat.parseDecimal('abc', { lang: 'en' })).toBeNaN();
-        expect(CbFormat.parseDecimal('1.2.3', { lang: 'en' })).toBeNaN();
-        expect(CbFormat.parseDecimal('.', { lang: 'en' })).toBeNaN();
+    });
+
+    it('round-trips every language: what is shown reads back as the same number', () => {
+        for (const lang of ['en', 'hr', 'es', 'sr']) {
+            for (const value of [0.5, 2.5, 2500, 1234.5, 1000000.125]) {
+                expect(CbFormat.parseDecimal(CbFormat.formatNumber(value, { lang, maxFractionDigits: 8 }), { lang })).toBe(value);
+            }
+        }
     });
 
     it('keeps a fractional offer through the offer field helpers (proposals/lifecycle.js)', () => {
