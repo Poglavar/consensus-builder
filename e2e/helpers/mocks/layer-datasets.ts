@@ -2,6 +2,7 @@ import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { fixtureSiteBinding } from './site-binding';
 import { surveyResponse } from './survey-data';
+import { isApiDataRequest } from './api-routes';
 
 export const TEST_PARCEL_ID = 'HR-335754-1234';
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -102,7 +103,11 @@ export async function installLayerDatasets(page: Page): Promise<void> {
       geometry: { type: 'Polygon', coordinates: [[[15.98207,45.80030],[15.98217,45.80030],[15.98217,45.80042],[15.98207,45.80042],[15.98207,45.80030]]] } }],
   } }));
 
-  await page.route('**/osm-road**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [line] } }));
+  // Only the API: the glob also matches the app's own js/osm-roads-source.js.
+  await page.route('**/osm-road**', route => {
+    if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'osm-road')) return route.continue();
+    return route.fulfill({ json: { type: 'FeatureCollection', features: [line] } });
+  });
   await page.route('https://overpass-api.de/api/interpreter**', route => route.fulfill({ json: {
     version: 0.6,
     elements: [{ type: 'way', id: 702, tags: { highway: 'residential', name: 'Fixture street' }, geometry: [
@@ -116,9 +121,13 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   // The development data source reads planned roads from the backend route, not the static plan
   // catalog. Both the planned-road API and survey APIs explicitly return EPSG:3765.
   await page.route('**/planned-road**', route => route.fulfill({ json: surveyResponse([planArea]) }));
-  await page.route('**/road-parcels**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [
-    { type: 'Feature', properties: { parcelId: TEST_PARCEL_ID }, geometry: sampleParcels.features[0].geometry },
-  ] } }));
+  // Only the API: the glob also matches the app's own js/road-parcels.js.
+  await page.route('**/road-parcels**', route => {
+    if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
+    return route.fulfill({ json: { type: 'FeatureCollection', features: [
+      { type: 'Feature', properties: { parcelId: TEST_PARCEL_ID }, geometry: sampleParcels.features[0].geometry },
+    ] } });
+  });
   await page.route('**/js/plan.json', route => route.fulfill({ json: [{
     plan_name: 'E2E road plan', government_name: 'Fixture authority', plan_version: '1',
     'data source': '/e2e-road-plan.geojson',

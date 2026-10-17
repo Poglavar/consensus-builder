@@ -4,7 +4,7 @@ import { sampleProposalsList, makeRoadProposal } from './proposal-data';
 import { fixtureSiteBinding } from './site-binding';
 import { mockOvertureTiles } from './overture-tiles';
 
-const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
+export const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
   if (resourceType !== 'fetch' && resourceType !== 'xhr') {
     return false;
   }
