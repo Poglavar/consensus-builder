@@ -139,9 +139,10 @@ describe('algorithmic agent schedule', () => {
         expect(sync).toMatchObject({ script: 'scripts/sync-transactions.mjs', args: '--run', autorestart: false, cron_restart: '*/20 * * * *' });
     });
 
-    it('declares lifecycle-01 as an inactive, unscheduled lens member', () => {
+    it('declares lifecycle-01 as an unscheduled lens member service that PM2 restarts with backoff', () => {
         const member = apps.find(item => item.name === 'consensus-builder-lifecycle-member');
-        expect(member).toMatchObject({ script: 'agents/lens-member-run.mjs', instances: 1, autorestart: false });
+        expect(member).toMatchObject({ script: 'agents/lens-member-run.mjs', instances: 1, autorestart: true,
+            max_restarts: 10, exp_backoff_restart_delay: 2000 });
         expect(member.args).toContain('--persona lifecycle-01');
         expect(member).not.toHaveProperty('cron_restart');
     });
@@ -192,17 +193,19 @@ describe('algorithmic agent schedule', () => {
         expect(source).toContain('fs.renameSync(tempFile, RUN_STATS_FILE)');
     });
 
-    it('declares the notary-01 lens member as an inactive, unscheduled opt-in process', () => {
+    it('declares the notary-01 lens member as an unscheduled opt-in service that PM2 restarts with backoff', () => {
         const lensMember = apps.find(item => item.name === 'consensus-builder-lens-member');
         expect(lensMember).toMatchObject({
             script: 'agents/lens-member-run.mjs',
             instances: 1,
-            autorestart: false
+            autorestart: true,
+            max_restarts: 10,
+            exp_backoff_restart_delay: 2000
         });
         expect(lensMember.args).toContain('--persona notary-01');
         expect(lensMember).not.toHaveProperty('cron_restart');
         const config = fs.readFileSync(new URL('../agents/ecosystem.config.cjs', import.meta.url), 'utf8');
-        expect(config).toMatch(/INACTIVE, opt-in[\s\S]*schemas are registered/);
+        expect(config).toMatch(/Opt-in: the notary-01[\s\S]*schemas are registered/);
         const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
         expect(personas.find(persona => persona.name === 'notary-01')).toMatchObject({
             role: 'lens-member',

@@ -2,7 +2,7 @@
 // every job passes --slot auto, so a run id is <day>-h<UTC hour>-<persona> and each run is its own
 // checkpoint; the proposers rotate through cities worldwide, see agents/area-plan.js), land-event materializer, the live
 // prospective-market resolver, the society personas (preservationist-01, speculator-01; opt-in until
-// their keys exist) and the (inactive) notary-01 and lifecycle-01 lens members. Secrets stay in backend/.env
+// their keys exist) and the opt-in notary-01 and lifecycle-01 lens member services. Secrets stay in backend/.env
 // or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
 // activate these jobs separately.
 // The proposer now renders its immutable thumbnail before minting. Use the same
@@ -261,8 +261,9 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
-    // INACTIVE, opt-in: the notary-01 reference lens member (backend/lens/, lens-model.md). Not
-    // scheduled and never restarted. Start it with `pm2 start agents/ecosystem.config.cjs --only
+    // Opt-in: the notary-01 reference lens member (backend/lens/, lens-model.md), a long-running
+    // HTTP service (running on prod), so PM2 brings it back after a crash, backing off between
+    // tries. Start it with `pm2 start agents/ecosystem.config.cjs --only
     // consensus-builder-lens-member` only after the notary-01 key exists, its SAS credential and the
     // ParcelOwnership-v1/ProposalVerdict-v1 schemas are registered (scripts/register-lens-schemas.mjs),
     // sas-lib is installed and X402_* is set; until then a live member cannot issue anything.
@@ -272,7 +273,10 @@ module.exports = {
     cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
-    autorestart: false,
+    autorestart: true,
+    min_uptime: '30s',
+    max_restarts: 10,
+    exp_backoff_restart_delay: 2000,
     kill_timeout: 30000,
     env: lensEnv,
     error_file: path.join(BACKEND_ROOT, 'logs', 'lens-member-error.log'),
@@ -280,8 +284,9 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
-    // INACTIVE, opt-in: the lifecycle-01 lens member (kind lifecycle) whose expiry verdicts the
-    // proposer's retire phase requests. Not scheduled and never restarted. Start it with `--only
+    // Opt-in: the lifecycle-01 lens member (kind lifecycle) whose expiry verdicts the proposer's
+    // retire phase requests; a long-running service like the one above and restarted the same way.
+    // Start it with `--only
     // consensus-builder-lifecycle-member` only after the lifecycle-01 key exists, its SAS credential
     // and the ProposalVerdict-v1 schema are registered (scripts/register-lens-schemas.mjs) and
     // AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN is set in backend/.env; then set
@@ -292,7 +297,10 @@ module.exports = {
     cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
-    autorestart: false,
+    autorestart: true,
+    min_uptime: '30s',
+    max_restarts: 10,
+    exp_backoff_restart_delay: 2000,
     kill_timeout: 30000,
     env: lensEnv,
     error_file: path.join(BACKEND_ROOT, 'logs', 'lens-member-error.log'),
