@@ -329,3 +329,21 @@ describe('smaller fixes', () => {
         expect(ruleBody(block, '\\.proposal-list-item--compact \\.proposal-list-title')).toMatch(/white-space:\s*normal/);
     });
 });
+
+describe('the land readjustment tables hold their columns still', () => {
+    const reparcelCss = read('css/on-map-reparcellization.css');
+    const modalsCss = read('css/modals.css');
+
+    it('takes column widths from the headers, not the figures', () => {
+        expect(ruleBody(reparcelCss, '\\.reparcel-owners-table,\\s*\\.reparcel-newplots-table')).toMatch(/table-layout:\s*fixed/);
+        expect(ruleBody(reparcelCss, '\\.reparcel-col--figure')).toMatch(/width:/);
+        const designer = read('js/reparcellization.js');
+        expect(designer.match(/<th class="reparcel-col--figure">/g)?.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('turns the owners ledger into cards in a narrow panel: the container it queries exists', () => {
+        expect(modalsCss).toMatch(/@container reparcel-legend \(max-width: 420px\)/);
+        expect(ruleBody(reparcelCss, '(?:^|\\n)\\.reparcel-legend-panel')).toBeTruthy();
+        expect(reparcelCss).toMatch(/container:\s*reparcel-legend \/ inline-size/);
+    });
+});

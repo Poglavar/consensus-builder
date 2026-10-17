@@ -73,6 +73,30 @@ describe('rights with leases and public bodies', () => {
     });
 });
 
+// Every scheme version ever offered. A published proposal pins id@version, so removing or re-dating
+// one would make those proposals' approval rules unreadable: a re-check adds a version, and this
+// list only grows.
+const SHIPPED = ['nl-kavelruil', 'tw-owner-organized', 'kr-association', 'es-ct-basic', 'es-ct-concertacion',
+    'es-md-compensation', 'co-readjustment', 'jp-association', 'jp-joint', 'de-umlegung-new',
+    'de-umlegung-developed', 'tr-article-18', 'in-gj-tps'].map(id => `${id}@2026-10-11`);
+
+describe('scheme versions', () => {
+    it('keeps every shipped version resolvable, so pinned proposals still read', () => {
+        for (const key of SHIPPED) {
+            const [id, version] = key.split('@');
+            expect(R.get(id, version), key).not.toBe(null);
+            const policy = R.policyOf(R.get(id, version), R.get(id, version).authorities ? ['authority-1'] : []);
+            expect(() => A.normalizeConfig(config(null, policy, { id, version })), key).not.toThrow();
+        }
+    });
+
+    it('offers new proposals one entry per scheme, its newest version', () => {
+        const ids = R.list().map(regime => regime.id);
+        expect(new Set(ids).size).toBe(ids.length);
+        for (const regime of R.list()) expect(R.latest(regime.id)).toBe(regime);
+    });
+});
+
 describe('the canonical policy', () => {
     it('keeps the two older forms for rules they can express, so published proposals keep their hashes', () => {
         expect(A.normalizePolicy(rules([test('headcount', 'owners', 'all', 1, 1)]))).toEqual({ type: 'unanimous' });

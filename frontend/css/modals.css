@@ -976,8 +976,8 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-ledger-table td.bal-even { color: var(--cb-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* Keep every owner's figures and cash input visible in phones and narrow desktop sidebars. */
-@container reparcel-legend (max-width: 520px) {
-    .reparcel-legend-list { max-height: none; overflow: visible; padding-right: 0; }
+@container reparcel-legend (max-width: 420px) {
+    .reparcel-legend-panel .reparcel-legend-list { max-height: none; overflow: visible; padding-right: 0; }
     .reparcel-ledger-table thead {
         position: absolute;
         width: 1px;

@@ -163,6 +163,8 @@
     flex-direction: column;
     gap: 8px;
     min-width: 0;
+    /* The owners ledger turns into one card per owner when this is narrow (modals.css). */
+    container: reparcel-legend / inline-size;
 }
 
 .reparcel-legend-list,
@@ -178,6 +180,36 @@
     width: 100%;
     border-collapse: collapse;
     font-size: var(--cb-text-sm);
+    /* Column widths come from the header, never from the figures, so the columns hold still while
+       a plan is edited (user rule 2026-10-17). */
+    table-layout: fixed;
+}
+
+.reparcel-col--figure { width: 19%; }
+.reparcel-col--cash { width: 15%; }
+.reparcel-col--plot { width: 8.5em; }
+
+/* Four figure columns and the owner's name share the panel: headers keep whole words. */
+.reparcel-owners-table th {
+    padding-left: 4px;
+    padding-right: 4px;
+    letter-spacing: 0;
+}
+
+.reparcel-owners-table .cash-offer-cell input.cash-offer-input {
+    width: 100%;
+}
+
+/* Figures right-aligned under right-aligned headers: digits line up and a longer number grows leftwards. */
+.reparcel-owners-table th.reparcel-col--figure,
+.reparcel-owners-table td.area-cell,
+.reparcel-oldplots-table th.reparcel-col--figure,
+.reparcel-oldplots-table td.area-cell {
+    text-align: right;
+}
+
+.reparcel-owners-table td {
+    overflow-wrap: anywhere;
 }
 
 .reparcel-owners-table th,

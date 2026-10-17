@@ -1173,10 +1173,10 @@
             const thead = document.createElement('thead');
             thead.innerHTML = `<tr>
                 <th>${t('reparcellization.modal.colOwner', 'Owner')}</th>
-                <th>${t('reparcellization.modal.colContributed', 'Pooled')}</th>
-                <th>${t('reparcellization.modal.colAssigned', 'Assigned')}</th>
-                <th>${t('reparcellization.modal.colBalance', 'Balance')}</th>
-                <th>${t('reparcellization.modal.colCash', 'Cash (+ receives, − pays)')}</th>
+                <th class="reparcel-col--figure">${t('reparcellization.modal.colContributed', 'Pooled')}</th>
+                <th class="reparcel-col--figure">${t('reparcellization.modal.colAssigned', 'Assigned')}</th>
+                <th class="reparcel-col--figure">${t('reparcellization.modal.colBalance', 'Balance')}</th>
+                <th class="reparcel-col--cash">${t('reparcellization.modal.colCash', 'Cash (+ receives, − pays)')}</th>
             </tr>`;
             table.appendChild(thead);
             const tbody = document.createElement('tbody');
@@ -1246,7 +1246,7 @@
             table.className = 'reparcel-newplots-table';
             const thead = document.createElement('thead');
             thead.innerHTML = `<tr>
-                <th>${t('reparcellization.modal.colPlot', 'Plot')}</th>
+                <th class="reparcel-col--plot">${t('reparcellization.modal.colPlot', 'Plot')}</th>
                 <th>${t('reparcellization.modal.colOwners', 'Owners')}</th>
             </tr>`;
             table.appendChild(thead);
@@ -1464,7 +1464,7 @@
         const thead = document.createElement('thead');
         thead.innerHTML = `<tr>
             <th>${t('reparcellization.modal.colParcel', 'Parcel')}</th>
-            <th>${t('reparcellization.modal.colArea', 'Area')}</th>
+            <th class="reparcel-col--figure">${t('reparcellization.modal.colArea', 'Area')}</th>
         </tr>`;
         table.appendChild(thead);
         const tbody = document.createElement('tbody');

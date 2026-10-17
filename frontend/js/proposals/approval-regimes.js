@@ -14,6 +14,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // A template's version is the date its rules were last checked against the sources. A published
+    // proposal pins id@version, so a version, once shipped, is never edited or removed: a re-check
+    // that changes a scheme adds a new entry with the new date and leaves the old one beside it
+    // (backend/test/proposal-approval-regimes.test.js lists every shipped version).
     const CHECKED = '2026-10-11';
     const atLeast = (numerator, denominator) => ({ numerator, denominator, strict: false });
     const moreThan = (numerator, denominator) => ({ numerator, denominator, strict: true });
@@ -184,7 +188,9 @@
     const FAMILIES = ['voluntary', 'support-and-authority', 'authority-led'];
     const byKey = new Map(REGIMES.map(regime => [`${regime.id}@${regime.version}`, regime]));
 
-    function list() { return REGIMES.slice(); }
+    // What a new proposal can choose: the newest version of each scheme. Older versions stay
+    // reachable through get() for the proposals that pinned them.
+    function list() { return REGIMES.filter(regime => latest(regime.id) === regime); }
     function get(id, version) { return byKey.get(`${id}@${version}`) || null; }
     // The newest version of a scheme: what a new proposal pins.
     function latest(id) {
