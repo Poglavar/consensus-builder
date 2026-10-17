@@ -151,7 +151,10 @@ describe('every outgoing path stamps the current author', () => {
         expect(stamp).toBeGreaterThan(gate);
         expect(stamp).toBeLessThan(upload.indexOf('prepareForPublish'));
         expect(read('proposals/sharing-routes.js')).toMatch(/deepClone\(stampCurrentAuthor\(proposal\)\)/);
-        expect(read('proposals/dialog-upload.js')).toMatch(/const proposalAuthor = stampCurrentAuthor\(proposal\)\.author/);
+        // Every mint (create dialog and share dialog) goes through the one mint, which stamps.
+        expect(read('proposals/dialog-upload.js')).toMatch(/window\.ProposalPublishMint\.mint\(proposal/);
+        expect(read('proposals/create.js')).toMatch(/window\.ProposalPublishMint\.mint\(proposal/);
+        expect(read('proposals/publish-mint.js')).toMatch(/root\.stampCurrentAuthor\(proposal\)\.author/);
         const create = read('proposals/create.js');
         const build = create.slice(create.indexOf('function buildUploadReadyProposal('));
         // The share dialog projects first and uploads the projection: the stamp must happen in

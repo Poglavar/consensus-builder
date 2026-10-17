@@ -1350,6 +1350,7 @@ async function createProposal() {
             ? window.proposalDraftStore?.getDraft?.(publishingDraftId)?.publish
             : null;
         let onchainResult = recoveredPublish?.onchainResult || null;
+        let mintedNow = false;
         if (onchainResult && recoveredPublish?.proposalOnchain) {
             proposal.onchain = { ...recoveredPublish.proposalOnchain };
             proposal.nft = recoveredPublish.proposalNft ? { ...recoveredPublish.proposalNft } : undefined;
@@ -1712,206 +1713,27 @@ async function createProposal() {
                         // Store screenshot on proposal for later use (e.g., minting from share dialog)
                         proposal.screenshotDataUrl = screenshotDataUrl;
 
-                        // Convert offer to native currency amount (ETH for EVM, SOL for Solana)
-                        // If currency is ETH or SOL, use the offer amount directly
-                        // Otherwise, set to 0 (no native funding, but proposal can still be minted)
-                        const nativeAmount = (offerCurrency === 'ETH' || offerCurrency === 'SOL') ? offer : 0;
-
-                        const storageLabel = (typeof window.getStorageProviderLabel === 'function') ? window.getStorageProviderLabel() : 'decentralized storage';
-                        console.debug(`[createProposal] Uploading proposal image to ${storageLabel}`);
-                        const ipfsStartTime = performance.now();
-                        updateStatus(`Uploading proposal image to ${storageLabel}...`);
-                        showProposalWaitingPopup(`Uploading proposal image to ${storageLabel}...`);
-                        const createdAtIso = proposal.createdAt || new Date().toISOString();
-                        proposal.createdAt = createdAtIso;
-
+                        // The one mint every publish path uses (proposals/publish-mint.js): metadata,
+                        // image upload, the active chain's mint, and the result on the record.
                         const lensEntriesForMint = getProposalLensEntries(proposal, { fallbackToGlobal: true });
-                        const lensAddressesForMint = lensEntriesForMint
-                            .filter(entry => entry && entry.address && entry.address.trim())
-                            .map(entry => entry.address.trim());
-                        // Skip lens requirement for ownership-transfer-from-me proposals; Solana validates its own lens below
-                        const isFromMeProposal = selectedTool === 'ownership-transfer-from-me';
-                        if (!lensAddressesForMint.length && !isFromMeProposal && !isSolanaWalletConnected && !cantonActive) {
-                            throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
-                        }
-
-                        const goalKey = resolveProposalGoalKey(proposal, null) || proposalType || 'proposal';
-                        const goalLabel = goalKey.replace(/-/g, ' ');
-                        const metadataTitle = proposal.name || proposal.title || `${goalLabel} Proposal`;
-                        const metadataPayload = {
-                            name: metadataTitle,
-                            title: metadataTitle,
-                            description: description,
-                            image: '', // populated after image upload
-                            attributes: [
-                                {
-                                    trait_type: 'Goal',
-                                    value: goalLabel
-                                },
-                                {
-                                    trait_type: 'Conditional',
-                                    value: isConditional ? 'Yes' : 'No'
-                                },
-                                {
-                                    trait_type: 'Parcel Count',
-                                    value: parcelIdsForMinting.length
-                                },
-                                {
-                                    trait_type: 'Author',
-                                    value: author
-                                },
-                                {
-                                    trait_type: 'Offer',
-                                    value: `${offer} ${offerCurrency}`
-                                },
-                                // where it is: the city the authored record belongs to
-                                ...(proposal.city ? [{ trait_type: 'City', value: proposal.city }] : [])
-                            ],
-                            // Full authored content, including site, binding and cadastral evidence.
-                            properties: window.__chainRecord.metadataProperties({ ...proposal,
-                                type: mapGoalToBackendType(goalKey) || 'parcel', lens: lensAddressesForMint, isConditional })
+                        const showMintStatus = message => {
+                            updateStatus(message);
+                            showProposalWaitingPopup(message);
                         };
-
-                        const fileNameBase = `proposal-${Date.now()}`;
-                        const uploadChainId = isSolanaWalletConnected
-                            ? `solana-${solWm.getCluster ? solWm.getCluster() : 'devnet'}`
-                            : ((walletManager && typeof walletManager.getState === 'function')
-                                ? walletManager.getState()?.chainId
-                                : null);
-                        const assetUploadResult = await window.AssetService.uploadProposalAssets({
-                            imageData: screenshotDataUrl,
-                            metadata: metadataPayload,
-                            fileName: fileNameBase,
-                            chainId: uploadChainId,
-                            target: 'auto'
-                        });
-                        console.debug('[createProposal] IPFS upload took:', (performance.now() - ipfsStartTime).toFixed(2), 'ms');
-                        const metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
-
-                        if (!metadataUri) {
-                            throw new Error('Metadata URI missing from asset upload response.');
-                        }
-
-                        console.debug('[createProposal] Minting proposal on blockchain');
                         const mintTxStartTime = performance.now();
-                        showProposalWaitingPopup('Waiting for transaction...');
                         waitingPopupVisible = true;
                         setProposalModalDimmed(true);
-                        updateStatus('Minting proposal on blockchain...');
-
-                        if (cantonActive && window.CantonProposalChainBridge) {
-                            // Canton (custodial): create via the backend; the current
-                            // Canton identity is the buyer, owner/lens auto-allocated.
-                            onchainResult = await window.CantonProposalChainBridge.mintProposal({
-                                parcelIds: parcelIdsForMinting,
-                                price: offer,
-                                imageURI: metadataUri
-                            });
-                        } else if (isSolanaWalletConnected && window.SolanaProposalChainBridge) {
-                            // The lens is exactly the members the proposer picked; an empty one is an error.
-                            const solanaLens = window.LensCore.validateSolanaLens(lensEntriesForMint);
-                            if (!solanaLens.ok) {
-                                throw new Error(t('alerts.messages.solana_lens_required', 'Choose at least one lens member (the lens button) before minting on Solana.'));
-                            }
-                            // An owner offer names an asking price; bids arrive as pledges and donations
-                            // from others, so nothing is escrowed from the owner's own wallet at mint.
-                            // An approval setup escrows nothing on chain: the contract would split it
-                            // equally per parcel, not by the deal's cash terms (land-readjustmend.md §20).
-                            const approvalSetup = window.ProposalApprovalRuntime?.uses(proposal) === true;
-                            // A vote holds no money and never executes (proposal-kinds.md).
-                            const nonBinding = window.ProposalKind.isNonBinding(proposal);
-                            const escrowAmount = proposal.proposalRole === 'owner-offer' || approvalSetup || nonBinding ? 0 : nativeAmount;
-                            // proposal_nft v3: the site and its binding give site_hash and open_ground
-                            // (frontend/js/proposals/site-hash.js). Owners of bound parcels always
-                            // consent; open ground (or an empty binding) also needs a lens member's
-                            // executed verdict, so verdict_may_execute is set exactly when there is open
-                            // ground. On such a proposal the verdict clears the open ground and never
-                            // stands in for the owners; permit-style skipping of consent stays off.
-                            const siteArgs = await window.__siteHash.chainSiteArgs({
-                                site: mintSite,
-                                binding: proposal.binding || null,
-                                parcelIds: parcelIdsForMinting
-                            });
-                            onchainResult = await window.SolanaProposalChainBridge.mintProposal({
-                                parcelIds: parcelIdsForMinting,
-                                isConditional: isConditional,
-                                solAmount: escrowAmount,
-                                imageURI: metadataUri,
-                                lens: solanaLens.keys,
-                                approvalSetup,
-                                verdictMayExecute: approvalSetup || nonBinding ? false : siteArgs.openGround,
-                                siteHash: siteArgs.siteHash,
-                                openGround: siteArgs.openGround
-                            });
-                        } else {
-                            onchainResult = await window.ProposalChainBridge.mintProposal({
-                                parcelIds: parcelIdsForMinting,
-                                isConditional: isConditional,
-                                ethAmount: nativeAmount,
-                                tokenAmount: 0n,
-                                imageURI: metadataUri,
-                                lens: lensAddressesForMint,
-                                // Both vote kinds mint fund-less via mintVote with a voting deadline.
-                                isVote: window.ProposalKind.isNonBinding(proposal),
-                                expiryDays: window.ProposalKind.isNonBinding(proposal) ? proposal.voteExpiryDays : undefined
-                            });
-                        }
+                        const minted = await window.ProposalPublishMint.mint(proposal, {
+                            screenshotDataUrl,
+                            lensEntries: lensEntriesForMint,
+                            onStatus: showMintStatus
+                        });
+                        onchainResult = minted.onchainResult;
+                        mintedNow = true;
                         console.debug('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');
                         console.debug('[createProposal] Total on-chain minting process took:', (performance.now() - mintStartTime).toFixed(2), 'ms');
                         hideWaitingPopupSafe();
-
-                        proposal.onchain = {
-                            transactionHash: onchainResult.transactionHash,
-                            proposalId: onchainResult.proposalId,
-                            chainId: onchainResult.chainId,
-                            contractAddress: onchainResult.contractAddress,
-                            metadataUri,
-                            metadataUrl: assetUploadResult?.metadataGatewayUrl || null,
-                            imageUri: assetUploadResult?.imageUri || null,
-                            imageUrl: assetUploadResult?.imageGatewayUrl || null
-                        };
-                        proposal.nft = {
-                            chain: onchainResult.chainId || chainId || null,
-                            contract: onchainResult.contractAddress || null,
-                            tokenId: onchainResult.proposalId != null ? onchainResult.proposalId.toString() : null
-                        };
-
-                        const chainProposalIdValue = buildChainProposalId(onchainResult.chainId || chainId, onchainResult.contractAddress, onchainResult.proposalId);
-                        proposal.chainProposalId = chainProposalIdValue;
-                        proposal.tokenId = proposal.tokenId || (onchainResult.proposalId != null ? onchainResult.proposalId.toString() : null);
-                        proposal.onchain.chainProposalId = chainProposalIdValue;
-                        proposal.nft.chainProposalId = chainProposalIdValue;
-
-                        // Update stored proposal with on-chain data
-                        const stored = proposalStorage.getProposal(proposal.proposalId || proposal.proposalId);
-                        if (stored) {
-                            stored.onchain = { ...proposal.onchain };
-                            stored.nft = { ...proposal.nft };
-                            stored.chainProposalId = stored.chainProposalId || chainProposalIdValue;
-                            stored.tokenId = stored.tokenId || proposal.tokenId;
-                            stored.proposalId = stored.proposalId || hash || stored.proposalId;
-                            // After mint we have a permanent image URL — promote it from on-chain to the
-                            // top-level screenshotUrl and drop the local data URL to free localStorage.
-                            if (proposal.onchain.imageUrl) {
-                                stored.screenshotUrl = proposal.onchain.imageUrl;
-                                if (stored.screenshotDataUrl) delete stored.screenshotDataUrl;
-                            }
-                            if (typeof proposalStorage._indexProposal === 'function') {
-                                proposalStorage._indexProposal(stored);
-                            }
-                            if (typeof proposalStorage.save === 'function') {
-                                proposalStorage.save();
-                            }
-                            if (stored.screenshotUrl) {
-                                try {
-                                    document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
-                                        detail: { proposalId: stored.proposalId, screenshotUrl: stored.screenshotUrl }
-                                    }));
-                                } catch (_) { }
-                            }
-                        }
-
-                        updateStatus(`Proposal minted on blockchain! Transaction: ${onchainResult.transactionHash.substring(0, 10)}...`);
+                        updateStatus(`Proposal minted on blockchain! Transaction: ${String(onchainResult.transactionHash || '').substring(0, 10)}...`);
                     }
                 }
             } catch (error) {
@@ -2028,6 +1850,18 @@ async function createProposal() {
                 }
                 if (typeof proposalStorage.save === 'function') {
                     proposalStorage.save();
+                }
+            }
+        }
+        // A fresh mint is mirrored to the server for discovery and ENS, as every publish path does;
+        // a failed mirror leaves the independent chain proposal intact.
+        if (mintedNow && storedForOnchain) {
+            try {
+                await window.ProposalPublishMint.mirror(storedForOnchain);
+            } catch (mirrorError) {
+                console.error(`[${new Date().toISOString()}] [createProposal] server mirror after mint failed`, mirrorError);
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(t('modal.roadWidth.share.mintSavedChainOnly', 'Minted on-chain, but saving to the server failed — the ENS link may not resolve until you retry.'), 8000, 'error');
                 }
             }
         }

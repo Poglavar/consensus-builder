@@ -94,7 +94,7 @@ describe('proposal create approval publication boundary', () => {
         const approvalGuard = uploadSource.indexOf("window.ProposalChainBridge?.supportsProposalApproval?.('proposal-approval/v1') !== true", uploadHandler);
         const walletConnection = uploadSource.indexOf('const walletManager = window.walletManager', uploadHandler);
         const mintRecord = uploadSource.indexOf('window.__mintBinding.prepareForMint(proposal)', uploadHandler);
-        const metadataUpload = uploadSource.indexOf('window.AssetService.uploadProposalAssets(', uploadHandler);
+        const metadataUpload = uploadSource.indexOf('window.ProposalPublishMint.mint(', uploadHandler);
         expect(approvalGuard).toBeGreaterThan(walletConnection);
         expect(approvalGuard).toBeLessThan(mintRecord);
         expect(approvalGuard).toBeLessThan(metadataUpload);
