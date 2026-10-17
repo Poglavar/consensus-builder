@@ -1611,9 +1611,12 @@ function buildBlockProposalListItem(proposal) {
         : isBuildingProposal
             ? (appliedOnMap ? tBlock('panel.block.proposals.buildingRemoveTooltip', {}, 'Unapply this building proposal') : tBlock('panel.block.proposals.buildingApplyTooltip', {}, 'Apply this building proposal'))
             : (appliedOnMap ? tBlock('panel.block.proposals.structureRemoveTooltip', {}, 'Unapply this structure proposal') : tBlock('panel.block.proposals.structureApplyTooltip', {}, 'Apply this structure proposal'));
+    // Apply / Unapply is offered as proposals/display-state.js decides for every list: a cancelled
+    // proposal is withdrawn and gets neither, whatever this browser's applied flag says.
+    const mapAction = window.__proposalDisplayState.of(proposal, { applied: appliedOnMap }).mapAction;
     let actionButtons = '';
-    if (typeof ProposalManager !== 'undefined' && (isRoadProposal || isBuildingProposal || isStructureProposal)) {
-        actionButtons = appliedOnMap
+    if (mapAction && typeof ProposalManager !== 'undefined' && (isRoadProposal || isBuildingProposal || isStructureProposal)) {
+        actionButtons = mapAction === 'unapply'
             ? `<button type="button" id="proposal-action-btn-${proposalIdOrHash}" class="btn btn-sm proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="${actionTitle}">
                     <i class="fas fa-eye-slash" aria-hidden="true"></i> ${tBlock('panel.block.proposals.removeButton', {}, 'Remove from map')}
                 </button>`
