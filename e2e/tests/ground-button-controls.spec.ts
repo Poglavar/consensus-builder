@@ -131,7 +131,7 @@ test('Explore banner requests its place, opens World view, and dismisses for thi
     requests.push(route.request().postDataJSON());
     return route.fulfill({ json: { ok: true } });
   });
-  await page.goto('/?city=explore&at=23.7104,90.4074,16&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   const banner = page.locator('#explore-banner');
   await expect(banner).toBeVisible();

@@ -330,7 +330,7 @@ function getServerProposalId(proposal) {
 
 // `?city=` for a share link: the proposal's own city when given (the server files a record under
 // the city its site lies in), else the current one. The short code where a city has one (?city=zg),
-// else its id — the boot reads both (city-config.js getCityIdFromQuery). Only eight cities have a
+// else its id — the boot reads both (city-config.js resolveCityParam). Only eight cities have a
 // code, so a link to any other carried no city and opened in whatever city the recipient last used.
 function buildCityQueryParam(cityId) {
     const mgr = (typeof window !== 'undefined') ? window.CityConfigManager : null;

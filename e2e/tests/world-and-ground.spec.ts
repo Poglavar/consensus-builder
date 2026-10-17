@@ -24,7 +24,8 @@ test.describe('World navigation and open ground @features', () => {
     await page.route('**/proposals/summary?*', route => {
       listQueries.push(route.request().url()); return route.fulfill({ json: { proposals: [], count: 7 } });
     });
-    await page.goto('/?city=explore&at=45.8,16,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
+    // Dhaka: no configured city covers it, so the address alone opens explore there
+    await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
     await expect(page.locator('#proposals-button-count')).toHaveText('7');
     expect(new URL(countQueries.at(-1)!).searchParams.has('bbox')).toBe(true);
     expect(new URL(countQueries.at(-1)!).searchParams.has('city')).toBe(false);

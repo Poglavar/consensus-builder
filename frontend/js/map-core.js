@@ -120,11 +120,15 @@ const AT_VIEW = (() => {
 // entries), so a reload, a copied link or a second tab opens where the map is. It used to be read
 // once and stripped, and in-place moves (search, globe, panning) wrote nothing, so a reload or a
 // shared address showed the city's default or another tab's explore spot.
+// A boot that took its city from ?at= or ?city= alone drops ?city= with the first write: from then
+// on the address is a plain location (location-first.md), and a stale label can't contradict it.
+let dropCityParam = !!(window.CityConfigManager?.getBootEntry?.()?.dropCityParam);
 map.on('moveend', () => {
     if (!window.WorldEntryModel) return;
     try {
         const center = map.getCenter();
-        const next = window.WorldEntryModel.addressWithView(window.location.href, { lat: center.lat, lon: center.lng, zoom: map.getZoom() });
+        const next = window.WorldEntryModel.addressWithView(window.location.href, { lat: center.lat, lon: center.lng, zoom: map.getZoom() }, { dropCity: dropCityParam });
+        dropCityParam = false;
         if (next) window.history.replaceState(window.history.state, '', next);
     } catch (error) {
         console.warn(`[${new Date().toISOString()}] [map-core] could not keep the view in the address`, error);

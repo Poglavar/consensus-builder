@@ -57,6 +57,7 @@
 // Usage: node scripts/build-world-coverage.mjs --run [--tolerance 0.06] [--region-tolerance 0.1] [--out path]
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { writeBootCoverage } from './build-boot-coverage.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -684,6 +685,11 @@ function main(argv) {
     console.log(`[${ts()}] mostly regions: ${result.regions.filter(r => r.coverage === 'mostly').map(r => r.id).join(', ') || 'none'}`);
     console.log(`[${ts()}] registry cities by tier: ${JSON.stringify(count(result.cities, 'tier'))}`);
     console.log(`[${ts()}] wrote ${path.relative(REPO, out)} (${(json.length / 1024).toFixed(1)} KB)`);
+    // The boot subset follows the JSON it is derived from (only for the default output).
+    if (out === path.resolve(DEFAULTS.out)) {
+        const boot = writeBootCoverage({ input: out });
+        console.log(`[${ts()}] wrote ${path.relative(REPO, boot.out)} (${(boot.bytes / 1024).toFixed(1)} KB)`);
+    }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

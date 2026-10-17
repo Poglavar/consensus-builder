@@ -46,7 +46,10 @@ Reading, first match wins:
 4. **Neither** → the stored city's centre, as today; a first visit opens the globe, as today.
 
 Outside every coverage the jurisdiction is **explore** (no parcels, geography still loads). Distance
-is used only to *suggest* the nearest covered city there, never to pick one.
+is used only to *suggest* the nearest covered city there, never to pick one. Explore is never asked
+for: a legacy `?city=explore` beside `?at=` is just the point (user, 2026-10-17: drop the mode, use
+the coordinates), and alone it opens explore at its last view. A failing parcel source does not need
+an escape into explore: the city view degrades on its own (the parcel-register notice).
 
 Writing: the app writes only `?at=` (map-core already does on every `moveend`). After boot the
 address bar drops `city=` (and the legacy `city=explore`), so every copied link is a plain location.
@@ -58,42 +61,47 @@ a switch reloads the page and may interrupt an edit.
 
 ## Border rule
 
-Coverage circles ignore borders, so a point in El Paso could fall in a Juárez circle. Rule:
+Coverage circles ignore borders, so a point in El Paso could fall in a Juárez circle. Rule (phase 3):
 
-- A city's coverage is its circle **clipped to its own country** (`countryAt` already exists).
+- A city's coverage is its circle **clipped to its own country**.
 - Among the coverages containing the point, the **smallest area wins** (a city source inside a
   national one), then the nearest centre (several cities on one source differ only in label).
 - Phase 3 replaces circles with declared source areas where they exist; the precedence stays.
 
-Limit to note: the country outlines are Natural Earth 110 m, which can be kilometres off along a
-border. Phase 1 adds an audit listing every city whose circle crosses a border so we know the
-exposure; phase 3 brings finer outlines or source polygons for those.
+The clip needs finer outlines than we have. Tried in phase 1 with the Natural Earth 110 m outlines
+in world-coverage.json: 11 of the 650 city centres fall outside their own country's outline there
+(Geneva, Aachen, Maastricht, Enschede, Jerusalem, Modiin, Livingstone) or have no outline at all
+(Hong Kong ×3, Macau, San Marino), so the clip broke exactly the border cities it is for. It waits for
+phase 3 (finer outlines or declared source areas); phase 1 keeps today's circles. No border pair like
+El Paso / Juárez is configured today.
 
 ## Phases
 
 | # | Phase | Status |
 |---|---|---|
-| 1 | URL and boot: jurisdiction from the location, `at` wins, `city` is an alias | planned |
+| 1 | URL and boot: jurisdiction from the location, `at` wins, `city` is an alias | done 2026-10-17 |
 | 2 | Geography sources by coordinates only (backend + 3D) | planned |
 | 3 | Declared coverage per parcel source; border precision | planned |
 | 4 | App state by area (proposal counts/lists, markets, plans) and the stray city defaults | planned |
 
 ### Phase 1: URL and boot
 
-- A pure `resolveEntry({ search, storedCityId, coverage, configs })` in
-  `world/world-entry-model.js` returning `{ view, cityId, canonicalSearch, ignoredCity, reason }`.
-  It implements the URL rules above and the border clip. No DOM.
-- `city-config.js` `determineCurrentCityId` calls it. `world-coverage.json` must be available
-  synchronously at boot: load it before `city-config.js` (it is ~650 cities + outlines; measure the
-  size and parse time, and inline only the live-city table if the outlines are too heavy).
-- `map-core.js` takes the view from the resolver, so a city-only link opens at the city centre and
-  an `at` link at the point. Rewrite the address bar to the canonical form after boot.
-- `world-coverage.js` gains the country clip and the smallest-area ordering, used by both the boot
-  resolver and `publication-city.js`.
-- Remove the stale comments (`?at= is stripped after boot`) and the dead `/geo/default-city` path in
-  `city-config.js` (`maybeApplyGeoDefaultCity` returns before doing anything).
-- Audit script `scripts/audit-border-coverage.mjs`: every live city whose coverage circle crosses a
-  country outline, with the neighbouring country and the overlap. Output in `world-parcels/report/`.
+Built:
+
+- `WorldEntryModel.resolveEntry` (pure): the URL rules above → `{ cityId, view, source, cityParam,
+  ignoredCity, dropCityParam }`.
+- `WorldCoverage.jurisdictionAt` = the first of `liveCitiesAt`, which is also what the server files a
+  city-less publication under and what a globe pick opens (`tierAt` now uses `liveCitiesAt`).
+- `frontend/data/boot-coverage.js` (53 KB, from `scripts/build-boot-coverage.mjs`, rerun by
+  `build-world-coverage.mjs`): live cities + Croatia's outline, loaded before `city-config.js` with
+  `world-coverage.js`. The full JSON is 875 KB, too heavy for boot; a test pins identical
+  `liveCitiesAt` answers and that the file matches the JSON.
+- `city-config.js` boots from the entry, logs an ignored `city=`, stores the chosen city (not
+  explore), exposes `getBootEntry()`; the dead `/geo/default-city` client path is gone.
+- `map-core.js` drops `?city=` with its first `?at=` write. AI-scene share links take the city from
+  the city manager, not the address.
+
+Deferred: the border clip and its audit script (see Border rule).
 
 ### Phase 2: geography by coordinates
 
@@ -182,7 +190,9 @@ Headed (a launched Chrome over agent-browser, checked by eye):
 
 - 2026-10-17: `at` wins over `city`; `city` is a read-only alias for its centre; the app never
   writes `city=`.
-- 2026-10-17: jurisdiction by containment (circle clipped to country now, declared areas later),
-  smallest area first; distance only suggests.
+- 2026-10-17: jurisdiction by containment, distance only suggests. Circles keep nearest-centre order
+  in phase 1 (smallest-area-first would refile overlapping publications for little gain); smallest
+  area first applies to declared source areas in phase 3, with the country clip.
+- 2026-10-17: explore is derived, never asked for; `?city=explore` is legacy.
 - 2026-10-17: a session keeps its boot jurisdiction for parcels/proposals/storage; geography follows
   the camera.

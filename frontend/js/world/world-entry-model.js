@@ -7,8 +7,9 @@
 // API
 //   parseAt(value) -> { lat, lon, zoom|null } | null      validates; zoom clamped to [MIN_ZOOM, MAX_ZOOM]
 //   formatAt({ lat, lon, zoom }) -> 'lat,lon,zoom'        5 decimals, integer zoom
-//   addressWithView(href, view) -> href | null             the address carrying the view as ?at=;
-//                                                          null when it already does
+//   addressWithView(href, view, { dropCity }) -> href | null  the address carrying the view as ?at=
+//                                                          (and without ?city= when dropCity); null
+//                                                          when it already is that
 //   isSharedRoute({ pathname, search }) -> boolean         a link that names what to show (no globe)
 //   bootDecision({ cityChosen, sharedRoute, search }) -> { open, closable, firstVisit, forced }
 //   canReturnToMap(zoom) -> boolean      true when the current map is a useful return destination
@@ -16,6 +17,7 @@
 //   liveCityFor({ place, currentCityId, sameCadastre }) -> the city a live place opens
 //   arrivesAtLatest(landing) -> boolean   a landing goes on to the city's latest proposal
 //   exploreZoomFor(place) -> zoom for an explore landing
+//   resolveEntry({ pathname, search, storedCityId, resolveCityParam, jurisdictionAt }) -> entry (see below)
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -60,11 +62,13 @@
     // The address bar follows the map (js/map-core.js, on every move): the current address with the
     // view as ?at=, everything else kept — so a reload, a copied link or a second tab opens where the
     // map is, not the city's default (or the explore spot another tab saved). null = already there.
-    function addressWithView(href, view) {
+    function addressWithView(href, view, options) {
         const url = new URL(href);
         const at = formatAt(view);
-        if (url.searchParams.get('at') === at) return null;
+        const dropCity = !!(options && options.dropCity) && url.searchParams.has('city');
+        if (url.searchParams.get('at') === at && !dropCity) return null;
         url.searchParams.set('at', at);
+        if (dropCity) url.searchParams.delete('city');
         // commas are valid in a query: keep the view readable in an address people copy
         return url.toString().replace(/([?&]at=)([^&#]*)/, (match, key, value) => key + value.replace(/%2C/gi, ','));
     }
@@ -77,6 +81,8 @@
     // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl), or a valid shared map view (?at=).
     const SHARED_PATHS = [/^\/proposals(?:\/|$)/i, /^\/plans\/./i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
     const SHARED_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
+    // The shared routes that open a stored record, which keeps the city it was made in.
+    const RECORD_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'bets'];
 
     // A user zooming out through the map scale opens the globe at the last map centre. Keep the
     // decision pure; the UI separately proves a native zoom gesture happened.
@@ -175,9 +181,48 @@
         return !!landing && landing.cityId !== EXPLORE_CITY_ID && !landing.carryAt;
     }
 
+    // Which city a boot opens in, from the address (location-first.md "URL rules"). First match wins:
+    //   record   a link to a stored record (a proposal, plan, parcel, bet, scene, monitor) keeps its
+    //            ?city=, else the stored city; the record frames itself (view null).
+    //   at       ?at= decides: the city whose parcels apply there (jurisdictionAt), else explore. A
+    //            ?city= beside it is ignored (ignoredCity names it when it disagrees).
+    //   city     only ?city= (an id or short code): that city at its own default view.
+    //   stored   neither: the stored city.
+    //   default  nothing at all: cityId null, the caller's default.
+    // Explore is never asked for: it is where no city's parcels reach, so a legacy ?city=explore beside
+    // ?at= is just the point, and alone it opens explore at its last view.
+    //   resolveCityParam(raw) -> configured city id | null (unknown values are null)
+    //   jurisdictionAt(lat, lon) -> city id | null   (WorldCoverage.jurisdictionAt)
+    // -> { cityId, view: { lat, lon, zoom|null } | null, source, cityParam, ignoredCity, dropCityParam }
+    //   dropCityParam: the address should lose ?city= (it carries ?at= from the first move on).
+    function resolveEntry(input) {
+        const pathname = (input && input.pathname) || '';
+        let params;
+        try { params = new URLSearchParams((input && input.search) || ''); } catch (_) { params = new URLSearchParams(); }
+        const rawCity = params.get('city');
+        const cityParam = rawCity && typeof input.resolveCityParam === 'function' ? input.resolveCityParam(rawCity) : null;
+        const storedCityId = (input && input.storedCityId) || null;
+        const entry = (cityId, view, source, extra) => Object.assign(
+            { cityId, view, source, cityParam, ignoredCity: null, dropCityParam: false }, extra || {});
+
+        const record = SHARED_PATHS.some(pattern => pattern.test(pathname)) || RECORD_PARAMS.some(name => params.has(name));
+        if (record) return entry(cityParam || storedCityId, null, 'record');
+
+        // Without a coverage to ask, ?at= cannot choose (guessing explore would hide every city).
+        const at = typeof input.jurisdictionAt === 'function' ? parseAt(params.get('at')) : null;
+        if (at) {
+            const cityId = input.jurisdictionAt(at.lat, at.lon) || EXPLORE_CITY_ID;
+            const ignoredCity = rawCity && cityParam !== cityId && cityParam !== EXPLORE_CITY_ID ? rawCity : null;
+            return entry(cityId, at, 'at', { ignoredCity, dropCityParam: rawCity !== null });
+        }
+        if (cityParam) return entry(cityParam, null, 'city', { dropCityParam: true });
+        if (storedCityId) return entry(storedCityId, null, 'stored');
+        return entry(null, null, 'default');
+    }
+
     return {
         EXPLORE_CITY_ID, MIN_ZOOM, MAX_ZOOM, PARCEL_ZOOM, EXPLORE_ZOOM,
         parseAt, formatAt, addressWithView, isSharedRoute, bootDecision, canReturnToMap, resolveLanding, liveCityFor, exploreZoomFor, arrivesAtLatest,
-        shouldReturnToGlobe
+        shouldReturnToGlobe, resolveEntry
     };
 });

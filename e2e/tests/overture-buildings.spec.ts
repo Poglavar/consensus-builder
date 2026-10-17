@@ -18,17 +18,25 @@ const BUILDINGS: TestBuilding[] = [
   { id: 'gers-ml', ring: square(-74.0820, 4.6106), floors: 4 }
 ];
 const VIEW = 'at=4.6105,-74.0822,18&lang=en&reduceMotion=1';
+// The same two buildings in Villavicencio, which no configured city covers: the address alone opens
+// explore there (location-first.md), the place without a survey of its own.
+const OPEN_BUILDINGS: TestBuilding[] = [
+  { id: 'gers-osm', osmId: 'w24518461', ring: square(-73.6267, 4.1419), height: 21 },
+  { id: 'gers-ml', ring: square(-73.6264, 4.1421), floors: 4 }
+];
+const OPEN_VIEW = 'at=4.1420,-73.6266,18&lang=en&reduceMotion=1';
 
 const poolIds = (page: any) => page.evaluate(() =>
   ((window as any).buildingFeaturePool || []).map((f: any) => String(f.properties?.id ?? f.id)).sort());
 
 test.describe('Overture buildings in the browser', () => {
-  test('a city without its own survey fills its buildings from the tiles, not from our server', async ({ mockApi: page }) => {
-    const tiles = await mockOvertureTiles(page, BUILDINGS);
+  test('a place without its own survey fills its buildings from the tiles, not from our server', async ({ mockApi: page }) => {
+    const tiles = await mockOvertureTiles(page, OPEN_BUILDINGS);
     const backendFootprints: string[] = [];
     page.on('request', request => { if (request.url().endsWith('/buildings/footprints')) backendFootprints.push(request.url()); });
-    await page.goto(`/?city=explore&${VIEW}`);
+    await page.goto(`/?${OPEN_VIEW}`);
     await waitForMapReady(page);
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('explore');
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityConfig().buildings.source)).toBe('overture-tiles');
 
     await page.evaluate(() => (window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
@@ -42,7 +50,7 @@ test.describe('Overture buildings in the browser', () => {
 
     // The 3D answer is extruded in the browser by the shared rule: measured, storeys × 3 m.
     const near = await page.evaluate(() => (window as any).BuildingSourceClient.request('/buildings/near',
-      { geometry: { type: 'Point', coordinates: [-74.0822, 4.6105] }, buffer_meters: 100 }));
+      { geometry: { type: 'Point', coordinates: [-73.6266, 4.1420] }, buffer_meters: 100 }));
     expect(near.source).toBe('overture-tiles-3d');
     expect(Object.fromEntries(near.buildings.map((b: any) => [b.object_id, b.z_max]))).toEqual({ w24518461: 21, 'gers-ml': 12 });
   });

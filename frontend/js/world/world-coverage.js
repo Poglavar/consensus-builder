@@ -9,6 +9,8 @@
 //   coverage.tierAt(lat, lon) -> Place                  see below
 //   coverage.liveCitiesAt(lat, lon) -> [{ cityId, km, via: 'radius'|'country' }]  every configured city
 //                                                       whose parcels cover the point (see below)
+//   coverage.jurisdictionAt(lat, lon) -> cityId | null  the ONE city whose parcels apply there (boot,
+//                                                       publication with no city); null = explore
 //   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
 //   coverage.regionAt(lat, lon) -> region record | null  the state/province/UK nation outline holding a point
 //   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
@@ -164,6 +166,8 @@
         });
     }
 
+    // `data` is world-coverage.json, or the boot subset frontend/data/boot-coverage.js (live cities and
+    // the outlines liveCitiesAt can need, no registry cities), which answers liveCitiesAt identically.
     function create(data) {
         if (!data || !Array.isArray(data.countries) || !Array.isArray(data.cities) || !Array.isArray(data.liveCities)) {
             throw new Error('world-coverage: malformed data');
@@ -173,6 +177,7 @@
         const regions = (data.regions || []).map(r => Object.assign({}, r, { bbox: r.rings.length ? ringsBbox(r.rings) : null }));
         const countryByCc = new Map(countries.map(c => [c.cc, c]));
         const liveCities = data.liveCities;
+        const liveById = new Map(liveCities.map(city => [city.id, city]));
         const liveSummary = Object.freeze({
             cityCount: new Set(liveCities.map(city => typeof city.id === 'string' ? city.id.trim() : '').filter(Boolean)).size,
             countryCount: new Set(liveCities.map(city => typeof city.cc === 'string' ? city.cc.trim() : '').filter(Boolean)).size
@@ -234,8 +239,8 @@
 
         function tierAt(lat, lon) {
             if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('tierAt: lat/lon must be finite numbers');
-            const live = nearest(liveCities, lat, lon, LIVE_RADIUS_KM);
-            if (live) return livePlace(live, lat, lon);
+            const area = liveCitiesAt(lat, lon).find(hit => hit.via === 'radius');
+            if (area) return livePlace(liveById.get(area.cityId), lat, lon);
             const city = nearest(cities, lat, lon, CITY_RADIUS_KM);
             if (city) {
                 return {
@@ -270,7 +275,9 @@
         // live country (Croatia), each of that country's cities (via 'country'). Nearest first within
         // each group, ties by id. [] = no app cadastre covers the point. A publication's city is
         // decided from this (backend/proposals/publication-city.js), never from the view it was
-        // drawn in; tierAt answers the different question of which ONE city a globe pick opens.
+        // drawn in, and so is the city a view boots in (jurisdictionAt). The circles ignore borders:
+        // the country outlines here are too coarse to clip them (Geneva's centre falls in France),
+        // see location-first.md phase 3.
         function liveCitiesAt(lat, lon) {
             if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('liveCitiesAt: lat/lon must be finite numbers');
             const byDistance = (a, b) => a.km - b.km || (a.cityId < b.cityId ? -1 : a.cityId > b.cityId ? 1 : 0);
@@ -285,6 +292,14 @@
                     .map(live => ({ cityId: live.id, km: haversineKm(lat, lon, live.lat, live.lon), via: 'country' }))
                 : [];
             return radius.sort(byDistance).concat(countrywide.sort(byDistance));
+        }
+
+        // The city whose parcels apply at a point: the nearest covering one (liveCitiesAt), null where
+        // no app cadastre does (explore). The city a view boots in (WorldEntryModel.resolveEntry) and
+        // the city a publication with no requested city is filed in are both this.
+        function jurisdictionAt(lat, lon) {
+            const hit = liveCitiesAt(lat, lon)[0];
+            return hit ? hit.cityId : null;
         }
 
         // The name of where the map is (the explore city chip): the nearest configured or registry
@@ -351,7 +366,7 @@
             });
         }
 
-        return { data, tierAt, liveCitiesAt, nameAt, regionAt, searchPlaces, countries, regions, territories, cities, liveCities, liveSummary };
+        return { data, tierAt, liveCitiesAt, jurisdictionAt, nameAt, regionAt, searchPlaces, countries, regions, territories, cities, liveCities, liveSummary };
     }
 
     function load(url) {

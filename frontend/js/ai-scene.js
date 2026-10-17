@@ -116,8 +116,10 @@
         return new URLSearchParams(window.location.search).get('lang') || null;
     }
 
+    // The city the map is in: the address carries only ?at= once booted (location-first.md), and a
+    // scene link is a record link, which opens in the city it names.
     function currentCity() {
-        return new URLSearchParams(window.location.search).get('city') || null;
+        return window.CityConfigManager?.getCurrentCityId?.() || null;
     }
 
     function buildShareUrl(slug, appliedSerialIds) {
@@ -127,7 +129,7 @@
         const parts = [];
         const backend = cur.get('backend'); // preserve local-dev backend override so the link works locally
         if (backend) parts.push('backend=' + encodeURIComponent(backend));
-        const city = cur.get('city');
+        const city = currentCity();
         if (city) parts.push('city=' + encodeURIComponent(city));
         parts.push('model');                 // boolean flag: enter 3D model mode
         parts.push('scene=' + encodeURIComponent(slug));

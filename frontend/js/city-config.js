@@ -85,9 +85,10 @@
         }
     }
 
-    // The explore city (`?city=explore&at=lat,lon,zoom`): any place without parcel data, opened from
-    // the world view. Its centre is the ?at= point, else the last explored point (kept in localStorage
-    // so a reload stays put), else a world overview. Never a stored city, never a shared-link target.
+    // The explore city: any place without parcel data (an ?at= no city's parcels reach, see
+    // WorldEntryModel.resolveEntry). Its centre is the ?at= point, else the last explored point (kept
+    // in localStorage so a reload stays put), else a world overview. Never a stored city, never a
+    // shared-link target.
     const EXPLORE_CITY_ID = 'explore';
     const EXPLORE_AT_KEY = 'cb_explore_at';
     const EXPLORE_DEFAULT_VIEW = { lat: 30, lon: 15, zoom: 3 };
@@ -97,8 +98,7 @@
         let fromQuery = null;
         let fromStore = null;
         try {
-            const params = new URLSearchParams(window.location.search || '');
-            if ((params.get('city') || '').trim().toLowerCase() === EXPLORE_CITY_ID) fromQuery = model.parseAt(params.get('at'));
+            fromQuery = model.parseAt(new URLSearchParams(window.location.search || '').get('at'));
         } catch (_) { /* no location */ }
         try { fromStore = model.parseAt(localStorage.getItem(EXPLORE_AT_KEY)); } catch (_) { /* storage blocked */ }
         const view = fromQuery || fromStore;
@@ -10909,22 +10909,44 @@
 
     ensureProjectionDefinitions();
 
-    function getCityIdFromQuery() {
-        if (typeof window === 'undefined' || typeof window.location === 'undefined') {
+    // A ?city= value (an id or short code) -> the configured city id, or null.
+    function resolveCityParam(rawValue) {
+        if (!rawValue) return null;
+        const normalized = String(rawValue).trim().toLowerCase();
+        const mappedId = CITY_QUERY_MAP[normalized] || normalized;
+        return CITY_CONFIGS[mappedId] ? mappedId : null;
+    }
+
+    // The boot coverage (frontend/data/boot-coverage.js, loaded before this file) answers which city's
+    // parcels apply at a point, exactly as the globe and the server do (world/world-coverage.js).
+    function createBootJurisdiction() {
+        if (typeof window === 'undefined') return null;
+        if (!window.BOOT_COVERAGE || !window.WorldCoverage) {
+            console.error(`[${new Date().toISOString()}] [city-config] boot coverage missing (data/boot-coverage.js, js/world/world-coverage.js): ?at= cannot choose the city`);
             return null;
         }
-        try {
-            const params = new URLSearchParams(window.location.search || '');
-            const rawValue = params.get('city');
-            if (!rawValue) {
-                return null;
-            }
-            const normalized = rawValue.trim().toLowerCase();
-            const mappedId = CITY_QUERY_MAP[normalized] || normalized;
-            return CITY_CONFIGS[mappedId] ? mappedId : null;
-        } catch (_) {
-            return null;
+        const coverage = window.WorldCoverage.create(window.BOOT_COVERAGE);
+        return (lat, lon) => coverage.jurisdictionAt(lat, lon);
+    }
+
+    // How this boot chose its city (WorldEntryModel.resolveEntry, location-first.md "URL rules").
+    function resolveBootEntry() {
+        const model = typeof window !== 'undefined' ? window.WorldEntryModel : null;
+        const storedCityId = getStoredCityId();
+        if (!model || typeof window.location === 'undefined') {
+            // No entry model (a page or test without it): ?city=, else the stored city.
+            let cityParam = null;
+            try { cityParam = resolveCityParam(new URLSearchParams(window.location.search || '').get('city')); } catch (_) { cityParam = null; }
+            const cityId = cityParam || storedCityId;
+            return { cityId, view: null, source: cityParam ? 'city' : (storedCityId ? 'stored' : 'default'), cityParam, ignoredCity: null, dropCityParam: false };
         }
+        return model.resolveEntry({
+            pathname: window.location.pathname,
+            search: window.location.search,
+            storedCityId,
+            resolveCityParam,
+            jurisdictionAt: createBootJurisdiction()
+        });
     }
 
     // The city pointer lives in localStorage because it must be readable *synchronously*, before
@@ -10955,23 +10977,20 @@
     // Each city has its own database (see js/persistent-storage.js), so adopting the city named in
     // a link takes nothing away: the city you were in keeps its parcels, proposals and settings, and
     // they are all still there when you go back. Nothing is wiped here, and nothing needs asking.
-    function determineCurrentCityId() {
-        const storedCityId = getStoredCityId();
-        const queryCityId = getCityIdFromQuery();
-
-        if (queryCityId && CITY_CONFIGS[queryCityId]) {
-            // Exploring is not choosing a city: the pointer keeps the last real city (or none).
-            if (queryCityId !== storedCityId && queryCityId !== EXPLORE_CITY_ID) {
-                try {
-                    if (typeof localStorage !== 'undefined' && localStorage) {
-                        localStorage.setItem(STORAGE_KEY, queryCityId);
-                    }
-                } catch (_) { /* ignore */ }
-            }
-            return queryCityId;
+    function determineCurrentCityId(entry) {
+        const cityId = entry.cityId && CITY_CONFIGS[entry.cityId] ? entry.cityId : DEFAULT_CITY_ID;
+        if (entry.ignoredCity) {
+            console.info(`[${new Date().toISOString()}] [city-config] city=${entry.ignoredCity} ignored: at= lies in ${cityId}`);
         }
-
-        return storedCityId || DEFAULT_CITY_ID;
+        // Exploring is not choosing a city: the pointer keeps the last real city (or none).
+        if (entry.source !== 'stored' && entry.source !== 'default' && cityId !== EXPLORE_CITY_ID && cityId !== getStoredCityId()) {
+            try {
+                if (typeof localStorage !== 'undefined' && localStorage) {
+                    localStorage.setItem(STORAGE_KEY, cityId);
+                }
+            } catch (_) { /* ignore */ }
+        }
+        return cityId;
     }
 
     function getCityLabel(cityId) {
@@ -10983,11 +11002,11 @@
     // Did the user actually choose this city, or did we fall back to the default? Only a defaulted
     // city may be overridden by the one recovered from a pre-upgrade database. Read before
     // setScope, since determineCurrentCityId writes the pointer as a side effect.
-    const cityWasExplicitlyChosen = !!(getCityIdFromQuery() || getStoredCityId());
+    const bootEntry = resolveBootEntry();
+    const cityWasExplicitlyChosen = !!bootEntry.cityId;
 
-    let currentCityId = determineCurrentCityId();
-    // Remember where exploring happened, so a reload of ?city=explore (its ?at= is stripped after
-    // boot, js/map-core.js) opens at the same place.
+    let currentCityId = determineCurrentCityId(bootEntry);
+    // Remember where exploring happened, so the explore view outlives an address without ?at=.
     if (currentCityId === EXPLORE_CITY_ID) rememberExploreView(exploreView);
 
     function rememberExploreView(view) {
@@ -11013,51 +11032,6 @@
         else applyStoredLanguage();
     }
 
-    function maybeApplyGeoDefaultCity() {
-        // Temporarily disable IP-based city detection; default stays NYC for all users.
-        return;
-        // Only auto-guess if the user hasn't explicitly chosen a city and no query override exists.
-        if (getCityIdFromQuery()) return;
-        if (getStoredCityId()) return;
-
-        const backendBase = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function')
-            ? window.getBackendBase()
-            : null;
-        if (!backendBase) return;
-
-        const url = `${backendBase.replace(/\/+$/, '')}/geo/default-city`;
-        fetch(url, { headers: { 'Accept': 'application/json' } })
-            .then(r => r.ok ? r.json() : null)
-            .then(data => {
-                const nextId = data && data.cityId ? String(data.cityId) : null;
-                if (!nextId || !CITY_CONFIGS[nextId]) {
-                    // Store the default so we do not keep retrying geo detection on every load.
-                    setStoredCityId(DEFAULT_CITY_ID);
-                    return;
-                }
-
-                const previousCityId = currentCityId;
-                const cityChanged = nextId !== previousCityId;
-
-                setStoredCityId(nextId);
-
-                if (cityChanged) {
-                    try {
-                        window.location.reload();
-                    } catch (_) { /* ignore */ }
-                }
-            })
-            .catch(() => { /* ignore */ });
-    }
-
-    // Register early so we run before other DOMContentLoaded listeners in later scripts.
-    if (typeof document !== 'undefined') {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', maybeApplyGeoDefaultCity, { once: true });
-        } else {
-            maybeApplyGeoDefaultCity();
-        }
-    }
 
 
     function setStoredCityId(id) {
@@ -11392,7 +11366,8 @@
         try {
             const url = new URL(options.url || window.location.href, window.location.href);
             url.searchParams.set('city', nextId);
-            // `at` opens the next city at a given view (js/map-core.js applies and strips it);
+            // `at` opens at a given view, and then decides the city (WorldEntryModel.resolveEntry) unless
+            // a record route stays in the address;
             // `world` (force the globe) must not follow the visitor into the city they just picked.
             url.searchParams.delete('at');
             url.searchParams.delete('world');
@@ -11680,9 +11655,13 @@
         getAvailableCities: () => Object.keys(CITY_CONFIGS).map(getCityConfig).filter(config => !config.explore),
         EXPLORE_CITY_ID,
         isExplore: () => currentCityId === EXPLORE_CITY_ID,
-        // Whether this boot had a city chosen (?city= or a stored pointer) rather than the default:
+        // Whether this boot had a city chosen (?at=, ?city=, a record link's city or a stored
+        // pointer) rather than the default:
         // the world view opens on a first visit only (js/ui/world-entry.js).
         wasCityChosenAtBoot: () => cityWasExplicitlyChosen,
+        // How the boot chose the city (WorldEntryModel.resolveEntry): js/map-core.js drops ?city=
+        // from the address when the entry says so.
+        getBootEntry: () => Object.assign({}, bootEntry),
         // Keep a city the visitor picked on the globe without a reload (the default city it booted on).
         // Writes only the pointer: the city is unchanged, so no cityChanged event.
         rememberCurrentCity: () => {

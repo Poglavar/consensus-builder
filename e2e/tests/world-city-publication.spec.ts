@@ -164,7 +164,8 @@ test.describe('Worldwide publication and city routing @core', () => {
     await panMap(page, 200, 0);
     await expect.poll(() => new URL(page.url()).searchParams.get('at')).not.toBe('45.81050,15.97500,17');
     const at = new URL(page.url()).searchParams.get('at') as string;
-    expect(new URL(page.url()).searchParams.get('city')).toBe('zg');
+    // a plain location: ?at= decides the city on reload, so the ?city= the boot came with is gone
+    expect(new URL(page.url()).searchParams.get('city')).toBeNull();
 
     await page.reload();
     await waitForMapReady(page);
