@@ -172,3 +172,70 @@ describe('a block grows from its seed, parcel by parcel', () => {
         expect(graph.neighborsOf('W')).toEqual([]);
     });
 });
+
+describe('the corridor barrier index', () => {
+    // The index answers from a grid of boundary edges; it must agree with the plain definition:
+    // inside a barrier (even/odd over all rings, boundary included) or within clearance of one.
+    const reference = (barriers, x, y, clearanceM) => barriers.some(barrier =>
+        topology.barrierContains(barrier, x, y)
+        || (clearanceM > 0 && topology.barrierBoundaryDistance(barrier, x, y) <= clearanceM));
+
+    it('agrees with the definition on every point of a grid around roads with holes and jagged edges', () => {
+        const zigzag = [];
+        for (let i = 0; i <= 40; i += 1) zigzag.push([i * 2.5, 30 + ((i % 2) * 1.7)]);
+        for (let i = 40; i >= 0; i -= 1) zigzag.push([i * 2.5, 38 + ((i % 3) * 0.9)]);
+        zigzag.push(zigzag[0]);
+        const barriers = [
+            parcel('SQUARE-WITH-HOLE', rect(0, 0, 20, 20), rect(5, 5, 15, 15)),
+            parcel('ZIGZAG', zigzag),
+            parcel('DIAGONAL', [[40, 0], [70, 25], [72, 23], [42, -2], [40, 0]])
+        ];
+        [0, 0.5, 1.3].forEach(barrierClearanceM => {
+            const index = topology.createBarrierIndex(barriers, { barrierClearanceM });
+            let disagreements = 0;
+            let insideCount = 0;
+            for (let x = -3; x <= 103; x += 0.37) {
+                for (let y = -4; y <= 45; y += 0.41) {
+                    const expected = reference(barriers, x, y, barrierClearanceM);
+                    if (expected) insideCount += 1;
+                    if (index.contains(x, y) !== expected) disagreements += 1;
+                }
+            }
+            expect(disagreements, `clearance ${barrierClearanceM}`).toBe(0);
+            expect(insideCount).toBeGreaterThan(1000);
+        });
+    });
+
+    it('counts a point exactly on a boundary as inside, even with no clearance', () => {
+        const index = topology.createBarrierIndex([parcel('ROAD', rect(0, 0, 10, 10))], { barrierClearanceM: 0 });
+        expect(index.contains(10, 5)).toBe(true);
+        expect(index.contains(10.001, 5)).toBe(false);
+    });
+});
+
+describe('the bounds index a flood fill looks its neighbours up in', () => {
+    it('returns exactly the boxes a linear scan finds, for boxes of every size', () => {
+        const entries = [];
+        let seed = 7;
+        const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+        for (let i = 0; i < 2000; i += 1) {
+            const x = random() * 0.05;
+            const y = random() * 0.05;
+            const w = random() < 0.05 ? random() * 0.02 : random() * 0.0004; // a few long roads
+            const h = random() * 0.0004;
+            entries.push({ id: `E${i}`, bounds: [x, y, x + w, y + h] });
+        }
+        const index = topology.createBoundsIndex(entries, 0.001);
+        const scan = box => entries.filter(({ bounds: b }) => b[0] <= box[2] && b[2] >= box[0] && b[1] <= box[3] && b[3] >= box[1])
+            .map(entry => entry.id).sort();
+        for (let i = 0; i < 300; i += 1) {
+            const x = random() * 0.05;
+            const y = random() * 0.05;
+            const size = random() < 0.1 ? 0.01 : random() * 0.0005;
+            const box = [x, y, x + size, y + size];
+            expect(index.query(box).map(entry => entry.id).sort()).toEqual(scan(box));
+        }
+        // Boxes that only touch count as intersecting, as in the fabric's own bounds query.
+        expect(topology.createBoundsIndex([{ id: 'A', bounds: [0, 0, 1, 1] }], 0.5).query([1, 1, 2, 2]).map(e => e.id)).toEqual(['A']);
+    });
+});

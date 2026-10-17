@@ -13,15 +13,16 @@ function environment() {
         ['road-piece', { parcelId: 'road-piece', cadastreParcelIds: ['road-root'], isRoad: true }]
     ].map(([id, properties]) => [id, { type: 'Feature', properties }]));
     const layers = new Map([...features.keys()].map(id => [id, {
-        id, options: {}, setStyle(style) { Object.assign(this.options, style); }
+        id, options: {}, styled: 0, setStyle(style) { this.styled += 1; Object.assign(this.options, style); }
     }]));
     const events = [];
+    const writes = [];
     const context = {
         console: { log() {} },
         addEventListener() {},
         CustomEvent,
         dispatchEvent: event => events.push(event),
-        PersistentStorage: { getItem: () => null, setItem() {} },
+        PersistentStorage: { getItem: () => null, setItem: (key, value) => writes.push([key, JSON.parse(value)]) },
         map: { getBounds: () => [0, 0, 1, 1] },
         CadastralParcelRepository: {
             roadClassificationAvailable: () => true,
@@ -38,10 +39,11 @@ function environment() {
     };
     context.window = context;
     vm.createContext(context);
-    for (const file of ['parcels/styles.js', 'road-detection.js']) {
+    // The registry and the curated fetch always load (road-parcels.js); the detectors do not.
+    for (const file of ['parcels/styles.js', 'road-parcels.js']) {
         vm.runInContext(readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8'), context);
     }
-    return { context, layers, events };
+    return { context, layers, events, writes };
 }
 
 describe('background curated road styling after plan application', () => {
@@ -51,17 +53,29 @@ describe('background curated road styling after plan application', () => {
         // Blocks listen for this to re-form around the newly known road.
         expect(events.map(e => [e.type, e.detail.parcelIds])).toEqual([['roadParcelsMarked', ['road-root']]]);
         for (const id of ['building-plot', 'park-plot', 'remainder']) {
-            expect(layers.get(id).options.fillOpacity, id).toBe(0);
-            expect(layers.get(id).options, id).toMatchObject(context.getParcelBaseStyle(id));
+            expect(context.isRoadParcel(id), id).toBe(false);
+            expect(context.getParcelBaseStyle(id).fillOpacity, id).toBe(0);
         }
     });
 
-    it('preserves curated roads and explicitly classified road and track pieces', async () => {
-        const { context, layers } = environment();
+    it('repaints only the parcel that became a road, and writes the registry once', async () => {
+        const { context, layers, writes } = environment();
         await context.fetchCuratedRoadParcels();
         expect(layers.get('road-root').options).toMatchObject(context.roadStyle);
-        expect(layers.get('road-piece').options).toMatchObject(context.roadStyle);
-        expect(layers.get('corridor').options).toMatchObject(context.corridorParcelStyle);
-        expect(layers.get('track').options).toMatchObject(context.trackStyle);
+        // Every other layer was styled from the registry when it was drawn; repainting the whole
+        // fabric on every fetch was a long task that grew with the ground loaded.
+        for (const id of ['building-plot', 'park-plot', 'remainder', 'corridor', 'track', 'road-piece']) {
+            expect(layers.get(id).styled, id).toBe(0);
+        }
+        expect(writes).toEqual([['roadParcels', ['road-root']]]);
+        // Explicitly classified pieces keep their own class when they are drawn.
+        expect(context.getParcelBaseStyle('road-piece')).toMatchObject(context.roadStyle);
+        expect(context.getParcelBaseStyle('corridor')).toMatchObject(context.corridorParcelStyle);
+        expect(context.getParcelBaseStyle('track')).toMatchObject(context.trackStyle);
+
+        // A second fetch that finds nothing new repaints and writes nothing.
+        expect(await context.fetchCuratedRoadParcels()).toBe(0);
+        expect(layers.get('road-root').styled).toBe(1);
+        expect(writes.length).toBe(1);
     });
 });

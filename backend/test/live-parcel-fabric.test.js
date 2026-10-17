@@ -144,6 +144,30 @@ describe('live parcel fabric', () => {
         }
     });
 
+    it('peeks bounds with queryBounds semantics, handing out the frozen committed features', async () => {
+        const fabric = createLiveParcelFabric();
+        await mutate(fabric, mutation => {
+            mutation.seedCadastre([polygon('HR-A'), polygon('HR-B', 4), polygon('HR-FAR', 40)]);
+            mutation.upsertFeatures([polygon('road:HR-C', 2, {
+                cadastreParcelIds: ['HR-C'], producedByProposalId: 'road', isCorridor: true
+            })]);
+        });
+        const ids = features => features.map(feature => feature.properties.parcelId).sort();
+        [undefined, { includeCorridors: true }].forEach(query => {
+            expect(ids(fabric.peekBounds([-1, -1, 5, 2], query))).toEqual(ids(fabric.queryBounds([-1, -1, 5, 2], query)));
+        });
+
+        const cloneSpy = vi.spyOn(globalThis, 'structuredClone');
+        try {
+            const peeked = fabric.peekBounds([-1, -1, 5, 2], { includeCorridors: true });
+            expect(cloneSpy).not.toHaveBeenCalled();
+            expect(peeked.every(feature => Object.isFrozen(feature))).toBe(true);
+            expect(peeked.find(feature => feature.properties.parcelId === 'HR-A')).toBe(fabric.peek('HR-A'));
+        } finally {
+            cloneSpy.mockRestore();
+        }
+    });
+
     it('splits disconnected raw cadastral geometry deterministically', async () => {
         const fabric = createLiveParcelFabric();
         const raw = polygon('HR-A');

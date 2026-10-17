@@ -62,7 +62,7 @@ function isCorridorParcel(parcelOrId, layer = null) {
     const parcelId = (typeof parcelOrId === 'string' || typeof parcelOrId === 'number')
         ? parcelOrId.toString()
         : parcelIdFromLayer(parcelOrId || layer);
-    const liveFeature = parcelId ? liveBlockServices()?.fabric?.get?.(parcelId) : null;
+    const liveFeature = parcelId ? liveBlockPeek(parcelId) : null;
     if (!liveFeature) return false;
     const props = liveFeature.properties || {};
 
@@ -90,13 +90,21 @@ function liveBlockServices() {
     return { fabric, presenter };
 }
 
+// The committed fabric feature itself, for read-only checks: get() returns a defensive deep copy,
+// and block detection asks these questions for every parcel around every member of a block.
+function liveBlockPeek(parcelId) {
+    const fabric = liveBlockServices()?.fabric;
+    if (!fabric) return null;
+    return fabric.peek(String(parcelId));
+}
+
 function liveBlockLayerForId(parcelId) {
     const services = liveBlockServices();
     const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
     if (!services || !id) return null;
     // Both checks are required: fabric membership is the domain authority; presenter membership
     // is the only authority allowed to provide a layer for UI/geometry operations.
-    if (!services.fabric.get(id)) return null;
+    if (!liveBlockPeek(id)) return null;
     const layer = services.presenter.getLayer(id);
     if (!layer || services.presenter.getIdForLayer?.(layer) !== id) return null;
     return layer;
@@ -568,12 +576,13 @@ function buildNeighborMapFromEdges(parcels) {
 // barriers, exactly as in buildNeighborMapFromEdges. Returns { get(id) -> neighbour layers }.
 const BLOCK_NEIGHBOUR_SEARCH_PAD_M = 1;
 
-function paddedFeatureBounds(feature, padM) {
-    const box = turf.bbox(feature);
-    if (!Array.isArray(box) || !box.every(Number.isFinite)) return null;
+// Search cell for the per-graph bounds index, in degrees (~80 x 110 m at Zagreb's latitude).
+const BLOCK_NEIGHBOUR_INDEX_CELL_DEG = 0.001;
+
+function paddedBox(box, padM) {
     const padLat = padM / 111320;
     const padLng = padM / (111320 * Math.cos(((box[1] + box[3]) / 2) * Math.PI / 180));
-    return L.latLngBounds([box[1] - padLat, box[0] - padLng], [box[3] + padLat, box[2] + padLng]);
+    return [box[0] - padLng, box[1] - padLat, box[2] + padLng, box[3] + padLat];
 }
 
 function liveBlockNeighborGraph(seedId) {
@@ -582,7 +591,7 @@ function liveBlockNeighborGraph(seedId) {
     if (!services || !blockTopology || typeof blockTopology.createNeighborGraph !== 'function') {
         throw new Error('[parcel-blocks] live parcel fabric/presenter or block topology is not loaded; blocks cannot be detected');
     }
-    const seedFeature = services.fabric.get(String(seedId));
+    const seedFeature = liveBlockPeek(seedId);
     if (!seedFeature) throw new Error(`[parcel-blocks] seed parcel ${seedId} is not in the live fabric`);
     // One frame for every parcel this graph compares, anchored at the seed: a block is far inside
     // the frame's 60 km radius.
@@ -593,15 +602,24 @@ function liveBlockNeighborGraph(seedId) {
         return { id, rings: ringsById.get(id) };
     };
 
+    // Read-only throughout: the committed features are frozen, and copying every candidate around
+    // every member was most of a widened detection's main-thread time. One scan of the search area
+    // builds a bounds index; every member's surroundings are then a lookup, not another scan. A
+    // member's neighbours and the roads on its boundary all touch it, so they intersect the area.
+    const index = blockTopology.createBoundsIndex(
+        services.fabric.peekBounds(blockSearchBounds(), { includeCorridors: true })
+            .map(feature => ({ id: parcelIdFromLayer(feature), feature, bounds: turf.bbox(feature) }))
+            .filter(entry => entry.id),
+        BLOCK_NEIGHBOUR_INDEX_CELL_DEG);
+    const boundsById = new Map();
     const graph = blockTopology.createNeighborGraph(id => {
-        const feature = services.fabric.get(id);
-        const bounds = feature ? paddedFeatureBounds(feature, BLOCK_NEIGHBOUR_SEARCH_PAD_M) : null;
-        if (!bounds) return null;
+        const feature = liveBlockPeek(id);
+        if (!feature) return null;
+        if (!boundsById.has(id)) boundsById.set(id, turf.bbox(feature));
         const parcels = [];
         const barriers = [];
-        services.fabric.queryBounds(bounds, { includeCorridors: true }).forEach(candidate => {
-            const candidateId = parcelIdFromLayer(candidate);
-            if (!candidateId || candidateId === id) return;
+        index.query(paddedBox(boundsById.get(id), BLOCK_NEIGHBOUR_SEARCH_PAD_M)).forEach(({ id: candidateId, feature: candidate }) => {
+            if (candidateId === id) return;
             if (isCorridorParcel(candidateId)) barriers.push(metricEntry(candidateId, candidate));
             else if (liveBlockLayerForId(candidateId)) parcels.push(metricEntry(candidateId, candidate));
         });
@@ -2062,7 +2080,9 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             const parcels = [];
             return { parcels, result: floodfillBlock(seedParcel, parcels, liveBlockNeighborGraph(startParcelId)) };
         };
-        await ensureBlockRoadClassification(map.getBounds());
+        // Roads bound blocks: without their classification the fill would run down them. The
+        // background refresh after each parcel load may still be in flight, so wait for it here.
+        await window.fetchCuratedRoadParcels(map.getBounds());
         let attempt = flood();
         const repository = window.CadastralParcelRepository;
         let searchBounds = map.getBounds();
@@ -2073,7 +2093,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             // A failure to load the wider ground is an error, not an answer: it propagates to the
             // loud failure below instead of being reported as a block that runs past the view.
             await repository.ensureBounds(searchBounds);
-            await ensureBlockRoadClassification(searchBounds);
+            await window.fetchCuratedRoadParcels(searchBounds);
             blockSearchBoundsOverride = searchBounds;
             try { attempt = flood(); } finally { blockSearchBoundsOverride = null; }
         }
@@ -2169,16 +2189,6 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         return runWithButtonBusyState(button, { key: 'common.busy.selecting', fallback: 'Selecting...' }, runReportingFailure);
     }
     return runReportingFailure();
-}
-
-// Roads bound blocks: without their classification a fill runs down every street. The curated
-// classification (Zagreb's road_parcel_classification) is fetched by road-detection.js, which is
-// an optional tool loaded on first use, so block detection loads it itself before relying on it.
-async function ensureBlockRoadClassification(bounds) {
-    if (typeof window.fetchCuratedRoadParcels !== 'function' && typeof window.ensureOptionalTool === 'function') {
-        await window.ensureOptionalTool('roadDetection');
-    }
-    if (typeof window.fetchCuratedRoadParcels === 'function') await window.fetchCuratedRoadParcels(bounds);
 }
 
 // Rewrite: Animate block formation from selected parcel, highlight accepted, label rejected

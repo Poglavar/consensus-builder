@@ -26,7 +26,9 @@
         // squeeze through that numerical seam. Treat half a metre around live corridor ground as
         // part of the barrier; a real land connection must have at least that much clearance.
         barrierClearanceM: 0.5,
-        barrierIndexCellM: 50
+        barrierIndexCellM: 50,
+        // Grid for barrier boundary edges: the clearance test only measures edges in a point's cell.
+        barrierEdgeCellM: 5
     };
 
     function pointOnSegment(x, y, a, b, epsilon = 1e-7) {
@@ -113,22 +115,43 @@
         return Number.isFinite(minX) ? [minX, minY, maxX, maxY] : null;
     }
 
+    // Even/odd crossing count over every ring of a barrier, without the on-boundary test: the
+    // index below answers "on or near the boundary" from its edge grid first.
+    function crossesOddly(barrier, x, y) {
+        let inside = false;
+        for (const ring of barrier.rings) {
+            if (!Array.isArray(ring) || ring.length < 3) continue;
+            for (let i = 0, j = ring.length - 1; i < ring.length; j = i, i += 1) {
+                const a = ring[j];
+                const b = ring[i];
+                if (!Array.isArray(a) || !Array.isArray(b)) continue;
+                if (((a[1] > y) !== (b[1] > y))
+                    && (x < ((b[0] - a[0]) * (y - a[1]) / (b[1] - a[1])) + a[0])) inside = !inside;
+            }
+        }
+        return inside;
+    }
+
     function createBarrierIndex(barriers, options) {
         const opts = { ...DEFAULTS, ...(options || {}) };
         const cellM = Math.max(1, Number(opts.barrierIndexCellM) || DEFAULTS.barrierIndexCellM);
+        const edgeCellM = Math.max(0.5, Number(opts.barrierEdgeCellM) || DEFAULTS.barrierEdgeCellM);
         const requestedClearance = Number(opts.barrierClearanceM);
         const clearanceM = Number.isFinite(requestedClearance)
             ? Math.max(0, requestedClearance)
             : DEFAULTS.barrierClearanceM;
+        // A point exactly on a barrier boundary is inside it, even with no clearance.
+        const nearM = Math.max(clearanceM, 1e-7);
         const cells = new Map();
+        const edgeCells = new Map();
         const records = [];
-        const file = (key, index) => {
-            let list = cells.get(key);
-            if (!list) { list = []; cells.set(key, list); }
-            list.push(index);
+        const file = (map, key, value) => {
+            let list = map.get(key);
+            if (!list) { list = []; map.set(key, list); }
+            list.push(value);
         };
 
-        (Array.isArray(barriers) ? barriers : []).forEach(barrier => {
+        function add(barrier) {
             const rings = barrier && Array.isArray(barrier.rings) ? barrier.rings : [];
             const bounds = boundsOfRings(rings);
             if (!bounds) return;
@@ -139,24 +162,47 @@
             const x1 = Math.floor((bounds[2] + clearanceM) / cellM);
             const y1 = Math.floor((bounds[3] + clearanceM) / cellM);
             for (let x = x0; x <= x1; x += 1) {
-                for (let y = y0; y <= y1; y += 1) file(`${x}|${y}`, index);
+                for (let y = y0; y <= y1; y += 1) file(cells, `${x}|${y}`, index);
             }
-        });
+            // Every boundary edge, filed in the fine cells within clearance of it, so a sample
+            // point measures its distance to the few edges near it instead of to every edge of
+            // every road around the block (most of a widened Detect block's time went there).
+            rings.forEach(ring => {
+                if (!Array.isArray(ring) || ring.length < 2) return;
+                for (let i = 0; i < ring.length; i += 1) {
+                    const a = ring[i];
+                    const b = ring[(i + 1) % ring.length];
+                    if (!Array.isArray(a) || !Array.isArray(b)) continue;
+                    const ex0 = Math.floor((Math.min(a[0], b[0]) - nearM) / edgeCellM);
+                    const ey0 = Math.floor((Math.min(a[1], b[1]) - nearM) / edgeCellM);
+                    const ex1 = Math.floor((Math.max(a[0], b[0]) + nearM) / edgeCellM);
+                    const ey1 = Math.floor((Math.max(a[1], b[1]) + nearM) / edgeCellM);
+                    for (let x = ex0; x <= ex1; x += 1) {
+                        for (let y = ey0; y <= ey1; y += 1) file(edgeCells, `${x}|${y}`, [a, b]);
+                    }
+                }
+            });
+        }
+        (Array.isArray(barriers) ? barriers : []).forEach(add);
 
+        // Inside a barrier, on its boundary, or within clearance of it.
         function contains(x, y) {
+            const edges = edgeCells.get(`${Math.floor(x / edgeCellM)}|${Math.floor(y / edgeCellM)}`) || [];
+            for (const [a, b] of edges) {
+                if (pointSegmentDistance(x, y, a, b) <= nearM) return true;
+            }
             const candidates = cells.get(`${Math.floor(x / cellM)}|${Math.floor(y / cellM)}`) || [];
             for (const index of candidates) {
                 const barrier = records[index];
                 const b = barrier.bounds;
-                if (x < b[0] - clearanceM || x > b[2] + clearanceM
-                    || y < b[1] - clearanceM || y > b[3] + clearanceM) continue;
-                if (barrierContains(barrier, x, y)) return true;
-                if (clearanceM > 0 && barrierBoundaryDistance(barrier, x, y) <= clearanceM) return true;
+                if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
+                if (crossesOddly(barrier, x, y)) return true;
             }
             return false;
         }
 
-        return { contains, size: records.length, clearanceM };
+        // `add` grows the index in place: a flood fill meets the same roads around many members.
+        return { contains, add, get size() { return records.length; }, clearanceM };
     }
 
     function openLengthOfSpan(span, barriers, options) {
@@ -183,7 +229,10 @@
         const api = adjacency();
         if (!api || typeof api.sharedBoundarySpans !== 'function') return [];
         const opts = { ...DEFAULTS, ...(options || {}) };
-        const barrierIndex = createBarrierIndex(barrierParcels, opts);
+        // Either the corridor parcels themselves or an index already built over them.
+        const barrierIndex = barrierParcels && typeof barrierParcels.contains === 'function'
+            ? barrierParcels
+            : createBarrierIndex(barrierParcels, opts);
         return api.sharedBoundarySpans(parcels, opts)
             .map(pair => {
                 const sharedM = pair.spans.reduce(
@@ -206,23 +255,82 @@
     // Answers are cached per parcel id.
     function createNeighborGraph(nearby, options) {
         const cache = new Map();
+        // A pair is measured once: the second parcel of a pair reuses the first one's answer and
+        // leaves the first out of its own comparison. Both find each other through `nearby`,
+        // because "within the search pad of the other's bounds" is symmetric.
+        const measured = new Map(); // id -> Map(neighbourId -> sharedM), for parcels already done
+        // One barrier index for the whole fill, grown as members bring new roads into view: the same
+        // road bounds many members, and rebuilding its edge grid for each was a third of the work.
+        const barrierIndex = createBarrierIndex([], options);
+        const indexedBarriers = new Set();
         function neighborsOf(parcelId) {
             const id = String(parcelId);
             if (cache.has(id)) return cache.get(id);
             const around = nearby(id) || {};
             const parcel = around.parcel;
-            let neighbours = [];
+            const neighbours = [];
             if (parcel && Array.isArray(parcel.rings) && parcel.rings.length) {
-                const others = (Array.isArray(around.parcels) ? around.parcels : [])
-                    .filter(entry => entry && String(entry.id) !== id);
-                neighbours = neighborPairs([{ ...parcel, id }, ...others], around.barriers || [],
-                    { ...(options || {}), focusId: id })
-                    .map(pair => ({ id: pair.a === id ? pair.b : pair.a, sharedM: pair.sharedM }));
+                const others = [];
+                (Array.isArray(around.parcels) ? around.parcels : []).forEach(entry => {
+                    const otherId = entry ? String(entry.id) : '';
+                    if (!otherId || otherId === id) return;
+                    const known = measured.get(otherId);
+                    if (!known) { others.push(entry); return; }
+                    if (known.has(id)) neighbours.push({ id: otherId, sharedM: known.get(id) });
+                });
+                (Array.isArray(around.barriers) ? around.barriers : []).forEach(barrier => {
+                    const barrierId = barrier ? String(barrier.id) : '';
+                    if (!barrierId || indexedBarriers.has(barrierId)) return;
+                    indexedBarriers.add(barrierId);
+                    barrierIndex.add(barrier);
+                });
+                neighborPairs([{ ...parcel, id }, ...others], barrierIndex, { ...(options || {}), focusId: id })
+                    .forEach(pair => neighbours.push({ id: pair.a === id ? pair.b : pair.a, sharedM: pair.sharedM }));
+                neighbours.sort((x, y) => (y.sharedM - x.sharedM) || x.id.localeCompare(y.id));
             }
+            measured.set(id, new Map(neighbours.map(entry => [entry.id, entry.sharedM])));
             cache.set(id, neighbours);
             return neighbours;
         }
         return { neighborsOf };
+    }
+
+    // A uniform grid over entries' bounding boxes ([minX, minY, maxX, maxY], any units), answering
+    // "which entries' boxes intersect this box" without scanning them all. A block flood fill asks
+    // that for every member; a linear scan of ~25,000 loaded parcels cost about 1 ms per member.
+    function createBoundsIndex(entries, cellSize) {
+        const size = Number(cellSize);
+        if (!(size > 0)) throw new Error('createBoundsIndex: cellSize must be a positive number');
+        const list = (Array.isArray(entries) ? entries : []).filter(entry => entry && Array.isArray(entry.bounds)
+            && entry.bounds.length >= 4 && entry.bounds.every(Number.isFinite));
+        const cells = new Map();
+        list.forEach((entry, index) => {
+            const [x0, y0, x1, y1] = entry.bounds;
+            for (let x = Math.floor(x0 / size); x <= Math.floor(x1 / size); x += 1) {
+                for (let y = Math.floor(y0 / size); y <= Math.floor(y1 / size); y += 1) {
+                    const key = `${x}|${y}`;
+                    let bucket = cells.get(key);
+                    if (!bucket) { bucket = []; cells.set(key, bucket); }
+                    bucket.push(index);
+                }
+            }
+        });
+        function query(box) {
+            const seen = new Set();
+            const found = [];
+            for (let x = Math.floor(box[0] / size); x <= Math.floor(box[2] / size); x += 1) {
+                for (let y = Math.floor(box[1] / size); y <= Math.floor(box[3] / size); y += 1) {
+                    for (const index of cells.get(`${x}|${y}`) || []) {
+                        if (seen.has(index)) continue;
+                        seen.add(index);
+                        const b = list[index].bounds;
+                        if (b[0] <= box[2] && b[2] >= box[0] && b[1] <= box[3] && b[3] >= box[1]) found.push(list[index]);
+                    }
+                }
+            }
+            return found;
+        }
+        return { query, size: list.length };
     }
 
     // Breadth-first block growth from `seedId`. Every member must satisfy `isInside(id)` (in the
@@ -258,6 +366,7 @@
         barrierBoundaryDistance,
         barrierContains,
         createBarrierIndex,
+        createBoundsIndex,
         createNeighborGraph,
         growBlock,
         neighborPairs,

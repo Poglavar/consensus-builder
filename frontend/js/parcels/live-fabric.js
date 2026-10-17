@@ -610,14 +610,14 @@
             return absent;
         }
 
-        function queryBoundsFrom(data, bounds, query = {}) {
+        function queryBoundsFrom(data, bounds, query = {}, copy = clone) {
             const box = boundsArray(bounds);
             if (!box) return [];
             const result = [];
             data.byId.forEach((feature, id) => {
                 if (!intersects(box, data.bboxById.get(id))) return;
                 if (query.includeCorridors !== true && isCorridor(feature)) return;
-                result.push(clone(feature));
+                result.push(copy(feature));
             });
             return result;
         }
@@ -894,6 +894,10 @@
             return ids ? Array.from(ids, id => clone(committed.byId.get(id))) : [];
         }
         function queryBounds(bounds, query) { return queryBoundsFrom(committed, bounds, query); }
+        // The committed (frozen) features themselves, for read-only hot paths such as a block flood
+        // fill asking about every member's surroundings: queryBounds' defensive copies were most of
+        // that work.
+        function peekBounds(bounds, query) { return queryBoundsFrom(committed, bounds, query, feature => feature); }
         function countBounds(bounds, query) { return countBoundsFrom(committed, bounds, query); }
         function cadastreIdsForParcelIds(ids, query) { return cadastreIdsForParcelIdsFrom(committed, ids, query); }
         function claimedCadastreIds() {
@@ -937,6 +941,7 @@
             absentCadastreIds,
             producedBy,
             queryBounds,
+            peekBounds,
             countBounds,
             claimedCadastreIds,
             cadastreIdsForParcelIds,
