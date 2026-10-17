@@ -15,9 +15,12 @@ function environment() {
     const layers = new Map([...features.keys()].map(id => [id, {
         id, options: {}, setStyle(style) { Object.assign(this.options, style); }
     }]));
+    const events = [];
     const context = {
         console: { log() {} },
         addEventListener() {},
+        CustomEvent,
+        dispatchEvent: event => events.push(event),
         PersistentStorage: { getItem: () => null, setItem() {} },
         map: { getBounds: () => [0, 0, 1, 1] },
         CadastralParcelRepository: {
@@ -38,13 +41,15 @@ function environment() {
     for (const file of ['parcels/styles.js', 'road-detection.js']) {
         vm.runInContext(readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8'), context);
     }
-    return { context, layers };
+    return { context, layers, events };
 }
 
 describe('background curated road styling after plan application', () => {
     it('does not turn building plots, parks or remnants into roads through cadastral provenance', async () => {
-        const { context, layers } = environment();
+        const { context, layers, events } = environment();
         expect(await context.fetchCuratedRoadParcels()).toBe(1);
+        // Blocks listen for this to re-form around the newly known road.
+        expect(events.map(e => [e.type, e.detail.parcelIds])).toEqual([['roadParcelsMarked', ['road-root']]]);
         for (const id of ['building-plot', 'park-plot', 'remainder']) {
             expect(layers.get(id).options.fillOpacity, id).toBe(0);
             expect(layers.get(id).options, id).toMatchObject(context.getParcelBaseStyle(id));
