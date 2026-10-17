@@ -196,11 +196,70 @@
             .sort((a, b) => (b.sharedM - a.sharedM) || a.a.localeCompare(b.a));
     }
 
+    // Block neighbours of ONE parcel at a time, for a flood fill growing a block out of a seed.
+    //
+    // `nearby(id)` returns { parcel, parcels, barriers }: that parcel, the ordinary parcels around
+    // it and the live corridor parcels around it, all in one metric frame. The work then follows
+    // the block rather than the ground loaded around it. Detect block used to compute every pair in
+    // its whole search area before flooding — after three widenings of the search that was ~80,000
+    // central-Zagreb parcels, over a minute of main thread, for a block of a few dozen.
+    // Answers are cached per parcel id.
+    function createNeighborGraph(nearby, options) {
+        const cache = new Map();
+        function neighborsOf(parcelId) {
+            const id = String(parcelId);
+            if (cache.has(id)) return cache.get(id);
+            const around = nearby(id) || {};
+            const parcel = around.parcel;
+            let neighbours = [];
+            if (parcel && Array.isArray(parcel.rings) && parcel.rings.length) {
+                const others = (Array.isArray(around.parcels) ? around.parcels : [])
+                    .filter(entry => entry && String(entry.id) !== id);
+                neighbours = neighborPairs([{ ...parcel, id }, ...others], around.barriers || [],
+                    { ...(options || {}), focusId: id })
+                    .map(pair => ({ id: pair.a === id ? pair.b : pair.a, sharedM: pair.sharedM }));
+            }
+            cache.set(id, neighbours);
+            return neighbours;
+        }
+        return { neighborsOf };
+    }
+
+    // Breadth-first block growth from `seedId`. Every member must satisfy `isInside(id)` (in the
+    // app: lies wholly inside ground that is loaded); the first one that does not makes the block
+    // invalid and stops the fill, because a block with a member running out of known ground is
+    // not known to be complete.
+    function growBlock({ seedId, neighborsOf, isInside }) {
+        const seed = String(seedId);
+        const result = { ids: [], isValid: true, invalidId: null, invalidReason: null };
+        if (!isInside(seed)) {
+            return { ...result, isValid: false, invalidId: seed, invalidReason: 'start_not_fully_visible' };
+        }
+        const queued = new Set([seed]);
+        const queue = [seed];
+        for (let head = 0; head < queue.length; head += 1) {
+            const id = queue[head];
+            result.ids.push(id);
+            for (const neighbour of neighborsOf(id)) {
+                const neighbourId = String(neighbour);
+                if (queued.has(neighbourId)) continue;
+                if (!isInside(neighbourId)) {
+                    return { ...result, isValid: false, invalidId: neighbourId, invalidReason: 'not_fully_visible' };
+                }
+                queued.add(neighbourId);
+                queue.push(neighbourId);
+            }
+        }
+        return result;
+    }
+
     const api = {
         DEFAULTS,
         barrierBoundaryDistance,
         barrierContains,
         createBarrierIndex,
+        createNeighborGraph,
+        growBlock,
         neighborPairs,
         openLengthOfSpan,
         ringContains

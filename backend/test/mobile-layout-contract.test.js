@@ -276,7 +276,7 @@ describe('block detection on a small screen', () => {
         const body = run();
         expect(body).toContain('searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD)');
         expect(body).toContain('await repository.ensureBounds(searchBounds)');
-        expect(body).toContain('await window.fetchCuratedRoadParcels(searchBounds)');
+        expect(body).toContain('await ensureBlockRoadClassification(searchBounds)');
         // The override must not outlive the attempt, or every later viewport query would use it.
         expect(body).toMatch(/blockSearchBoundsOverride = searchBounds;\s*try \{ attempt = flood\(\); \} finally \{ blockSearchBoundsOverride = null; \}/);
     });

@@ -215,29 +215,32 @@
             if (!list) { list = []; buckets.set(key, list); }
             list.push(segment);
         };
+        const padding = Math.max(0, Number(opts.offsetToleranceM) || 0);
+        const cellM = Math.max(1, Number(opts.candidateCellM) || DEFAULTS.candidateCellM);
         segments.forEach(segment => {
-            const padding = Math.max(0, Number(opts.offsetToleranceM) || 0);
-            const cellM = Math.max(1, Number(opts.candidateCellM) || DEFAULTS.candidateCellM);
-            const minX = Math.floor((Math.min(segment.p[0], segment.q[0]) - padding) / cellM);
-            const maxX = Math.floor((Math.max(segment.p[0], segment.q[0]) + padding) / cellM);
-            const minY = Math.floor((Math.min(segment.p[1], segment.q[1]) - padding) / cellM);
-            const maxY = Math.floor((Math.max(segment.p[1], segment.q[1]) + padding) / cellM);
-            for (let x = minX; x <= maxX; x += 1) {
-                for (let y = minY; y <= maxY; y += 1) fileUnder(`${x}|${y}`, segment);
+            segment.minX = Math.floor((Math.min(segment.p[0], segment.q[0]) - padding) / cellM);
+            segment.maxX = Math.floor((Math.max(segment.p[0], segment.q[0]) + padding) / cellM);
+            segment.minY = Math.floor((Math.min(segment.p[1], segment.q[1]) - padding) / cellM);
+            segment.maxY = Math.floor((Math.max(segment.p[1], segment.q[1]) + padding) / cellM);
+            for (let x = segment.minX; x <= segment.maxX; x += 1) {
+                for (let y = segment.minY; y <= segment.maxY; y += 1) fileUnder(`${x}|${y}`, segment);
             }
         });
 
+        // With `focusId`, only pairs that involve that one parcel are measured: a flood fill asking
+        // for one parcel's neighbours has no use for every other pair in the ground it was handed.
+        const focusId = opts.focusId !== undefined && opts.focusId !== null ? String(opts.focusId) : null;
         const shared = new Map();
-        const counted = new Set();
-        const consider = (s1, s2) => {
+        const consider = (s1, s2, cellX, cellY) => {
             if (s1.id === s2.id) return;
+            if (focusId !== null && s1.id !== focusId && s2.id !== focusId) return;
             // A segment spanning several cells meets the same partner in each of them; count the
-            // pair of segments once, not once per cell.
-            const pairKey = s1.index < s2.index
-                ? `${s1.index}#${s2.index}`
-                : `${s2.index}#${s1.index}`;
-            if (counted.has(pairKey)) return;
-            counted.add(pairKey);
+            // pair of segments once, not once per cell. Both segments are filed in every cell of
+            // the overlap of their cell ranges, so the pair is measured only in that overlap's
+            // lowest corner. That needs no memory: a Set of every compared pair outgrew the
+            // engine's 2^24-entry limit (RangeError: Set maximum size exceeded) once Detect block
+            // had widened its search to ~80,000 parcels in central Zagreb.
+            if (cellX !== Math.max(s1.minX, s2.minX) || cellY !== Math.max(s1.minY, s2.minY)) return;
             const span = sharedSpan(s1, s2, opts);
             if (!span) return;
             const key = s1.id < s2.id ? `${s1.id}~${s2.id}` : `${s2.id}~${s1.id}`;
@@ -256,9 +259,12 @@
             record.spans.push(span);
         };
 
-        buckets.forEach(list => {
+        buckets.forEach((list, key) => {
+            const separator = key.indexOf('|');
+            const cellX = Number(key.slice(0, separator));
+            const cellY = Number(key.slice(separator + 1));
             for (let i = 0; i < list.length; i += 1) {
-                for (let j = i + 1; j < list.length; j += 1) consider(list[i], list[j]);
+                for (let j = i + 1; j < list.length; j += 1) consider(list[i], list[j], cellX, cellY);
             }
         });
 

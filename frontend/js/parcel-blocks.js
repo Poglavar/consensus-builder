@@ -560,6 +560,63 @@ function buildNeighborMapFromEdges(parcels) {
     return { neighborMap, idToLayer };
 }
 
+// The same block graph as buildNeighborMapFromEdges, but computed one parcel at a time as a flood
+// fill reaches it (parcels/block-topology.js createNeighborGraph), for the paths that grow ONE
+// block from a seed. Each parcel is compared only with the live parcels whose bounds come within
+// BLOCK_NEIGHBOUR_SEARCH_PAD_M of its own, so the cost follows the block, not the ground loaded
+// around it. Ordinary parcels must have their live presenter layer; live corridor parcels are the
+// barriers, exactly as in buildNeighborMapFromEdges. Returns { get(id) -> neighbour layers }.
+const BLOCK_NEIGHBOUR_SEARCH_PAD_M = 1;
+
+function paddedFeatureBounds(feature, padM) {
+    const box = turf.bbox(feature);
+    if (!Array.isArray(box) || !box.every(Number.isFinite)) return null;
+    const padLat = padM / 111320;
+    const padLng = padM / (111320 * Math.cos(((box[1] + box[3]) / 2) * Math.PI / 180));
+    return L.latLngBounds([box[1] - padLat, box[0] - padLng], [box[3] + padLat, box[2] + padLng]);
+}
+
+function liveBlockNeighborGraph(seedId) {
+    const services = liveBlockServices();
+    const blockTopology = (typeof window !== 'undefined') ? window.__parcelBlockTopology : null;
+    if (!services || !blockTopology || typeof blockTopology.createNeighborGraph !== 'function') {
+        throw new Error('[parcel-blocks] live parcel fabric/presenter or block topology is not loaded; blocks cannot be detected');
+    }
+    const seedFeature = services.fabric.get(String(seedId));
+    if (!seedFeature) throw new Error(`[parcel-blocks] seed parcel ${seedId} is not in the live fabric`);
+    // One frame for every parcel this graph compares, anchored at the seed: a block is far inside
+    // the frame's 60 km radius.
+    const frame = window.__metricFrame.frameFor([seedFeature]);
+    const ringsById = new Map();
+    const metricEntry = (id, feature) => {
+        if (!ringsById.has(id)) ringsById.set(id, metricRingsOfFeature(feature, frame));
+        return { id, rings: ringsById.get(id) };
+    };
+
+    const graph = blockTopology.createNeighborGraph(id => {
+        const feature = services.fabric.get(id);
+        const bounds = feature ? paddedFeatureBounds(feature, BLOCK_NEIGHBOUR_SEARCH_PAD_M) : null;
+        if (!bounds) return null;
+        const parcels = [];
+        const barriers = [];
+        services.fabric.queryBounds(bounds, { includeCorridors: true }).forEach(candidate => {
+            const candidateId = parcelIdFromLayer(candidate);
+            if (!candidateId || candidateId === id) return;
+            if (isCorridorParcel(candidateId)) barriers.push(metricEntry(candidateId, candidate));
+            else if (liveBlockLayerForId(candidateId)) parcels.push(metricEntry(candidateId, candidate));
+        });
+        return { parcel: metricEntry(id, feature), parcels, barriers };
+    });
+
+    return {
+        get(id) {
+            return graph.neighborsOf(id)
+                .map(neighbour => liveBlockLayerForId(neighbour.id))
+                .filter(Boolean);
+        }
+    };
+}
+
 // Modify the countBlocks function to pre-calculate neighbors
 // After a (Re)form Blocks run, parcels that load later are formed into blocks too: only those in
 // no block yet, plus the stored blocks they touch (proposals/block-enumeration.js reformComponents).
@@ -772,68 +829,31 @@ async function countBlocks({ addedIds = null } = {}) {
     return run();
 }
 
-// Modify the floodfill function to accept the neighborMap
-function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed last parameter
-    const queue = [startParcel];
-    const visited = new Set();
-
-    const result = {
-        isValid: true,
-        invalidParcel: null,
-        invalidParcelId: null,
-        invalidReason: null
+// Grow a block from `startParcel`. `neighborMap` answers get(id) -> neighbour layers: the
+// precomputed Map from buildNeighborMapFromEdges, or the per-parcel liveBlockNeighborGraph().
+// The fill itself is the pure growBlock in parcels/block-topology.js.
+function floodfillBlock(startParcel, blockParcels, neighborMap) {
+    const layers = new Map();
+    const startId = parcelIdFromLayer(startParcel);
+    if (startId) layers.set(startId, startParcel);
+    const grown = window.__parcelBlockTopology.growBlock({
+        seedId: startId,
+        neighborsOf: id => findNeighbors(layers.get(id), neighborMap)
+            .map(layer => {
+                const neighbourId = parcelIdFromLayer(layer);
+                if (neighbourId && !layers.has(neighbourId)) layers.set(neighbourId, layer);
+                return neighbourId;
+            })
+            .filter(Boolean),
+        isInside: id => isParcelFullyVisible(layers.get(id))
+    });
+    grown.ids.forEach(id => blockParcels.push(layers.get(id)));
+    return {
+        isValid: grown.isValid,
+        invalidParcel: grown.invalidId ? layers.get(grown.invalidId) || null : null,
+        invalidParcelId: grown.invalidId,
+        invalidReason: grown.invalidReason
     };
-
-    function markInvalid(parcel, reason) {
-        result.isValid = false;
-        result.invalidParcel = parcel || null;
-        result.invalidParcelId = parcel ? parcelIdFromLayer(parcel) : null;
-        result.invalidReason = reason || null;
-    }
-
-    // Check visibility of the starting parcel itself
-    if (!isParcelFullyVisible(startParcel)) {
-        markInvalid(startParcel, 'start_not_fully_visible');
-        return result; // Return immediately if starting parcel is not visible
-    }
-
-    while (queue.length > 0 && result.isValid) { // Stop if block becomes invalid
-        const currentParcel = queue.shift();
-
-        // Check for valid parcel structure
-        const parcelId = parcelIdFromLayer(currentParcel);
-        if (!parcelId) {
-            console.warn("Invalid parcel in floodfill queue:", currentParcel);
-            continue;
-        }
-
-        if (visited.has(parcelId)) continue;
-        visited.add(parcelId);
-
-        // Add to block parcels *before* checking visibility of neighbors
-        blockParcels.push(currentParcel);
-
-        // Find neighbors using the precomputed map
-        const neighbors = findNeighbors(currentParcel, neighborMap); // Use the map
-
-        for (const neighbor of neighbors) {
-            if (!neighbor) continue;
-            const neighborId = parcelIdFromLayer(neighbor);
-            if (!neighborId || visited.has(neighborId)) continue;
-
-            // Check if the neighbor is fully visible *before* adding to queue
-            // If any neighbor isn't fully visible, the whole block is invalid
-            if (!isParcelFullyVisible(neighbor)) {
-                markInvalid(neighbor, 'not_fully_visible');
-                break; // Break out of neighbor loop
-            }
-
-            queue.push(neighbor);
-        }
-    }
-
-    // The block is only valid if *all* its constituent parcels were fully visible
-    return result;
 }
 
 // Show the blocks list popup
@@ -2036,11 +2056,13 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         // area, load the ground there, and try again — the completeness rule is unchanged (every
         // member must lie wholly inside ground that is loaded), only the area it is checked against
         // grows. Bounded so a block that is really a whole district still stops and explains.
+        // Neighbours are measured parcel by parcel as the fill reaches them, never over the whole
+        // search area: after three widenings that area held ~80,000 central-Zagreb parcels.
         const flood = () => {
-            const { neighborMap } = buildNeighborMapFromEdges(getVisibleNonCorridorParcels());
             const parcels = [];
-            return { parcels, result: floodfillBlock(seedParcel, parcels, neighborMap) };
+            return { parcels, result: floodfillBlock(seedParcel, parcels, liveBlockNeighborGraph(startParcelId)) };
         };
+        await ensureBlockRoadClassification(map.getBounds());
         let attempt = flood();
         const repository = window.CadastralParcelRepository;
         let searchBounds = map.getBounds();
@@ -2048,14 +2070,10 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             if (attempt.result && attempt.result.isValid) break;
             if (!repository || typeof repository.ensureBounds !== 'function') break;
             searchBounds = searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD);
-            try {
-                await repository.ensureBounds(searchBounds);
-                // Roads bound blocks: without their classification the fill would run down them.
-                if (typeof window.fetchCuratedRoadParcels === 'function') await window.fetchCuratedRoadParcels(searchBounds);
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] [blockDetection] loading wider ground failed`, error);
-                break;
-            }
+            // A failure to load the wider ground is an error, not an answer: it propagates to the
+            // loud failure below instead of being reported as a block that runs past the view.
+            await repository.ensureBounds(searchBounds);
+            await ensureBlockRoadClassification(searchBounds);
             blockSearchBoundsOverride = searchBounds;
             try { attempt = flood(); } finally { blockSearchBoundsOverride = null; }
         }
@@ -2078,12 +2096,17 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             // Deliberately NO camera move and NO selection change: this used to fly the map to the
             // offending parcel and select it, which threw away both the view and the selection the
             // user was working with to deliver what is only a message.
-            const message = reason === 'start_not_fully_visible'
-                ? tBlock('alerts.messages.block_seed_not_fully_visible', {},
-                    'Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.')
-                : tBlock('alerts.messages.block_neighbour_not_fully_visible', { id: idLabel },
-                    'Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.');
-            return failBlockDetection(message);
+            // Only the two visibility outcomes have a message of their own; anything else is an
+            // internal failure and must not be dressed up as one of them.
+            if (reason === 'start_not_fully_visible') {
+                return failBlockDetection(tBlock('alerts.messages.block_seed_not_fully_visible', {},
+                    'Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.'));
+            }
+            if (reason === 'not_fully_visible' && invalidParcelId) {
+                return failBlockDetection(tBlock('alerts.messages.block_neighbour_not_fully_visible', { id: idLabel },
+                    'Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.'));
+            }
+            throw new Error(`block flood fill returned no block (valid=${isValid}, members=${blockParcels.length}, reason=${reason || 'none'})`);
         }
 
         if (options.replaceSelection === true) {
@@ -2129,10 +2152,33 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         return true;
     };
 
+    // An internal failure fails loudly, as itself: logged with its stack, shown in the dialog, and
+    // rethrown. It is never reported as a block that runs past the edge of the view.
+    const runReportingFailure = async () => {
+        try {
+            return await run();
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [blockDetection] FAILED`, error);
+            failBlockDetection(`${tBlock('status.messages.error_while_forming_block_from_selected_parcel', {},
+                'Error while forming block from selected parcel.')} ${error && error.message ? error.message : String(error)}`);
+            throw error;
+        }
+    };
+
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, { key: 'common.busy.selecting', fallback: 'Selecting...' }, run);
+        return runWithButtonBusyState(button, { key: 'common.busy.selecting', fallback: 'Selecting...' }, runReportingFailure);
     }
-    return run();
+    return runReportingFailure();
+}
+
+// Roads bound blocks: without their classification a fill runs down every street. The curated
+// classification (Zagreb's road_parcel_classification) is fetched by road-detection.js, which is
+// an optional tool loaded on first use, so block detection loads it itself before relying on it.
+async function ensureBlockRoadClassification(bounds) {
+    if (typeof window.fetchCuratedRoadParcels !== 'function' && typeof window.ensureOptionalTool === 'function') {
+        await window.ensureOptionalTool('roadDetection');
+    }
+    if (typeof window.fetchCuratedRoadParcels === 'function') await window.fetchCuratedRoadParcels(bounds);
 }
 
 // Rewrite: Animate block formation from selected parcel, highlight accepted, label rejected
@@ -2146,11 +2192,9 @@ function detectBlockParcelIdsForParcel(parcelId) {
         const seed = liveBlockLayerForId(idStr);
         if (!seed) return null;
         if (isCorridorParcel(idStr, seed)) return null;
-        const nonCorridorParcels = getVisibleNonCorridorParcels();
-        if (!nonCorridorParcels.length) return null;
-        const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
+        if (!getVisibleNonCorridorParcels().length) return null;
         const blockParcels = [];
-        const floodResult = floodfillBlock(seed, blockParcels, neighborMap);
+        const floodResult = floodfillBlock(seed, blockParcels, liveBlockNeighborGraph(idStr));
         if (!floodResult || !floodResult.isValid || !blockParcels.length) return null;
         const ids = blockParcels.map(parcelIdFromLayer).filter(Boolean).map(String);
         return { count: ids.length, parcelIds: ids };
@@ -2209,9 +2253,7 @@ function animateFloodfillFromSelected(options = {}) {
 
         try {
             console.log('floodfillFromSelected: Starting from parcel:', parcelIdFromLayer(startParcel));
-            const nonCorridorParcels = getVisibleNonCorridorParcels();
-            console.log('floodfillFromSelected: Parcels being processed:', nonCorridorParcels.map(parcelIdFromLayer).filter(Boolean));
-            const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
+            const neighborMap = liveBlockNeighborGraph(parcelIdFromLayer(startParcel));
 
             const visited = new Set();
             const blockParcels = [];
