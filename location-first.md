@@ -81,7 +81,7 @@ El Paso / Juárez is configured today.
 |---|---|---|
 | 1 | URL and boot: jurisdiction from the location, `at` wins, `city` is an alias | done 2026-10-17 |
 | 2 | Geography sources by coordinates only (backend + 3D + 2D buildings) | done 2026-10-17 |
-| 2b | Coverage sized to the city, not 3–8 km sample circles | next |
+| 2b | Coverage at least 10 km, not 3–8 km sample circles | done 2026-10-17 |
 | 3 | Declared coverage per parcel source; border precision | planned |
 | 4 | Proposals by geography: binding, lists, counts, markets, plans by site; city a derived label | planned |
 
@@ -149,9 +149,14 @@ Frontend:
 ### Phase 2b: coverage sized to the city
 
 User, 2026-10-17: 3 km is far too small (Zagreb is 20 km+ across). The `liveRadiusKm` values (3, 6,
-8 km) record where qualification sampled the source, not the city's extent. Size each city's
-coverage from its own urban area (UN WUP 2025 surface, already joined for population), with a floor
-and the 60 km cap; the source's own declared extent replaces this in phase 3.
+8 km) record where qualification sampled the source, not the city's extent.
+
+Built: every declared radius is at least 10 km (`coverageRadiusKm` in build-world-coverage.mjs);
+larger declared radii stand and undeclared cities keep the 60 km cap. Tried and dropped: sizing from
+the UN WUP 2025 urban-centre area (×2 its equal-area radius gives Zagreb 14 km, Paris 42 km). It
+claimed neighbouring municipalities that research had deliberately kept out (Bogotá's circle took
+Soacha, Toronto's Markham and Mississauga; their tests pin it). A city's real extent is the source's
+declared area, phase 3.
 
 ### Phase 4: proposals by geography, stray defaults
 

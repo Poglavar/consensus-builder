@@ -488,6 +488,17 @@ function demographicSourceMetadata(demographics) {
     };
 }
 
+// The radius of the area a live city covers (location-first.md phase 2b). A declared liveRadiusKm
+// records where qualification sampled the source (often 3 km), not how big the city is, so a view at
+// the city's edge fell outside it: every declared radius is at least MIN_CITY_RADIUS_KM (20 km
+// across), and larger declared ones stand, since several are researched source limits (Bogotá stops
+// short of Soacha, Toronto of Markham and Mississauga). A city that declares none keeps the 60 km cap.
+export const MIN_CITY_RADIUS_KM = 10;
+export function coverageRadiusKm(declaredKm) {
+    if (!Number.isFinite(declaredKm) || declaredKm <= 0) return null;
+    return Math.min(60, Math.max(MIN_CITY_RADIUS_KM, declaredKm));
+}
+
 export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], demographics = null, tolerance = DEFAULTS.tolerance,
     regions = null, regionReviews = [], catalog = [], regionTolerance = DEFAULTS.regionTolerance, outcomes = [] }) {
     const sourcesById = new Map(registry.sources.map(s => [s.sourceId, s]));
@@ -578,6 +589,10 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
     }
 
     const cityConfigs = parseCityConfigs(cityConfigSource);
+    const radiusOf = city => {
+        const km = coverageRadiusKm(city.radiusKm);
+        return km === null ? {} : { radiusKm: km };
+    };
     const liveWupCodes = new Set(cityConfigs.map(city => city.wupCityCode).filter(Number.isSafeInteger));
     const liveCities = cityConfigs.map(city => {
         const country = [...byCode.values()].find(e => e.rings.length && pointInRings(city.lat, city.lon, e.rings));
@@ -592,7 +607,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             population2025: liveCityPopulation(demographics, city, cc),
             ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.dataVersion ? { dataVersion: city.dataVersion } : {}),
             ...(city.queryMode ? { queryMode: city.queryMode } : {}),
-            ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };
+            ...radiusOf(city) };
     }).sort((a, b) => a.id.localeCompare(b.id));
 
     for (const entry of byCode.values()) {

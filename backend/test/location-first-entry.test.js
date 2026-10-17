@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { bootCoverage, bootCoverageScript } from '../../scripts/build-boot-coverage.mjs';
+import { coverageRadiusKm, MIN_CITY_RADIUS_KM } from '../../scripts/build-world-coverage.mjs';
 import { resolvePublicationCity } from '../proposals/publication-city.js';
 
 const require = createRequire(import.meta.url);
@@ -238,5 +239,26 @@ describe('city-config boot', () => {
         runInContext(read('../../frontend/js/city-config.js'), createContext(context));
         expect(context.CityConfigManager.getCurrentCityId()).toBe('split');
         expect(errors.some(line => /boot coverage missing/.test(line))).toBe(true);
+    });
+});
+
+describe('coverage sized to the city (phase 2b)', () => {
+    it('widens a sampled radius to 10 km and keeps larger declared ones and the 60 km cap', () => {
+        expect(coverageRadiusKm(3)).toBe(MIN_CITY_RADIUS_KM);
+        expect(coverageRadiusKm(8)).toBe(MIN_CITY_RADIUS_KM);
+        expect(coverageRadiusKm(12)).toBe(12); // Bogotá: a researched limit stands
+        expect(coverageRadiusKm(90)).toBe(60);
+    });
+
+    it('never shrinks a city that declares no radius (it keeps the 60 km cap)', () => {
+        expect(coverageRadiusKm(undefined)).toBeNull();
+        expect(coverageRadiusKm(null)).toBeNull();
+    });
+
+    it('leaves no live city covering less than 10 km, and every former 3 km city at 10', () => {
+        const small = fullJson.liveCities.filter(city => city.radiusKm != null && city.radiusKm < MIN_CITY_RADIUS_KM).map(city => city.id);
+        expect(small).toEqual([]);
+        expect(fullJson.liveCities.find(city => city.id === 'surat').radiusKm).toBe(10); // declared 3 km
+        expect(fullJson.liveCities.find(city => city.id === 'bogota').radiusKm).toBe(12);
     });
 });
