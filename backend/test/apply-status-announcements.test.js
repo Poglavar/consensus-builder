@@ -184,19 +184,21 @@ describe('the existing-buildings fetch', () => {
         const start = mapCore.indexOf('async function fetchBuildings(boundsOverride = null, options = {}) {');
         expect(start, 'fetchBuildings not found').toBeGreaterThan(-1);
         const fetchFn = mapCore.slice(start, mapCore.indexOf('// The DGU CADASTRE reference layer', start));
-        expect(fetchFn.indexOf('if (!req && !providerCity) return;'))
-            .toBeLessThan(fetchFn.indexOf("updateStatus('Fetching existing buildings...')"));
+        const guard = fetchFn.indexOf('if (!req && !useProvider) return;');
+        expect(guard, 'early return not found').toBeGreaterThan(-1);
+        expect(guard).toBeLessThan(fetchFn.indexOf("updateStatus('Fetching existing buildings...')"));
     });
 
-    it('fills the pool from the city\'s own provider when it is not GDI', () => {
+    it('fills the pool from the place\'s own provider when it is not GDI', () => {
         // Šibenik's stock is Overture, served by the same POST /buildings/footprints the urban-rule
         // editor reads. Without this the pool stayed empty there and a road could never find a
-        // building to demolish.
-        expect(mapCore).toContain('function footprintProviderCity()');
-        expect(mapCore).toContain("if (!source || source === 'none' || source === 'gdi') return null;");
-        expect(mapCore).toContain('await loadProviderFootprints(bounds, providerCity)');
+        // building to demolish. The provider is the one where the bounds lie, not the session's
+        // city (location-first.md phase 2).
+        expect(mapCore).toContain('function hasFootprintProvider(bounds)');
+        expect(mapCore).toContain("return !!source && source !== 'none' && source !== 'gdi';");
+        expect(mapCore).toContain('await loadProviderFootprints(bounds)');
         const loader = mapCore.slice(
-            mapCore.indexOf('async function loadProviderFootprints(bounds, city)'),
+            mapCore.indexOf('async function loadProviderFootprints(bounds)'),
             mapCore.indexOf('// Fetch buildings from data source.')
         );
         expect(loader).toContain('/buildings/footprints');
