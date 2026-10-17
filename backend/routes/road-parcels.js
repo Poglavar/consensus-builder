@@ -7,7 +7,6 @@ import { POSTGIS_SRID, MAX_VIEW_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/help
 // load at z17+; the sidebar button can ask at any zoom), so the bbox cap bounds the area and these
 // bound the payload. `truncated: true` in the response says the list is not complete.
 export const MAX_ROAD_PARCEL_FEATURES = 20000;
-export const MAX_GOVT_PLAN_FEATURES = 5000;
 
 function parseWgs84Bbox(raw) {
     if (!raw || typeof raw !== 'string') return null;
@@ -78,57 +77,6 @@ export function setupRoadParcelsRoute(app, pool) {
             res.json({ type: 'FeatureCollection', features, truncated });
         } catch (err) {
             console.error('Error in /road-parcels:', err);
-            res.status(500).json({ error: 'Internal server error' });
-        } finally {
-            client?.release();
-        }
-    });
-
-    // Govt plan polygons clipped to viewport, for the report viewer.
-    app.get('/govt-plan', async (req, res) => {
-        const bbox = parseWgs84Bbox(req.query.bbox);
-        if (!bbox) {
-            return res.status(400).json({ error: 'bbox required. Expected minLng,minLat,maxLng,maxLat in WGS84.' });
-        }
-        const bboxError = bboxTooLarge(bbox);
-        if (bboxError) return res.status(400).json({ error: bboxError });
-
-        let client;
-        try {
-            client = await pool.connect();
-            const sql = `
-                WITH envelope AS (
-                    SELECT ST_Transform(
-                        ST_MakeEnvelope($1, $2, $3, $4, 4326),
-                        ${POSTGIS_SRID}
-                    ) AS geom
-                )
-                SELECT ST_AsGeoJSON(
-                    ST_Transform(
-                        ST_Intersection(ST_MakeValid(pr.geom), e.geom),
-                        4326
-                    )
-                )::json AS geometry
-                FROM planned_road pr, envelope e
-                WHERE pr.geom IS NOT NULL
-                  AND pr.geom && e.geom
-                LIMIT $5
-            `;
-
-            const { rows: fetched } = await client.query(sql, [...bbox, MAX_GOVT_PLAN_FEATURES + 1]);
-            const truncated = fetched.length > MAX_GOVT_PLAN_FEATURES;
-            const rows = truncated ? fetched.slice(0, MAX_GOVT_PLAN_FEATURES) : fetched;
-            const features = rows
-                .filter(r => r.geometry)
-                .map(r => ({
-                    type: 'Feature',
-                    properties: {},
-                    geometry: r.geometry,
-                }));
-
-            res.json({ type: 'FeatureCollection', features, truncated });
-        } catch (err) {
-            console.error('Error in /govt-plan:', err);
             res.status(500).json({ error: 'Internal server error' });
         } finally {
             client?.release();

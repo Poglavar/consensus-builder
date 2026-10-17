@@ -150,7 +150,6 @@ describe('public reads are bounded', () => {
     it('refuses /road-parcels over a whole-region bbox and /planned-road without one', async () => {
         const server = app();
         expect((await request(server).get('/road-parcels?bbox=13,42,19,46.5')).status).toBe(400);
-        expect((await request(server).get('/govt-plan?bbox=13,42,19,46.5')).status).toBe(400);
         expect((await request(server).get('/planned-road')).status).toBe(400);
     });
 });

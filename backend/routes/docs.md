@@ -14,7 +14,7 @@ This is the API documentation for the Consensus Builder application.
 - **`parcel`**: Land parcels with cadastral information
 - **`building`**: Building structures and 3D models
 - **`street`**: Street/road network
-- **`planned_road`**: Planned infrastructure
+- **`road_widening_segment`**, **`gup_street_line`**: the GUP's street widening reservations and planned street network (`GET /planned-road`)
 - **`urban_rule`**: Urban planning regulations
 - **`cadastral_municipality`**: Administrative boundaries
 

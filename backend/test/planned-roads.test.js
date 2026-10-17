@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { setupPlannedRoadRoute, MAX_PLANNED_ROAD_FEATURES } from '../routes/planned-roads.js';
+import { setupPlannedRoadRoute, MAX_PLANNED_ROAD_FEATURES, MIN_PLAN_PIECE_M2 } from '../routes/planned-roads.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 function createPlannedRoadPool(resultRows = []) {
@@ -85,19 +85,21 @@ describe('GET /planned-road', () => {
 
         expect(res.status).toBe(200);
         const last = pool.calls.at(-1);
-        expect(last.sql).toMatch(/LIMIT \$7/);
-        expect(last.params[6]).toBe(MAX_PLANNED_ROAD_FEATURES + 1);
+        expect(last.sql).toMatch(/LIMIT \$6/);
+        expect(last.params[5]).toBe(MAX_PLANNED_ROAD_FEATURES + 1);
         expect(res.body.truncated).toBe(false);
     });
 
-    it('clips planned road geometry to the viewport and avoids serializing the source geom into props', async () => {
+    it('reads the GUP widening reservations and new GUP streets, not the old planned_road polygons', async () => {
         const res = await request(app).get('/planned-road?bbox=1,2,3,4');
 
         expect(res.status).toBe(200);
         const sql = pool.calls.at(-1).sql;
-        expect(sql).toContain('ST_Intersection(ST_MakeValid(pr.geom), (SELECT geom FROM envelope))');
-        expect(sql).toContain('jsonb_build_object(');
-        expect(sql).not.toContain("(to_jsonb(pr) - 'geom')");
+        expect(sql).toContain('FROM road_widening_segment s');
+        expect(sql).toContain('FROM gup_street_line l');
+        expect(sql).not.toMatch(/\bplanned_road\b/);
+        expect(sql).toContain('ST_Intersection(ST_MakeValid(geom), (SELECT geom FROM envelope))');
+        expect(sql).toContain(`ST_Area(geom) >= ${MIN_PLAN_PIECE_M2}`);
     });
 
     it('falls back from missing classification view to dgu_road_usage', async () => {
@@ -138,7 +140,7 @@ describe('GET /planned-road', () => {
         expect(res.body.features).toHaveLength(1);
         expect(calls[0].sql).toContain('road_parcel_classification');
         expect(calls[1].sql).toContain('dgu_road_usage');
-        expect(calls.at(-1).params[5]).toBe(roadUnion);
+        expect(calls.at(-1).params[4]).toBe(roadUnion);
     });
 
     it('releases the client when road union query fails with non-fallback error', async () => {
@@ -235,8 +237,7 @@ describe('GET /planned-road', () => {
             displayColor: '#ffd54f',
             strokeColor: '#c98a00',
             strokeWeight: 2,
-            fillOpacity: 0.35,
-            display: 'planned_road'
+            fillOpacity: 0.35
         });
     });
 });

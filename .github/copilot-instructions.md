@@ -5,7 +5,7 @@
 ### Runbook
 
 - `docker-compose up` starts nginx front (8080), API (3000), PostGIS (`my-postgis:16-3.5-arm64`) with live-reload bind mounts.
-- Backend dev: `cd backend && npm install && npm run dev`; relies on `.env` PG vars and tables `parcel`, `building`, `planned_road`, `cadastral_municipality`.
+- Backend dev: `cd backend && npm install && npm run dev`; relies on `.env` PG vars and tables `parcel`, `building`, `road_widening_segment`, `gup_street_line`, `cadastral_municipality`.
 - Frontend is static: serve via `npx serve frontend` (avoid `file://` because workers) or nginx in compose.
 - Blockchain dev: `cd blockchain && pnpm install && pnpm hardhat compile`; local chain via `pnpm chain` (script wraps `start-chain-with-funding.sh`) or `pnpm chain:simple`.
 
@@ -14,7 +14,7 @@
 - All routes export `setup*Route(app, pool)` from `backend/routes/*`; main entry `index.js` wires them and enforces CORS allowlist when `USE_CORS_ALLOWLIST=true`.
 - PostGIS SRID is 3765 (`POSTGIS_SRID` in `utils/helpers.js`); prefer helper `parseBboxParam` for validating bbox query params.
 - `/parcels` (Zagreb) supports `bbox`, `coordinates`, `parcel_number`, `parcel_identifier`, `parcel_id`; normalizes ownership (classifies gov/institution/company) and builds parcel_id `HR-<maticni_broj_ko>-<broj_cestice>`. Buenos Aires/Belgrade variants live in `parcel-ba.js` / `parcel-bg.js`.
-- Planned roads: `planned-roads.js` subtracts existing road/road-like parcels via `getExistingRoadUnion` and returns polygon features with default styling props.
+- Planned roads: `planned-roads.js` takes the GUP street widening reservations (`road_widening_segment`) and new GUP streets (`gup_street_line` stretches with no measured street, buffered to their čl. 38 width), subtracts existing road/road-like parcels via `getExistingRoadUnion` and returns polygon features with default styling props.
 - Proposals API stores the full proposal JSON (`proposal_data`) plus denormalized columns; local `proposalId` values (`local-*`) are replaced with DB `id` and kept in `proposal_data`. Duplicate proposal_id returns 409 with existing id when possible.
 - Docs route renders markdown (`routes/docs.md`) through `marked`; static uploads served from `/uploads`, `/metadata`, `/images`.
 
