@@ -16,8 +16,15 @@ async function createGroundProposal(page: any, kind: 'park' | 'square'): Promise
   return page.evaluate(kind => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.structureProposal?.kind === kind).proposalId, kind);
 }
 
-async function openLayers(page: any) {
+// curatedRoads: false leaves the fixture parcel off the curated road list, which always loads with
+// the map (js/road-parcels.js), since a road's own style wins over every highlight.
+async function openLayers(page: any, { curatedRoads = true } = {}) {
   await installLayerDatasets(page);
+  if (!curatedRoads) {
+    await page.route('**/road-parcels**', (route: any) => route.request().resourceType() === 'script'
+      ? route.continue()
+      : route.fulfill({ json: { type: 'FeatureCollection', features: [] } }));
+  }
   await openCity(page);
   await page.evaluate(async ids => {
     await (window as any).CadastralParcelRepository.ensureIds(ids);
@@ -45,7 +52,7 @@ test.describe('Layers sheet behavior @features', () => {
   test('parcel, ownership, label, ad, and minted controls produce visible map data', async ({ mockApi: page }) => {
     // This complete sheet flow also opens and closes two real external browser tabs.
     test.setTimeout(60_000);
-    await openLayers(page);
+    await openLayers(page, { curatedRoads: false });
     const mapHasParcels = () => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer));
     await page.locator('#parcelsCheckbox').uncheck();
     await expect.poll(mapHasParcels).toBe(false);
