@@ -165,8 +165,8 @@ export function setupUrbanRulesRoute(app, pool) {
                         urv.exception_paragraph,
                         urv.variables
                     FROM urban_rule ur
-                    LEFT JOIN urban_rule_text urt ON ur.short_name = urt.rule_short_name
-                    LEFT JOIN urban_rule_variable urv ON ur.short_name = urv.rule_short_name 
+                    LEFT JOIN urban_rule_text urt ON COALESCE(ur.short_name, ur.title) = urt.rule_short_name
+                    LEFT JOIN urban_rule_variable urv ON COALESCE(ur.short_name, ur.title) = urv.rule_short_name
                         AND (ur.exception_para = urv.exception_paragraph OR (ur.exception_para IS NULL AND urv.exception_paragraph IS NULL))
                     WHERE ST_Contains(ur.geom, ST_Transform(ST_SetSRID(ST_MakePoint($1, $2), 4326), 3765))
                     ORDER BY ur.title
@@ -195,8 +195,8 @@ export function setupUrbanRulesRoute(app, pool) {
                         urv.exception_paragraph,
                         urv.variables
                     FROM urban_rule ur
-                    LEFT JOIN urban_rule_text urt ON ur.short_name = urt.rule_short_name
-                    LEFT JOIN urban_rule_variable urv ON ur.short_name = urv.rule_short_name 
+                    LEFT JOIN urban_rule_text urt ON COALESCE(ur.short_name, ur.title) = urt.rule_short_name
+                    LEFT JOIN urban_rule_variable urv ON COALESCE(ur.short_name, ur.title) = urv.rule_short_name
                         AND (ur.exception_para = urv.exception_paragraph OR (ur.exception_para IS NULL AND urv.exception_paragraph IS NULL))
                     WHERE ST_Contains(ur.geom, ST_SetSRID(ST_MakePoint($1, $2), 3765))
                     ORDER BY ur.title
