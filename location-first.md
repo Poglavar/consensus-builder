@@ -188,7 +188,7 @@ Built:
   `/geo/default-city` is removed (no caller since phase 1; it also sent visitor IPs to ipapi.co);
   `normalizeCityCodeForApi` resolves every code through `CityConfigManager.resolveCityParam`.
 
-Recommended, nothing changed (the user's call):
+Decided (user, 2026-10-17):
 
 - Keep one IndexedDB per city. A session keeps its boot jurisdiction for parcels and
   proposals (decision of 2026-10-17 below), and a switch reloads into the other city's store, so a
@@ -198,7 +198,10 @@ Recommended, nothing changed (the user's call):
 
 Open:
 
-- The production audit (read-only, `--input` rows exported from prod) has not been run.
+- Production audit (2026-10-17, read-only export of `consensus.proposal`): 656 of 658 measurable
+  records carry their site's city. The 2 exceptions (ids 2 and 5, December 2025) are labelled
+  zagreb but lie by Split (Kaštela, 43.538,16.315): the same countrywide cadastre, so their binding
+  is right; they are listed under Zagreb, not Split. Left as they are (records are immutable).
 - `proposal-prepare-db.test.js` (RUN_DB_TESTS=1) fails at HEAD before any placement code: its street
   fixture uses the legacy `width/points/segments` road shape the OSM-form road record no longer
   accepts (`parcels-required`). Its expectations are updated to the new rule but unverified.
@@ -249,5 +252,6 @@ Headed (a launched Chrome over agent-browser, checked by eye):
 - 2026-10-17: explore is derived, never asked for; `?city=explore` is legacy.
 - 2026-10-17: a session keeps its boot jurisdiction for parcels/proposals/storage; geography follows
   the camera.
+- 2026-10-17: one IndexedDB per city stays (user).
 - 2026-10-17: a publication's city is the site's, never the request's; nothing is refused for where
   it was drawn from. Lists filter by that label (it is the site's city), plans by their members'.
