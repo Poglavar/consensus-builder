@@ -494,7 +494,7 @@
         "busy": "U tijeku je druga izmjena karte. Pričekajte da završi pa pokušajte ponovno.",
         "storeUnavailable": "Prijedlozi se još nisu učitali. Pričekajte da se grad učita pa pokušajte ponovno.",
         "notFound": "Ovaj prijedlog više nije dostupan. Osvježite popis prijedloga i pokušajte ponovno.",
-        "cancelled": "Ovaj prijedlog je otkazan pa se ne može primijeniti na kartu."
+        "cancelled": "Ovaj prijedlog je povučen pa se ne može primijeniti na kartu."
     },
     "proposalDrafts": {
         "title": "Skice",
@@ -1801,7 +1801,7 @@
             },
             "lifecycle": {
                 "active": "Aktivan",
-                "cancelled": "Otkazan",
+                "cancelled": "Povučen",
                 "expired": "Istekao",
                 "executed": "Izvršen",
                 "minted": "Iskovan",
@@ -3141,7 +3141,7 @@
                     },
                     "applyBlockedByDependencies": "Blokirano: ovisnosti nisu zadovoljene nakon pokušaja.",
                     "summary": "Rezultat dijeljenog plana",
-                    "cancelledToast": "Nije primijenjeno, otkazano: {{titles}}.",
+                    "cancelledToast": "Nije primijenjeno, povučeno: {{titles}}.",
                     "appliedToast": {
                         "one": "Primijenjen {{count}} prijedlog.",
                         "few": "Primijenjena {{count}} prijedloga.",

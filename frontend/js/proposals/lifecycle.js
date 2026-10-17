@@ -307,7 +307,7 @@ function getProposalLifecycleLabel(key) {
         case 'expired':
             return t('panel.proposal.lifecycle.expired', 'Expired');
         case 'cancelled':
-            return t('panel.proposal.lifecycle.cancelled', 'Cancelled');
+            return t('panel.proposal.lifecycle.cancelled', 'Withdrawn');
         case 'accepted-not-funded':
             return t('panel.proposal.lifecycle.acceptedNotFunded', 'Accepted (Not funded)');
         default:

@@ -1441,7 +1441,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                     const record = proposalStorage.getProposal(id);
                     return escapeHtml((record && (record.title || record.name)) || String(id));
                 };
-                bodyLines.push(`<p>${tShare('plan.cancelledToast', 'Not applied, cancelled: {{titles}}.', {
+                bodyLines.push(`<p>${tShare('plan.cancelledToast', 'Not applied, withdrawn: {{titles}}.', {
                     titles: cancelled.map(titleOf).join(', ')
                 })}</p>`);
             }
@@ -2597,7 +2597,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 }));
             }
             if (cancelled.length > 0) {
-                bits.push(tShare('plan.cancelledToast', 'Not applied, cancelled: {{titles}}.', {
+                bits.push(tShare('plan.cancelledToast', 'Not applied, withdrawn: {{titles}}.', {
                     titles: cancelled.map(item => item.label).join(', ')
                 }));
             }

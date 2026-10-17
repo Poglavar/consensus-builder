@@ -616,7 +616,7 @@ const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-map-busy': ['busy', 'Another map update is still running. Wait for it to finish and try again.'],
     'proposal-store-unavailable': ['storeUnavailable', 'Proposals are not loaded yet. Wait for the city to finish loading and try again.'],
     'proposal-not-found': ['notFound', 'This proposal is no longer available. Refresh the proposals list and try again.'],
-    'proposal-cancelled': ['cancelled', 'This proposal was cancelled, so it cannot be applied to the map.']
+    'proposal-cancelled': ['cancelled', 'This proposal was withdrawn, so it cannot be applied to the map.']
 };
 
 function _proposalApplyFailure(code, params = {}) {

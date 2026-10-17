@@ -494,7 +494,7 @@
         "busy": "Another map update is still running. Wait for it to finish and try again.",
         "storeUnavailable": "Proposals are not loaded yet. Wait for the city to finish loading and try again.",
         "notFound": "This proposal is no longer available. Refresh the proposals list and try again.",
-        "cancelled": "This proposal was cancelled, so it cannot be applied to the map."
+        "cancelled": "This proposal was withdrawn, so it cannot be applied to the map."
     },
     "proposalDrafts": {
         "title": "Drafts",
@@ -1776,7 +1776,7 @@
             },
             "lifecycle": {
                 "active": "Active",
-                "cancelled": "Cancelled",
+                "cancelled": "Withdrawn",
                 "expired": "Expired",
                 "executed": "Executed",
                 "minted": "Minted",
@@ -3138,7 +3138,7 @@
                         "few": "Applied {{count}} proposals:",
                         "other": "Applied {{count}} proposals:"
                     },
-                    "cancelledToast": "Not applied, cancelled: {{titles}}.",
+                    "cancelledToast": "Not applied, withdrawn: {{titles}}.",
                     "appliedToast": {
                         "one": "Applied {{count}} proposal.",
                         "few": "Applied {{count}} proposals.",
