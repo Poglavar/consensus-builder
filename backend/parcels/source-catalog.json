@@ -2238,7 +2238,7 @@
       "cityIds": [
         "colorado"
       ],
-      "defaultForCity": false,
+      "defaultForCity": true,
       "evidenceFile": "research/db-city-us-live-2026-10-03.json",
       "scope": "Denver county only; a fixed county filter prevents collisions across Colorado county parcel-number spaces.",
       "licenceNote": "Source terms are informational; users choose their source and intended use.",

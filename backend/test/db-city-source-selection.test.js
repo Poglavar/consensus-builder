@@ -61,7 +61,7 @@ describe('database defaults and explicit upstream alternatives',()=>{
  it('keeps every imported city on DB by default and validates all configured alternatives',()=>{
   const normal=boot('?city=new_york').window.CityConfigManager;
   const live=boot('?city=new_york&parcelSource=live').window.CityConfigManager;
-  for(const city of ['zagreb','split','sibenik','belgrade','ljubljana','buenos_aires','colorado','new_york']){
+  for(const city of ['zagreb','split','sibenik','belgrade','ljubljana','buenos_aires','new_york']){
    expect(normal.getCityConfig(city).parcels.source).not.toBe('parcel-source');
    const alternative=normal.getCityConfig(city).parcels.liveSource;
    if(city==='belgrade'){expect(alternative).toBeUndefined();continue;}
@@ -71,6 +71,11 @@ describe('database defaults and explicit upstream alternatives',()=>{
    expect(configured.idPrefix).toBe(alternative.idPrefix);
    expect(parcelSourceForCity(city)).toBeNull();
   }
+ });
+ it('reads Denver live from Colorado OIT by default: its imported tables are gone',()=>{
+  const parcels=boot('?city=colorado').window.CityConfigManager.getCurrentCityConfig().parcels;
+  expect(parcels).toMatchObject({source:'parcel-source',sourceId:'us-co-oit-public-parcels-denver',idPrefix:'US-CO-',ownership:false});
+  expect(parcelSourceForCity('colorado').descriptor.id).toBe('us-co-oit-public-parcels-denver');
  });
  it('keeps routing hints out of proposal data and alternate IDs out of default globe metadata',()=>{
   expect(stripLocalProposalState({parcelSourceId:descriptor.id,binding:{source:'server:'+descriptor.id}})).toEqual({binding:{source:'server:'+descriptor.id}});

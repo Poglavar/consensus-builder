@@ -442,11 +442,14 @@
                 fallbackDataset: [-104.9903, 39.7392]
             },
             parcels: {
+                // Read live from Colorado OIT (Denver county); the imported parcel_co tables are gone.
                 strategy: 'grid',
                 gridSize: 0.005,
-                source: 'parcel-co',
-                liveSource: { sourceId: 'us-co-oit-public-parcels-denver', idPrefix: 'US-CO-' },
-                requiresBackend: true
+                source: 'parcel-source',
+                sourceId: 'us-co-oit-public-parcels-denver',
+                idPrefix: 'US-CO-',
+                requiresBackend: true,
+                ownership: false
             },
             buildings: {
                 source: 'overture-tiles'

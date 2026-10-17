@@ -282,7 +282,7 @@
         let features;
         let returnsWGS84 = true;
         let sourceSrid = null;
-        const importedIdParameters = { 'parcel-ba': 'smp', 'parcel-bg': 'parcel_id', 'parcel-co': 'parcel_id', 'parcel-lj': 'parcel_id', 'parcel-nyc': 'parcel_id' };
+        const importedIdParameters = { 'parcel-ba': 'smp', 'parcel-bg': 'parcel_id', 'parcel-lj': 'parcel_id', 'parcel-nyc': 'parcel_id' };
         if (override) {
             const answer = await override.fetchByIds(ids);
             features = Array.isArray(answer?.features) ? answer.features : [];

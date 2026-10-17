@@ -135,7 +135,7 @@
         }
         const importedSources = {
             'parcel-ba': {}, 'parcel-bg': { disablePagination: true },
-            'parcel-lj': { disablePagination: true }, 'parcel-co': {}, 'parcel-nyc': {}
+            'parcel-lj': { disablePagination: true }, 'parcel-nyc': {}
         };
         if (source && Object.prototype.hasOwnProperty.call(importedSources, source)) {
             const base = getBackendBase().replace(/\/$/, '');

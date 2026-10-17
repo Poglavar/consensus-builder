@@ -17,7 +17,6 @@ import { setupParcelsRoute } from './routes/parcels.js';
 import { setupParcelBaRoute } from './routes/parcel-ba.js';
 import { setupParcelBgRoute } from './routes/parcel-bg.js';
 import { setupParcelLjRoute } from './routes/parcel-lj.js';
-import { setupParcelCoRoute } from './routes/parcel-co.js';
 import { setupParcelNycRoute } from './routes/parcel-nyc.js';
 import { setupParcelSourcesRoute } from './routes/parcel-sources.js';
 import { createParcelProviderRelayRouter } from './routes/parcel-provider-relay.js';
@@ -450,7 +449,6 @@ export function createApp({
     setupParcelBaRoute(app, activePool);
     setupParcelBgRoute(app, activePool);
     setupParcelLjRoute(app, activePool);
-    setupParcelCoRoute(app, activePool);
     setupParcelNycRoute(app, activePool);
     app.use('/parcel-provider-relay', createParcelProviderRelayRouter());
     setupParcelSourcesRoute(app);

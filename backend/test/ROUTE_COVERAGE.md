@@ -18,7 +18,6 @@ Current route-level coverage status for modules wired in [backend/index.js](../i
 | `routes/objects.js`       | Covered | `test/objects.test.js`       |
 | `routes/parcel-ba.js`     | Covered | `test/parcel-ba.test.js`     |
 | `routes/parcel-bg.js`     | Covered | `test/parcel-bg.test.js`     |
-| `routes/parcel-co.js`     | Covered | `test/parcel-co.test.js`     |
 | `routes/parcel-lj.js`     | Covered | `test/parcel-lj.test.js`     |
 | `routes/parcel-nyc.js`    | Covered | `test/parcel-nyc.test.js`    |
 | `routes/parcels.js`       | Covered | `test/parcels.test.js`       |

@@ -45,7 +45,6 @@ describe('absolute areas served to a client are geodesic', () => {
     it.each([
         ['routes/parcels.js', 'calculated_area'],
         ['routes/parcel-lj.js', 'calculated_area'],
-        ['routes/parcel-co.js', 'calculated_area'],
         ['routes/road-corridor.js', 'full_area_m2'],
         ['routes/buildings.js', 'footprint_area']
     ])('%s measures %s on the ellipsoid', (path, alias) => {
