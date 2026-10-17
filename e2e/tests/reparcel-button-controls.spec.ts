@@ -155,6 +155,25 @@ test.describe('reparcellization button controls @core', () => {
     expect(gaps.width).toBeLessThan(560);
   });
 
+  test('every owner ledger figure and cash amount fits its column in the desktop panel', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const modal = await openReadjustment(page);
+    await expect(modal.locator('.reparcel-ledger-table .cash-offer-input').first()).toBeVisible();
+    const clipped = await modal.evaluate(() => {
+      const context = document.createElement('canvas').getContext('2d')!;
+      const cells = [...document.querySelectorAll<HTMLElement>('.reparcel-ledger-table tbody td')]
+        .filter(cell => cell.scrollWidth > cell.clientWidth + 1).map(cell => `${cell.dataset.label}: ${cell.textContent!.trim()}`);
+      const inputs = [...document.querySelectorAll<HTMLInputElement>('.reparcel-ledger-table .cash-offer-input')].filter(input => {
+        const style = getComputedStyle(input);
+        context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const inner = input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        return context.measureText(input.value).width > inner;
+      }).map(input => `cash input: ${input.value}`);
+      return [...cells, ...inputs];
+    });
+    expect(clipped).toEqual([]);
+  });
+
   test('Draw plot creates draft points, Undo point removes the latest point, and Cancel removes the draft', async ({ mockApi: page }) => {
     await openReadjustment(page);
     const modal = await manualLayout(page);

@@ -187,8 +187,10 @@
     table-layout: fixed;
 }
 
-.reparcel-col--figure { width: 19%; }
-.reparcel-col--cash { width: 15%; }
+/* Sized to their widest figure in the 480 px panel ("176,958 EUR", a "-88544.59" cash input); the
+   owner's name takes what is left. */
+.reparcel-col--figure { width: 17%; }
+.reparcel-col--cash { width: 18.5%; }
 .reparcel-col--plot { width: 8.5em; }
 
 /* Four figure columns and the owner's name share the panel: headers keep whole words. */
@@ -234,7 +236,13 @@
     vertical-align: top;
 }
 
-.reparcel-owners-table td:first-child,
+/* Five columns share the panel: narrower gutters than the plots table. */
+.reparcel-owners-table td {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* A long owner name wraps inside its column (td overflow-wrap above) instead of running under the figures. */
 .reparcel-newplots-table td:first-child,
 .plot-cell {
     white-space: nowrap;
