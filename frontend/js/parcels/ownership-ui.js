@@ -484,7 +484,8 @@
     }
 
     async function fetchOwnersFromBackend(parcelId) {
-        if (global.CityConfigManager?.getCurrentCityConfig?.()?.parcels?.ownership === false) return [];
+        const parcelsConfig = global.CityConfigManager?.getCurrentCityConfig?.()?.parcels;
+        if (parcelsConfig?.ownership === false) return [];
         if (typeof global.getBackendBase !== 'function') {
             throw new Error('Backend base helper unavailable for ownership lookup');
         }
@@ -493,27 +494,15 @@
             throw new Error('Backend base is not configured');
         }
 
-        const normalizedCityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
-        let smpForPath = parcelId;
-
-        // For Buenos Aires, strip the "AR-" prefix from parcel IDs
-        // Backend expects SMP format like "002-043-022", not "AR-002-043-022"
-        if (normalizedCityId === 'buenos_aires') {
-            const parcelIdStr = (parcelId || '').toString().trim();
-            if (parcelIdStr.startsWith('AR-')) {
-                smpForPath = parcelIdStr.substring(3);
-            }
+        // One route for every city: the parcel's source decides which ownership adapter answers.
+        const request = global.__parcelOwnershipRequest;
+        const sourceId = request.parcelSourceIdFor(parcelsConfig, parcelId);
+        if (!sourceId) {
+            const error = new Error(`No parcel source is known for ${parcelId}`);
+            error.statusCode = 404;
+            throw error;
         }
-
-        // For Zagreb, use parcelId as-is (don't add or strip HR- prefix)
-        const path = normalizedCityId === 'buenos_aires'
-            ? `/parcel-ba/${encodeURIComponent(smpForPath)}/ownership`
-            : normalizedCityId === 'belgrade'
-                ? `/parcel-bg/${encodeURIComponent(parcelId)}/ownership`
-                : normalizedCityId === 'new_york'
-                    ? `/parcel-nyc/${encodeURIComponent(parcelId)}/ownership`
-                    : `/parcels/${encodeURIComponent(parcelId)}/ownership`;
-        const url = `${backendBase.replace(/\/$/, '')}${path}`;
+        const url = `${backendBase.replace(/\/$/, '')}${request.ownershipRequestPath(sourceId, parcelId)}`;
         const response = await fetch(url, {
             headers: {
                 'Accept': 'application/json'
@@ -526,8 +515,7 @@
             throw error;
         }
 
-        const payload = await response.json();
-        return extractOwnersFromOwnershipPayload(payload);
+        return request.ownersFromOwnershipRecord(await response.json());
     }
 
     function buildOssOwnershipRequestUrls(parcelId) {

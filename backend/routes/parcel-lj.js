@@ -1,11 +1,9 @@
 import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
-import { buildOwnershipSummary } from './parcels.js';
 
 const MAX_LIMIT = 5000;
 
 const SRID_WGS84 = 4326;
 const SRID_DATASET = 3765; // EPSG:3765 - same as Zagreb (HTRS96/TM)
-const CITY_NAME = 'Ljubljana';
 const COUNTRY_PREFIX = 'SI';
 
 function isValidParcelValue(value) {
@@ -160,89 +158,6 @@ async function fetchOwnershipForParcels(pool, eidParcelas) {
     }
 }
 
-async function fetchOwnershipForParcelId(pool, eidParcela) {
-    const sql = `
-        SELECT
-            p.eid_parcela,
-            p.ko_id,
-            p.naziv,
-            p.st_parcele,
-            p.povrsina,
-            o.share_num,
-            o.share_den,
-            o.oseba_id,
-            o.meta
-        FROM parcel_lj p
-        LEFT JOIN parcel_lj_owner o ON o.parcel_eid = p.eid_parcela AND o.current = true
-        WHERE p.eid_parcela = $1 AND p.current = true
-    `;
-
-    const { rows } = await pool.query(sql, [eidParcela]);
-    if (!rows.length) {
-        return null;
-    }
-
-    const firstRow = rows[0];
-    const parcelId = `${COUNTRY_PREFIX}-${eidParcela}`;
-
-    // Build possessors from ownership rows
-    const possessors = rows
-        .filter(row => row.oseba_id)
-        .map(row => {
-            const shareNum = Number(row.share_num) || 1;
-            const shareDen = Number(row.share_den) || 1;
-
-            let ownerName = `Owner ${row.oseba_id}`;
-            if (row.meta && typeof row.meta === 'object') {
-                if (row.meta.ime) {
-                    ownerName = row.meta.ime;
-                } else if (row.meta.naziv) {
-                    ownerName = row.meta.naziv;
-                }
-            }
-
-            return {
-                name: ownerName,
-                ownership: `${shareNum}/${shareDen}`,
-                address: ''
-            };
-        });
-
-    if (possessors.length === 0) {
-        possessors.push({
-            name: 'Unknown owner',
-            ownership: '1/1',
-            address: ''
-        });
-    }
-
-    const possessionSheets = [{
-        possessionSheetId: null,
-        possessionSheetNumber: null,
-        cadMunicipalityName: firstRow.naziv || CITY_NAME,
-        possessors
-    }];
-
-    const payload = {
-        parcelId,
-        possessionSheets,
-        parcelNumber: firstRow.st_parcele,
-        koId: firstRow.ko_id,
-        koName: firstRow.naziv,
-        cadMunicipalityName: firstRow.naziv || CITY_NAME,
-        area: firstRow.povrsina
-    };
-
-    // Add ownership summary
-    const summary = buildOwnershipSummary(payload);
-    if (summary) {
-        payload.ownershipList = summary.ownershipList;
-        payload.ownershipType = summary.ownershipType;
-    }
-
-    return payload;
-}
-
 export function setupParcelLjRoute(app, pool) {
     app.get('/parcel-lj', async (req, res) => {
         const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
@@ -381,29 +296,6 @@ export function setupParcelLjRoute(app, pool) {
         } catch (error) {
             console.error('Error in /parcel-lj:', error);
             res.status(500).json({ error: 'Failed to fetch Ljubljana parcels.' });
-        }
-    });
-
-    app.get('/parcel-lj/:parcelId/ownership', async (req, res) => {
-        const parcelId = (req.params.parcelId || '').trim();
-        if (!parcelId) {
-            return res.status(400).json({ error: 'parcelId is required.' });
-        }
-        const eidParcela = parseParcelId(parcelId);
-        if (!eidParcela) {
-            return res.status(400).json({
-                error: 'Invalid parcelId format. Expected SI-<eid_parcela> or <eid_parcela>.'
-            });
-        }
-        try {
-            const ownership = await fetchOwnershipForParcelId(pool, eidParcela);
-            if (!ownership) {
-                return res.status(404).json({ error: 'Ownership data not found for the requested parcelId.' });
-            }
-            res.json(ownership);
-        } catch (error) {
-            console.error(`Error in /parcel-lj/${parcelId}/ownership:`, error);
-            res.status(500).json({ error: 'Failed to fetch Ljubljana ownership data.' });
         }
     });
 }

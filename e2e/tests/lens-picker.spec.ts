@@ -85,10 +85,13 @@ test.describe('Proposal Lens picker @features', () => {
       body: JSON.stringify({ members: [{ key: MEMBER, name: 'Parcel Lens', serviceUrl: 'https://lens-picker-e2e.invalid' }] }),
     }));
     let proofAvailable = true;
-    await page.route('**/parcels/*/ownership', route => route.fulfill({
+    // The register (parcel-ownership/1) names owners only; the owner's wallet comes from the
+    // single-owner chain-address hook the parcel panel consults.
+    await page.addInitScript(wallet => { (window as any).fetchParcelNftOwnerAddress = async () => wallet; }, WALLET);
+    await page.route('**/parcel-ownership/**', route => route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ owners: [{ name: 'Fixture private owner', ownership: '1/1', address: WALLET }] }),
+      body: JSON.stringify({ contract: 'parcel-ownership/1', owners: [{ name: 'Fixture private owner', shareText: '1/1', sharePercent: 100, ownerType: 'private individual' }] }),
     }));
     await page.route('https://lens-picker-e2e.invalid/lens/attestations**', async route => {
       const url = new URL(route.request().url());

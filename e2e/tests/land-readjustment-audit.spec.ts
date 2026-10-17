@@ -153,11 +153,12 @@ test('joint imported ownership survives apply and reload, then unapply restores 
     ] };
     return route.fulfill({ json: data });
   });
-  await page.route(`**/parcels/${PARCEL_ID}/ownership`, route => route.fulfill({ json: {
-    possessionSheets: [{ possessors: [
-      { name: 'Joint owner A', ownership: '1/2' },
-      { name: 'Joint owner B', ownership: '1/2' },
-    ] }],
+  await page.route('**/parcel-ownership/**', route => route.fulfill({ json: {
+    contract: 'parcel-ownership/1',
+    owners: [
+      { name: 'Joint owner A', shareText: '1/2', sharePercent: 50, ownerType: 'private individual' },
+      { name: 'Joint owner B', shareText: '1/2', sharePercent: 50, ownerType: 'private individual' },
+    ],
   } }));
   const modal = await openReadjustment(page);
   await modal.locator('input[name="reparcel-algorithm"][value="manual"]').check({ force: true });

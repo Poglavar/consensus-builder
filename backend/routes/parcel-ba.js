@@ -1,5 +1,5 @@
 import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
-import { normalizePossessionSheets, buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
+import { buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
 
 const MAX_LIMIT = 5000;
 // Pages come from one grid cell (bbox capped at MAX_CELL_BBOX_KM2), so a deep offset is never the
@@ -197,21 +197,6 @@ function buildFeature(row, ownershipSummary = null) {
         properties,
         geometry: row.geometry
     };
-}
-
-async function fetchOwnershipForSmp(pool, smp) {
-    const sql = `
-        SELECT information_basic, information_technical, property_horizontal, doors, date_added, date_updated
-        FROM parcel_ba
-        WHERE smp = $1
-        LIMIT 1
-    `;
-    const { rows } = await pool.query(sql, [smp]);
-    if (!rows.length) {
-        return null;
-    }
-    const row = rows[0];
-    return buildOwnershipPayloadFromRow(row, smp);
 }
 
 async function fetchOwnershipSummariesForSmps(pool, smps) {
@@ -475,31 +460,4 @@ export function setupParcelBaRoute(app, pool) {
             res.status(500).json({ error: 'Failed to fetch Buenos Aires parcels.' });
         }
     });
-
-    app.get('/parcel-ba/:smp/ownership', async (req, res) => {
-        let smp = (req.params.smp || '').trim();
-        // Strip AR- prefix if present (handle both AR-002-062-000 and 002-062-000 formats)
-        if (smp) {
-            smp = smp.replace(/^(AR-)+/i, '');
-        }
-        if (!smp) {
-            return res.status(400).json({ error: 'SMP identifier is required.' });
-        }
-        if (!SMP_REGEX.test(smp)) {
-            return res.status(400).json({
-                error: 'Invalid SMP format. Expected e.g. 001-005-027A or 001-025A-002.'
-            });
-        }
-        try {
-            const ownership = await fetchOwnershipForSmp(pool, smp);
-            if (!ownership) {
-                return res.status(404).json({ error: 'Ownership data not found for the requested SMP.' });
-            }
-            res.json(ownership);
-        } catch (error) {
-            console.error(`Error in /parcel-ba/${smp}/ownership:`, error);
-            res.status(500).json({ error: 'Failed to fetch Buenos Aires ownership data.' });
-        }
-    });
 }
-

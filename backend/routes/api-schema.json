@@ -786,77 +786,6 @@
                 }
             }
         },
-        "/parcel-bg/{smp}/ownership": {
-            "get": {
-                "summary": "Get ownership data for a specific Belgrade parcel (SMP)",
-                "parameters": [
-                    {
-                        "name": "smp",
-                        "in": "path",
-                        "required": true,
-                        "description": "SMP identifier (e.g. 001-005-027A)",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]{3}-[0-9]{3}-[0-9A-Za-z]+$"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Ownership information for the requested SMP",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "smp": { "type": "string" },
-                                        "section": { "type": "string" },
-                                        "block": { "type": "string" },
-                                        "parcel": { "type": "string" },
-                                        "informationBasic": { "type": "object" },
-                                        "informationTechnical": { "type": "object" },
-                                        "propertyHorizontal": { "type": "object" },
-                                        "doors": { "type": "object" },
-                                        "dateAdded": { "type": "string", "format": "date-time" },
-                                        "dateUpdated": { "type": "string", "format": "date-time" }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid SMP format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definitions/APIError"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Ownership not found for the provided SMP",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definitions/APIError"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definitions/APIError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/parcel-ba": {
             "get": {
                 "summary": "Get Buenos Aires parcels by bbox, SMP, block, or section",
@@ -964,74 +893,64 @@
                 }
             }
         },
-        "/parcel-ba/{smp}/ownership": {
+        "/parcel-ownership/{sourceId}/{parcelId}": {
             "get": {
-                "summary": "Get ownership data for a specific Buenos Aires parcel (SMP)",
+                "summary": "Ownership display data for one parcel, from the adapter or linked endpoint its parcel source declares (docs/ownership-adapters.md). Not a trusted ownership claim: that is the lens ParcelOwnership attestation.",
                 "parameters": [
                     {
-                        "name": "smp",
+                        "name": "sourceId",
                         "in": "path",
                         "required": true,
-                        "description": "SMP identifier (e.g. 001-005-027A)",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]{3}-[0-9]{3}-[0-9A-Za-z]+$"
-                        }
+                        "description": "Parcel source id: a source-catalog.json source or databaseSources id (oss-wfs, parcel-ba, parcel-bg, parcel-lj, parcel-nyc)",
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "parcelId",
+                        "in": "path",
+                        "required": true,
+                        "description": "The parcel id as the source issues it, e.g. HR-335258-4341/2 (may contain slashes)",
+                        "schema": { "type": "string", "maxLength": 200 }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Ownership information for the requested SMP",
+                        "description": "parcel-ownership/1 record",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
+                                    "required": ["contract", "sourceId", "parcelId", "owners", "ownershipType", "observedAt", "retrievedAt", "attribution", "licence"],
                                     "properties": {
-                                        "smp": { "type": "string" },
-                                        "section": { "type": "string" },
-                                        "block": { "type": "string" },
-                                        "parcel": { "type": "string" },
-                                        "informationBasic": { "type": "object" },
-                                        "informationTechnical": { "type": "object" },
-                                        "propertyHorizontal": { "type": "object" },
-                                        "doors": { "type": "object" },
-                                        "dateAdded": { "type": "string", "format": "date-time" },
-                                        "dateUpdated": { "type": "string", "format": "date-time" }
+                                        "contract": { "type": "string", "enum": ["parcel-ownership/1"] },
+                                        "sourceId": { "type": "string" },
+                                        "parcelId": { "type": "string" },
+                                        "owners": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "required": ["name", "shareText", "sharePercent", "ownerType"],
+                                                "properties": {
+                                                    "name": { "type": "string" },
+                                                    "shareText": { "type": ["string", "null"] },
+                                                    "sharePercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+                                                    "ownerType": { "type": "string", "enum": ["private individual", "company", "government", "institution"] }
+                                                }
+                                            }
+                                        },
+                                        "ownershipType": { "type": ["string", "null"], "enum": ["private individual", "company", "government", "institution", "mixed", null] },
+                                        "observedAt": { "type": ["string", "null"], "description": "The source's own ISO 8601 time for this ownership state; null when the source states none" },
+                                        "retrievedAt": { "type": ["string", "null"], "description": "When this service read the data from the source" },
+                                        "attribution": { "type": "string" },
+                                        "licence": { "type": ["string", "null"] }
                                     }
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "description": "Invalid SMP format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definitions/APIError"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Ownership not found for the provided SMP",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definitions/APIError"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definitions/APIError"
-                                }
-                            }
-                        }
-                    }
+                    "400": { "description": "Malformed parcel id for this source" },
+                    "404": { "description": "No ownership adapter for the source (code no-ownership-adapter) or no data for the parcel (code ownership-not-found)" },
+                    "502": { "description": "Linked endpoint failed or broke the contract (code ownership-contract-violation)" },
+                    "504": { "description": "Linked endpoint timed out" }
                 }
             }
         },

@@ -21,19 +21,6 @@ function buildParcelInfoLateralJoin(parcelAlias = 'p') {
     `;
 }
 
-// Single-parcel ownership lookup from parcel_info.
-function buildParcelInfoOwnershipQuery() {
-    return `
-        SELECT details
-        FROM parcel_info
-        WHERE maticni_broj_ko = $1
-        AND broj_cestice = $2
-        AND details IS NOT NULL
-        ORDER BY version DESC
-        LIMIT 1
-    `;
-}
-
 // Batch ownership lookup from parcel_info for multiple parcels.
 export function buildOwnershipDetailBatchQuery() {
     return `
@@ -398,15 +385,6 @@ export function pickOwnershipFields(payload, fallbackParcelId) {
     return base;
 }
 
-function extractParcelKey(row) {
-    const maticni = Number(row?.maticni_broj_ko);
-    const broj = row?.broj_cestice;
-    if (!Number.isFinite(maticni) || !broj) {
-        return null;
-    }
-    return { maticni_broj_ko: maticni, broj_cestice: String(broj) };
-}
-
 function buildParcelSelectQuery({
     whereClause = '',
     includeMunicipality = false,
@@ -439,81 +417,6 @@ function buildParcelSelectQuery({
         ${orderByClause}
         ${limitClause}
     `;
-}
-
-async function fetchParcelOwnership(pool, parcelId) {
-    const parcelKeyResult = await pool.query(`
-        SELECT maticni_broj_ko, broj_cestice
-        FROM parcel
-        WHERE cestica_id = $1
-        AND current = true
-        LIMIT 1
-    `, [parcelId]);
-
-    const parcelKey = extractParcelKey(parcelKeyResult.rows?.[0]);
-    if (!parcelKey) {
-        const missingError = new Error('Ownership data not found for the requested parcel.');
-        missingError.statusCode = 404;
-        throw missingError;
-    }
-
-    let payloadRow = null;
-
-    try {
-        const result = await pool.query(buildParcelInfoOwnershipQuery(), [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
-        if (result.rows.length) {
-            payloadRow = result.rows[0];
-        }
-    } catch (error) {
-        if (error && error.code === '42P01') {
-            const configError = new Error('Ownership table is not configured in the current database.');
-            configError.statusCode = 503;
-            configError.cause = error;
-            throw configError;
-        }
-        const wrapped = new Error('Failed to read cached ownership for parcel');
-        wrapped.cause = error;
-        throw wrapped;
-    }
-
-    if (!payloadRow) {
-        const notFoundError = new Error('Ownership data not found for the requested parcel.');
-        notFoundError.statusCode = 404;
-        throw notFoundError;
-    }
-
-    let payload = payloadRow?.details;
-    if (!payload) {
-        const missingError = new Error('Ownership record exists but has no details payload.');
-        missingError.statusCode = 404;
-        throw missingError;
-    }
-
-    if (typeof payload === 'string') {
-        try {
-            payload = JSON.parse(payload);
-        } catch (err) {
-            const parseError = new Error('Cached ownership payload is not valid JSON.');
-            parseError.cause = err;
-            parseError.statusCode = 500;
-            throw parseError;
-        }
-    }
-
-    if (!payload || typeof payload !== 'object') {
-        const invalidError = new Error('Cached ownership payload is missing structured data.');
-        invalidError.statusCode = 500;
-        throw invalidError;
-    }
-
-    const ownership = pickOwnershipFields(payload, parcelId);
-    const summary = buildOwnershipSummary(payload);
-    if (summary) {
-        ownership.ownershipList = summary.ownershipList;
-        ownership.ownershipType = summary.ownershipType;
-    }
-
-    return ownership;
 }
 
 async function resolveParcelIdToCesticaId(pool, parcelId) {
@@ -1242,108 +1145,6 @@ export function setupParcelsRoute(app, pool) {
         } catch (err) {
             console.error('Error in /parcels/:parcelId/neighbours:', err);
             return res.status(500).json({ error: 'Internal server error' });
-        }
-    });
-
-    // Use regex to allow slashes in parcelId (e.g. HR-335649-456/1)
-    app.get(/^\/parcels\/(.+)\/ownership$/, async (req, res) => {
-        const parcelId = (req.params[0] || '').trim();
-        if (!parcelId) {
-            return res.status(400).json({ error: 'parcelId is required in the path.' });
-        }
-
-        if (!isValidParcelPathId(parcelId)) {
-            return res.status(400).json({
-                error: 'Invalid parcelId path parameter. Expected a numeric cestica_id or HR-<maticni_broj_ko>-<broj_cestice>.'
-            });
-        }
-
-        let numericParcelId = null;
-        let normalizedParcelId = parcelId;
-
-        // Strip parcel part suffix (e.g., "/2", "/1") if present
-        normalizedParcelId = normalizedParcelId.replace(/\/\d+$/, '');
-
-        // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
-        normalizedParcelId = normalizedParcelId.replace(/^(HR-)+/i, '');
-
-        // Check if parcelId is a numeric cestica_id
-        if (/^[0-9]+$/.test(normalizedParcelId)) {
-            const numeric = Number(normalizedParcelId);
-            if (Number.isFinite(numeric) && numeric > 0) {
-                numericParcelId = numeric;
-            }
-        } else {
-            // Try to parse <maticni_broj_ko>-<broj_cestice> format (HR- prefix already removed)
-            const parts = normalizedParcelId.split('-');
-            if (parts.length === 2) {
-                const cadMunRaw = parts[0].trim();
-                const parcelNumber = parts[1].trim();
-
-                if (cadMunRaw && parcelNumber) {
-                    const cadMun = Number(cadMunRaw);
-                    if (Number.isFinite(cadMun)) {
-                        // Query to get cestica_id from broj_cestice and maticni_broj_ko
-                        try {
-                            const lookupSql = `
-                                SELECT cestica_id
-                                FROM parcel
-                                WHERE broj_cestice = $1
-                                AND maticni_broj_ko = $2
-                                AND current = true
-                                LIMIT 1
-                            `;
-                            const { rows } = await pool.query(lookupSql, [parcelNumber, cadMun]);
-                            if (rows.length && rows[0].cestica_id) {
-                                numericParcelId = rows[0].cestica_id;
-                            }
-                        } catch (lookupError) {
-                            console.warn(`Failed to lookup cestica_id for ${parcelId}:`, lookupError);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!numericParcelId) {
-            return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
-        }
-
-        try {
-            const ownership = await fetchParcelOwnership(pool, numericParcelId);
-            res.json(ownership);
-        } catch (error) {
-            // Handle PostgreSQL numeric value out of range error (22003) as 404
-            if (error?.cause?.code === '22003') {
-                return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
-            }
-
-            const upstreamStatus = error?.statusCode;
-            const statusCode = upstreamStatus === 404
-                ? 404
-                : upstreamStatus === 400
-                    ? 400
-                    : upstreamStatus === 504
-                        ? 504
-                        : upstreamStatus
-                            ? 502
-                            : (error?.name === 'AbortError' ? 504 : 500);
-
-            const message = statusCode === 404
-                ? 'Ownership data not found for the requested parcel.'
-                : statusCode === 400
-                    ? 'Upstream data source rejected the request.'
-                    : statusCode === 504
-                        ? 'Ownership data request timed out.'
-                        : 'Failed to retrieve parcel ownership information.';
-
-            // Only log as error if it's not a 404 (404 is expected for parcels without ownership data)
-            if (statusCode === 404) {
-                // Don't log 404s - they're expected for some parcels
-            } else {
-                console.error(`Error in /parcels/${parcelId}/ownership:`, error);
-            }
-            res.status(statusCode).json({ error: message });
         }
     });
 }

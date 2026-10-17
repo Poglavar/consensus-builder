@@ -33,13 +33,15 @@ const parcels = {
 };
 
 async function openCourtyard(page: Page, enclosed = true) {
+  await page.route('**/parcel-ownership/**', route => {
+    const url = decodeURIComponent(route.request().url());
+    const parcel = parcels.features.find(feature => url.endsWith(`/${feature.properties.parcelId}`));
+    return route.fulfill({ json: { contract: 'parcel-ownership/1',
+      owners: (parcel?.properties.owners || []).map(owner => ({ name: owner.name, shareText: owner.share, sharePercent: null, ownerType: 'private individual' })) } });
+  });
   await page.route('**/parcels**', route => {
     const request = route.request();
     if (!['fetch', 'xhr'].includes(request.resourceType())) return route.fallback();
-    if (/\/ownership(?:\?|$)/.test(request.url())) {
-      const parcel = parcels.features.find(feature => request.url().includes(feature.properties.parcelId));
-      return route.fulfill({ json: { possessionSheets: [{ possessors: (parcel?.properties.owners || []).map(owner => ({ name: owner.name, ownership: owner.share })) }] } });
-    }
     return route.fulfill({ json: parcels });
   });
   await openCity(page);

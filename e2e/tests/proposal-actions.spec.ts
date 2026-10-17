@@ -15,10 +15,14 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 }
 
 async function loadParcelOwnershipFixture(page: import('@playwright/test').Page): Promise<void> {
-  await page.route(`**/parcels/${encodeURIComponent(PARCEL_ID)}/ownership`, route => route.fulfill({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify({ owners: [{ name: 'Fixture private owner', ownership: '1/1', address: SOLANA_WALLET }] }),
+  // The register (parcel-ownership/1) names owners only; the owner's wallet comes from the
+  // single-owner chain-address hook the parcel panel consults.
+  const ownerWallet = (wallet: string) => { (window as any).fetchParcelNftOwnerAddress = async () => wallet; };
+  await page.addInitScript(ownerWallet, SOLANA_WALLET);
+  await page.evaluate(ownerWallet, SOLANA_WALLET);
+  await page.route('**/parcel-ownership/**', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ contract: 'parcel-ownership/1', owners: [{ name: 'Fixture private owner', shareText: '1/1', sharePercent: 100, ownerType: 'private individual' }] }),
   }));
   await openParcel(page, 'info');
   await page.waitForFunction(parcelId => {

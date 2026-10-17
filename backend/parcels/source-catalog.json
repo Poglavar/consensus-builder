@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "description": "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.",
+  "description": "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified. databaseSources names the providers served from the app database (their ids are city-config parcels.source values). Any source may declare ownership: an adapter or an http link (docs/ownership-adapters.md).",
   "sources": [
     {
       "id": "ge-msda-napr-registered-land-plots",
@@ -13666,6 +13666,63 @@
         "tirupati": 32644
       },
       "metricSrid": 32644
+    }
+  ],
+  "databaseSources": [
+    {
+      "id": "oss-wfs",
+      "name": "Croatian cadastral parcels in the app database (DGU OSS)",
+      "cityIds": ["zagreb", "split", "sibenik"],
+      "idPrefix": "HR-",
+      "ownership": {
+        "adapter": "hr-oss",
+        "attribution": "Državna geodetska uprava, OSS Uređena zemlja public parcel information (parcel-info).",
+        "licence": null
+      }
+    },
+    {
+      "id": "parcel-ba",
+      "name": "Buenos Aires cadastral parcels in the app database",
+      "cityIds": ["buenos_aires"],
+      "idPrefix": "AR-",
+      "ownership": {
+        "adapter": "ar-caba",
+        "attribution": "Gobierno de la Ciudad de Buenos Aires, cadastre API (epok.buenosaires.gob.ar), horizontal-property units.",
+        "licence": null
+      }
+    },
+    {
+      "id": "parcel-bg",
+      "name": "Belgrade cadastral parcels in the app database (RGZ)",
+      "cityIds": ["belgrade"],
+      "idPrefix": "SR-",
+      "ownership": {
+        "adapter": "rs-bg",
+        "attribution": "Republički geodetski zavod (RGZ), digital cadastral plan parcels. The layer publishes no owners.",
+        "licence": null
+      }
+    },
+    {
+      "id": "parcel-lj",
+      "name": "Ljubljana cadastral parcels in the app database (GURS)",
+      "cityIds": ["ljubljana"],
+      "idPrefix": "SI-",
+      "ownership": {
+        "adapter": "si-gurs",
+        "attribution": "Geodetska uprava Republike Slovenije (GURS), land cadastre ownership rights (anonymised holders).",
+        "licence": null
+      }
+    },
+    {
+      "id": "parcel-nyc",
+      "name": "New York tax parcels in the app database (NYS)",
+      "cityIds": ["new_york"],
+      "idPrefix": "US-NY-",
+      "ownership": {
+        "adapter": "us-nyc",
+        "attribution": "New York State Tax Parcels (NYS ITS) assessment-roll owners; condominium unit owners from NYC Department of Finance Property Valuation and Assessment Data.",
+        "licence": null
+      }
     }
   ]
 }
