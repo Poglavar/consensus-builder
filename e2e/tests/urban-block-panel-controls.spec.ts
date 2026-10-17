@@ -86,6 +86,11 @@ test('block-layout ranges, candidate visibility and alternative selection change
   // Candidate points, pieces and new streets are drawn on the map; the panel holds the controls.
   const candidates = page.locator('path.urban-block-playground__candidate');
   await expect(candidates.first()).toBeVisible();
+  // The block stays framed beside the playground panel: hiding the block panel must not re-fit it
+  // without that panel's padding, under the playground.
+  const outline = await page.locator('path.urban-block-playground__outline').boundingBox();
+  const panelBox = await dialog.boundingBox();
+  expect(outline!.x + outline!.width).toBeLessThanOrEqual(panelBox!.x);
 
   const settings = [
     { id: 'urban-block-playground-target-area', name: 'targetAreaM2', key: 'Home', value: 1000 },

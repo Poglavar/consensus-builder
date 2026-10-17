@@ -299,7 +299,11 @@
     }
 
     function fitSelected() {
-        if (!selected || fitting || el('urban-block-panel').hidden) return;
+        // Frame only while the block panel is on screen. A tool that takes over the map (See how
+        // opens the playground through OnMapEditor) hides the panel with display:none; the resize
+        // that causes used to re-fit the block with no panel padding, under the tool's panel.
+        const panel = el('urban-block-panel');
+        if (!selected || fitting || panel.hidden || !panel.getClientRects().length) return;
         fitting = true;
         try {
             // Leaflet can still cache the previous viewport height during a phone resize. Fit
