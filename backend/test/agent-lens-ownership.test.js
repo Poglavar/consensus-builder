@@ -42,7 +42,7 @@ beforeAll(async () => {
         identity, clock, dryRun: true
     });
     const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }) });
-    await new Promise(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
+    await new Promise(resolve => { server = app.listen(0, resolve); });
     serviceUrl = `http://127.0.0.1:${server.address().port}`;
     keyFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ugt-lens-')), 'agent.json');
     fs.writeFileSync(keyFile, JSON.stringify(Array.from(agent.secretKey)));
@@ -178,7 +178,7 @@ describe('member lookups and operator verdicts against a dry-run reference membe
             identity, clock, dryRun: true
         });
         const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), operatorToken: OPERATOR });
-        await new Promise(resolve => { operatorServer = app.listen(0, '127.0.0.1', resolve); });
+        await new Promise(resolve => { operatorServer = app.listen(0, resolve); });
         url = `http://127.0.0.1:${operatorServer.address().port}`;
     });
 

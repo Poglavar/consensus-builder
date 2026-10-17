@@ -83,7 +83,7 @@ describe('temporary review HTTP boundary', () => {
         const { directory } = await fixture();
         await writeFile(join(directory, 'drafts.json'), JSON.stringify([draft]));
         const server = await createReviewServer({ dataDirectory: directory });
-        await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+        await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, resolve); });
         cleanup.push(() => new Promise(resolve => { server.close(resolve); server.closeAllConnections(); }));
         const base = `http://localhost:${server.address().port}`;
         const get = await fetch(base + '/api/annotations/S2');

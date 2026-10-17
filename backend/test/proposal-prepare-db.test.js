@@ -110,7 +110,7 @@ live('prepare → publish on the real cadastre (rolled back)', () => {
     });
 
     it('the scripts\' publish() prepares and publishes the server-built land (over HTTP)', async () => {
-        const server = await new Promise(resolve => { const listening = app.listen(0, '127.0.0.1', () => resolve(listening)); });
+        const server = await new Promise(resolve => { const listening = app.listen(0, () => resolve(listening)); });
         try {
             const backend = `http://127.0.0.1:${server.address().port}`;
             const draft = street();

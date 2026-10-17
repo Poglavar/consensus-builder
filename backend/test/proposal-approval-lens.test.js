@@ -77,7 +77,7 @@ function memberApp({ registry = registryJson(), keypair = memberKeypair, validit
 // ephemeral ports, and with many suites in parallel a request can reach another suite's server.
 const servers = [];
 function serve(app) {
-    const server = app.listen(0, '127.0.0.1');
+    const server = app.listen(0);
     servers.push(server);
     return server;
 }
@@ -233,7 +233,7 @@ describe('four owners across three parcels approve only for themselves', () => {
     let server;
     let serviceUrl;
     beforeAll(async () => {
-        server = memberApp().listen(0, '127.0.0.1');
+        server = memberApp().listen(0);
         await new Promise(resolve => server.once('listening', resolve));
         serviceUrl = `http://127.0.0.1:${server.address().port}`;
     });

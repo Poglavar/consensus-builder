@@ -148,7 +148,7 @@ describe('two browsers through the relay', () => {
     const servers = [];
     afterEach(async () => { await Promise.all(servers.splice(0).map(server => new Promise(resolve => server.close(resolve)))); });
     function listen(app) {
-        const server = app.listen(0, '127.0.0.1');
+        const server = app.listen(0);
         servers.push(server);
         return new Promise(resolve => server.on('listening', () => resolve(`http://127.0.0.1:${server.address().port}`)));
     }

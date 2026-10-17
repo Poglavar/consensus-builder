@@ -52,7 +52,7 @@ async function serve({ pricing } = {}) {
         dryRun: !pricing
     });
     const app = createLensMemberApp({ member, pricing: pricing ?? createLensPricing({ dryRun: true }), operatorToken: TOKEN });
-    const server = await new Promise(resolve => { const s = app.listen(0, '127.0.0.1', () => resolve(s)); });
+    const server = await new Promise(resolve => { const s = app.listen(0, () => resolve(s)); });
     servers.push(server);
     return `http://127.0.0.1:${server.address().port}`;
 }

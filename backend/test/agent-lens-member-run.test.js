@@ -77,7 +77,7 @@ describe('lens/run.mjs --kind', () => {
         const owners = path.join(directory, 'owners.json');
         fs.writeFileSync(owners, '[]');
         const port = 40000 + Math.floor(Math.random() * 20000);
-        const child = spawn(process.execPath, [LENS_RUN, '--dry-run', '--kind', 'lifecycle', '--owners', owners, '--port', String(port)], { stdio: ['ignore', 'pipe', 'pipe'] });
+        const child = spawn(process.execPath, [LENS_RUN, '--dry-run', '--kind', 'lifecycle', '--owners', owners, '--port', String(port), '--host', '::'], { stdio: ['ignore', 'pipe', 'pipe'] });
         try {
             await new Promise((resolve, reject) => {
                 let output = '';

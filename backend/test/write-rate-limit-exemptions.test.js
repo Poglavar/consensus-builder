@@ -46,7 +46,7 @@ function app() {
 // test each time, on an idle machine.
 async function hammer(expressApp, path, body, times) {
     const server = http.createServer(expressApp);
-    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    await new Promise(resolve => server.listen(0, resolve));
     const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
     const codes = [];
     try {

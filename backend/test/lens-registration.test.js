@@ -198,7 +198,7 @@ describe('announce end to end', () => {
             identity: createDevnetRegistryIdentity({ rows: [], clock, authority: KEY }),
             clock
         });
-        const memberServer = createLensMemberApp({ member: lens, pricing: createLensPricing({ dryRun: true, env: {} }) }).listen(0, '127.0.0.1');
+        const memberServer = createLensMemberApp({ member: lens, pricing: createLensPricing({ dryRun: true, env: {} }) }).listen(0);
         await new Promise(resolve => memberServer.once('listening', resolve));
         const publicUrl = `http://127.0.0.1:${memberServer.address().port}`;
 
@@ -206,7 +206,7 @@ describe('announce end to end', () => {
         const directory = express();
         directory.use(express.json());
         setupLensesRoute(directory, pool, { readAccounts: chain(), nowSeconds: () => NOW, allowHttp: true });
-        const directoryServer = directory.listen(0, '127.0.0.1');
+        const directoryServer = directory.listen(0);
         await new Promise(resolve => directoryServer.once('listening', resolve));
 
         try {
