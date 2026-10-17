@@ -257,57 +257,6 @@ function formatParcelSelectionLabel(parcelIds = []) {
     return `${parcelIds.length} Parcels`;
 }
 
-async function launchStructureToolForSelection(kind) {
-    const selection = getCurrentParcelSelectionContext();
-    if (!selection.ids.length) {
-        const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.select_parcels_before_launching_the_structure_tool', 'Select parcels before launching the structure tool.'));
-        return false;
-    }
-    if (await shouldStopFreshProposalForWholeBlock(kind, selection)) return false;
-    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
-    if (!contiguity.contiguous) {
-        if (typeof showProposalAlertMessage === 'function') {
-            showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
-        } else {
-            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            window.CbDialog.alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
-        }
-        return false;
-    }
-    const geometry = buildGeometryFromParcels(selection.ids);
-    if (!geometry) {
-        const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.could_not_build_geometry_for_the_selected_parcels', 'Could not build geometry for the selected parcels.'));
-        return false;
-    }
-    const oneArea = (typeof window === 'undefined' || !window.__parcelContiguity?.isContiguous)
-        ? geometry.type === 'Polygon' || (geometry.type === 'MultiPolygon' && geometry.coordinates?.length === 1)
-        : window.__parcelContiguity.isContiguous(geometry);
-    if (!oneArea) {
-        if (typeof showProposalAlertMessage === 'function') {
-            showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
-        } else {
-            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            window.CbDialog.alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
-        }
-        return false;
-    }
-    if (typeof showStructureProposalDialog !== 'function') {
-        const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.structure_proposal_dialog_is_unavailable', 'Structure proposal dialog is unavailable.'));
-        return false;
-    }
-    closeProposalDialog();
-    showStructureProposalDialog({
-        kind,
-        parcelIds: selection.ids,
-        geometry,
-        blockName: formatParcelSelectionLabel(selection.ids)
-    });
-    return true;
-}
-
 async function launchSingleBuildingToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.ids.length) {

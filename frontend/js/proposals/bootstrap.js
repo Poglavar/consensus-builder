@@ -50,7 +50,6 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof window !== 'undefined') {
-    window.showStructureProposalDialog = showStructureProposalDialog;
     window.handleProposalToolButton = handleProposalToolButton;
     window.selectLandUse = selectLandUse;
     window.onProposalLandUseChange = onProposalLandUseChange;

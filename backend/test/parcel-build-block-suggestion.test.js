@@ -211,11 +211,10 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(maybeSuggestWholeBlockForFreshProposal).toHaveBeenCalledOnce();
     });
 
-    it('covers classic Freeform, Row, and structure launchers with the same preflight', async () => {
+    it('covers classic Freeform and Row launchers with the same preflight', async () => {
         const maybeSuggestWholeBlockForFreshProposal = vi.fn(async () => true);
         const openSingleBuildingForParcels = vi.fn();
         const openRowHouseForParcels = vi.fn();
-        const showStructureProposalDialog = vi.fn();
         const layer = { feature: {} };
         const context = {
             console,
@@ -228,7 +227,6 @@ describe('whole-block fresh-proposal suggestion', () => {
             maybeSuggestWholeBlockForFreshProposal,
             openSingleBuildingForParcels,
             openRowHouseForParcels,
-            showStructureProposalDialog,
             updateStatus: vi.fn()
         };
         context.window = context;
@@ -236,42 +234,13 @@ describe('whole-block fresh-proposal suggestion', () => {
 
         await context.launchSingleBuildingToolForSelection();
         await context.launchRowHouseToolForSelection();
-        await context.launchStructureToolForSelection('park');
 
         expect(maybeSuggestWholeBlockForFreshProposal.mock.calls).toEqual([
             ['single', ['parcel-1']],
-            ['row', ['parcel-1']],
-            ['park', ['parcel-1']]
+            ['row', ['parcel-1']]
         ]);
         expect(openSingleBuildingForParcels).not.toHaveBeenCalled();
         expect(openRowHouseForParcels).not.toHaveBeenCalled();
-        expect(showStructureProposalDialog).not.toHaveBeenCalled();
-    });
-
-    it('refuses a disconnected square in the classic structure launcher', async () => {
-        const showProposalAlertMessage = vi.fn();
-        const buildGeometryFromParcels = vi.fn();
-        const context = {
-            console,
-            window: null,
-            document: { addEventListener() { } },   // list-ui.js listens for the sheet events at load
-            multiParcelSelection: {
-                selectedParcels: new Set(['west', 'east']),
-                getSelectedParcels: vi.fn(() => [{ feature: {} }, { feature: {} }])
-            },
-            ParcelPresenter: { getLayers: vi.fn(() => [{ feature: {} }, { feature: {} }]) },
-            areParcelsContiguous: vi.fn(() => ({ contiguous: false, components: 2 })),
-            showProposalAlertMessage,
-            buildGeometryFromParcels,
-            updateStatus: vi.fn()
-        };
-        context.window = context;
-        vm.runInNewContext(listUiSource, context);
-
-        await expect(context.launchStructureToolForSelection('square')).resolves.toBe(false);
-
-        expect(showProposalAlertMessage).toHaveBeenCalledWith('parcels_not_contiguous', 'Parcels not contiguous');
-        expect(buildGeometryFromParcels).not.toHaveBeenCalled();
     });
 
     it('covers the classic Block editor and no-editor public-space choice', async () => {
