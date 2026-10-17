@@ -61,6 +61,8 @@ describe('WFS parcel adapter', () => {
         { type: 'name', properties: { name: 'CRS84' } },
         { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC::CRS84' } },
         { type: 'name', properties: { name: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84' } },
+        // GeoServer's spelling for a srsName=CRS:84 request (Berlin ALKIS, GeoSampa, 2026-10-17).
+        { type: 'name', properties: { name: 'urn:ogc:def:crs:CRS::84' } },
         { type: 'name', properties: { name: 'EPSG:4326' } }
     ])('accepts absent or recognized WGS84 GeoJSON CRS metadata (%s)', async crs => {
         const payload = { type: 'FeatureCollection', features: [feature(1)], numberMatched: 1, numberReturned: 1 };

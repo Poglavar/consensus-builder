@@ -4,6 +4,8 @@ const GEOJSON_CRS_NAMES = Object.freeze({
     4326: new Set([
         'urn:ogc:def:crs:OGC::CRS84', 'urn:ogc:def:crs:OGC:1.3:CRS84',
         'http://www.opengis.net/def/crs/OGC/1.3/CRS84', 'OGC:CRS84', 'CRS84',
+        // GeoServer names CRS:84 this way (Berlin ALKIS, GeoSampa São Paulo, seen 2026-10-17).
+        'urn:ogc:def:crs:CRS::84',
         'EPSG:4326', 'urn:ogc:def:crs:EPSG::4326', 'http://www.opengis.net/def/crs/EPSG/0/4326'
     ]),
     3857: new Set([
