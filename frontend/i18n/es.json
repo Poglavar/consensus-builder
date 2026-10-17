@@ -476,6 +476,13 @@
             "sponsorNothing": "Los pagos de los propietarios cubren todos los cobros; el patrocinador no paga nada."
         }
     },
+    "proposalGroundRebase": {
+        "fork": "Nueva propuesta con la misma geometría",
+        "forkHint": "Copia esta propuesta con las parcelas que su geometría cubre en el terreno que se muestra ahora. La propuesta publicada no cambia.",
+        "forkFailed": "No se pudo iniciar la nueva propuesta: {{reason}}",
+        "noParcels": "Esta geometría no cubre ninguna parcela en el terreno visible.",
+        "rederived": "El catastro cambió bajo este borrador: sus parcelas ahora siguen su geometría ({{count}})."
+    },
     "proposalApplyFailures": {
         "outsideCadastre": "La geometría de la propuesta se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea una propuesta que incluya las parcelas adicionales.",
         "outsideSite": "La geometría de la propuesta se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",

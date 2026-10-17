@@ -8,13 +8,14 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const supportView = require('../../frontend/js/proposals/support-view.js');
 const displayText = require('../../frontend/js/proposals/display-text.js');
+const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const renderStart = source.indexOf('function safeAgentText(');
 const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '' } = {}) {
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false } = {}) {
     const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
@@ -49,6 +50,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
     const window = {
         i18n: null,
         __proposalMapActionFailures: actionError ? { [String(proposal.proposalId)]: actionError } : {},
+        __proposalGroundForkOffers: forkOffer ? { [String(proposal.proposalId)]: true } : {},
+        ProposalGroundRebase: groundRebase,
         addEventListener() {}, removeEventListener() {},
         MapShell: { closeSheets() {} },
         ProposalDisplayText: displayText,
@@ -130,6 +133,16 @@ describe('proposal details action footer', () => {
         expect(panel('[data-proposal-map-action-error]').attr('role')).toBe('alert');
         expect(panel('[data-proposal-map-action-error]').attr('data-proposal-map-action-error')).toBe('lake-1');
         expect(panel('[data-proposal-map-action-error]').text()).toBe('Geometry extends beyond this site.');
+        expect(panel('[data-ground-rebase]')).toHaveLength(0);
+    });
+
+    it('offers a new proposal with the same geometry under a ground-change error', () => {
+        const proposal = { proposalId: '879', title: 'Block', cadastreParcelIds: ['HR-1-1'] };
+        const result = render(proposal, { actionError: 'The proposal geometry extends beyond its selected cadastral parcels.', forkOffer: true });
+        const panel = parse(result.footer.innerHTML);
+        const button = panel('[data-proposal-map-action-error] [data-ground-rebase]');
+        expect(button.attr('data-ground-rebase')).toBe('879');
+        expect(button.text().trim()).toBe('New proposal with same geometry');
     });
 
     it.each([

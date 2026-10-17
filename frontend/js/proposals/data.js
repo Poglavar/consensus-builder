@@ -1422,6 +1422,22 @@ const proposalStorage = {
         return true;
     },
 
+    // A local draft's parcels re-derived from its geometry on today's ground (proposals/ground-rebase.js).
+    // Published records are never changed: they fork instead. The stamped effect fingerprint and
+    // ownership flow described the old parcels, so they go; publishing stamps them afresh.
+    setDraftCadastreParcelIds(proposalId, ids) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal || !Array.isArray(ids) || !ids.length) return false;
+        if (typeof isPublishedProposalRecord === 'function' && isPublishedProposalRecord(proposal)) return false;
+        proposal.cadastreParcelIds = ids.map(String);
+        delete proposal.effectHash;
+        delete proposal.ownershipFlow;
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        this.save();
+        return true;
+    },
+
     setProposalApplied(proposalId, applied) {
         const proposal = this.getProposal(proposalId);
         if (!proposal) return false;

@@ -408,7 +408,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? window.__proposalMapActionFailures?.[String(proposalKey)]
         : '';
     const mapActionFailureHtml = mapActionFailure
-        ? `<div class="proposal-editor-approval-error proposal-map-action-error" data-proposal-map-action-error="${safeAgentText(proposalKey)}" role="alert">${safeAgentText(mapActionFailure)}</div>`
+        ? window.ProposalGroundRebase.failureNoticeHtml(String(proposalKey), mapActionFailure,
+            !!window.__proposalGroundForkOffers?.[String(proposalKey)], safeAgentText)
         : '';
     const hasProposalManager = typeof ProposalManager !== 'undefined'
         && typeof ProposalManager.applyProposal === 'function'

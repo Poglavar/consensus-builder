@@ -476,6 +476,13 @@
             "sponsorNothing": "Owner payments cover every payout; the sponsor pays nothing."
         }
     },
+    "proposalGroundRebase": {
+        "fork": "New proposal with same geometry",
+        "forkHint": "Copy this proposal with the parcels its geometry covers on the ground shown now. The published proposal stays unchanged.",
+        "forkFailed": "Could not start the new proposal: {{reason}}",
+        "noParcels": "This geometry covers no parcels on the ground in view.",
+        "rederived": "The cadastre changed under this draft: its parcels now follow its geometry ({{count}})."
+    },
     "proposalApplyFailures": {
         "outsideCadastre": "The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.",
         "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",

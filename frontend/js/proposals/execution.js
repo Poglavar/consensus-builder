@@ -630,7 +630,33 @@ function proposalApplyFailureReason(proposalId, error = null) {
     return String(error?.message || error || '').trim();
 }
 
-function reportProposalMapActionFailure(proposalId, reason = '', fallbackKey = 'applyFailedUnknown', action = 'apply') {
+// After a failed apply: 'applied' when a local draft's parcels were re-derived from its geometry
+// and it applied, 'fork' when a published record should be offered a new proposal with the same
+// geometry, else null. Never throws: a failed re-derivation leaves the original error standing.
+async function rebaseAfterApplyFailure(proposalId, proposal) {
+    const rebaseApi = window.ProposalGroundRebase;
+    if (!rebaseApi || !proposal) return null;
+    try {
+        const failure = typeof ProposalManager !== 'undefined' ? ProposalManager.getLastApplyFailureInfo?.(proposalId) : null;
+        const published = typeof isPublishedProposalRecord === 'function' && isPublishedProposalRecord(proposal);
+        const route = rebaseApi.rebaseRoute(proposal, failure, published);
+        if (route !== 'rederive') return route;
+        const result = await rebaseApi.rederiveAndApply(proposal, rebaseApi.browserDeps());
+        console.log(`[${new Date().toISOString()}] [applyProposalToMap] ${proposalId}: ground changed (${failure.code}); `
+            + `re-derived its parcels from its geometry → ${result.outcome} (${result.ids.length} parcels)`);
+        if (result.outcome !== 'applied') return null;
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(rebaseApi.t('proposalGroundRebase.rederived',
+                'The cadastre changed under this draft: its parcels now follow its geometry ({{count}}).', { count: result.ids.length }), 5000, 'info');
+        }
+        return 'applied';
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [applyProposalToMap] ${proposalId}: re-deriving its parcels failed`, error);
+        return null;
+    }
+}
+
+function reportProposalMapActionFailure(proposalId, reason = '', fallbackKey = 'applyFailedUnknown', action = 'apply', extra = {}) {
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
     let fallback;
     switch (fallbackKey) {
@@ -651,21 +677,30 @@ function reportProposalMapActionFailure(proposalId, reason = '', fallbackKey = '
     if (proposalId) {
         const failures = window.__proposalMapActionFailures || (window.__proposalMapActionFailures = Object.create(null));
         failures[String(proposalId)] = message;
+        const forkOffers = window.__proposalGroundForkOffers || (window.__proposalGroundForkOffers = Object.create(null));
+        if (extra && extra.offerFork) forkOffers[String(proposalId)] = true;
+        else delete forkOffers[String(proposalId)];
         const detailsContent = typeof document !== 'undefined' ? document.getElementById('proposal-details-content') : null;
         if (detailsContent?.dataset?.proposalId === String(proposalId)) {
             const panelError = [...document.querySelectorAll('[data-proposal-map-action-error]')]
                 .find(element => element.dataset.proposalMapActionError === String(proposalId));
+            let notice = panelError || null;
             if (panelError) panelError.textContent = message;
             else {
                 const footer = document.getElementById('proposal-details-footer');
                 if (footer?.appendChild && typeof document.createElement === 'function') {
-                    const notice = document.createElement('div');
+                    notice = document.createElement('div');
                     notice.className = 'proposal-editor-approval-error proposal-map-action-error';
                     notice.dataset.proposalMapActionError = String(proposalId);
                     notice.setAttribute('role', 'alert');
                     notice.textContent = message;
                     footer.appendChild(notice);
                 }
+            }
+            // Ground changed under a published record: the way forward sits under the error.
+            if (notice && forkOffers[String(proposalId)] && window.ProposalGroundRebase && notice.insertAdjacentHTML) {
+                const escape = value => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                notice.insertAdjacentHTML('beforeend', window.ProposalGroundRebase.offerButtonHtml(String(proposalId), escape));
             }
         }
     }
@@ -676,6 +711,7 @@ function reportProposalMapActionFailure(proposalId, reason = '', fallbackKey = '
 function clearProposalMapActionFailure(proposalId) {
     if (!proposalId || typeof window === 'undefined') return;
     if (window.__proposalMapActionFailures) delete window.__proposalMapActionFailures[String(proposalId)];
+    if (window.__proposalGroundForkOffers) delete window.__proposalGroundForkOffers[String(proposalId)];
     if (typeof document !== 'undefined') {
         [...document.querySelectorAll('[data-proposal-map-action-error]')]
             .filter(element => element.dataset.proposalMapActionError === String(proposalId))
@@ -748,10 +784,17 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         const step4Duration = performance.now() - step4Time;
         console.debug(`[applyProposalToMap] Step 4: ProposalManager.applyProposal completed (${step4Duration.toFixed(2)}ms)`);
 
+        let rebase = null;
         if (applied === false) {
             console.warn(`[applyProposalToMap] Proposal application returned false`);
+            // Ground that changed under the stored parcels (proposals/ground-rebase.js): a local
+            // draft re-derives its parcels from its geometry and applies; a published record keeps
+            // its error and is offered a new proposal with the same geometry.
+            rebase = await rebaseAfterApplyFailure(safeId, proposal);
+        }
+        if (applied === false && rebase !== 'applied') {
             const reason = proposalApplyFailureReason(safeId);
-            reportProposalMapActionFailure(safeId, reason);
+            reportProposalMapActionFailure(safeId, reason, 'applyFailedUnknown', 'apply', { offerFork: rebase === 'fork' });
             if (button && originalButtonContent) {
                 button.innerHTML = originalButtonContent;
                 button.disabled = false;

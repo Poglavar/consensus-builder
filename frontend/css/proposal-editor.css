@@ -46,6 +46,12 @@
     font-size: var(--cb-text-sm);
 }
 
+/* An apply error that carries its way forward (proposals/ground-rebase.js): the action sits under the text. */
+.proposal-map-action-error .btn-ground-rebase {
+    display: flex;
+    margin-top: 8px;
+}
+
 .proposal-editor-approval-list {
     display: grid;
     gap: 7px;

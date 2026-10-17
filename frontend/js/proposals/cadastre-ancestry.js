@@ -189,6 +189,19 @@
         return declared;
     }
 
+    // The cadastral parcels a record's geometry takes on the ground in view today (>= 1 m² each):
+    // loads the ground under its footprint, then reads it. For re-basing a record whose stored
+    // parcels no longer fit the cadastre (proposals/ground-rebase.js).
+    async function currentCadastreParcelIds(proposal) {
+        const api = planOrder();
+        const repository = global.CadastralParcelRepository;
+        const footprint = api && proposal ? api.footprintOf(proposal) : null;
+        if (!footprint) throw new Error('The proposal has no footprint to find its parcels from.');
+        if (!repository || typeof repository.ensureFootprint !== 'function') throw new Error('The cadastral repository is unavailable.');
+        await repository.ensureFootprint(footprint, proposal.city ? { city: proposal.city } : {});
+        return undeclaredParcelsUnder(footprint, []).map(hit => String(hit.id));
+    }
+
     // The ownership flow of a proposal's formation against the live cadastre (see ownership-flow.js).
     // Same contract as validateCadastreParcelIds: additive bookkeeping, so a failure costs the field,
     // never the proposal.
@@ -223,6 +236,7 @@
         declarationCoveringFootprint,
         publishDeclaration,
         validateCadastreParcelIds,
+        currentCadastreParcelIds,
         computeOwnershipFlow
     };
 

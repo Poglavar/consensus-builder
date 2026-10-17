@@ -476,6 +476,13 @@
             "sponsorNothing": "Uplate vlasnika pokrivaju sve isplate; pokrovitelj ne plaća ništa."
         }
     },
+    "proposalGroundRebase": {
+        "fork": "Novi predlog sa istom geometrijom",
+        "forkHint": "Kopiraj ovaj predlog sa parcelama koje njegova geometrija pokriva na trenutno prikazanoj podlozi. Objavljeni predlog ostaje nepromenjen.",
+        "forkFailed": "Novi predlog nije moguće započeti: {{reason}}",
+        "noParcels": "Ova geometrija ne pokriva nijednu parcelu na prikazanoj podlozi.",
+        "rederived": "Katastar se promenio ispod ovog nacrta: njegove parcele sada prate njegovu geometriju ({{count}})."
+    },
     "proposalApplyFailures": {
         "outsideCadastre": "Geometrija predloga prelazi granice izabranih katastarskih parcela. Zadržite je unutar izabranog zemljišta ili napravite predlog koji obuhvata dodatne parcele.",
         "outsideSite": "Geometrija predloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju pre primene.",
