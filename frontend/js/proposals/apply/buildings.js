@@ -516,6 +516,8 @@
                 area: _calculateGeoJsonArea(geometry)
             })).filter(part => part.area >= 0.5).sort((a, b) => b.area - a.area);
 
+            if (isForeign && allocateForeignIndex) allocateForeignIndex.reserve(hostIdentity.anchor, hostIdentity.token, hostIdentity.index);
+
             parts.forEach((part, index) => {
                 const remainder = JSON.parse(JSON.stringify(hostFeature));
                 remainder.geometry = part.geometry;

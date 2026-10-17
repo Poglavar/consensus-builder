@@ -643,6 +643,7 @@
                     const parentId = String(entry.id);
                     const parentProps = entry.feature.properties || {};
                     const parentIdentity = formationEdit.formationIdentityOf(entry.feature);
+                    if (parentIdentity && allocForeign) allocForeign.reserve(parentIdentity.anchor, parentIdentity.token, parentIdentity.index);
                     parts.forEach((part, partIndex) => {
                         const clone = JSON.parse(JSON.stringify(entry.feature));
                         clone.geometry = part.geometry;

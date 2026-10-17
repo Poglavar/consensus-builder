@@ -342,6 +342,7 @@
                             && typeof _extractPolygonsWithHolesFromGeometry === 'function'
                             && typeof _ensurePolygonIsClosed === 'function') {
                             if (!allocForeignIndex) allocForeignIndex = this._createForeignIndexAllocator(options);
+                            allocForeignIndex.reserve(carryIdentity.anchor, carryIdentity.token, carryIdentity.index);
                             const parts = _extractPolygonsWithHolesFromGeometry(leftover.geometry)
                                 .map(({ outer, holes }) => {
                                     const coords = [_ensurePolygonIsClosed(outer || []), ...(Array.isArray(holes) ? holes.map(ring => _ensurePolygonIsClosed(ring || [])) : [])];

@@ -407,7 +407,7 @@ function _childGeometrySortKey(feature) {
 // -6. The registry is purged before replay; its entries therefore describe this fold only.
 function _createForeignIndexAllocator(fabric) {
     const next = new Map();
-    return (cadastreId, token) => {
+    const keyOf = (cadastreId, token) => {
         const base = String(cadastreId || '').trim();
         const producerToken = String(token || '').trim();
         if (!base || !producerToken) {
@@ -437,10 +437,23 @@ function _createForeignIndexAllocator(fabric) {
             else fabric.entriesForCadastre([base], { includeCorridors: true }).forEach(scan);
             next.set(key, max + 1);
         }
+        return key;
+    };
+    const allocate = (cadastreId, token) => {
+        const key = keyOf(cadastreId, token);
         const value = next.get(key);
         next.set(key, value + 1);
         return value;
     };
+    // The largest piece of a cut foreign parent keeps the parent's own index. Once the parent is
+    // consumed the fabric no longer shows that index, so a split would be handed it again and
+    // overwrite the carried piece (the square cut through a readjustment remainder, 2026-10-17,
+    // lost 14,782 m² that way). Callers reserve the carried index before allocating splits.
+    allocate.reserve = (cadastreId, token, index) => {
+        const key = keyOf(cadastreId, token);
+        if (Number.isInteger(index) && index >= next.get(key)) next.set(key, index + 1);
+    };
+    return allocate;
 }
 
 function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options = {}) {

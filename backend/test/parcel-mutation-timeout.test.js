@@ -179,4 +179,25 @@ describe('_createForeignIndexAllocator', () => {
         byCadastre.mock.calls.forEach(([ids]) => expect(ids).toHaveLength(1));
         mutation.rollback();
     });
+
+    it('never hands a split the index a carried piece keeps once its parent is consumed', async () => {
+        const fabric = await seededFabric(['HR-A']);
+        const mutation = fabric.beginMutation({ kind: 'test' });
+        // The parent HR-A#T1-21 is the highest-numbered piece and has already been consumed: the
+        // fabric shows only -20. Its largest leftover keeps index 21.
+        mutation.upsertFeatures([
+            polygon('HR-A#T1-20', { cadastreParcelIds: ['HR-A'], syntheticToken: 'T1', syntheticIndex: 20 }, 0)
+        ]);
+        const options = { _parcelMutation: { fabric: mutation } };
+        const unreserved = ProposalManager._createForeignIndexAllocator(options);
+        expect(unreserved('HR-A', 'T1')).toBe(21); // what overwrote the carried piece
+
+        const allocate = ProposalManager._createForeignIndexAllocator(options);
+        allocate.reserve('HR-A', 'T1', 21);
+        expect([allocate('HR-A', 'T1'), allocate('HR-A', 'T1')]).toEqual([22, 23]);
+        // A reserved index below the next free one changes nothing.
+        allocate.reserve('HR-A', 'T1', 3);
+        expect(allocate('HR-A', 'T1')).toBe(24);
+        mutation.rollback();
+    });
 });
