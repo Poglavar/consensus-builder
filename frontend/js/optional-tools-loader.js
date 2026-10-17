@@ -5,7 +5,7 @@
 
     const groups = {
         roadAnalysis: ['js/road-analysis.js'],
-        roadDetection: ['js/road-detection.js'],
+        roadDetection: ['js/osm-roads-source.js', 'js/road-detection.js'],
         singleBuilding: ['js/single-building.js'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],

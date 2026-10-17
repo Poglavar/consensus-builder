@@ -5647,11 +5647,15 @@
             console.log(`[3D life] ${lifeOsmFeatures.length} OSM ways from ${source}`);
             if (isActive && scene) rebuildLifeOnly();
         };
+        // Our server's answer stands, an empty one included (its own chain already tried public
+        // Overpass after Tracestrack); only a server that does not answer sends the browser there.
         fetch(`${base}/osm-road?${query}`)
-            .then(response => (response.ok ? response.json() : null))
+            .then(response => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
             .then(collection => {
                 const features = (collection && Array.isArray(collection.features)) ? collection.features : [];
-                if (features.length) return settle(features, collection.source === 'overpass' ? 'the backend’s Overpass chain' : 'the ingested osm_road table');
+                settle(features, collection && collection.source === 'overpass' ? 'the backend’s Overpass chain' : 'the ingested osm_road table');
+            }, error => {
+                console.warn(`[3D life] our server did not answer /osm-road (${error && error.message ? error.message : error}); asking a public Overpass instance`);
                 return fetchLifeOverpass(bounds).then(ways => settle(ways, 'a public Overpass instance'));
             })
             .catch(error => {

@@ -14,16 +14,27 @@
 // Outside the ingested table (any city without osm_road rows) a scene-sized bbox is answered from
 // OpenStreetMap live, through the shared Overpass chain (roads/osm-road-overpass.js), in the same
 // feature shape with `source: 'overpass'`. The 3D life layer and the 2D existing-roads layer thus
-// see OSM streets everywhere without the browser ever holding an Overpass credential.
+// see OSM streets everywhere without the browser ever holding an Overpass credential. A box larger
+// than a scene is answered for a scene-sized box around its centre, and says `clipped: true`.
+//
+// `railways=1` adds railway ways (table rows with a railway_type, and Overpass `way["railway"]`) for
+// the 2D road tools; the 3D life layer leaves it off and gets streets alone. Every feature carries
+// `osm_node_ids`, the shared OSM nodes the road tools rebuild topology from.
 import { parseWgs84Bbox, wgs84BboxFilterSql } from '../utils/helpers.js';
-import { fetchOverpassRoads as defaultFetchOverpassRoads, roadsBboxTooLarge } from '../roads/osm-road-overpass.js';
+import {
+    fetchOverpassRoads as defaultFetchOverpassRoads,
+    fetchOverpassRoadsAndRailways as defaultFetchOverpassRoadsAndRailways,
+    roadsBboxTooLarge, clipRoadsBbox
+} from '../roads/osm-road-overpass.js';
 
 const MAX_FEATURES = 8000;
 
 export function setupOsmRoadRoute(app, pool, options = {}) {
     const fetchOverpassRoads = options.fetchOverpassRoads || defaultFetchOverpassRoads;
+    const fetchOverpassRoadsAndRailways = options.fetchOverpassRoadsAndRailways || defaultFetchOverpassRoadsAndRailways;
     app.get('/osm-road', async (req, res) => {
         try {
+            const railways = req.query.railways === '1' || req.query.railways === 'true';
             const boxes = parseWgs84Bbox(req.query.bbox, req.query.crs);
             const hasBbox = Array.isArray(boxes);
 
@@ -42,10 +53,12 @@ export function setupOsmRoadRoute(app, pool, options = {}) {
                         'width_meters', r.width_meters,
                         'city', r.city,
                         'tags', r.tags,
+                        'osm_node_ids', r.osm_node_ids,
                         'source', 'osm_road'
                     ) AS properties
                 FROM osm_road r
-                WHERE r.current AND r.geom IS NOT NULL AND r.highway_type IS NOT NULL
+                WHERE r.current AND r.geom IS NOT NULL
+                  AND ${railways ? '(r.highway_type IS NOT NULL OR r.railway_type IS NOT NULL)' : 'r.highway_type IS NOT NULL'}
             `;
 
             const params = [];
@@ -65,12 +78,16 @@ export function setupOsmRoadRoute(app, pool, options = {}) {
                 geometry: row.geometry
             }));
 
-            if (!features.length && hasBbox && boxes.length === 1 && !roadsBboxTooLarge(boxes[0])) {
+            const liveBox = !features.length && hasBbox && boxes.length === 1
+                ? (roadsBboxTooLarge(boxes[0]) ? clipRoadsBbox(boxes[0]) : boxes[0]) : null;
+            if (liveBox) {
+                const clipped = liveBox !== boxes[0];
                 try {
-                    const live = await fetchOverpassRoads(boxes[0]);
+                    const live = await (railways ? fetchOverpassRoadsAndRailways : fetchOverpassRoads)(liveBox);
                     return res.json({
                         type: 'FeatureCollection', features: live.features, source: 'overpass',
-                        truncated: !!live.truncated, partial: !!live.partial
+                        truncated: !!live.truncated, partial: !!live.partial,
+                        ...(clipped ? { clipped: true, bbox: liveBox } : {})
                     });
                 } catch (err) {
                     console.warn(`[${new Date().toISOString()}] /osm-road: no table rows and Overpass unavailable (${err && err.message ? err.message : err})`);

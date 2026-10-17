@@ -512,9 +512,10 @@ function toggleWFSPolygons() {
 
 window.toggleWFSPolygons = toggleWFSPolygons;
 
-// Function to fetch road data from OpenStreetMap using Overpass API
+// Road and railway data from OpenStreetMap, through our backend (/osm-road: the ingested table, else
+// its Tracestrack-first Overpass chain; js/osm-roads-source.js). Public Overpass is asked directly
+// only when our server itself does not answer.
 async function fetchOSMRoads() {
-    const status = document.getElementById('status');
     updateStatus('Fetching road data from OpenStreetMap...');
 
     try {
@@ -531,28 +532,24 @@ async function fetchOSMRoads() {
             return cachedData;
         }
 
-        // Overpass API query for roads (highway) and railways; exclude footpaths explicitly
-        const overpassQuery = `
-            [out:json][timeout:60];
-            (
-                way[highway][name](${south},${west},${north},${east});
-                way[highway~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|service|living_street)$"](${south},${west},${north},${east});
-                way[railway](${south},${west},${north},${east});
-            );
-            out body geom;
-        `;
-
-        const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
-
-        const response = await fetch(overpassUrl);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch OSM data: ${response.statusText}`);
+        let data;
+        try {
+            const base = typeof getBackendBase === 'function' ? getBackendBase() : '';
+            const answer = await window.OsmRoadsSource.fetchFromBackend([west, south, east, north], { base });
+            if (answer.tooLarge) {
+                updateStatus('Zoom in to fetch OSM roads: this view is too large');
+                return null;
+            }
+            data = { elements: answer.elements };
+            if (answer.partial) console.warn(`[${new Date().toISOString()}] [road-detection] OSM roads incomplete for this view (a part could not be fetched or hit the cap)`);
+            // A partial answer is not cached, so the next fetch asks again for what is missing.
+            if (!answer.partial) cacheOSMData(data, south, west, north, east);
+        } catch (error) {
+            if (!error || !error.backendUnavailable) throw error;
+            console.warn(`[${new Date().toISOString()}] [road-detection] ${error.message}; asking public Overpass directly`);
+            data = await fetchOSMRoadsFromPublicOverpass(south, west, north, east);
+            cacheOSMData(data, south, west, north, east);
         }
-
-        const data = await response.json();
-
-        // Cache the result
-        cacheOSMData(data, south, west, north, east);
 
         updateStatus(`Fetched ${data.elements.length} roads from OpenStreetMap`);
         return data;
@@ -561,6 +558,25 @@ async function fetchOSMRoads() {
         updateStatus(`Error fetching OSM data: ${error.message}`);
         return null;
     }
+}
+
+// The fallback for when our server is down: the public Overpass server, from the browser.
+async function fetchOSMRoadsFromPublicOverpass(south, west, north, east) {
+    // Overpass API query for roads (highway) and railways; exclude footpaths explicitly
+    const overpassQuery = `
+        [out:json][timeout:60];
+        (
+            way[highway][name](${south},${west},${north},${east});
+            way[highway~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|service|living_street)$"](${south},${west},${north},${east});
+            way[railway](${south},${west},${north},${east});
+        );
+        out body geom;
+    `;
+    const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch OSM data: ${response.statusText}`);
+    }
+    return response.json();
 }
 
 // Function to store OSM data in cache
