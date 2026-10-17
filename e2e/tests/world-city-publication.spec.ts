@@ -176,6 +176,8 @@ test.describe('Worldwide publication and city routing @core', () => {
   });
 
   test('a second tab of the same city is read-only, a tab of another city stays editable', async ({ mockApi: first, context }) => {
+    // Four full app loads: 30 s is not enough on a busy machine.
+    test.setTimeout(90_000);
     await openCity(first);
     const banner = (page: Page) => page.locator('#cb-multitab-banner');
     const readOnly = (page: Page) => page.evaluate(() => !!(window as any).__cbSecondaryTab);

@@ -28,6 +28,9 @@ test.describe('Supporting tertiary controls @core', () => {
     const proposalId = await createSpace(secondary, 'park');
     await expect(banner).toBeVisible({ timeout: 5_000 });
     await expect(banner).toContainText('already open in another tab');
+    await expect(banner).toContainText('recovery copy');
+    // The banner is the one message: no toast repeats it.
+    await expect(secondary.locator('#ephemeral-message-container', { hasText: 'another tab' })).toHaveCount(0);
     expect(await isSecondary(secondary)).toBe(true);
     expect(await secondary.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => String(p.proposalId) === id), proposalId)).toBe(true);
     expect(await primary.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => String(p.proposalId) === id), proposalId)).toBe(false);

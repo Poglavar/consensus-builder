@@ -1,6 +1,6 @@
-// A create or edit in a read-only (secondary) tab must TELL the user on screen that the work was
-// thrown away — the console error alone is not something anyone is looking at, and the yellow
-// banner is dismissable and easy to stop seeing.
+// The multi-tab guard: a second tab of the same city goes read-only under one banner, and work it
+// cannot save brings that banner back even after it was dismissed. The banner is the only message:
+// no toast repeats it.
 //
 // multi-tab-guard.js is a classic browser script with no exports and runs entirely at load time, so
 // it is evaluated in THIS realm behind a fake window/document/BroadcastChannel and driven through
@@ -16,13 +16,6 @@ const source = readFileSync(GUARD, 'utf8');
 function fakeElement(id) {
     const el = {
         id,
-        style: {
-            _v: {},
-            setProperty(k, v) { this._v[k] = v; },
-            removeProperty(k) { delete this._v[k]; },
-            get top() { return this._v.top; },
-            set top(v) { this._v.top = v; }
-        },
         children: [],
         className: '',
         textContent: '',
@@ -33,7 +26,6 @@ function fakeElement(id) {
         addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); },
         removeEventListener() { },
         remove() { if (this.parent) this.parent.children = this.parent.children.filter(c => c !== this); this.removed = true; },
-        getBoundingClientRect: () => ({ top: 0, bottom: 44, left: 0, right: 1000, width: 1000, height: 44 })
     };
     return el;
 }
@@ -124,21 +116,12 @@ describe('read-only tab write reporting', () => {
         expect(guard.byId.get('cb-multitab-banner')).toBeTruthy();
     });
 
-    it('toasts that the proposal was not saved when a write is dropped', () => {
+    it('says where unsaved work goes, and never with a toast', () => {
+        const banner = guard.byId.get('cb-multitab-banner');
+        expect(banner.children[0].textContent).toMatch(/already open in another tab/);
+        expect(banner.children[0].textContent).toMatch(/recovery copy/);
         guard.scope.__cbReportSecondaryWriteBlocked();
-        expect(guard.toasts).toHaveLength(1);
-        expect(guard.toasts[0].text).toMatch(/NOT saved/i);
-        expect(guard.toasts[0].text).toMatch(/main tab/i);
-        expect(guard.toasts[0].text).toMatch(/recovery copy/i);
-        // Never the raw i18n key, which is what a missing translation resolves to.
-        expect(guard.toasts[0].text).not.toContain('multitab.');
-    });
-
-    it('does not spam: one user action triggers several saves', () => {
-        guard.scope.__cbReportSecondaryWriteBlocked();
-        guard.scope.__cbReportSecondaryWriteBlocked();
-        guard.scope.__cbReportSecondaryWriteBlocked();
-        expect(guard.toasts).toHaveLength(1);
+        expect(guard.toasts).toEqual([]);
     });
 
     it('brings the dismissed banner back, because work is being lost right now', () => {
@@ -149,16 +132,6 @@ describe('read-only tab write reporting', () => {
 
         guard.scope.__cbReportSecondaryWriteBlocked();
         expect(guard.byId.get('cb-multitab-banner').removed).toBeFalsy();
-    });
-
-    it('pushes the toast clear of the banner instead of under it', () => {
-        const container = fakeElement('ephemeral-message-container');
-        guard.byId.set('ephemeral-message-container', container);
-
-        guard.scope.__cbReportSecondaryWriteBlocked();
-
-        // Banner bottom is 44px in the stub, so the toast may not sit at the CSS default of 20px.
-        expect(container.style.top).toBe('56px');
     });
 
     it('says nothing at all in a tab that owns the store', () => {

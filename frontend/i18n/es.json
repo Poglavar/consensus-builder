@@ -191,8 +191,7 @@
         "floorHeightHint": "Calculado a partir de las huellas dibujadas y la altura ÷ {{height}} m por planta."
     },
     "multitab": {
-        "warning": "Esta ciudad ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas de esta ciudad y recarga esta para editar. Otras ciudades pueden quedar abiertas.",
-        "notSaved": "Esta ciudad está abierta en otra pestaña. Tus cambios se conservan en una copia de recuperación, pero no se guardan en el plan compartido. Usa la pestaña principal para guardar los cambios."
+        "warning": "Esta ciudad ya está abierta en otra pestaña, así que los cambios aquí no se guardan en el plan. Se conservan en una copia de recuperación que se te ofrecerá al volver a abrir esta ciudad con sus otras pestañas cerradas. Otras ciudades pueden quedar abiertas."
     },
     "proposalApproval": {
         "ownerLabel": "Propietario {{label}}",

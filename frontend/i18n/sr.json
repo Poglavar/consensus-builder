@@ -191,8 +191,7 @@
         "floorHeightHint": "Proračun iz nacrtanih osnova i visine ÷ {{height}} m po etaži."
     },
     "multitab": {
-        "warning": "Ovaj grad je već otvoren u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice ovog grada i ponovo učitajte ovu za uređivanje. Drugi gradovi mogu ostati otvoreni.",
-        "notSaved": "Ovaj grad je otvoren u drugoj kartici. Vaše promene se čuvaju u kopiji za oporavak, ali se ne čuvaju u zajedničkom planu. Koristite glavnu karticu da sačuvate promene."
+        "warning": "Ovaj grad je već otvoren u drugoj kartici, pa se promene ovde ne čuvaju u planu. Čuvaju se u kopiji za oporavak, koja će vam biti ponuđena kada ponovo otvorite ovaj grad sa zatvorenim ostalim karticama. Drugi gradovi mogu ostati otvoreni."
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",

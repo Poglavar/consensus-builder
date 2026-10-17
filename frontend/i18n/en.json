@@ -191,8 +191,7 @@
         "floorHeightHint": "Calculated from the drawn footprints and height ÷ {{height}} m per storey."
     },
     "multitab": {
-        "warning": "This city is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs of this city and reload this one to edit. Other cities can stay open.",
-        "notSaved": "This city is open in another tab. Your changes are kept in a recovery copy, but are not saved to the shared plan. Use the main tab to save changes."
+        "warning": "This city is already open in another tab, so changes here aren't saved to the plan. They're kept in a recovery copy, offered back when you reopen this city with its other tabs closed. Other cities can stay open."
     },
     "proposalApproval": {
         "ownerLabel": "Owner {{label}}",
