@@ -1991,22 +1991,6 @@
         return showSingleBuildingMapEditor();
     }
 
-    // Button handler exposed globally
-    function singleBuildingOnSelectedBlock() {
-        // Route single-building creation through the unified Create Proposal modal
-        if (typeof showProposalDialog === 'function') {
-            showProposalDialog();
-            setTimeout(() => {
-                try {
-                    if (typeof handleProposalToolButton === 'function') handleProposalToolButton('single');
-                } catch (_) { }
-            }, 0);
-            return;
-        }
-        singleBuildingOverrideContext = null;
-        showSingleBuildingMapEditor();
-    }
-
     // Uploads enter the same placement editor; only Done saves the design and completes the
     // upload caller's form status. The mesh reference stays attached to the editable footprint.
     function createSingleBuildingFromUpload({ blockName, parcelIds, width, length, height, modelName, modelUrl, onConfirm } = {}) {
@@ -2062,7 +2046,6 @@
         return showSingleBuildingMapEditor();
     }
 
-    window.singleBuildingOnSelectedBlock = singleBuildingOnSelectedBlock;
     window.openSingleBuildingForParcels = openSingleBuildingForParcels;
     window.createSingleBuildingProposal = createSingleBuildingProposal;
     window.createSingleBuildingFromUpload = createSingleBuildingFromUpload;

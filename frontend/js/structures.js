@@ -1458,32 +1458,9 @@
         return { parcelIds: Array.from(new Set(parcelIds)), geometry: multiCoords.length ? { type: 'MultiPolygon', coordinates: multiCoords } : null };
     }
 
-    function redirectStructureToCreateProposal(toolKey) {
-        if (typeof showProposalDialog === 'function') {
-            showProposalDialog();
-            setTimeout(() => {
-                try {
-                    if (typeof handleProposalToolButton === 'function') handleProposalToolButton(toolKey);
-                } catch (_) { }
-            }, 0);
-            return;
-        }
-        if (typeof updateStatus === 'function') updateStatus('Use the Create Proposal modal.');
-    }
-
-    function parkOnSelectedBlock() {
-        redirectStructureToCreateProposal('park');
-    }
-
-    function squareOnSelectedBlock() {
-        redirectStructureToCreateProposal('square');
-    }
-
     // Public API
-    window.parkOnSelectedBlock = parkOnSelectedBlock;
     window.updateParksLayer = updateParksLayer;
     window.toggleParksVisibility = toggleParksVisibility;
-    window.squareOnSelectedBlock = squareOnSelectedBlock;
     window.updateSquaresLayer = updateSquaresLayer;
     window.toggleSquaresVisibility = toggleSquaresVisibility;
     window.updateLakesLayer = updateLakesLayer;

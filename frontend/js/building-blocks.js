@@ -3824,24 +3824,6 @@ function generateBuilding() {
     generateBuildingInModal();
 }
 
-function redirectBlockifyToCreateProposal() {
-    if (typeof showProposalDialog === 'function') {
-        showProposalDialog();
-        setTimeout(() => {
-            try {
-                if (typeof handleProposalToolButton === 'function') handleProposalToolButton('urban-rule');
-            } catch (_) { }
-        }, 0);
-        return;
-    }
-    if (typeof updateStatus === 'function') updateStatus('Use the Create Proposal modal.');
-}
-
-// Update the blockifySelectedBlock function to route through the Create Proposal modal
-function blockifySelectedBlock() {
-    redirectBlockifyToCreateProposal();
-}
-
 // `initialState` (optional) restores a previously-saved design instead of the defaults — see
 // applyBlockifySeedState. Used by "Copy into new proposal" to reopen a fork's original building.
 function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null, site = null }) {

@@ -118,7 +118,7 @@
         .forEach(name => forward('roadDetection', name));
 
     [
-        'openSingleBuildingForParcels', 'singleBuildingOnSelectedBlock',
+        'openSingleBuildingForParcels',
         'createSingleBuildingProposal', 'createSingleBuildingFromUpload'
     ].forEach(name => forward('singleBuilding', name, {
         guardMapMode: name === 'openSingleBuildingForParcels'
