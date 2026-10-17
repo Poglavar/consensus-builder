@@ -11,6 +11,17 @@ Agents work against the API host, https://api.urbangametheory.xyz: parcel search
 - [OpenAPI](https://api.urbangametheory.xyz/openapi.json): agent-facing endpoints as OpenAPI 3.1.
 - [x402 manifest](https://api.urbangametheory.xyz/.well-known/x402): paid resources for x402 indexers.
 
+## Guides (static HTML, English and Croatian)
+- [How to use](https://urbangametheory.xyz/how-to-use.html): the proposal lifecycle on real parcels, with video walkthroughs. Croatian: [Kako koristiti](https://urbangametheory.xyz/kako-koristiti.html).
+- [Buildings](https://urbangametheory.xyz/how-to-use-buildings.html): freeform footprints and block, row and detached-house rules.
+- [Parks, squares and lakes](https://urbangametheory.xyz/how-to-use-park-square.html): draw the surface, then arrange trees, paths, water and furniture.
+- [Land readjustment](https://urbangametheory.xyz/how-to-use-reparcellization.html): automatic or drawn divisions, with land, ownership shares and cash checked together.
+- [Roads and tracks](https://urbangametheory.xyz/how-to-use-road.html): corridors whose lanes set width and land take.
+- [Views and comparisons](https://urbangametheory.xyz/how-to-use-views.html): 2D for land work, 3D for volume and context, comparisons per parcel or owner.
+- [Free urban planning software](https://urbangametheory.xyz/urban-planning.html): what the app is for, in one page.
+- [Roadmap](https://urbangametheory.xyz/roadmap.html): now, next and later.
+- [Parcel source formats](https://urbangametheory.xyz/parcel-source-formats.html) and [global parcel registry report](https://urbangametheory.xyz/parcel-coverage-report.html): which cadastres the map can read.
+
 ## Human surfaces
 - [Demo](https://urbangametheory.xyz/hackathon-demo.html): the guided hackathon demo, "Hyperstition: Markets for Possible Cities".
 - [Actor explorer](https://urbangametheory.xyz/actor-explorer.html): activity from humans, algorithms and LLM agents.

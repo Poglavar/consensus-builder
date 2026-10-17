@@ -1118,6 +1118,8 @@
             "analysisToggleTooltip": "Mostrar u ocultar el último análisis de anchura",
             "analysisToggle": "Mostrar resultados del análisis vial",
             "legendTitle": "Leyenda de carreteras",
+            "legendMinLabel": "Límite inferior de ancho (m)",
+            "legendMaxLabel": "Límite superior de ancho (m)",
             "detectAi": "Detectar vías con IA",
             "detectAiTooltip": "Detectar vías con IA (función futura)",
             "detectExisting": "Detectar vías existentes",

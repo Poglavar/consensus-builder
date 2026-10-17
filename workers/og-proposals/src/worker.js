@@ -25,6 +25,13 @@ function escapeHtml(s) {
         .replace(/'/g, '&#39;');
 }
 
+// Search snippets show about 160 characters: collapse whitespace and cut on a word with an ellipsis.
+function clip(text, max = 160) {
+    const t = String(text).replace(/\s+/g, ' ').trim();
+    if (t.length <= max) return t;
+    return t.slice(0, t.lastIndexOf(' ', max - 1) > 80 ? t.lastIndexOf(' ', max - 1) : max - 1) + '…';
+}
+
 // Injects the social meta tags at the end of <head>. The page's own og:/twitter:/<title> tags are
 // stripped first (see handleHtml) — leaving duplicates is NOT safe: crawlers commonly honour the
 // FIRST occurrence, which would be the SPA's generic site card, silently defeating the whole Worker.
@@ -37,7 +44,7 @@ class HeadInjector {
             ['og:site_name', m.siteName],
             ['og:title', m.title],
             ['og:description', m.description],
-            ['og:url', m.url],
+            ['og:url', m.canonical || m.url],
             ['og:image', m.image],
             ['twitter:card', 'summary_large_image'],
             ['twitter:title', m.title],
@@ -50,7 +57,11 @@ class HeadInjector {
                 return `<meta ${attr}="${k}" content="${escapeHtml(v)}">`;
             })
             .join('');
-        head.append(`<title>${escapeHtml(m.title)}</title>${html}`, { html: true });
+        // The SPA's own description and canonical (the homepage) are stripped too: a canonical of "/"
+        // on every proposal link told search engines each proposal was a duplicate of the homepage.
+        const seo = `<meta name="description" content="${escapeHtml(m.description)}">`
+            + `<link rel="canonical" href="${escapeHtml(m.canonical || m.url)}">`;
+        head.append(`<title>${escapeHtml(m.title)}</title>${seo}${html}`, { html: true });
     }
 }
 
@@ -64,7 +75,7 @@ async function sceneMeta(slug, url, env, base) {
         ...base,
         title: `AI render of an urban proposal${where} · ${DEFAULTS.siteName}`,
         description: s.prompt
-            ? String(s.prompt).slice(0, 200)
+            ? clip(s.prompt)
             : 'A photorealistic AI view of a proposed change to the city — open to explore it in 3D.',
         image: s.imageUrl,          // already an absolute hosted PNG — point the card straight at it
         url: url.toString()
@@ -79,7 +90,7 @@ async function proposalMeta(firstId, url, env, base) {
     return {
         ...base,
         title: `${title} · ${DEFAULTS.siteName}`,
-        description: p.description ? String(p.description).slice(0, 200) : base.description,
+        description: p.description ? clip(p.description) : base.description,
         // The proposal's own image may be a data: URL server-side, so route the card through our
         // image endpoint (Route 2), which always yields absolute PNG bytes.
         image: `${env.SITE_BASE}/proposals/${encodeURIComponent(firstId)}/og-image.png`,
@@ -116,7 +127,10 @@ async function handleHtml(url, request, env) {
 
     const ids = url.pathname.replace(/^\/proposals\//, '').split(',').map(s => s.trim()).filter(Boolean);
     const firstId = ids[0];
-    let meta = { ...DEFAULTS, url: url.toString() };
+    // Canonical drops tracking and debug parameters; only ?scene= names a different page.
+    const canonical = new URL(url.origin + url.pathname);
+    if (url.searchParams.get('scene')) canonical.searchParams.set('scene', url.searchParams.get('scene'));
+    let meta = { ...DEFAULTS, url: url.toString(), canonical: canonical.toString() };
     try {
         const scene = url.searchParams.get('scene');
         if (scene) meta = await sceneMeta(scene, url, env, meta);
@@ -129,6 +143,8 @@ async function handleHtml(url, request, env) {
         .on('head title', strip)
         .on('head meta[property^="og:"]', strip)
         .on('head meta[name^="twitter:"]', strip)
+        .on('head meta[name="description"]', strip)
+        .on('head link[rel="canonical"]', strip)
         .on('head', new HeadInjector(meta))
         .transform(originResp);
 }

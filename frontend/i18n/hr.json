@@ -1238,6 +1238,8 @@
             "analysisToggleTooltip": "Prikaži ili sakrij najnoviju analizu širine ceste",
             "analysisToggle": "Prikaži rezultate analize ceste",
             "legendTitle": "Legenda cesta",
+            "legendMinLabel": "Donja granica širine (m)",
+            "legendMaxLabel": "Gornja granica širine (m)",
             "detectAi": "Otkrij ceste pomoću UI-a",
             "detectAiTooltip": "Otkrij ceste pomoću UI-a (buduća značajka)",
             "detectExisting": "Otkrij postojeće ceste",

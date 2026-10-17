@@ -1224,6 +1224,8 @@
             "analysisToggleTooltip": "Show or hide the latest road width analysis",
             "analysisToggle": "Show road analysis results",
             "legendTitle": "Road legend",
+            "legendMinLabel": "Lower width bound (m)",
+            "legendMaxLabel": "Upper width bound (m)",
             "detectingExisting": "Detecting existing roads…"
         },
         "areaMonitor": {

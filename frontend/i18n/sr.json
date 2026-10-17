@@ -1238,6 +1238,8 @@
             "analysisToggleTooltip": "Prikaži ili sakrij najnoviju analizu širine puta",
             "analysisToggle": "Prikaži rezultate analize puta",
             "legendTitle": "Legenda puteva",
+            "legendMinLabel": "Donja granica širine (m)",
+            "legendMaxLabel": "Gornja granica širine (m)",
             "detectAi": "Otkrij puteve pomoću AI",
             "detectAiTooltip": "Otkrij puteve pomoću AI (buduća funkcija)",
             "detectExisting": "Otkrij postojeće puteve",

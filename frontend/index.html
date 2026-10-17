@@ -12,7 +12,11 @@
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Consensus Builder · Free urban planning software">
     <meta property="og:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning proposals, and open city planning.">
-    <meta property="og:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
+    <meta property="og:image" content="https://urbangametheory.xyz/images/og-default.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Detached houses on small parcels beside the same land readjusted into a courtyard block">
+    <meta property="og:locale" content="en_US">
     <meta property="og:url" content="https://urbangametheory.xyz/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Consensus Builder">
@@ -23,12 +27,14 @@
     <meta name="twitter:creator" content="@UrbanGameTheory">
     <meta name="twitter:title" content="Consensus Builder · Free urban planning software">
     <meta name="twitter:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning proposals, and open city planning.">
-    <meta name="twitter:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
+    <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-default.jpg">
     <meta name="twitter:url" content="https://urbangametheory.xyz/">
 
     <!-- Standard Meta Tags -->
-    <meta name="description" content="Consensus Builder is free urban planning software for real parcels, community zoning proposals, and open city planning—SimCity on the blockchain, a focused ArcGIS alternative for collaborative city planning.">
+    <meta name="description" content="Consensus Builder is free urban planning software: design changes on real cadastral parcels in 2D and 3D, publish proposals and let communities decide.">
     <link rel="canonical" href="https://urbangametheory.xyz/">
+    <!-- Structured data for search engines and LLM crawlers: the site, its publisher and the app. -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://urbangametheory.xyz/#website","name":"Consensus Builder","url":"https://urbangametheory.xyz/","publisher":{"@id":"https://urbangametheory.xyz/#org"},"inLanguage":["en","hr","es","sr"]},{"@type":"Organization","@id":"https://urbangametheory.xyz/#org","name":"Urban Game Theory","url":"https://urbangametheory.xyz/","logo":"https://urbangametheory.xyz/images/consensus-builder-logo-2.png","sameAs":["https://x.com/UrbanGameTheory"]},{"@type":"SoftwareApplication","name":"Consensus Builder","applicationCategory":"DesignApplication","operatingSystem":"Web browser","url":"https://urbangametheory.xyz/","description":"Consensus Builder is free urban planning software: design changes on real cadastral parcels in 2D and 3D, publish proposals and let communities decide.","image":"https://urbangametheory.xyz/images/og-default.jpg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@id":"https://urbangametheory.xyz/#org"}}]}</script>
     <!-- Google Search Console ownership verification; keep this tag when updating the page. -->
     <meta name="google-site-verification" content="TiaSv9B5pjjxxDyBZdWBED2xnUAGNL1vjWO6pkRiasw" />
 
@@ -238,6 +244,8 @@
     <script>
         window.writeVersionedLocalScripts(['js/world/handoff.js']);
     </script>
+    <!-- The page's one h1 for search engines and screen readers; the map app has no visible title. -->
+    <h1 class="map-shell-sr-only">Consensus Builder: free urban planning software for real parcels</h1>
     <!-- Shared SVG defs. A Leaflet vector lives in its own inline <svg>, but `fill: url(#id)` is
          resolved against the whole document, so one running-bond paving pattern defined here can be
          referenced from the map's paths (see .corridor-strip--paved). -->
@@ -860,32 +868,32 @@
                         <div class="road-legend" id="road-legend" style="display: none;">
                             <div>
                                 <span class="legend-swatch" style="background:white; border:1px solid #ccc;"></span>
-                                <input type="number" id="legend-min-0" value="0" style="width:40px;">–<input type="number"
-                                    id="legend-max-0" value="3" style="width:40px;"> m
+                                <input type="number" id="legend-min-0" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="0" style="width:40px;">–<input type="number"
+                                    id="legend-max-0" aria-label="Upper width bound (m)" data-i18n-key="sidebar.roads.legendMaxLabel" data-i18n-attr="aria-label" value="3" style="width:40px;"> m
                             </div>
                             <div>
                                 <span class="legend-swatch" style="background:blue;"></span>
-                                <input type="number" id="legend-min-1" value="3" style="width:40px;">–<input type="number"
-                                    id="legend-max-1" value="5" style="width:40px;"> m
+                                <input type="number" id="legend-min-1" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="3" style="width:40px;">–<input type="number"
+                                    id="legend-max-1" aria-label="Upper width bound (m)" data-i18n-key="sidebar.roads.legendMaxLabel" data-i18n-attr="aria-label" value="5" style="width:40px;"> m
                             </div>
                             <div>
                                 <span class="legend-swatch" style="background:green;"></span>
-                                <input type="number" id="legend-min-2" value="5" style="width:40px;">–<input type="number"
-                                    id="legend-max-2" value="7" style="width:40px;"> m
+                                <input type="number" id="legend-min-2" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="5" style="width:40px;">–<input type="number"
+                                    id="legend-max-2" aria-label="Upper width bound (m)" data-i18n-key="sidebar.roads.legendMaxLabel" data-i18n-attr="aria-label" value="7" style="width:40px;"> m
                             </div>
                             <div>
                                 <span class="legend-swatch" style="background:yellow;"></span>
-                                <input type="number" id="legend-min-3" value="7" style="width:40px;">–<input type="number"
-                                    id="legend-max-3" value="9" style="width:40px;"> m
+                                <input type="number" id="legend-min-3" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="7" style="width:40px;">–<input type="number"
+                                    id="legend-max-3" aria-label="Upper width bound (m)" data-i18n-key="sidebar.roads.legendMaxLabel" data-i18n-attr="aria-label" value="9" style="width:40px;"> m
                             </div>
                             <div>
                                 <span class="legend-swatch" style="background:orange;"></span>
-                                <input type="number" id="legend-min-4" value="9" style="width:40px;">–<input type="number"
-                                    id="legend-max-4" value="12" style="width:40px;"> m
+                                <input type="number" id="legend-min-4" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="9" style="width:40px;">–<input type="number"
+                                    id="legend-max-4" aria-label="Upper width bound (m)" data-i18n-key="sidebar.roads.legendMaxLabel" data-i18n-attr="aria-label" value="12" style="width:40px;"> m
                             </div>
                             <div>
                                 <span class="legend-swatch" style="background:black;"></span>
-                                <input type="number" id="legend-min-5" value="12" style="width:40px;">+ m
+                                <input type="number" id="legend-min-5" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="12" style="width:40px;">+ m
                             </div>
                         </div>
                     </details>
@@ -2509,8 +2517,8 @@
                             role="group" aria-labelledby="welcome-language-label"></div>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="username-input" placeholder="Your username" required
-                            data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder">
+                        <input type="text" id="username-input" placeholder="Your username" aria-label="Your username" required
+                            data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder,aria-label">
                     </div>
                     <div id="takeover-section" class="takeover-section" hidden>
                         <p id="takeover-message"></p>
