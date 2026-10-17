@@ -28,7 +28,7 @@ import { INVALID_FOOTPRINT, footprintParts, footprintQueryParams, hasFootprint }
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
 import { computeSourceBinding, computeSourceParcelActBinding } from '../parcels/source-binding.js';
-import { NO_CADASTRE_CITIES, SITE_IN_OTHER_CITY, resolvePublicationCity } from './publication-city.js';
+import { NO_CADASTRE_CITIES, resolvePublicationCity } from './publication-city.js';
 
 const requireCjs = createRequire(import.meta.url);
 const siteBindingApi = requireCjs('../../frontend/js/proposals/site-binding.js');
@@ -77,8 +77,7 @@ export const BINDING_CODES = Object.freeze({
     unboundParcels: 'unbound-parcels', // in cadastreParcelIds, not bound by the site
     parcelsRequired: 'parcels-required',
     siteRequired: 'site-required',
-    unresolved: 'binding-unresolved', // an intrusion within the measurement band of the threshold
-    siteInOtherCity: SITE_IN_OTHER_CITY // only another city's cadastre covers the site (publication-city.js)
+    unresolved: 'binding-unresolved' // an intrusion within the measurement band of the threshold
 });
 
 export const SERVER_CADASTRE_SOURCE = 'server:hr-cadastre';
@@ -156,18 +155,15 @@ export function bindingFrame({ site = null, parts = null } = {}) {
     }
 }
 
-// The city a NEW publication of this site belongs to (publication-city.js): from the site's anchor,
-// never from the view it was drawn in; a request naming none is placed where its site is. Throws
-// `site-in-other-city` (422) when only another city's cadastre covers the site, `invalid-site` when it
-// cannot be measured.
+// Where a NEW publication of this site is filed and which source binds it (publication-city.js):
+// { city, parcelSourceId } from the site's anchor, never from the view it was drawn in. Throws
+// `invalid-site` when the site cannot be measured.
 export function publicationCityOf({ site = null, parts = null, city = null, parcelSourceId = null } = {}) {
-    // A source the city does not have is a malformed request (400 invalid-parcel-source), whatever
-    // the site: refused before anything is placed.
+    // A source the requested city does not have is a malformed request (400 invalid-parcel-source),
+    // whatever the site: refused before anything is placed.
     if (city && parcelSourceId) parcelSourceForCity(city, parcelSourceId);
     const [lon, lat] = bindingFrame({ site, parts }).anchor;
-    const placed = resolvePublicationCity({ city, parcelSourceId, lon, lat });
-    if (!city && parcelSourceId) parcelSourceForCity(placed, parcelSourceId);
-    return placed;
+    return resolvePublicationCity({ city, parcelSourceId, lon, lat });
 }
 
 // The site in the operation frame (SRID 0, metres), valid and unioned, and — for statements that
@@ -508,9 +504,9 @@ const describeMissing = hit => ({ id: hit.parcelId, overlapM2: round(hit.overlap
  *     (parcel act without geometry) the declared parcels;
  *   - parcel acts need a non-empty binding;
  *   - coverage 'unknown' (cadastre not held here): the declaration is accepted unverified;
- *   - `city` is the publication's city, placed by its site (publicationCityOf): a site covered only
- *     by another city's cadastre is refused (422 site-in-other-city, naming `siteCity`).
- * @returns {Promise<{ ok: true, site, binding, city } | { ok: false, status, code, error, missing?, extra?, parcels?, siteCity? }>}
+ *   - `city` is the publication's city and `parcelSourceId` the source that bound it, both placed by
+ *     its site (publicationCityOf); a parcel act is placed where its parcels are.
+ * @returns {Promise<{ ok: true, site, binding, city, parcelSourceId } | { ok: false, status, code, error, missing?, extra?, parcels? }>}
  */
 // `derive: true` (POST /proposals/prepare): a material proposal's declaration is not compared but
 // DERIVED from the binding and returned as `cadastreParcelIds`; parcel acts still name their parcels.
@@ -535,12 +531,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     // the binding is computed against that city's cadastre. Parcel acts are placed by their parcels.
     let publicationCity = city || null;
     if (site || hasFootprint(parts)) {
-        try {
-            publicationCity = publicationCityOf({ site, parts: site ? null : parts, city, parcelSourceId });
-        } catch (error) {
-            if (error.code !== SITE_IN_OTHER_CITY) throw error;
-            return { ok: false, status: error.status, code: error.code, error: error.message, siteCity: error.siteCity };
-        }
+        ({ city: publicationCity, parcelSourceId } = publicationCityOf({ site, parts: site ? null : parts, city, parcelSourceId }));
     }
 
     let result;
@@ -568,7 +559,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     } else {
         const act = await parcelActBinding(db, declared, { toleranceM, city, parcelSourceId, now });
         // an act naming no city is placed where its parcels are
-        if (!publicationCity && act.site) publicationCity = publicationCityOf({ site: act.site, city: null, parcelSourceId });
+        if (!publicationCity && act.site) publicationCity = publicationCityOf({ site: act.site, city: null }).city;
         if (act.extra.length) {
             return {
                 ok: false,
@@ -579,7 +570,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
                 extra: act.extra.map(id => ({ id }))
             };
         }
-        return { ok: true, site: act.site, binding: act.binding, city: publicationCity, ...(derive ? { cadastreParcelIds: declared.slice().sort() } : {}) };
+        return { ok: true, site: act.site, binding: act.binding, city: publicationCity, parcelSourceId, ...(derive ? { cadastreParcelIds: declared.slice().sort() } : {}) };
     }
 
     const { binding } = result;
@@ -596,7 +587,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     if (binding.coverage === COVERAGE.unknown) {
         binding.parcels = declared.map(id => ({ parcelId: id, overlapM2: null, intrusionM: null }));
         binding.subject = 'declared-unverified';
-        return { ok: true, site: result.site, binding, city: publicationCity, ...(derive ? { cadastreParcelIds: declared } : {}) };
+        return { ok: true, site: result.site, binding, city: publicationCity, parcelSourceId, ...(derive ? { cadastreParcelIds: declared } : {}) };
     }
     if (needsParcels && !binding.parcels.length) {
         return {
@@ -607,7 +598,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
         };
     }
     if (derive && !needsParcels) {
-        return { ok: true, site: result.site, binding, city: publicationCity, cadastreParcelIds: binding.parcels.map(hit => String(hit.parcelId)).sort() };
+        return { ok: true, site: result.site, binding, city: publicationCity, parcelSourceId, cadastreParcelIds: binding.parcels.map(hit => String(hit.parcelId)).sort() };
     }
     const { missing, extra } = compareDeclaration(declared, binding);
     if (missing.length || extra.length) {
@@ -632,5 +623,5 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
             parcels: missingHits.map(hit => ({ id: hit.id, overlapM2: hit.overlapM2 }))
         };
     }
-    return { ok: true, site: result.site, binding, city: publicationCity, ...(derive ? { cadastreParcelIds: declared.slice().sort() } : {}) };
+    return { ok: true, site: result.site, binding, city: publicationCity, parcelSourceId, ...(derive ? { cadastreParcelIds: declared.slice().sort() } : {}) };
 }

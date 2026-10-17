@@ -251,9 +251,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     // binds the site and signs the artifact, storing nothing; submit (and mint) the returned
                     // `proposal` — it carries `preparation` and `preparedArtifact`, which publication verifies
                     // and stores. Required for a road or track drawn as a centre line (422
-                    // preparation-required otherwise). The record is filed under the city its site lies in
-                    // (artifact.city; a Split site sent as 'zagreb' is Split's); a site only another city's
-                    // parcels cover answers 422 site-in-other-city with that city in `siteCity`.
+                    // preparation-required otherwise). The record is filed under, and bound against the
+                    // parcels of, the city its site lies in (artifact.city; a Zagreb site sent as 'new_york' is
+                    // Zagreb's); `city` matters only where no city covers the site.
                     proposalPrepare: `${base}/agent/prepare`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`,

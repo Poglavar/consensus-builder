@@ -633,8 +633,6 @@ async function uploadProposalToServer(proposal) {
             });
         } catch (bindError) {
             console.warn(`[${new Date().toISOString()}] [uploadProposalToServer] preparation failed`, bindError);
-            // A site in another city's cadastre is an answer, not a failed check: say where to go.
-            if (bindError && bindError.code === 'site-in-other-city') return { ok: false, code: bindError.code, siteCity: bindError.siteCity, message: bindError.message };
             return { ok: false, code: bindError.code, message: publishBindingText('modal.createProposal.errors.bindingFailed',
                 'Could not check which parcels this proposal\'s site reaches into: {{reason}}', { reason: bindError.message || String(bindError) }) };
         }
@@ -662,8 +660,8 @@ async function uploadProposalToServer(proposal) {
         const response = await fetch(`${backendBase}/proposals/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...uploadProposal,
-                parcelSourceId: window.CityConfigManager?.getCityConfig?.(proposal.city)?.parcels?.sourceId ?? null })
+            // the source that bound the prepared artifact (the server's choice for the site's city)
+            body: JSON.stringify({ ...uploadProposal, parcelSourceId: bound.artifact?.parcelSourceId ?? null })
         });
 
         let errorBody = null;

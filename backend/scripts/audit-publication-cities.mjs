@@ -2,11 +2,12 @@
 // not in. A new publication's city now follows its site (proposals/publication-city.js); before, it
 // was whichever city the author's view had loaded, and the binding used that city's parcel source.
 // For every record with geometry this places the site's anchor among the cities whose parcels cover
-// it, by the same rule, and compares the stored city:
+// it, by the same rule (location-first.md phase 4: the city whose parcels apply at the site), and
+// compares the stored city:
 //   same      the stored city is where the site is
-//   moved     a city on the same cadastre (a Split site filed under zagreb): only the listing differs
-//   refused   only another city's cadastre covers the site, so it was bound against a source with no
-//             parcels there — investigate (a correction is a reviewed fork; records are immutable)
+//   moved     the site lies in another city: it is listed under the wrong one, and if that city reads
+//             another cadastre it was bound against a source with no parcels there — investigate (a
+//             correction is a reviewed fork; records are immutable)
 //   no-city   no stored city, or one the app does not configure
 // Records without geometry (parcel acts) are counted, not placed. Nothing is written anywhere except
 // the report files.
@@ -20,7 +21,7 @@ import dotenv from 'dotenv';
 import { createClient } from '../db/connection.cjs';
 import { bindingFrame } from '../proposals/binding.js';
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
-import { citiesCovering, resolvePublicationCity, SITE_IN_OTHER_CITY } from '../proposals/publication-city.js';
+import { citiesCovering, resolvePublicationCity } from '../proposals/publication-city.js';
 import { normalizeCityCode } from '../routes/proposals.js';
 
 const USAGE = `Usage:
@@ -66,31 +67,25 @@ export function placeRecord(row) {
     out.covering = covering.slice(0, 3);
     const city = normalizeCityCode(row.city);
     if (!city || city === 'city') return { ...out, status: 'no-city', placed: covering[0] || null };
-    try {
-        const placed = resolvePublicationCity({ city, lon, lat });
-        return { ...out, status: placed === city ? 'same' : 'moved', placed };
-    } catch (error) {
-        if (error.code !== SITE_IN_OTHER_CITY) throw error;
-        return { ...out, status: 'refused', placed: error.siteCity };
-    }
+    const placed = resolvePublicationCity({ city, lon, lat }).city;
+    return { ...out, status: placed === city ? 'same' : 'moved', placed };
 }
 
 export function buildReport(records, { label, generatedAt }) {
     const by = status => records.filter(record => record.status === status);
     const lines = [`# Publication cities — ${label}`, '', `Generated ${generatedAt}. ${records.length} records.`, ''];
     lines.push('| status | records |', '|---|---|');
-    for (const status of ['same', 'moved', 'refused', 'no-city', 'no-geometry', 'unmeasurable']) lines.push(`| ${status} | ${by(status).length} |`);
+    for (const status of ['same', 'moved', 'no-city', 'no-geometry', 'unmeasurable']) lines.push(`| ${status} | ${by(status).length} |`);
     lines.push('');
     const pairs = list => {
         const counts = new Map();
         list.forEach(record => { const key = `${record.city ?? '∅'} → ${record.placed ?? '∅'}`; counts.set(key, (counts.get(key) || 0) + 1); });
         return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([pair, n]) => `- ${pair}: ${n}`);
     };
-    lines.push('## Refused: only another city\'s cadastre covers the site', '');
-    lines.push(...(by('refused').length ? pairs(by('refused')) : ['None.']), '');
-    by('refused').forEach(record => lines.push(`- ${record.id} (${record.proposalId}) ${record.city} at ${record.at.join(',')} → ${record.placed}, ${record.month}`));
-    lines.push('', '## Moved: a city on the same cadastre', '');
+    lines.push('## Moved: the site lies in another city', '');
     lines.push(...(by('moved').length ? pairs(by('moved')) : ['None.']), '');
+    by('moved').forEach(record => lines.push(`- ${record.id} (${record.proposalId}) ${record.city} at ${record.at.join(',')} → ${record.placed}, ${record.month}`));
+    lines.push('');
     lines.push('## No city', '');
     lines.push(...(by('no-city').length ? pairs(by('no-city')) : ['None.']), '');
     if (by('unmeasurable').length) {
@@ -156,7 +151,7 @@ async function main() {
         }
         return record;
     });
-    const counts = ['same', 'moved', 'refused', 'no-city', 'no-geometry', 'unmeasurable'].map(status => `${status} ${records.filter(r => r.status === status).length}`).join(', ');
+    const counts = ['same', 'moved', 'no-city', 'no-geometry', 'unmeasurable'].map(status => `${status} ${records.filter(r => r.status === status).length}`).join(', ');
     log(counts);
     const report = buildReport(records, { label: args.label || source, generatedAt: new Date().toISOString() });
     if (args.out) { writeFileSync(args.out, report); log(`report written to ${args.out}`); } else { console.log(report); }

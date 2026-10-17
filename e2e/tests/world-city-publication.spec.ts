@@ -1,5 +1,6 @@
-// Worldwide publication and city routing (projections.md §3, §10 M8): a publish presents the
-// server's signed preparation and its artifact, a site in another city's cadastre is refused by name,
+// Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4): a
+// publish presents the server's signed preparation and its artifact, a site the server places in
+// another city is filed there with the source that bound it,
 // every proposal opens in its own city's store (a record without a city by its parcels), the address
 // bar follows the map, and the read-only guard for a second tab applies per city.
 import { Browser, BrowserContext, Page } from '@playwright/test';
@@ -98,20 +99,16 @@ test.describe('Worldwide publication and city routing @core', () => {
     expect(record.city).toBe('zagreb');
   });
 
-  test('a site in another city\'s cadastre is refused with a message naming that city', async ({ mockApi: page }) => {
+  test('a site the server places in another city is published there, with the source that bound it', async ({ mockApi: page }) => {
     const server = createSharedProposalServer();
-    server.prepareRefusal = { status: 422, body: { code: 'site-in-other-city', siteCity: 'split', error: 'The site lies in split.' } };
+    server.placeIn = { city: 'split', parcelSourceId: 'hr-dgu-oss-dkp-cestice' };
     await attachSharedProposalServer(page, server);
-    await openCity(page);
-    await personalizeProfile(page, 'City author');
-    const proposalId = await createSpace(page, 'park');
-    await showProposal(page, proposalId);
-    await page.locator('.btn-share-proposal').click();
-    await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
-    // the upload's failure toast says where the site belongs
-    await expect(page.locator('#ephemeral-message-container')).toContainText('This site lies in Split', { timeout: 30_000 });
-    expect(server.records.size).toBe(0);
-    expect(server.requests.some(request => request.method === 'POST' && /\/proposals$/.test(request.path))).toBe(false);
+    const record = await publishPark(page, server);
+    // nothing refused for where it was drawn from: filed in the city its site lies in, and the publish
+    // names the artifact's source (the mock refuses any other, as the API does)
+    expect(record.city).toBe('split');
+    expect(record.parcelSourceId).toBe('hr-dgu-oss-dkp-cestice');
+    expect(server.records.size).toBe(1);
   });
 
   test('a proposal opened in the wrong city asks, then opens in its own city; a record without a city goes by its parcels', async ({ mockApi: author, browser }) => {

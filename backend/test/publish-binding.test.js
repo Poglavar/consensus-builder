@@ -192,25 +192,6 @@ describe('refusalMessage', () => {
         expect(publishBinding.refusalMessage({ code: 'rate-limited' }, t)).toBeNull();
     });
 
-    it('names the city to publish from when another city\'s parcels cover the site', async () => {
-        const message = publishBinding.refusalMessage({ code: 'site-in-other-city', siteCity: 'zagreb', error: 'x' });
-        expect(message).toMatch(/lies in zagreb/);
-        expect(message).toMatch(/Open zagreb/);
-        // the label in the UI language when the city is configured
-        const manager = globalThis.CityConfigManager;
-        globalThis.CityConfigManager = { getCityConfig: id => (id === 'zagreb' ? { label: 'Zagreb, Croatia' } : null) };
-        try {
-            const t = vi.fn((key, fallback, params) => (key === 'city.labels.zagreb' ? 'Zagreb' : `${key}|${params.city}`));
-            expect(publishBinding.refusalMessage({ code: 'site-in-other-city', siteCity: 'zagreb' }, t)).toBe('modal.createProposal.errors.siteInOtherCity|Zagreb');
-        } finally {
-            globalThis.CityConfigManager = manager;
-        }
-        // and the refusal keeps the city, for a caller that offers to go there
-        const fetchImpl = async () => ({ ok: false, status: 422, json: async () => ({ code: 'site-in-other-city', siteCity: 'zagreb', error: 'x' }) });
-        await expect(publishBinding.createFetchPrepare(fetchImpl, '')({ proposal: { goal: 'park', site: SITE }, city: 'new_york' }))
-            .rejects.toMatchObject({ code: 'site-in-other-city', status: 422, siteCity: 'zagreb' });
-    });
-
     it('asks to publish again when the record no longer matches its preparation', () => {
         const message = publishBinding.refusalMessage({ code: 'preparation-mismatch', error: 'The proposal\'s geometry differs from what was prepared' });
         expect(message).toMatch(/changed after it was prepared/);

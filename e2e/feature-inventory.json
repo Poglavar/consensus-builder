@@ -842,7 +842,7 @@
       ]
     },
     {
-      "feature": "signed prepare-then-publish, site-in-other-city refusal, proposals opening in their own city (city-less records by their parcels), address bar following the map, read-only second tab per city",
+      "feature": "signed prepare-then-publish, a site filed in the city it lies in, proposals opening in their own city (city-less records by their parcels), address bar following the map, read-only second tab per city",
       "specs": [
         "tests/world-city-publication.spec.ts"
       ]

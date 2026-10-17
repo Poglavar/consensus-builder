@@ -143,8 +143,8 @@
         const preparation = { id: prepared.preparationId, digest: prepared.digest, preparedAt: prepared.preparedAt, signature: prepared.signature };
         const out = {
             ...record,
-            // the city the server placed the site in, which may differ from the view's (a Split
-            // site drawn from Zagreb's view is Split's)
+            // the city the server placed the site in, which may differ from the view's (a Zagreb
+            // site drawn from New York's view is Zagreb's, bound against Zagreb's parcels)
             ...(artifact.city ? { city: artifact.city } : {}),
             binding: server,
             cadastreParcelIds: (Array.isArray(artifact.cadastreParcelIds) ? artifact.cadastreParcelIds : []).map(String),
@@ -191,8 +191,7 @@
         const readable = payload ? refusalMessage(payload, t) : null;
         throw publishError(payload && payload.code ? payload.code : `${what}-failed`,
             readable || (payload && payload.error) || `The ${what} service answered ${response.status}.`,
-            { status: response.status, ...(Array.isArray(payload?.unresolved) ? { unresolved: payload.unresolved } : {}),
-                ...(payload?.siteCity ? { siteCity: payload.siteCity } : {}) });
+            { status: response.status, ...(Array.isArray(payload?.unresolved) ? { unresolved: payload.unresolved } : {}) });
     }
 
     const parcelSourceOf = city => global.CityConfigManager?.getCityConfig?.(city)?.parcels?.sourceId ?? null;
@@ -250,19 +249,10 @@
      * refusal. `t(key, fallback, params)` translates.
      */
     function refusalMessage(body, t) {
-        const known = ['undeclared-parcels', 'unbound-parcels', 'binding-unresolved', 'site-in-other-city'].concat(PREPARATION_CODES);
+        const known = ['undeclared-parcels', 'unbound-parcels', 'binding-unresolved'].concat(PREPARATION_CODES);
         if (!body || !known.includes(body.code)) return null;
         const translate = typeof t === 'function' ? t : ((key, fallback, params) => String(fallback)
             .replace(/\{\{\s*(\w+)\s*\}\}/g, (m, name) => (params && name in params ? params[name] : m)));
-        if (body.code === 'site-in-other-city') {
-            // The server places a publication in the city its site lies in (backend
-            // proposals/publication-city.js); another city's cadastre covers this one.
-            const config = body.siteCity ? global.CityConfigManager?.getCityConfig?.(body.siteCity) : null;
-            const city = config ? translate(`city.labels.${body.siteCity}`, config.label || body.siteCity) : (body.siteCity || '?');
-            return translate('modal.createProposal.errors.siteInOtherCity',
-                'This site lies in {{city}}, whose parcels are not the ones loaded here. Open {{city}} and publish it from there.',
-                { city });
-        }
         if (PREPARATION_CODES.includes(body.code)) {
             return translate('modal.createProposal.errors.preparationChanged',
                 'This proposal changed after it was prepared for publishing ({{reason}}). Publish it again.',

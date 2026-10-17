@@ -36,10 +36,10 @@ export function setupProposalBindingRoute(app, pool) {
             const started = Date.now();
             try {
                 const site = normalizeSiteGeometry(body.site);
-                const parcelSourceId = body.parcelSourceId ?? null;
                 // Measured as a publication would be: against the cadastre of the city the site lies
                 // in (proposals/publication-city.js), which is returned as `city`.
-                const city = publicationCityOf({ site, city: normalizeCityCode(body.city) || null, parcelSourceId });
+                const { city, parcelSourceId } = publicationCityOf({ site, city: normalizeCityCode(body.city) || null,
+                    parcelSourceId: body.parcelSourceId ?? null });
                 const { binding } = await computeBinding(pool, { site, toleranceM: tolerance.value, city, parcelSourceId });
                 return res.json({ binding, city, queryMs: Date.now() - started });
             } catch (error) {
@@ -47,7 +47,7 @@ export function setupProposalBindingRoute(app, pool) {
                     if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(error.retryAfterSeconds));
                     return res.status(error.status).json({ error: error.message, code: error.code,
                         upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds,
-                        ...(error.count ? { count: error.count } : {}), ...(error.siteCity ? { siteCity: error.siteCity } : {}) });
+                        ...(error.count ? { count: error.count } : {}) });
                 }
                 const badInput = /GeoJSON|geometry|parse|invalid/i.test(String(error && error.message));
                 console.error(`[${new Date().toISOString()}] Error in POST ${routePath}:`, error);

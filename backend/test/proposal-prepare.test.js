@@ -12,14 +12,14 @@ vi.mock('../proposals/binding.js', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...actual,
-        checkProposalBinding: vi.fn(async (_db, record, declared, { site, toleranceM, derive, city }) => {
+        checkProposalBinding: vi.fn(async (_db, record, declared, { site, toleranceM, derive, city, parcelSourceId }) => {
             if (record.roadProposal && !record.roadProposal.definition.polygon) throw new Error('bound before the land was built');
             const parcels = [{ parcelId: 'HR-335649-100', overlapM2: 120.5, intrusionM: 6.2 }];
             return {
                 ok: true,
                 site,
                 // placed for real (publication-city.js): only the cadastre is stubbed
-                city: actual.publicationCityOf({ site, city }),
+                ...actual.publicationCityOf({ site, city, parcelSourceId }),
                 binding: { coverage: 'complete', subject: 'site', toleranceM, parcels, touched: [], source: { kind: 'hr-cadastre' }, computedAt: new Date().toISOString() },
                 ...(derive ? { cadastreParcelIds: parcels.map(hit => hit.parcelId) } : {})
             };

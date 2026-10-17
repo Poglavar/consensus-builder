@@ -3403,7 +3403,6 @@
                 "bindingFailed": "Nije moguće provjeriti u koje čestice zadire lokacija ovog prijedloga: {{reason}}",
                 "bindingUnresolved": "Lokacija zadire u {{list}} gotovo točno za iznos tolerancije, pa se ne može odlučiti zauzima li ondje zemljište. Pomaknite projekt za milimetar prema toj čestici ili od nje.",
                 "preparationChanged": "Prijedlog se promijenio nakon što je pripremljen za objavu ({{reason}}). Objavite ga ponovno.",
-                "siteInOtherCity": "Ova lokacija nalazi se u gradu {{city}}, čije čestice nisu one učitane ovdje. Otvorite {{city}} i objavite je odande.",
                 "noMintGeometry": "Ovaj prijedlog nema geometriju lokacije ni čestica za kovanje.",
                 "noMintParcels": "Ovaj prijedlog ne navodi čestice i nema lokaciju, pa se ne može iskovati."
             },

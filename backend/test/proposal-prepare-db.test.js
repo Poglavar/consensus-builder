@@ -127,7 +127,7 @@ live('prepare → publish on the real cadastre (rolled back)', () => {
         }
     });
 
-    it('files a publication under the city its site lies in, and refuses one only another city covers', async () => {
+    it('files a publication under the city its site lies in, whatever city it was drawn from', async () => {
         // drawn from Split's view (one countrywide cadastre): bound the same, stored as Zagreb's
         const fromSplit = { ...street(), city: 'split' };
         const prepared = await request(app).post('/proposals/prepare').send({ proposal: fromSplit });
@@ -140,10 +140,11 @@ live('prepare → publish on the real cadastre (rolled back)', () => {
         const { rows } = await client.query('SELECT city, proposal_data->>\'city\' AS data_city FROM proposal WHERE id = $1', [published.body.id]);
         expect(rows[0]).toEqual({ city: 'zagreb', data_city: 'zagreb' });
 
-        // drawn while New York was loaded: New York's parcels do not cover Zagreb
+        // drawn while New York was loaded: bound against Zagreb's cadastre and filed there
         const fromNewYork = await request(app).post('/proposals/prepare').send({ proposal: { ...street(), city: 'new_york' } });
-        expect(fromNewYork.status).toBe(422);
-        expect(fromNewYork.body).toMatchObject({ code: 'site-in-other-city', siteCity: 'zagreb' });
+        expect(fromNewYork.status, JSON.stringify(fromNewYork.body).slice(0, 400)).toBe(201);
+        expect(fromNewYork.body.artifact).toMatchObject({ city: 'zagreb', requestedCity: 'new_york', parcelSourceId: null });
+        expect(fromNewYork.body.artifact.binding.parcels).toEqual(prepared.body.artifact.binding.parcels);
     });
 
     it('refuses a street published unprepared, and one changed after preparing', async () => {

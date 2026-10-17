@@ -10,12 +10,13 @@ export interface SharedProposalServer {
   issued: Map<string, { signature: string; artifact: Record<string, any> }>;
   /** Artifacts stored beside their published record, by preparation id (consensus.proposal_prepared). */
   prepared: Map<string, Record<string, any>>;
-  /** A refusal POST /proposals/prepare answers instead of preparing, e.g. a site in another city. */
-  prepareRefusal: { status: number; body: Record<string, any> } | null;
+  /** Where POST /proposals/prepare places the site, as the API does by its location
+   *  (backend/proposals/publication-city.js); null = the requested city with no named source. */
+  placeIn: { city: string; parcelSourceId: string | null } | null;
 }
 
 export function createSharedProposalServer(): SharedProposalServer {
-  return { records: new Map(), requests: [], nextId: 7001, issued: new Map(), prepared: new Map(), prepareRefusal: null };
+  return { records: new Map(), requests: [], nextId: 7001, issued: new Map(), prepared: new Map(), placeIn: null };
 }
 
 // The protocol of backend/proposals/prepare.js, with a fixed test key: the artifact's digest is the
@@ -25,10 +26,11 @@ const hex = (value: string) => createHash('sha256').update(value).digest('hex');
 
 function prepareAnswer(server: SharedProposalServer, body: Record<string, any>): Record<string, any> {
   const proposal = body.proposal || {};
-  const city = body.city || proposal.city || null;
+  const city = server.placeIn?.city || body.city || proposal.city || null;
   const artifact = {
     protocol: 'prepare/1',
     city,
+    parcelSourceId: server.placeIn ? server.placeIn.parcelSourceId : null,
     cadastreParcelIds: (proposal.cadastreParcelIds || []).map(String),
     binding: {
       parcels: [], touched: [], toleranceM: Number(body.toleranceM) || 0,
@@ -56,6 +58,9 @@ function preparationRefusal(server: SharedProposalServer, body: Record<string, a
   if (!issued || issued.signature !== preparation.signature
       || JSON.stringify(issued.artifact) !== JSON.stringify(body.preparedArtifact)) {
     return { code: 'preparation-invalid', error: 'The preparation was not signed by this server.' };
+  }
+  if ((issued.artifact.parcelSourceId || null) !== (body.parcelSourceId || null)) {
+    return { code: 'preparation-mismatch', error: 'The proposal\'s parcel source differs from what was prepared; prepare it again.' };
   }
   return null;
 }
@@ -129,10 +134,6 @@ export async function attachSharedProposalServer(page: Page, server: SharedPropo
     // signs an artifact and stores nothing until the record is published with it.
     if (path.endsWith('/proposals/prepare') && request.method() === 'POST') {
       const body = request.postDataJSON() as Record<string, any>;
-      if (server.prepareRefusal) {
-        await route.fulfill({ status: server.prepareRefusal.status, contentType: 'application/json', body: JSON.stringify(server.prepareRefusal.body) });
-        return;
-      }
       await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify(prepareAnswer(server, body)) });
       return;
     }

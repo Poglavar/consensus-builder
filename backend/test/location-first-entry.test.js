@@ -168,7 +168,10 @@ describe('the server files a city-less publication where the boot opens', () => 
             points.push({ lat: city.lat + (random() - 0.5) * 0.4, lon: city.lon + (random() - 0.5) * 0.4 });
         }
         for (const p of points) {
-            expect(resolvePublicationCity({ city: null, lon: p.lon, lat: p.lat })).toBe(full.jurisdictionAt(p.lat, p.lon) || 'explore');
+            expect(resolvePublicationCity({ city: null, lon: p.lon, lat: p.lat }).city).toBe(full.jurisdictionAt(p.lat, p.lon) || 'explore');
+            // a requested city decides nothing where some city covers the site (phase 4)
+            const covered = full.jurisdictionAt(p.lat, p.lon);
+            if (covered) expect(resolvePublicationCity({ city: 'new_york', lon: p.lon, lat: p.lat }).city).toBe(covered);
         }
     });
 });

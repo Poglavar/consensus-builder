@@ -221,7 +221,8 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
         // when it differs: a publication may name either, and is stored under the first.
         city: bound.city || null,
         ...(city && bound.city !== city ? { requestedCity: city } : {}),
-        parcelSourceId: parcelSourceId || null,
+        // the source that bound it: the requested one where it serves that city, else the city's own
+        parcelSourceId: bound.parcelSourceId || null,
         toleranceM: tolerance.value,
         site: storedSite,
         siteHash: storedSite ? await siteHashApi.siteHashHex(storedSite) : null,
@@ -242,7 +243,7 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
         cadastreParcelIds: artifact.cadastreParcelIds,
         preparation,
         preparedArtifact: artifact,
-        ...(parcelSourceId ? { parcelSourceId } : {})
+        ...(artifact.parcelSourceId ? { parcelSourceId: artifact.parcelSourceId } : {})
     };
     return { preparationId, digest, preparedAt, signature, artifact, proposal };
 }
