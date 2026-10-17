@@ -12230,7 +12230,7 @@
       "name": "Georgia NAPR registered land plots via MSDA public map",
       "operator": "Municipal Services Development Agency / National Agency of Public Registry",
       "countryCode": "GE",
-      "scope": "One registered parcel near the user-provided Tbilisi location is verified. Citywide and nationwide completeness are not inferred.",
+      "scope": "One sample registered parcel in central Tbilisi is verified. Citywide and nationwide completeness are not inferred.",
       "endpoint": "https://ms.gov.ge/core-api/v1/search/unified-search",
       "viewerUrl": "https://ms.gov.ge/msmap/#C=44.8067283-41.7088867@Z=20",
       "method": "Anonymous POST search by cadastral code; separate public point query",

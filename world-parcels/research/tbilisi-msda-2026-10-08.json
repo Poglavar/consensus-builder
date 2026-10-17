@@ -46,7 +46,7 @@
   ],
   "sampleFile": "research/tbilisi-msda-2026-10-08-sample.geojson",
   "runtimeStatus": "enabled_point_lookup",
-  "scopeNote": "One registered parcel near the user-provided Tbilisi location is verified. Citywide and nationwide completeness are not inferred.",
+  "scopeNote": "One sample registered parcel in central Tbilisi is verified. Citywide and nationwide completeness are not inferred.",
   "termsAreInformational": true,
   "appCityId": "tbilisi",
   "runtimeCapabilities": {
