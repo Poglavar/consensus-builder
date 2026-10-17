@@ -16,7 +16,7 @@ function harness() {
     const beginStatusActivity = vi.fn(() => release);
     const api = new Function('threeI18n', 'updateStatus', 'beginStatusActivity', `
         let isActive = true, nearbyProposalBuildingsFetching = false, pendingModelLoads = 0;
-        let buildingsLoaderRelease = null, buildingsLoaderText = '';
+        let buildingsLoaderRelease = null, buildingsLoaderText = '', nearbyBuildingsOutcome = null;
         ${source.slice(start, end)}
         return {
             update: updateBuildingsLoader,
@@ -24,6 +24,7 @@ function harness() {
                 if ('active' in state) isActive = state.active;
                 if ('fetching' in state) nearbyProposalBuildingsFetching = state.fetching;
                 if ('pending' in state) pendingModelLoads = state.pending;
+                if ('outcome' in state) nearbyBuildingsOutcome = state.outcome;
             }
         };
     `)((_key, fallback) => fallback, updateStatus, beginStatusActivity);
@@ -75,5 +76,20 @@ describe('3D buildings loader on the status line', () => {
         h.update();
         expect(h.release).toHaveBeenCalledTimes(1);
         expect(h.updateStatus).toHaveBeenLastCalledWith('Buildings loaded');
+    });
+
+    // The word follows what came: an empty answer or a failed one must not pass for a loaded city.
+    it.each([
+        ['loaded', 'Buildings loaded'],
+        ['empty', 'No buildings found around here'],
+        ['failed', 'Buildings could not be loaded']
+    ])('closes a %s fetch with "%s"', (outcome, word) => {
+        const h = harness();
+        h.set({ fetching: true });
+        h.update();
+        h.set({ fetching: false, outcome });
+        h.update();
+        expect(h.release).toHaveBeenCalledTimes(1);
+        expect(h.updateStatus).toHaveBeenLastCalledWith(word);
     });
 });

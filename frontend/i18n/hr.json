@@ -5375,7 +5375,9 @@
         "overlay": {
             "rendering": "Iscrtavanje…",
             "loadingBuildings": "Učitavanje zgrada…",
-            "buildingsLoaded": "Zgrade učitane"
+            "buildingsLoaded": "Zgrade učitane",
+            "buildingsFailed": "Zgrade se nisu mogle učitati",
+            "noBuildings": "Ovdje nema zgrada"
         },
         "toggle": {
             "switchTo2d": "2D karta",

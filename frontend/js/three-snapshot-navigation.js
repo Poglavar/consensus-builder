@@ -15,11 +15,59 @@
         return cloneGeometry(focusGeometry);
     }
 
+    // The widest applied-work box a plain 3D entry loads in one request (its diagonal). Past it the
+    // buildings of a whole city's worth of scattered proposals would come down at once.
+    const MAX_APPLIED_WORK_SPAN_M = 1500;
+
+    // [minLng, minLat, maxLng, maxLat] of a geometry's coordinates, or null.
+    function geometryBox(geometry) {
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        const walk = node => {
+            if (!Array.isArray(node)) return;
+            if (typeof node[0] === 'number') {
+                if (Number.isFinite(node[0]) && Number.isFinite(node[1])) {
+                    minLng = Math.min(minLng, node[0]); maxLng = Math.max(maxLng, node[0]);
+                    minLat = Math.min(minLat, node[1]); maxLat = Math.max(maxLat, node[1]);
+                }
+                return;
+            }
+            node.forEach(walk);
+        };
+        walk(geometry && geometry.coordinates);
+        return Number.isFinite(minLng) ? [minLng, minLat, maxLng, maxLat] : null;
+    }
+
+    // Metres between two [lng, lat] points (equirectangular; ample for a city-scale box).
+    function metresBetween(a, b) {
+        const k = Math.PI / 180;
+        const x = (b[0] - a[0]) * k * Math.cos(((a[1] + b[1]) / 2) * k);
+        const y = (b[1] - a[1]) * k;
+        return Math.hypot(x, y) * 6371008.8;
+    }
+
+    // Applied work frames the scene only where the user is looking at it: the entry point lies in
+    // its box (or within the load radius of it) and the box is small enough to load. Otherwise the
+    // scene loads where the 2D map was, as the camera and the trees do: a plan applied across town,
+    // or proposals kilometres apart, used to send the buildings there and leave the view empty.
+    function appliedWorkFramesEntry(appliedWorkGeometry, entryAnchorGeometry, radiusMeters, maxSpanMeters) {
+        const box = geometryBox(appliedWorkGeometry);
+        if (!box) return false;
+        const [w, s, e, n] = box;
+        if (metresBetween([w, s], [e, n]) > maxSpanMeters) return false;
+        const anchor = entryAnchorGeometry && entryAnchorGeometry.type === 'Point' ? entryAnchorGeometry.coordinates : null;
+        if (!anchor || !Number.isFinite(anchor[0]) || !Number.isFinite(anchor[1])) return true;
+        const nearest = [Math.min(Math.max(anchor[0], w), e), Math.min(Math.max(anchor[1], s), n)];
+        return metresBetween(anchor, nearest) <= (Number.isFinite(radiusMeters) ? radiusMeters : 0);
+    }
+
     function resolveSceneLoadGeometry(options = {}) {
-        return options.proposalGeometry
-            || options.appliedWorkGeometry
-            || options.entryAnchorGeometry
-            || null;
+        if (options.proposalGeometry) return options.proposalGeometry;
+        const maxSpan = Number.isFinite(options.maxAppliedWorkSpanMeters) ? options.maxAppliedWorkSpanMeters : MAX_APPLIED_WORK_SPAN_M;
+        if (options.appliedWorkGeometry
+            && appliedWorkFramesEntry(options.appliedWorkGeometry, options.entryAnchorGeometry, options.radiusMeters, maxSpan)) {
+            return options.appliedWorkGeometry;
+        }
+        return options.entryAnchorGeometry || null;
     }
 
     // Use the frozen data anchor, not the movable camera target. Geographic circles retain their
@@ -86,6 +134,7 @@
     }
 
     return {
+        MAX_APPLIED_WORK_SPAN_M,
         captureSceneLoadAnchor,
         resolveSceneLoadGeometry,
         buildLoadRadiusPreview,

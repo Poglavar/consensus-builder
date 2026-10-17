@@ -4928,6 +4928,8 @@
     let nearbyProposalBuildings = [];
     let nearbyProposalBuildingsKey = null;
     let nearbyProposalBuildingsFetching = false;
+    // How the last /buildings/near ended ('loaded', 'empty', 'failed'): the status line's closing word.
+    let nearbyBuildingsOutcome = null;
     // How far out (metres) built context is fetched & rendered around the focus. User-adjustable
     // via the Radius slider in the 3D panel; dense cities (e.g. NYC) need a wider radius to look
     // right — at the tighter end a sparse spot like a park can yield only a handful of buildings.
@@ -5031,12 +5033,13 @@
         const selected = snapshotNavigation.resolveSceneLoadGeometry({
             proposalGeometry,
             appliedWorkGeometry,
-            entryAnchorGeometry
+            entryAnchorGeometry,
+            radiusMeters: buildingLoadRadiusM
         });
         sceneLoadGeometry = snapshotNavigation.captureSceneLoadAnchor(selected);
         sceneLoadGeometrySource = proposalGeometry
             ? 'proposal'
-            : (appliedWorkGeometry ? 'plan' : 'camera');
+            : (selected && selected === appliedWorkGeometry ? 'plan' : 'camera');
         sceneTreeLoadGeometry = snapshotNavigation.captureSceneLoadAnchor(
             proposalGeometry || entryAnchorGeometry
         );
@@ -5163,6 +5166,7 @@
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
                 nearbyBuildingsProvenance = payload ? { source: payload.source, heights: payload.heights || null, partial: payload.partial === true } : null;
+                nearbyBuildingsOutcome = payload && payload.unavailable ? 'failed' : (nearbyProposalBuildings.length ? 'loaded' : 'empty');
                 updateBuildingsSourceNote();
                 // The upstream failed outright: an empty scene must not pass for a city without buildings.
                 if (payload && payload.unavailable) reportNearbyBuildingsUnavailable(payload.retryAfter);
@@ -5178,6 +5182,7 @@
                 if (!current() || err.name === 'AbortError') return;
                 console.warn('Failed to fetch nearby buildings:', err);
                 nearbyProposalBuildingsFetching = false;
+                nearbyBuildingsOutcome = 'failed';
                 updateBuildingsLoader();
                 reportNearbyBuildingsUnavailable(null);
                 ensureNearbyWater();
@@ -7479,7 +7484,13 @@
                     // on the status line, spinner gone, until the idle fade or the next message.
                     buildingsLoaderRelease();
                     buildingsLoaderRelease = null;
-                    if (typeof updateStatus === 'function') updateStatus(threeI18n('threeMode.overlay.buildingsLoaded', 'Buildings loaded'));
+                    // Said only when buildings came: an empty answer or a failure says so instead.
+                    const closing = nearbyBuildingsOutcome === 'failed'
+                        ? threeI18n('threeMode.overlay.buildingsFailed', 'Buildings could not be loaded')
+                        : nearbyBuildingsOutcome === 'empty'
+                            ? threeI18n('threeMode.overlay.noBuildings', 'No buildings found around here')
+                            : threeI18n('threeMode.overlay.buildingsLoaded', 'Buildings loaded');
+                    if (typeof updateStatus === 'function') updateStatus(closing);
                 }
                 buildingsLoaderText = '';
                 return;

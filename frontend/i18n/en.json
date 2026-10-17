@@ -5323,7 +5323,9 @@
         "overlay": {
             "rendering": "Rendering…",
             "loadingBuildings": "Loading buildings…",
-            "buildingsLoaded": "Buildings loaded"
+            "buildingsLoaded": "Buildings loaded",
+            "buildingsFailed": "Buildings could not be loaded",
+            "noBuildings": "No buildings found around here"
         },
         "toggle": {
             "switchTo2d": "2D map",

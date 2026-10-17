@@ -5374,7 +5374,9 @@
         "overlay": {
             "rendering": "Renderizando…",
             "loadingBuildings": "Cargando edificios…",
-            "buildingsLoaded": "Edificios cargados"
+            "buildingsLoaded": "Edificios cargados",
+            "buildingsFailed": "No se pudieron cargar los edificios",
+            "noBuildings": "No hay edificios por aquí"
         },
         "toggle": {
             "switchTo2d": "Mapa 2D",

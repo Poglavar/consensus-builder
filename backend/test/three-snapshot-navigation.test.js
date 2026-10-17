@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
 const {
+    MAX_APPLIED_WORK_SPAN_M,
     captureSceneLoadAnchor,
     resolveSceneLoadGeometry,
     buildLoadRadiusPreview,
@@ -45,14 +46,34 @@ describe('3D snapshot navigation', () => {
         expect(resolveSceneLoadGeometry({ entryAnchorGeometry: anchor })).toBe(anchor);
     });
 
-    it('prefers a focused proposal, then applied work, before the entry anchor', () => {
-        const proposal = { type: 'Polygon', coordinates: [] };
-        const applied = { type: 'MultiPolygon', coordinates: [] };
-        const anchor = { type: 'Point', coordinates: [0, 0] };
+    // A box around [lng, lat] about `halfM` metres to each side (Zagreb's latitude).
+    const boxAround = ([lng, lat], halfM) => {
+        const dLat = halfM / 111195, dLng = halfM / (111195 * Math.cos(lat * Math.PI / 180));
+        return { type: 'Polygon', coordinates: [[[lng - dLng, lat - dLat], [lng + dLng, lat - dLat], [lng + dLng, lat + dLat], [lng - dLng, lat + dLat], [lng - dLng, lat - dLat]]] };
+    };
 
-        expect(resolveSceneLoadGeometry({ proposalGeometry: proposal, appliedWorkGeometry: applied, entryAnchorGeometry: anchor })).toBe(proposal);
-        expect(resolveSceneLoadGeometry({ appliedWorkGeometry: applied, entryAnchorGeometry: anchor })).toBe(applied);
+    it('prefers a focused proposal, then applied work the view is on, before the entry anchor', () => {
+        const proposal = { type: 'Polygon', coordinates: [] };
+        const anchor = { type: 'Point', coordinates: [15.977, 45.805] };
+        const applied = boxAround([15.978, 45.805], 300);
+
+        expect(resolveSceneLoadGeometry({ proposalGeometry: proposal, appliedWorkGeometry: applied, entryAnchorGeometry: anchor, radiusMeters: 300 })).toBe(proposal);
+        expect(resolveSceneLoadGeometry({ appliedWorkGeometry: applied, entryAnchorGeometry: anchor, radiusMeters: 300 })).toBe(applied);
         expect(resolveSceneLoadGeometry({ entryAnchorGeometry: anchor })).toBe(anchor);
+    });
+
+    it('loads where the view is when the applied work lies elsewhere or spans too far to load', () => {
+        // The view in the city centre; a plan applied in Borovje, about 3.5 km east.
+        const centre = { type: 'Point', coordinates: [15.977, 45.805] };
+        const borovje = boxAround([16.022, 45.802], 250);
+        expect(resolveSceneLoadGeometry({ appliedWorkGeometry: borovje, entryAnchorGeometry: centre, radiusMeters: 300 })).toBe(centre);
+        // Just outside the box but within the load radius still frames the plan.
+        const besideBorovje = { type: 'Point', coordinates: [16.022 + 400 / (111195 * Math.cos(45.802 * Math.PI / 180)), 45.802] };
+        expect(resolveSceneLoadGeometry({ appliedWorkGeometry: borovje, entryAnchorGeometry: besideBorovje, radiusMeters: 300 })).toBe(borovje);
+        // Proposals kilometres apart: their box contains the view, but it is too large to load at once.
+        const scattered = { type: 'MultiPolygon', coordinates: [boxAround([15.95, 45.79], 50).coordinates, boxAround([16.05, 45.83], 50).coordinates] };
+        expect(resolveSceneLoadGeometry({ appliedWorkGeometry: scattered, entryAnchorGeometry: { type: 'Point', coordinates: [16.0, 45.81] }, radiusMeters: 300 })).toEqual({ type: 'Point', coordinates: [16.0, 45.81] });
+        expect(MAX_APPLIED_WORK_SPAN_M).toBe(1500);
     });
 
     it.each([0, 45, 70])('draws the selected metre radius around a frozen anchor at latitude %s', lat => {
