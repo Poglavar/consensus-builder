@@ -5205,6 +5205,7 @@
     },
     "ephemeral": {
         "messages": {
+            "unknown_path": "No hay ninguna página en esta dirección. Se muestra el mapa.",
             "agent_location_unavailable": "No se puede ir a {{action}} de {{agent}}: los datos de parcelas aún no están cargados.",
             "minted_parcels_failed": "No se pudieron cargar las parcelas acuñadas: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "No se puede aplicar la propuesta de edificio, faltan parcelas requisito: {{missing}}",

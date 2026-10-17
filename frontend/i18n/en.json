@@ -5154,6 +5154,7 @@
     },
     "ephemeral": {
         "messages": {
+            "unknown_path": "There is no page at this address. Showing the map instead.",
             "agent_location_unavailable": "Cannot go to {{agent}}'s {{action}}: the parcel data is not loaded yet.",
             "minted_parcels_failed": "Minted parcels could not be loaded: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Can't apply building proposal, prerequisite parcels are missing: {{missing}}",

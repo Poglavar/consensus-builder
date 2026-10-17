@@ -5206,6 +5206,7 @@
     },
     "ephemeral": {
         "messages": {
+            "unknown_path": "Na ovoj adresi nema stranice. Prikazuje se mapa.",
             "agent_location_unavailable": "Nije moguće otići na {{action}} agenta {{agent}}: podaci o parcelama još nisu učitani.",
             "minted_parcels_failed": "Iskovane parcele nisu mogle da se učitaju: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primeniti predlog zgrade, nedostaju pretci: {{missing}}",
