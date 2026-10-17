@@ -1863,14 +1863,11 @@
                 ? global.generateDefaultProposalName(typeLabel, { parcelIds: draft.fields?.selectedParcelIds || [] })
                 : `${typeLabel} ${new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '')}`;
         }
-        // Every object carries usable terms from birth: the standard description pattern and a
-        // random placeholder offer — refined later in the Create proposal dialog if the user cares.
+        // Every object carries the standard description pattern from birth. Terms (kind, money,
+        // voting period) are chosen only when it is published (proposal-kinds.md): no placeholder offer.
         const resolvedName = autoFields.name || currentName;
         if (!String(draft.fields?.description || '').trim() && typeof global.generateDefaultProposalDescription === 'function') {
             autoFields.description = global.generateDefaultProposalDescription(typeLabel, resolvedName);
-        }
-        if (!(Number(draft.fields?.offer) > 0) && typeof global.generateRandomRoadOffer === 'function') {
-            autoFields.offer = global.generateRandomRoadOffer();
         }
         if (Object.keys(autoFields).length) {
             store.updateDraft(draftId, { fields: autoFields }, { recordHistory: false });

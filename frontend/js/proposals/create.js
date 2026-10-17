@@ -147,8 +147,6 @@ async function finishReparcellizationAgreementBatch(batch, draftId) {
 // ---- Kind ("Who decides?", proposal-kinds.md) ----
 // The kind is chosen first in both create dialogs; the overlay's data-proposal-kind shows the terms
 // that belong to it (css/proposals.css): money for an owner deal, a voting period for a vote.
-const PROPOSAL_VOTE_MAX_DAYS = 365;
-
 // The owner offers their own parcels: always an owner deal, whatever the row shows.
 function isOwnerSaleOfferInDialog() {
     return !!window.proposalOwnerOfferMode
@@ -185,16 +183,30 @@ function applyProposalKindToDialog() {
     if (explain) explain.textContent = proposalKindExplanation(kind, sale);
 }
 
-// The kind and the deadline it brings: a vote runs for whole days (default and max one year) and
-// carries no money; an owner deal keeps the expiry and money options the dialog holds.
+// Whether the chosen kind is a vote: it then needs no offer.
 function readProposalKindTerms() {
     const kind = getSelectedProposalKind();
-    const nonBinding = window.ProposalKind.isNonBinding({ kind });
-    if (!nonBinding) return { kind, nonBinding, voteExpiryDays: undefined, voteExpiresAt: null };
-    const input = document.getElementById('proposalVoteExpiryDays');
-    const rawDays = input ? parseInt(input.value, 10) : NaN;
-    const voteExpiryDays = (Number.isFinite(rawDays) && rawDays > 0) ? Math.min(rawDays, PROPOSAL_VOTE_MAX_DAYS) : PROPOSAL_VOTE_MAX_DAYS;
-    return { kind, nonBinding, voteExpiryDays, voteExpiresAt: new Date(Date.now() + voteExpiryDays * 86400000).toISOString() };
+    return { kind, nonBinding: window.ProposalKind.isNonBinding({ kind }) };
+}
+
+// The terms as the dialog holds them, for ProposalPublishTerms.publishFields.
+function readProposalTermsFromDialog(offer, offerCurrency) {
+    const field = id => document.getElementById(id);
+    const checked = id => field(id)?.checked === true;
+    const expiryMs = checked('proposalExpireCheckbox') ? parseExpiryTime(field('proposalExpiryTime')?.value) : 0;
+    return {
+        kind: getSelectedProposalKind(),
+        offer,
+        offerCurrency,
+        isConditional: checked('proposalConditionalCheckbox'),
+        expiresAt: expiryMs > 0 ? new Date(Date.now() + expiryMs).toISOString() : null,
+        decayEnabled: checked('proposalDecayCheckbox'),
+        decayPercent: parseInt(field('proposalDecayPercent')?.value, 10),
+        decayDurationMs: checked('proposalDecayCheckbox') ? parseExpiryTime(field('proposalDecayTime')?.value) : 0,
+        depositEnabled: checked('proposalDepositCheckbox'),
+        depositPercent: parseInt(field('proposalDepositPercent')?.value, 10),
+        voteExpiryDays: field('proposalVoteExpiryDays')?.value
+    };
 }
 
 // ---- Owner offer ("Offer my land") ----
@@ -843,52 +855,13 @@ async function createProposal() {
         const bounds = calculateProposalBounds(finalParcelIds, siteContext ? { site: siteContext.site } : {});
         console.debug('[createProposal] Bounds calculation took:', (performance.now() - boundsStartTime).toFixed(2), 'ms');
 
-        // Check for expiry option
-        const expireCheckbox = document.getElementById('proposalExpireCheckbox');
-        const expiryTimeInput = document.getElementById('proposalExpiryTime');
-        let expiresAt = null;
-        if (expireCheckbox && expireCheckbox.checked && expiryTimeInput) {
-            const expiryMs = parseExpiryTime(expiryTimeInput.value);
-            if (expiryMs > 0) {
-                expiresAt = new Date(Date.now() + expiryMs).toISOString();
-            }
-        }
-
-        // A vote (either kind) runs to its voting deadline instead of the short auction-style
-        // expiry above, and carries no money: nothing settles.
-        if (kindTerms.nonBinding) expiresAt = kindTerms.voteExpiresAt;
-
-        // Check for decay option
-        const decayCheckbox = document.getElementById('proposalDecayCheckbox');
-        const decayPercentInput = document.getElementById('proposalDecayPercent');
-        const decayTimeInput = document.getElementById('proposalDecayTime');
-        let decayEnabled = false;
-        let decayPercent = 0;
-        let decayDurationMs = 0;
-        if (decayCheckbox && decayCheckbox.checked && decayPercentInput && decayTimeInput) {
-            decayEnabled = true;
-            decayPercent = Math.min(100, Math.max(1, parseInt(decayPercentInput.value, 10) || 50));
-            decayDurationMs = parseExpiryTime(decayTimeInput.value);
-        }
-
-        // Check for deposit option
-        const depositCheckbox = document.getElementById('proposalDepositCheckbox');
-        const depositPercentInput = document.getElementById('proposalDepositPercent');
-        let depositEnabled = false;
-        let depositPercent = 0;
-        if (depositCheckbox && depositCheckbox.checked && depositPercentInput) {
-            depositEnabled = true;
-            // Clamp between 10% and 200%
-            depositPercent = Math.min(200, Math.max(10, parseInt(depositPercentInput.value, 10) || 100));
-        }
-
-        // Check for conditional proposal option (default to false if not available)
-        const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
-        const isConditional = !kindTerms.nonBinding && (conditionalCheckbox ? conditionalCheckbox.checked : false);
-        if (kindTerms.nonBinding) {
-            decayEnabled = false;
-            depositEnabled = false;
-        }
+        // The kind and its terms become record fields through the one builder every publish path
+        // uses (proposals/publish-terms.js): a vote carries no money and runs to its deadline.
+        const termFields = window.ProposalPublishTerms.publishFields(
+            readProposalTermsFromDialog(offer, offerCurrency),
+            { saleOffer: isOwnerSaleOfferInDialog() }
+        );
+        const isConditional = termFields.isConditional;
 
         if (publishingDraftId && window.proposalDraftStore?.getDraft?.(publishingDraftId)) {
             window.proposalDraftStore.updateDraft(publishingDraftId, {
@@ -896,17 +869,9 @@ async function createProposal() {
                     name: proposalName || proposalType,
                     description,
                     selectedParcelIds: selectedLiveParcelIds,
-                    offer,
-                    offerCurrency,
                     acquisitionMode,
                     boundaryAdjustment: boundaryMode,
-                    isConditional,
-                    expiresAt,
-                    decayEnabled,
-                    decayPercent,
-                    decayDurationMs,
-                    depositEnabled,
-                    depositPercent
+                    ...termFields
                 }
             }, { coalesceKey: 'publish-form' });
         }
@@ -917,10 +882,7 @@ async function createProposal() {
             name: proposalName || proposalType,
             proposalName: proposalName || proposalType,
             description: description || proposalName || proposalType,
-            offer: kindTerms.nonBinding ? null : offer,
-            offerCurrency,
-            budget: kindTerms.nonBinding ? null : offer, // Add budget field - initially same as offer
-            budgetCurrency: offerCurrency,
+            ...termFields, // kind, money terms or voting period (proposals/publish-terms.js)
             acquisitionMode: acquisitionMode,
             boundaryAdjustment: boundaryMode,
             cadastreParcelIds: authoredCadastreParcelIds,
@@ -931,20 +893,10 @@ async function createProposal() {
             applied: false,
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString(), // Add creation timestamp
-            expiresAt: expiresAt, // Expiry timestamp (null if no expiry)
-            decayEnabled: decayEnabled, // Whether amount decay is enabled
-            decayPercent: decayPercent, // Percentage of offer that decays (e.g., 50 means 50%)
-            decayDurationMs: decayDurationMs, // Duration over which decay happens (in ms)
-            depositEnabled: depositEnabled, // Whether deposit is enabled
-            depositPercent: depositPercent, // Percentage of offer deposited (10-200%)
-            isConditional: isConditional,
-            disbursementMode: isConditional ? 'conditional' : 'partial', // conditional = all must accept; partial = per-acceptance payouts
             // Which decade of the plan this builds — set in the dialog, sticky between creates.
             epochYear: (typeof window !== 'undefined' && window.__proposalEpoch)
                 ? window.__proposalEpoch.readCreateDialogEpoch()
                 : null,
-            kind: kindTerms.kind, // who decides: owner deal, owner vote or community vote (proposal-kinds.md)
-            voteExpiryDays: kindTerms.voteExpiryDays, // voting period in days (≤365), votes only
             // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a
             // proposal made in Zagreb and uploaded later from New York is still labelled Zagreb —
             // and so a shared link can be recognised as cross-city even without a ?city= param.

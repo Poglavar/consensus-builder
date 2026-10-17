@@ -4801,19 +4801,6 @@ function clearPreviewAffectedParcels() {
     roadPreviewAffectedParcels = []; // Clear the preview list
 }
 
-// Still read by proposal-editor-shell.js (global.generateRandomRoadOffer) to prefill an offer.
-function generateRandomRoadOffer(min = 10000, max = 500000) {
-    if (!isFinite(min) || !isFinite(max) || max <= min) {
-        min = 10000;
-        max = 500000;
-    }
-    const random = Math.random();
-    const value = min + random * (max - min);
-    // Round to nearest 1,000 for cleaner numbers
-    return Math.round(value / 1000) * 1000;
-}
-
-
 // Find parcels affected by the PREVIEW SEGMENT ONLY (not the entire road)
 // Uses cached locked stats + adds preview-only parcels for combined display
 // PERFORMANCE: Uses mapBounds filter and avoids expensive async calls

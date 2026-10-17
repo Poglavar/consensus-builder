@@ -34,9 +34,7 @@ async function saveRowHouses({ boundParcels }) {
     c.fetch = () => {};
     c.__publishBinding = { createFetchBinding: () => async () => ({ coverage: 'complete', source: 'server:test', parcels: boundParcels.map(parcelId => ({ parcelId })) }) };
     c.getProposalI18nHelper = () => (_key, fallback, values = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (_, key) => values[key]);
-    let offers = 0;
     let saved;
-    c.generateRandomRoadOffer = () => { offers++; return 1234; };
     c.generateDefaultProposalDescription = (type, name) => `${type}: ${name}`;
     store.buildProposalFromDraft = id => {
         const d = store.getDraft(id);
@@ -46,17 +44,17 @@ async function saveRowHouses({ boundParcels }) {
     c.ProposalManager = { deriveForNewProposal: async () => { saved.applied = true; return true; } };
     c.isProposalApplied = p => p.applied;
     const id = await c.instantCreateProposalFromDraft('row-draft');
-    return { id, saved, offers };
+    return { id, saved };
 }
 
 describe('free-placement naming', () => {
     it('names the saved object after the parcel it was finally bound to', async () => {
-        const { id, saved, offers } = await saveRowHouses({ boundParcels: ['HR-339164-2972'] });
+        const { id, saved } = await saveRowHouses({ boundParcels: ['HR-339164-2972'] });
         expect(id).toBe('row-saved');
         expect(saved.title).toBe('Row houses · parcel 2972');
         expect(saved.description).toBe('Row houses: Row houses · parcel 2972');
-        expect(saved.offer).toBe(1234);
-        expect(offers).toBe(1);
+        // No placeholder offer: terms are chosen when the proposal is published (proposal-kinds.md).
+        expect(saved.offer).toBe(0);
     });
 
     it('keeps the generated name when the binding names no parcel', async () => {

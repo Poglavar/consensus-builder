@@ -478,20 +478,14 @@
         output.proposalName = output.title;
         output.description = fields.description || '';
         output.cadastreParcelIds = cadastreParcelIds.slice();
-        output.offer = Number(fields.offer) || 0;
-        output.budget = output.offer;
-        output.offerCurrency = fields.offerCurrency || 'USDT';
-        output.budgetCurrency = output.offerCurrency;
+        // The kind and its terms through the one builder every publish path uses
+        // (proposals/publish-terms.js). A local draft has no kind and no invented offer.
+        const publishTerms = global.ProposalPublishTerms || require('./proposals/publish-terms.js');
+        Object.assign(output, publishTerms.publishFields(fields, {
+            saleOffer: global.ProposalKind?.isOwnerSaleOffer?.(output) === true
+        }));
         output.acquisitionMode = fields.acquisitionMode || output.acquisitionMode || null;
         output.boundaryAdjustment = fields.boundaryAdjustment || output.boundaryAdjustment || null;
-        output.isConditional = fields.isConditional === true;
-        output.disbursementMode = output.isConditional ? 'conditional' : 'partial';
-        output.expiresAt = fields.expiresAt || null;
-        output.decayEnabled = fields.decayEnabled === true;
-        output.decayPercent = Number(fields.decayPercent) || 0;
-        output.decayDurationMs = Number(fields.decayDurationMs) || 0;
-        output.depositEnabled = fields.depositEnabled === true;
-        output.depositPercent = Number(fields.depositPercent) || 0;
         const approval = global.ProposalApproval;
         if (approval?.normalizeConfig) {
             output.approvalConfig = approval.normalizeConfig(fields.approvalConfig || {
