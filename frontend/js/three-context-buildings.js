@@ -163,12 +163,10 @@
         // Mark in-flight key now so concurrent calls during a drag don't pile up.
         contextGroup.userData.__contextKey = key;
 
-        let city;
-        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         let payload;
         try {
             payload = await window.BuildingSourceClient.request('/buildings/near',
-                { geometry: opts.geometry, buffer_meters: bufferMeters, city, source: window.CityConfigManager?.getBuildingSourceId?.() });
+                { geometry: opts.geometry, buffer_meters: bufferMeters });
         } catch (e) {
             console.warn('[ContextBuildings3D] /buildings/near fetch failed:', e);
             // Reset key so a later attempt can retry.

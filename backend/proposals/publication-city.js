@@ -16,21 +16,12 @@
 // Only new publications are placed (checkProposalBinding, the binding preview): stored records keep
 // their city, and drift and migrations measure them with it.
 
-import { createRequire } from 'node:module';
 import { parcelSourceCatalog, resolveParcelSourceDescriptor } from '../parcels/sources.js';
-
-const requireCjs = createRequire(import.meta.url);
-const WorldCoverage = requireCjs('../../frontend/js/world/world-coverage.js');
+import { worldCoverage } from '../jurisdiction.js';
 
 // City ids configured with no cadastre at all (frontend/js/city-config.js parcels.source 'none').
 export const NO_CADASTRE_CITIES = Object.freeze(['explore']);
 export const SITE_IN_OTHER_CITY = 'site-in-other-city';
-
-let coverage = null;
-function worldCoverage() {
-    if (!coverage) coverage = WorldCoverage.create(requireCjs('../../frontend/data/world-coverage.json'));
-    return coverage;
-}
 
 const servingSources = city => parcelSourceCatalog.sources.filter(source => source.cityIds.includes(city));
 // The source a city binds against when the request names none (parcels/sources.js

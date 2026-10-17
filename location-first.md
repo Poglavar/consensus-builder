@@ -80,9 +80,10 @@ El Paso / Juárez is configured today.
 | # | Phase | Status |
 |---|---|---|
 | 1 | URL and boot: jurisdiction from the location, `at` wins, `city` is an alias | done 2026-10-17 |
-| 2 | Geography sources by coordinates only (backend + 3D) | planned |
+| 2 | Geography sources by coordinates only (backend + 3D + 2D buildings) | done 2026-10-17 |
+| 2b | Coverage sized to the city, not 3–8 km sample circles | next |
 | 3 | Declared coverage per parcel source; border precision | planned |
-| 4 | App state by area (proposal counts/lists, markets, plans) and the stray city defaults | planned |
+| 4 | Proposals by geography: binding, lists, counts, markets, plans by site; city a derived label | planned |
 
 ### Phase 1: URL and boot
 
@@ -104,6 +105,14 @@ Built:
 Deferred: the border clip and its audit script (see Border rule).
 
 ### Phase 2: geography by coordinates
+
+Built: `backend/jurisdiction.js` (the shared rule on the server); the building registry picks its
+provider from the request geometry (no Zagreb default; a body `city` is ignored); trees anywhere
+(Zagreb, New York and explore had none); `/decor/layers?bbox=`; `/buildings/osm` labels by the box;
+floor models keyed by the city at the geometry. Browser: `CityConfigManager.cityAt` /
+`getCityConfigAt`; the building client routes and picks the source by the request's place and sends
+no city; the 2D building layer (GDI vs provider) follows the view's centre. Planned below for the
+record:
 
 Backend:
 
@@ -137,10 +146,24 @@ Frontend:
   the nearest city centre. Circles remain the fallback for sources without a declared area.
 - Finer country outlines (Natural Earth 10 m admin-0) for the border cities the phase-1 audit lists.
 
-### Phase 4: app state by area, stray defaults
+### Phase 2b: coverage sized to the city
 
-- `/proposals/count|summary`, `/markets`, `/plans`: accept a bbox (explore already lists proposals
-  by area); the city filter stays for city pages.
+User, 2026-10-17: 3 km is far too small (Zagreb is 20 km+ across). The `liveRadiusKm` values (3, 6,
+8 km) record where qualification sampled the source, not the city's extent. Size each city's
+coverage from its own urban area (UN WUP 2025 surface, already joined for population), with a floor
+and the 60 km cap; the source's own declared extent replaces this in phase 3.
+
+### Phase 4: proposals by geography, stray defaults
+
+User, 2026-10-17: which city a proposal is "filed under" should not matter once the switch is done;
+proposals are geography-first.
+
+- Binding takes the parcel source from the site's location (the city at the site), never from the
+  view or a requested city, so the "publish it from <city>" refusal goes away.
+- `/proposals/count|summary`, `/markets`, `/plans` by area (site geometry; `proposal.site` has a GIST
+  index; explore already lists proposals by box). `proposal.city` becomes a derived label.
+- The browser's per-city database is the last coupling (one IndexedDB per city); decide whether
+  records move to one store keyed by place.
 - Defects found in the survey, fixed where they are:
   - `ens_plan.city` stores the raw request (`zg`), so `/markets?city=zagreb` misses those plans.
   - `area-monitors.js` prefix inference tests `NY-`/`CO-`, but ids are `US-NY-`/`US-CO-`, so those

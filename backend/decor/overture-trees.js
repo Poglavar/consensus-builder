@@ -35,12 +35,15 @@ const GREENERY_ACCEPTANCE = 0.72;
 // A planted tree this close to a mapped one is the same tree twice — drop it.
 const PLANTED_MIN_DISTANCE_TO_MAPPED_M = 5;
 
-export function createOvertureTreesProvider(pool, cityKey) {
-    const cfg = OVERTURE_CITIES[cityKey];
-    if (!cfg) throw new Error(`createOvertureTreesProvider: unknown Overture city '${cityKey}'`);
+// `cityKey` names an Overture city (overture-cities.js) whose labelled ingests are read first; any
+// other place (null) reads the geometry alone, the ladder's last rung.
+export function createOvertureTreesProvider(pool, cityKey = null) {
+    const known = cityKey ? OVERTURE_CITIES[cityKey] : null;
+    if (cityKey && !known) throw new Error(`createOvertureTreesProvider: unknown Overture city '${cityKey}'`);
+    const cfg = known || {};
     // city → region → country → planet, exactly as the buildings read (data-scope.js). Decor is
     // ingested by area too, so the same city can find its trees under a broader label than its own.
-    const ladder = scopeLadder({ city: cfg.city || cityKey, region: cfg.region, country: cfg.country });
+    const ladder = scopeLadder(known ? { city: cfg.city || cityKey, region: cfg.region, country: cfg.country } : {});
     const scopeMemo = createScopeMemo();
     const spacingM = Number.isFinite(cfg.greeneryTreeSpacingM) && cfg.greeneryTreeSpacingM > 0
         ? cfg.greeneryTreeSpacingM
@@ -135,7 +138,7 @@ export function createOvertureTreesProvider(pool, cityKey) {
                 spacingM, GREENERY_ACCEPTANCE, PLANTED_MIN_DISTANCE_TO_MAPPED_M
             ])).rows,
             scopeMemo,
-            `trees:${cityKey}`
+            `trees:${cityKey || 'planet'}`
         );
         const trees = rows.map(r => [Number(r.lng), Number(r.lat)]);
         return { trees, count: trees.length, scope, source: 'overture-trees' };

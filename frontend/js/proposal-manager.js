@@ -1779,9 +1779,6 @@ const ProposalManager = {
             return prefetched;
         }
 
-        const city = (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId)
-            ? CityConfigManager.getCurrentCityId() : undefined;
-
         // Chunked to stay under the endpoint's 400-region cap; each chunk's answer stands alone.
         const PREFETCH_CHUNK = 200;
         const batchCount = Math.ceil(regions.length / PREFETCH_CHUNK);
@@ -1794,8 +1791,7 @@ const ProposalManager = {
             const chunk = regions.slice(index, index + PREFETCH_CHUNK);
             try {
                 profile.requests += 1;
-                const payload = await window.BuildingSourceClient.request('/buildings/under',
-                    { regions: chunk, city, source: window.CityConfigManager?.getBuildingSourceId?.() });
+                const payload = await window.BuildingSourceClient.request('/buildings/under', { regions: chunk });
                 if (!payload || payload.supported === false || payload.truncated === true) {
                     if (payload && payload.truncated) console.warn('[replay] bulk building fetch truncated — falling back per proposal');
                     continue;

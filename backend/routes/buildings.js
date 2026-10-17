@@ -3,6 +3,7 @@ import { createBuildingProviders } from '../buildings/index.js';
 import { fetchOsmBuildings } from '../buildings/osm-reference.js';
 import { fetchStagedOsmBuildings } from '../buildings/osm-staged.js';
 import { attachNearbyFloorModels, nativeFloorModelSource } from '../buildings/floor-models.js';
+import { jurisdictionOf, jurisdictionAt } from '../jurisdiction.js';
 import {
     fetchProposalsForCarve,
     carveRecordsFor,
@@ -187,13 +188,13 @@ export function setupBuildingsRoute(app, pool) {
     });
 
     // POST /buildings/near - Full 3D building meshes within `buffer_meters` of a GeoJSON point/geometry.
-    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number, city?: string,
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number,
     //         proposals?: string[] | string }
     //
-    // Source is per-city via the building-provider registry (see backend/buildings/): Zagreb
-    // serves pre-built LOD2 meshes from `gdi_building_3d`, NYC extrudes live footprint sources, etc.
-    // Whatever the source, every provider yields the same flat-face shape in EPSG:4326 with Z in
-    // metres. `city` is the CityConfigManager city id; omitting it defaults to Zagreb.
+    // The source follows the geometry via the building-provider registry (see backend/buildings/):
+    // in Zagreb the pre-built LOD2 meshes from `gdi_building_3d`, in New York the live footprint
+    // sources, etc. Whatever the source, every provider yields the same flat-face shape in EPSG:4326
+    // with Z in metres. A `city` in the body is ignored (location-first.md).
     //
     // `proposals` (OPTIONAL) is an explicit list of proposal definitions whose demolitions to apply
     // to the meshes that come back — see backend/buildings/carve.js. With it:
@@ -221,7 +222,6 @@ export function setupBuildingsRoute(app, pool) {
             const body = req.body || {};
             const geometry = body.geometry;
             const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
-            const city = typeof body.city === 'string' ? body.city : undefined;
             const proposalIds = body.proposals === undefined ? [] : parseProposalIds(body.proposals);
 
             if (!geometry || typeof geometry !== 'object' || !geometry.type) {
@@ -231,11 +231,13 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            // A user-chosen building source (`source`) wins over the city's own.
-            const provider = buildingProviders.forRequest({ city, source: body.source });
+            // A user-chosen building source (`source`) wins over the one where the geometry lies.
+            const provider = buildingProviders.forRequest({ source: body.source, geometry });
             if (!provider) {
-                return res.status(400).json({ error: `No 3D building source for city '${city}'.` });
+                return res.status(400).json({ error: 'No 3D building source here.' });
             }
+            // Floor models are filed under the city whose data applies there.
+            const floorModelCity = jurisdictionOf(geometry) || 'explore';
 
             const result = await provider.near(geometry, bufferMeters);
             const floorModelSource = nativeFloorModelSource(body.source, result.source);
@@ -247,7 +249,7 @@ export function setupBuildingsRoute(app, pool) {
             // The upstream failed outright: the browser tells the person instead of drawing nothing.
             if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
-                const buildings = await attachNearbyFloorModels(pool, city || 'zagreb', floorModelSource, result.buildings);
+                const buildings = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, result.buildings);
                 return res.json({ buildings, count: result.count, source: result.source, ...extra });
             }
 
@@ -257,7 +259,7 @@ export function setupBuildingsRoute(app, pool) {
             // A cut proxy no longer has the authored floor shape. Enrich only untouched
             // objects (carveBuildings deliberately preserves those object references).
             const originals = new Set(result.buildings);
-            const modeled = await attachNearbyFloorModels(pool, city || 'zagreb', floorModelSource,
+            const modeled = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource,
                 buildings.filter(building => originals.has(building)));
             const byId = new Map(modeled.map(building => [building.object_id, building]));
             const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
@@ -273,7 +275,7 @@ export function setupBuildingsRoute(app, pool) {
     // POST /buildings/carve - What the explicitly selected proposals do to EXISTING buildings under
     // them, as a verdict per AFFECTED building. Nothing else is returned: a building absent from
     // `carves` is untouched and should render exactly as its source gives it.
-    // Body: { proposals: string[] | string, city?: string, geometry?: <GeoJSON>, buffer_meters?: number }
+    // Body: { proposals: string[] | string, geometry?: <GeoJSON>, buffer_meters?: number }
     //
     // This exists for consumers that already have their own mesh source and only need to know what
     // changed — the walk sim streams `gdi_building_3d` from the cadastre API (with facade colours
@@ -302,7 +304,6 @@ export function setupBuildingsRoute(app, pool) {
     app.post('/buildings/carve', async (req, res) => {
         try {
             const body = req.body || {};
-            const city = typeof body.city === 'string' ? body.city : undefined;
             const proposalIds = parseProposalIds(body.proposals);
             const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 50;
 
@@ -313,11 +314,8 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            // A user-chosen building source (`source`) wins over the city's own.
-            const provider = buildingProviders.forRequest({ city, source: body.source });
-            if (!provider) {
-                return res.status(400).json({ error: `No 3D building source for city '${city}'.` });
-            }
+            // A malformed user source is the caller's error before anything is read.
+            if (typeof body.source === 'string' && body.source) buildingProviders.resolveSource(body.source);
 
             const proposals = await fetchProposalsForCarve(pool, proposalIds);
             const carveContext = carveRecordsFor(proposals);
@@ -327,6 +325,12 @@ export function setupBuildingsRoute(app, pool) {
             const area = (body.geometry && body.geometry.type) ? body.geometry : carveRecordsBounds(carveContext);
             if (!area) {
                 return res.json({ carves: [], count: 0, source: null });
+            }
+
+            // A user-chosen building source (`source`) wins over the one where the area lies.
+            const provider = buildingProviders.forRequest({ source: body.source, geometry: area });
+            if (!provider) {
+                return res.status(400).json({ error: 'No 3D building source here.' });
             }
 
             const result = await provider.near(area, bufferMeters);
@@ -344,7 +348,7 @@ export function setupBuildingsRoute(app, pool) {
 
     // POST /buildings/footprints - 2D footprints (+ known heights) of existing buildings mostly
     // inside a GeoJSON polygon. Backs the urban-rule "based on existing buildings" mode.
-    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, city?: string }
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326> }
     //
     // Footprints are an OPTIONAL per-city provider capability: a provider that implements
     // `footprints(geometry)` supports it, everything else reports `supported: false` (the
@@ -373,7 +377,6 @@ export function setupBuildingsRoute(app, pool) {
         try {
             const body = req.body || {};
             const regions = Array.isArray(body.regions) ? body.regions : null;
-            const city = typeof body.city === 'string' ? body.city : undefined;
             if (!regions || !regions.length) {
                 return res.status(400).json({ error: 'regions must be a non-empty array of { key, geometry }.' });
             }
@@ -393,8 +396,9 @@ export function setupBuildingsRoute(app, pool) {
                 }
             }
 
-            // A user-chosen building source (`source`) wins over the city's own.
-            const provider = buildingProviders.forRequest({ city, source: body.source });
+            // A user-chosen building source (`source`) wins over the one where the regions lie (one
+            // request covers one scene, so its first region stands for all of them).
+            const provider = buildingProviders.forRequest({ source: body.source, geometry: regions[0].geometry });
             if (!provider || typeof provider.footprintsUnder !== 'function') {
                 return res.json({ supported: false, regions: {}, truncated: false, source: null });
             }
@@ -421,14 +425,13 @@ export function setupBuildingsRoute(app, pool) {
         try {
             const body = req.body || {};
             const geometry = body.geometry;
-            const city = typeof body.city === 'string' ? body.city : undefined;
 
             if (!geometry || typeof geometry !== 'object' || !geometry.type) {
                 return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
             }
 
-            // A user-chosen building source (`source`) wins over the city's own.
-            const provider = buildingProviders.forRequest({ city, source: body.source });
+            // A user-chosen building source (`source`) wins over the one where the geometry lies.
+            const provider = buildingProviders.forRequest({ source: body.source, geometry });
             if (!provider || typeof provider.footprints !== 'function') {
                 return res.json({ supported: false, footprints: [], count: 0, source: null });
             }
@@ -471,7 +474,8 @@ export function setupBuildingsRoute(app, pool) {
         if (bbox.length !== 4 || bbox.some(v => !Number.isFinite(v))) {
             return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
         }
-        const city = String(req.query.city || 'zagreb').trim().toLowerCase();
+        // The staged label is that of the city whose data applies at the box's centre.
+        const city = jurisdictionAt((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2) || 'explore';
         try {
             // Staged first: the same OSM footprints out of shared geodata, with no rate limit and no
             // outage. Overpass answers only for cities nobody has ingested yet.

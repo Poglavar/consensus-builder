@@ -257,20 +257,25 @@ describe('POST /buildings/footprints', () => {
         expect(params[0]).toBe(JSON.stringify(geometry));
     });
 
-    it('reports unsupported for a city whose provider has no footprint source', async () => {
-        const res = await request(app).post('/buildings/footprints').send({ geometry, city: 'new_york' });
+    // A box in Manhattan: the place, not a city in the body, picks New York's provider.
+    const manhattan = { type: 'Polygon', coordinates: [[[-73.987, 40.748], [-73.984, 40.748], [-73.984, 40.75], [-73.987, 40.75], [-73.987, 40.748]]] };
+
+    it('reports unsupported where the provider has no footprint source', async () => {
+        const res = await request(app).post('/buildings/footprints').send({ geometry: manhattan, city: 'zagreb' });
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ supported: false, footprints: [], count: 0, source: null });
         expect(pool.getCalls().length).toBe(0);
     });
 
-    it('serves an unknown city from OpenStreetMap instead of falling back to Zagreb', async () => {
+    it('serves a place no city covers from OpenStreetMap instead of falling back to Zagreb', async () => {
         // Live Overpass is stubbed: a unit test never touches the network.
         const overpass = vi.fn(async () => ({ ok: true, json: async () => ({ elements: [] }) }));
         vi.stubGlobal('fetch', overpass);
         try {
-            const res = await request(app).post('/buildings/footprints').send({ geometry, city: 'atlantis' });
+            // Dhaka: no configured city covers it
+            const dhaka = { type: 'Polygon', coordinates: [[[90.407, 23.71], [90.409, 23.71], [90.409, 23.712], [90.407, 23.712], [90.407, 23.71]]] };
+            const res = await request(app).post('/buildings/footprints').send({ geometry: dhaka });
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({ supported: true, source: 'osm-footprints' });

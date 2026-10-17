@@ -216,6 +216,15 @@ describe('city-config boot', () => {
         expect(manager.getCurrentCityId()).toBe('split');
     });
 
+    it('answers which city applies at any point, whatever city booted (geography follows the place)', () => {
+        const { manager } = boot('?at=45.81305,15.97060,19');
+        expect(manager.cityAt(43.5081, 16.4402)).toBe('split');
+        expect(manager.cityAt(40.7484, -73.9857)).toBe('new_york');
+        expect(manager.cityAt(30, -40)).toBe('explore');
+        expect(manager.getCityConfigAt(45.81305, 15.9706)).toBe(manager.getCurrentCityConfig());
+        expect(manager.getCityConfigAt(40.7484, -73.9857).id).toBe('new_york');
+    });
+
     it('says so loudly, and falls back to the stored city, when the boot coverage is missing', () => {
         const storage = new Map([['cb_current_city', 'split']]);
         const errors = [];

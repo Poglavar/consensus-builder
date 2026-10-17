@@ -5151,14 +5151,11 @@
 
         nearbyProposalBuildingsFetching = true;
         updateBuildingsLoader();
-        // The 3D building source is city-specific: resolved server-side from this id, or read in the
-        // browser from Overture's tiles (building-source-client.js).
-        let city;
-        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
+        // The 3D building source is that of the city where the geometry lies: resolved server-side,
+        // or read in the browser from Overture's tiles (building-source-client.js).
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        window.BuildingSourceClient.request('/buildings/near',
-            { geometry, buffer_meters: buffer, city, source: window.CityConfigManager?.getBuildingSourceId?.() }, { signal })
+        window.BuildingSourceClient.request('/buildings/near', { geometry, buffer_meters: buffer }, { signal })
             .then(payload => {
                 if (!current()) return;
                 const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
@@ -5317,15 +5314,13 @@
 
         nearbyTreesFetching = true;
         const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        let city;
-        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(`${base}/decor/near`, {
             signal,
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry, buffer_meters: buffer, city, kinds: ['trees'] })
+            body: JSON.stringify({ geometry, buffer_meters: buffer, kinds: ['trees'] })
         })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
@@ -5842,15 +5837,16 @@
         }
     }
 
-    // Ask the backend which scenery layers the active city has, then render toggles for them. Called
-    // on entering 3D (city may have changed); cities with no scenery get no toggles.
+    // Ask the backend which scenery layers the area in view has, then render toggles for them. Called
+    // on entering 3D; an area with no scenery gets no scenery toggles (water is everywhere).
     function refreshDecorToggles() {
         if (!decorTogglesEl) return;
-        let city;
-        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
-        if (!city) { decorTogglesEl.innerHTML = ''; return; }
+        let bounds = null;
+        try { bounds = window.map && window.map.getBounds(); } catch (_) { bounds = null; }
+        if (!bounds) { decorTogglesEl.innerHTML = ''; return; }
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].map(v => v.toFixed(5)).join(',');
         const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        fetch(`${base}/decor/layers?city=${encodeURIComponent(city)}`)
+        fetch(`${base}/decor/layers?bbox=${bbox}`)
             .then(r => (r.ok ? r.json() : { layers: [] }))
             .then(payload => renderDecorToggles((payload && Array.isArray(payload.layers)) ? payload.layers : []))
             .catch(() => { /* leave whatever's there; toggles are non-critical */ });

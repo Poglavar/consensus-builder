@@ -69,7 +69,9 @@ test.describe('Overture buildings in the browser', () => {
     cadastre = [{ id: 'CUSTOM-B-58c2275a9021877e969e-330327', geometry: { type: 'Polygon', coordinates: [square(-74.0823, 4.6104)] }, height_m: null, floors: 3 }];
     await page.evaluate(() => (window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
     await expect.poll(() => poolIds(page)).toEqual(['CUSTOM-B-58c2275a9021877e969e-330327']);
-    expect(asked[0]).toMatchObject({ city: 'bogota', source: expect.stringMatching(/^building\./) });
+    // Bogotá's own source for a request in Bogotá; the place tells the server where, no city is sent
+    expect(asked[0]).toMatchObject({ source: expect.stringMatching(/^building\./) });
+    expect(asked[0].city).toBeUndefined();
     expect(tiles.ranges).toEqual([]);
 
     // Somewhere the cadastre has nothing: the same request falls back to the tiles.

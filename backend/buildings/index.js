@@ -8,6 +8,10 @@
 // OpenStreetMap provider (osm-3d.js) here. The app itself no longer asks for those cities: their
 // config says 'overture-tiles', which the browser reads straight from Overture's public tiles
 // (frontend/js/overture-tiles.js); this provider still answers other callers.
+//
+// A request names no city: its geometry does (location-first.md). The city whose data applies there
+// (jurisdiction.js, the rule the boot and the globe share) picks the provider; nowhere covered is
+// explore, which gets OSM.
 
 import { createZagrebProvider } from './zagreb-3d.js';
 import { createNycProvider } from './nyc-footprints.js';
@@ -18,8 +22,9 @@ import { createOsmProvider } from './osm-3d.js';
 import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
 import { decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
+import { jurisdictionOf } from '../jurisdiction.js';
 
-const DEFAULT_CITY = 'zagreb';
+const NO_CITY = 'explore';
 
 export function createBuildingProviders(pool, env = process.env) {
     const nycProvider = String(env.NYC_BUILDINGS_SOURCE || 'arcgis').toLowerCase() === 'socrata'
@@ -46,18 +51,11 @@ export function createBuildingProviders(pool, env = process.env) {
         return osmProviders.get(cityId);
     }
 
-    // Resolve a city id (as sent by the frontend's CityConfigManager) to its provider. A caller that
-    // omits `city` keeps the historical Zagreb default; a named city without its own provider gets
-    // OSM. (It used to get Zagreb's provider too, which answers nothing outside Zagreb.)
+    // A city id to its provider: its own, else OSM; no city (explore) is OSM too, and a malformed id
+    // has none.
     function resolve(cityId) {
-        if (cityId === undefined || cityId === null || cityId === '') return providers[DEFAULT_CITY] || null;
+        if (cityId === undefined || cityId === null || cityId === '') return osmProviderFor(NO_CITY);
         return providers[cityId] || osmProviderFor(cityId);
-    }
-
-    // The same answer for capability checks (does this city have footprint data?): every valid city
-    // has OSM, and a malformed id has nothing.
-    function resolveExact(cityId) {
-        return resolve(cityId);
     }
 
     // A user-chosen building source (`building.<base64url>`), decoded and validated on every use;
@@ -74,11 +72,12 @@ export function createBuildingProviders(pool, env = process.env) {
         return customProviders.get(descriptor.id);
     }
 
-    // The provider for a request body: its own `source` when it names one, else its city's.
-    function forRequest({ city, source } = {}) {
+    // The provider for a request: its own `source` when it names one, else that of the city whose
+    // data applies where `geometry` lies. A city the client sends is not consulted.
+    function forRequest({ source, geometry } = {}) {
         if (typeof source === 'string' && source) return resolveSource(source);
-        return resolve(city);
+        return resolve(jurisdictionOf(geometry));
     }
 
-    return { resolve, resolveExact, resolveSource, forRequest };
+    return { resolve, resolveSource, forRequest };
 }

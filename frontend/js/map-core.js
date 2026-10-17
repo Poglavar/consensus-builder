@@ -313,29 +313,34 @@ function boundsCoveredByBuildingFetch(bounds) {
 // Fetches with generous padding so neighbouring corridor edges reuse one fetch.
 async function ensureBuildingFootprintsForBounds(rawBounds) {
     if (!rawBounds) return;
-    try {
-        const config = (typeof CityConfigManager !== 'undefined') ? CityConfigManager.getCurrentCityConfig?.() : null;
-        if (config?.buildings?.source === 'none') return;
-    } catch (_) { }
     let bounds = null;
     try { bounds = L.latLngBounds(rawBounds); } catch (_) { return; }
     if (!bounds || !bounds.isValid()) return;
+    if (buildingsConfigAt(bounds)?.source === 'none') return;
     if (boundsCoveredByBuildingFetch(bounds)) return;
     await fetchBuildings(bounds.pad(0.5));
 }
 window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 
-// The city whose existing stock is served by its own provider rather than by the GDI bbox layer.
-// Null for Zagreb (GDI) and for cities that have declared they have no buildings at all.
-function footprintProviderCity() {
+// The buildings config of the city whose data applies at the centre of `bounds` (location-first.md):
+// a view panned from Zagreb to Split reads Split's source, not Zagreb's survey.
+function buildingsConfigAt(bounds) {
     try {
         const manager = (typeof CityConfigManager !== 'undefined') ? CityConfigManager : null;
-        if (!manager || typeof manager.getCurrentCityId !== 'function') return null;
-        const config = manager.getCurrentCityConfig ? manager.getCurrentCityConfig() : null;
-        const source = (config && config.buildings) ? config.buildings.source : null;
-        if (!source || source === 'none' || source === 'gdi') return null;
-        return manager.getCurrentCityId() || null;
+        if (!manager) return null;
+        const center = bounds.getCenter();
+        const config = typeof manager.getCityConfigAt === 'function'
+            ? manager.getCityConfigAt(center.lat, center.lng)
+            : manager.getCurrentCityConfig?.();
+        return (config && config.buildings) || null;
     } catch (_) { return null; }
+}
+
+// Whether the existing stock at `bounds` is served by a provider rather than by the GDI bbox layer:
+// false for Zagreb (GDI) and where the city has declared no buildings at all.
+function hasFootprintProvider(bounds) {
+    const source = buildingsConfigAt(bounds)?.source || null;
+    return !!source && source !== 'none' && source !== 'gdi';
 }
 
 // The GDI bbox layer: EPSG:3765 out of the backend, so it is declared and converted.
@@ -352,14 +357,13 @@ async function loadGdiFootprints(req) {
 // land on `properties.id`, which is exactly what corridor-tunnel's building identity accepts for the
 // non-Zagreb sources — so a road cuts, tunnels under and demolishes these the same way it does GDI
 // objects.
-async function loadProviderFootprints(bounds, city) {
+async function loadProviderFootprints(bounds) {
     const west = bounds.getWest(), south = bounds.getSouth(), east = bounds.getEast(), north = bounds.getNorth();
     const geometry = {
         type: 'Polygon',
         coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
     };
-    const payload = await window.BuildingSourceClient.request('/buildings/footprints',
-        { geometry, city, source: CityConfigManager.getBuildingSourceId?.() });
+    const payload = await window.BuildingSourceClient.request('/buildings/footprints', { geometry });
     // A city with no footprint capability is not an error and not worth a status line about zero.
     if (!payload || payload.supported === false) return null;
     // The upstream failed outright (OSM throttling, a user's source down): an empty answer here is
@@ -451,8 +455,8 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     // provider (Overture for Šibenik/Split/Belgrade, Socrata for NYC), served by the same
     // POST /buildings/footprints the urban-rule editor reads. There is no WFS fallback — the WFS
     // serves the CADASTRE, which is a different survey and must never enter this pool.
-    const providerCity = req ? null : footprintProviderCity();
-    if (!req && !providerCity) return;
+    const useProvider = !req && hasFootprintProvider(bounds);
+    if (!req && !useProvider) return;
     // Inside the upstream's back-off a viewport pan asks for nothing; a tool covering its own
     // geometry still asks (the backend answers from its cache or says unavailable at once).
     if (!boundsOverride && Date.now() < buildingsRetryAt) return;
@@ -468,7 +472,7 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     try {
         const loaded = req
             ? await loadGdiFootprints(req)
-            : await loadProviderFootprints(bounds, providerCity);
+            : await loadProviderFootprints(bounds);
         if (!loaded) return;
         const data = { truncated: loaded.truncated };
         const convertedData = { type: 'FeatureCollection', features: loaded.features };
@@ -632,13 +636,9 @@ async function fetchOsmBuildings(boundsOverride = null) {
         const ne = bounds.getNorthEast();
         const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
         const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        // The city decides whether this can be served from the staged Overture rows in shared
-        // geodata (instant) or has to go out to Overpass (rate-limited).
-        const cityId = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
-            ? window.CityConfigManager.getCurrentCityId()
-            : '';
-        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`
-            + (cityId ? `&city=${encodeURIComponent(cityId)}` : '');
+        // The server decides from the box whether the staged rows in shared geodata answer
+        // (instant) or Overpass has to (rate-limited).
+        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`;
 
         const response = await fetch(url);
         if (response.status === 503) {

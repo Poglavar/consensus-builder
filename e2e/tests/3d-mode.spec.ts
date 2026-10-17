@@ -408,11 +408,19 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
 
 test('3D trees use real instanced geometry, toggle off and restore their saved preference', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
-  await page.route('**/decor/layers**', route => route.fulfill({ json: { layers: ['trees'] } }));
-  await page.route('**/decor/near', route => route.fulfill({ json: { trees: [[15.9822, 45.8002], [15.9827, 45.8003]] } }));
+  const layerUrls: string[] = [], treeBodies: any[] = [];
+  await page.route('**/decor/layers**', route => { layerUrls.push(route.request().url()); return route.fulfill({ json: { layers: ['trees'] } }); });
+  await page.route('**/decor/near', route => { treeBodies.push(route.request().postDataJSON()); return route.fulfill({ json: { trees: [[15.9822, 45.8002], [15.9827, 45.8003]] } }); });
   await openCity(page);
   await enter3D(page);
   await openModelLayers(page);
+  // Scenery is asked for by place (location-first.md): the box in view and the scene's geometry, no city.
+  const layersQuery = new URL(layerUrls.at(-1)!).searchParams;
+  expect(layersQuery.get('bbox')).toMatch(/^-?\d+\.\d+(,-?\d+\.\d+){3}$/);
+  expect(layersQuery.has('city')).toBe(false);
+  await expect.poll(() => treeBodies.length).toBeGreaterThan(0);
+  expect(treeBodies[0].geometry).toBeTruthy();
+  expect(treeBodies[0].city).toBeUndefined();
   const trees = page.locator('.three-mode-trees-toggle').filter({ hasText: 'Trees' }).locator('input');
   const instances = () => page.evaluate(() => {
     const counts: number[] = [];

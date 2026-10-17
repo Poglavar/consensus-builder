@@ -10928,6 +10928,26 @@
         const coverage = window.WorldCoverage.create(window.BOOT_COVERAGE);
         return (lat, lon) => coverage.jurisdictionAt(lat, lon);
     }
+    let bootJurisdictionFn;
+    function bootJurisdiction() {
+        if (bootJurisdictionFn === undefined) bootJurisdictionFn = createBootJurisdiction();
+        return bootJurisdictionFn;
+    }
+
+    // The city whose data applies at a point (explore where none does): what a geography request
+    // for that point reads, whatever city the session booted in (location-first.md). Without the
+    // boot coverage it can only say the current city.
+    function cityAt(lat, lon) {
+        const jurisdiction = bootJurisdiction();
+        if (!jurisdiction || !Number.isFinite(lat) || !Number.isFinite(lon)) return currentCityId;
+        return jurisdiction(lat, lon) || EXPLORE_CITY_ID;
+    }
+
+    // That city's config; the current city's own (with the visitor's source choices) when it is the one.
+    function getCityConfigAt(lat, lon) {
+        const id = cityAt(lat, lon);
+        return id === currentCityId ? getCurrentCityConfig() : getCityConfig(id);
+    }
 
     // How this boot chose its city (WorldEntryModel.resolveEntry, location-first.md "URL rules").
     function resolveBootEntry() {
@@ -10945,7 +10965,7 @@
             search: window.location.search,
             storedCityId,
             resolveCityParam,
-            jurisdictionAt: createBootJurisdiction()
+            jurisdictionAt: bootJurisdiction()
         });
     }
 
@@ -11662,6 +11682,8 @@
         // How the boot chose the city (WorldEntryModel.resolveEntry): js/map-core.js drops ?city=
         // from the address when the entry says so.
         getBootEntry: () => Object.assign({}, bootEntry),
+        cityAt,
+        getCityConfigAt,
         // Keep a city the visitor picked on the globe without a reload (the default city it booted on).
         // Writes only the pointer: the city is unchanged, so no cityChanged event.
         rememberCurrentCity: () => {

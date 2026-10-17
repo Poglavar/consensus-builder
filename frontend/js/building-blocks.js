@@ -3395,10 +3395,7 @@ function ensureExistingFootprints() {
     if (existingFootprintsPromise) return existingFootprintsPromise;
     const geometry = getBlockQueryGeometry();
     if (!geometry) return Promise.resolve(null);
-    let city;
-    try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
-    existingFootprintsPromise = window.BuildingSourceClient.request('/buildings/footprints',
-        { geometry, city, source: window.CityConfigManager?.getBuildingSourceId?.() }).then(payload => {
+    existingFootprintsPromise = window.BuildingSourceClient.request('/buildings/footprints', { geometry }).then(payload => {
         if (!payload || payload.supported === false) return null;
         existingFootprints = (payload.footprints || []).filter(f => f && f.geometry);
         return existingFootprints;

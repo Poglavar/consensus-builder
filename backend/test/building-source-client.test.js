@@ -1,7 +1,8 @@
 // Where the browser's building requests go (frontend/js/building-source-client.js): a city on
 // Overture's tiles is answered in the browser in the endpoints' own shapes, other sources go to the
 // backend, and a server source with `fallback: 'overture-tiles'` (Bogotá's cadastre) falls back to
-// the tiles when it fails or finds nothing.
+// the tiles when it fails or finds nothing. Which city's source that is follows where the request
+// lies (getCityConfigAt), and no city is sent (location-first.md).
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'node:module';
@@ -16,7 +17,7 @@ const box = (x, y, d = 0.0001) => ({ type: 'Polygon', coordinates: [[[x, y], [x 
 const building = (id, x, y, props = {}) => ({ type: 'Feature', id, geometry: box(x, y), properties: { measured_height_m: null, levels: null, building: null, ...props } });
 
 // A page: the city config, a backend reached through fetch, and the tile source replaced by a stub.
-function page({ buildings, server = null, tileFeatures = [] }) {
+function page({ buildings, server = null, tileFeatures = [], configAt = null }) {
     const calls = { server: [], tiles: 0 };
     const global = {
         turf,
@@ -27,7 +28,10 @@ function page({ buildings, server = null, tileFeatures = [] }) {
         },
         pmtiles: { PMTiles: function () {} },
         getBackendBase: () => 'http://backend.test',
-        CityConfigManager: { getCurrentCityConfig: () => ({ buildings }) },
+        CityConfigManager: {
+            getCurrentCityConfig: () => ({ buildings }),
+            ...(configAt ? { getCityConfigAt: (lat, lon) => ({ buildings: configAt(lat, lon) }) } : {})
+        },
         fetch: async (url, init) => {
             calls.server.push({ url, body: JSON.parse(init.body) });
             if (typeof server === 'function') return server(url);
@@ -75,13 +79,31 @@ describe('building source client', () => {
         expect(calls.server).toHaveLength(0);
     });
 
-    it('sends every other source to the backend, unchanged', async () => {
+    it('sends every other source to the backend without the city a caller still names', async () => {
         const answer = { buildings: [{ object_id: 'z1' }], count: 1, source: 'zagreb-3d' };
         const { global, calls } = page({ buildings: { source: 'gdi' }, server: answer });
         const body = { geometry: box(15.97, 45.8), buffer_meters: 300, city: 'zagreb' };
         expect(await client.request('/buildings/near', body, { global })).toEqual(answer);
-        expect(calls.server).toEqual([{ url: 'http://backend.test/buildings/near', body }]);
+        expect(calls.server).toEqual([{ url: 'http://backend.test/buildings/near', body: { geometry: box(15.97, 45.8), buffer_meters: 300 } }]);
         expect(calls.tiles).toBe(0);
+    });
+
+    it("follows the request's place, not the session's city", async () => {
+        // The session booted on Overture tiles; the request lies where a city with its own survey applies.
+        const answer = { buildings: [{ object_id: 'z1' }], count: 1, source: 'zagreb-3d' };
+        const seen = [];
+        const configAt = (lat, lon) => { seen.push([lat, lon]); return lat > 40 ? { source: 'cadastre', sourceId: 'building.there' } : { source: 'overture-tiles' }; };
+        const { global, calls } = page({ buildings: { source: 'overture-tiles' }, server: answer, configAt, tileFeatures: [building('w1', 10, 10)] });
+        expect(await client.request('/buildings/near', { geometry: box(15.97, 45.8) }, { global })).toEqual(answer);
+        expect(calls.server[0].body.source).toBe('building.there');
+        expect(seen[0][0]).toBeCloseTo(45.80005, 6);
+        // and back on the tiles where the place says so
+        const near = await client.request('/buildings/near', { geometry: box(10, 10) }, { global });
+        expect(near.source).toBe('overture-tiles-3d');
+        expect(calls.server).toHaveLength(1);
+        // a demolition scan is placed by its first region
+        await client.request('/buildings/under', { regions: [{ key: 'a', geometry: box(15.97, 45.8) }] }, { global });
+        expect(calls.server).toHaveLength(2);
     });
 
     it('fails loudly when the backend errors and there is no fallback', async () => {

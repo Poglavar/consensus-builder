@@ -48,9 +48,9 @@ describe('POST /decor/water', () => {
     it('serves water in every city and is listed as a layer even where no scenery is ingested', async () => {
         const server = app();
         const waterProvider = { near: vi.fn(async () => ({ areas: [{ geometry: square(0, 0, 1), kind: 'ocean' }], count: 1, source: 'openfreemap' })) };
-        setupDecorRoute(server, { query: vi.fn() }, { waterProvider });
+        setupDecorRoute(server, { query: vi.fn(async () => ({ rows: [] })) }, { waterProvider });
         const layers = response();
-        await server.routes['GET /decor/layers']({ query: { city: 'paris' } }, layers);
+        await server.routes['GET /decor/layers']({ query: { bbox: '2.34,48.84,2.36,48.86' } }, layers);
         expect(layers.body.layers).toContain('water');
         const water = response();
         await server.routes['POST /decor/water']({ body: { geometry: { type: 'Point', coordinates: [2.35, 48.85] }, buffer_meters: 300 } }, water);

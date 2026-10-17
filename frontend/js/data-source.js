@@ -240,7 +240,14 @@
     // project into 3765 at all (proj4 gives no finite answer near the equator in much of Asia and the
     // Americas), and computing it first used to stop every city's own provider from loading there.
     function buildBuildingRequestParams(bounds, source = 'gdi') {
-        const cityConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig() : null;
+        // The city whose data applies at the view's centre (location-first.md), not the session's.
+        let cityConfig = null;
+        if (CityConfigManager) {
+            const center = bounds && typeof bounds.getCenter === 'function' ? bounds.getCenter() : null;
+            cityConfig = center && typeof CityConfigManager.getCityConfigAt === 'function'
+                ? CityConfigManager.getCityConfigAt(center.lat, center.lng)
+                : CityConfigManager.getCurrentCityConfig();
+        }
         const configured = (cityConfig && cityConfig.buildings) ? cityConfig.buildings.source : null;
         if (configured === 'none') {
             return null;

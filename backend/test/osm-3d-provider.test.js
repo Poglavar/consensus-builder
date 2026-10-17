@@ -98,13 +98,22 @@ describe('building provider registry', () => {
             const provider = registry.resolve(city);
             expect(provider).toBeTruthy();
             expect(typeof provider.footprintsUnder).toBe('function');
-            expect(registry.resolveExact(city)).toBe(provider);
         }
         expect(registry.resolve('lima')).not.toBe(registry.resolve('zagreb'));
     });
 
-    it('keeps the Zagreb default for a missing city and refuses a malformed id', () => {
-        expect(registry.resolve(undefined)).toBe(registry.resolve('zagreb'));
+    it('gives no city the explore provider, not Zagreb, and refuses a malformed id', () => {
+        expect(registry.resolve(undefined)).toBe(registry.resolve('explore'));
+        expect(registry.resolve(undefined)).not.toBe(registry.resolve('zagreb'));
         expect(registry.resolve('../etc')).toBeNull();
+    });
+
+    it('picks the provider from where the request lies, never from a city it names', () => {
+        const at = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] });
+        expect(registry.forRequest({ geometry: at(15.9706, 45.81305) })).toBe(registry.resolve('zagreb'));
+        expect(registry.forRequest({ geometry: at(-73.9857, 40.7484) })).toBe(registry.resolve('new_york'));
+        expect(registry.forRequest({ geometry: at(-73.9857, 40.7484), city: 'zagreb' })).toBe(registry.resolve('new_york'));
+        expect(registry.forRequest({ geometry: at(90.4074, 23.7104) })).toBe(registry.resolve('explore'));
+        expect(registry.forRequest({})).toBe(registry.resolve('explore'));
     });
 });

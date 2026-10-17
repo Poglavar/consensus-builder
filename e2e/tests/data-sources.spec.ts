@@ -66,7 +66,10 @@ test.describe('Data sources @features', () => {
 
     const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/footprints') && request.method() === 'POST');
     await page.evaluate(() => (window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
-    expect((await footprints).postDataJSON()).toMatchObject({ city: 'zagreb', source: sourceId('ft') });
+    // the visitor's source for the city in view; the place, not a city name, tells the server where
+    const footprintsBody = (await footprints).postDataJSON();
+    expect(footprintsBody).toMatchObject({ source: sourceId('ft') });
+    expect(footprintsBody.city).toBeUndefined();
 
     await page.locator('#layers-button').click();
     await page.locator('#building-source-settings-button').click();
