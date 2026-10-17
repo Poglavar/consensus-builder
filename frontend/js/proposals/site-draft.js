@@ -150,10 +150,8 @@
 
     function draftRecordShape(draft) {
         const fields = (draft && draft.fields) || {};
-        const facets = fields.facets || {};
         return {
             goal: draft && draft.goal,
-            isVote: facets.ownership === 'no-change' && facets.parcels === 'as-is',
             proposalRole: fields.proposalRole || null
         };
     }

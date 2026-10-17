@@ -2748,3 +2748,17 @@ body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
 .readjustment-cash-review strong { white-space: nowrap; }
 .readjustment-cash-review-total { border-top: 1px solid var(--border-color, var(--cb-line)); margin-top: 4px; }
 .readjustment-cash-review-invalid { color: var(--color-danger, var(--cb-danger)); font-size: 13px; }
+
+/* The kind ("Who decides?", proposal-kinds.md) picks the terms: money for an owner deal, a voting
+   period for a vote. create.js applyProposalKindToDialog sets data-proposal-kind on the overlay. */
+.create-proposal-modal[data-proposal-kind="owner-vote"] .proposal-deal-term,
+.create-proposal-modal[data-proposal-kind="community-vote"] .proposal-deal-term,
+.create-proposal-modal[data-proposal-kind="owner-deal"] .proposal-vote-term {
+    display: none;
+}
+
+.proposal-kind-explain {
+    margin: var(--cb-space-1) 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}

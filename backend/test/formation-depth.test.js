@@ -278,7 +278,7 @@ describe('site-first records', () => {
     it('keeps refusing parcel acts and records about nothing', () => {
         expect(records.conformanceOf({ goal: 'ownership-transfer', site: SITE, cadastreParcelIds: [] }).violations.map(v => v.code))
             .toContain('missing-cadastral-provenance');
-        expect(records.conformanceOf({ goal: 'park', isVote: true, site: SITE }).flat).toBe(false);
+        expect(records.conformanceOf({ goal: 'park', kind: 'owner-vote', site: SITE }).flat).toBe(false);
         expect(records.conformanceOf({ goal: 'park', cadastreParcelIds: [] }).flat).toBe(false);
     });
 

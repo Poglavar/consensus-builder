@@ -3210,6 +3210,16 @@
             "summaryCoverage": "Approximate coverage of view: {{percent}}%"
         },
         "createProposal": {
+            "kind": {
+                "heading": "Who decides?",
+                "ownerDeal": "Owner deal",
+                "ownerVote": "Owner vote",
+                "communityVote": "Community vote",
+                "explainOwnerDeal": "The owners accept a binding deal, and you offer money for it.",
+                "explainSale": "You offer your own parcels and a buyer pays. Binding.",
+                "explainOwnerVote": "The owners of these parcels vote. Non-binding: nothing is paid and no one's land changes.",
+                "explainCommunityVote": "Residents take part through the organiser. Non-binding: nothing is paid and no one's land changes."
+            },
             "title": "Create proposal",
             "editTitle": "Proposal",
             "titlePark": "Create park proposal",
@@ -4955,6 +4965,8 @@
     },
     "alerts": {
         "messages": {
+            "community_vote_has_no_owner_action": "A community vote is decided by residents through its organiser; owners have nothing to accept.",
+            "owner_vote_not_on_solana": "Owner votes cannot be minted on Solana yet. Choose another kind, or keep the proposal off-chain.",
             "a_proposal_with_the_same_parcels_already_exists": "A proposal with the same parcels already exists.",
             "an_identical_proposal_already_exists": "An identical proposal already exists.",
             "building_proposal_workflow_is_unavailable": "Building proposal workflow is unavailable.",

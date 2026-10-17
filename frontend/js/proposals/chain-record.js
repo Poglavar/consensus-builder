@@ -12,7 +12,7 @@
         'proposalId', 'city', 'type', 'goal', 'proposalRole', 'name', 'title', 'description', 'author',
         'createdAt', 'authoredAt', 'expiresAt', 'epochYear', 'offer', 'offerCurrency', 'budget',
         'budgetCurrency', 'decayEnabled', 'decayPercent', 'decayDurationMs', 'depositEnabled',
-        'depositPercent', 'disbursementMode', 'isConditional', 'isVote', 'voteExpiryDays',
+        'depositPercent', 'disbursementMode', 'isConditional', 'kind', 'voteExpiryDays',
         'cadastreParcelIds', 'site', 'binding', 'toleranceM', 'cadastreSnapshot', 'ownershipFlow',
         'cadastreFrame', 'lens', 'bounds', 'geometry', 'roadProposal', 'buildingProposal',
         'structureProposal', 'reparcellization', 'decideLaterProposal', 'ownershipTransfer',
@@ -37,6 +37,12 @@
         return values.slice();
     }
 
+    // The kind and its terms (proposal-kinds.md): a vote never carries money.
+    function checkKind(record) {
+        const errors = dependency('ProposalKind', './proposal-kind.js').kindErrors(record);
+        if (errors.length) fail(`The proposal kind is invalid: ${errors[0].message}`);
+    }
+
     function authoredRecord(proposal) {
         const boundary = dependency('__formationDepth', './formation-depth.js');
         const gate = boundary.preparePublishRecord(proposal);
@@ -48,6 +54,7 @@
         if (record.lens) record.lens = record.lens.map(entry => typeof entry === 'string' ? entry : entry.address);
         if (record.ownershipTransferProposal) delete record.ownershipTransferProposal.status;
         if (record.approvalConfig != null) record.approvalConfig = approvalConfig(record.approvalConfig);
+        checkKind(record);
         return record;
     }
 
@@ -72,6 +79,7 @@
         const record = properties.proposal;
         if (Object.keys(record).some(key => !FIELDS.includes(key))) fail('NFT proposal contains non-authored fields.');
         parcelIds(record.cadastreParcelIds);
+        checkKind(record);
         if (!record.site || !record.binding || !record.cadastreSnapshot) fail('NFT proposal is missing its site, binding, or cadastral snapshot.');
         const gate = dependency('__formationDepth', './formation-depth.js').preparePublishRecord(record);
         if (!gate.verdict.flat) fail('NFT proposal contains invalid cadastral references.');

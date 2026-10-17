@@ -3231,6 +3231,16 @@
             "summaryCoverage": "Približna pokrivenost pogleda: {{percent}}%"
         },
         "createProposal": {
+            "kind": {
+                "heading": "Ko odlučuje?",
+                "ownerDeal": "Dogovor sa vlasnicima",
+                "ownerVote": "Glasanje vlasnika",
+                "communityVote": "Glasanje zajednice",
+                "explainOwnerDeal": "Vlasnici prihvataju obavezujući dogovor, a vi za njega nudite novac.",
+                "explainSale": "Nudite sopstvene parcele, a kupac plaća. Obavezujuće.",
+                "explainOwnerVote": "Glasaju vlasnici ovih parcela. Neobavezujuće: ništa se ne plaća i ničije se zemljište ne menja.",
+                "explainCommunityVote": "Stanovnici učestvuju preko organizatora. Neobavezujuće: ništa se ne plaća i ničije se zemljište ne menja."
+            },
             "title": "Kreiraj predlog",
             "editTitle": "Predlog",
             "titlePark": "Kreiraj predlog parka",
@@ -5006,6 +5016,8 @@
     },
     "alerts": {
         "messages": {
+            "community_vote_has_no_owner_action": "O glasanju zajednice odlučuju stanovnici preko organizatora; vlasnici nemaju šta da prihvate.",
+            "owner_vote_not_on_solana": "Glasanje vlasnika još ne može da se minta na Solani. Izaberite drugu vrstu ili ostavite predlog van lanca.",
             "a_proposal_with_the_same_parcels_already_exists": "Predlog sa istim parcelama već postoji.",
             "an_identical_proposal_already_exists": "Identičan predlog već postoji.",
             "building_proposal_workflow_is_unavailable": "Tok za predlog zgrade nije dostupan.",

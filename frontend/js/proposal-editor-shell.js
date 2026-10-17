@@ -1780,11 +1780,10 @@
         const submit = global.document?.getElementById('createProposalSubmitButton');
         if (submit) {
             const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
-            // A no-property-change proposal (ownership no-change + parcels as-is) is a non-binding
-            // vote — that outcome wins over the create/replacement label, matching
-            // updateCreateProposalSubmitState() so applying the facets doesn't clobber it.
-            const facets = (typeof global !== 'undefined' && global.proposalFacets) || {};
-            const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
+            // A vote (either kind chosen in the dialog, proposal-kinds.md) wins over the
+            // create/replacement label, matching updateCreateProposalSubmitState().
+            const isVote = typeof global.getSelectedProposalKind === 'function'
+                && global.ProposalKind.isNonBinding({ kind: global.getSelectedProposalKind() });
             submit.textContent = isVote
                 ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
                 : (source

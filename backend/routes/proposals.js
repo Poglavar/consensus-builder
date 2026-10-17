@@ -39,6 +39,7 @@ import { createOwnerDecisionHandlers, createOwnerDecisionStore } from '../propos
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 
 const require = createRequire(import.meta.url);
+const proposalKind = require('../../frontend/js/proposals/proposal-kind.js');
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -555,6 +556,11 @@ export function precheckProposalCreate(req) {
     // fields, and goal, isVote, geometry and buildingGeometry are not among them), with the
     // validated, normalised values on top.
     const record = { ...stripLocalProposalState(body), ...validated };
+
+    // The kind says who decides and whether it binds (proposal-kinds.md): a vote carries no money,
+    // and an owner's sale offer is always an owner deal. A record without one is an owner deal.
+    const kindError = proposalKind.kindErrors(record)[0];
+    if (kindError) return { ok: false, status: 422, code: `invalid-proposal-kind:${kindError.code}`, error: kindError.message };
 
     if (!req.chainMirror && (record.reparcellization || record.goal === 'reparcellization')) {
         const validation = validateReadjustmentProposal({ ...record,

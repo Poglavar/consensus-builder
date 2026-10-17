@@ -3261,6 +3261,16 @@
             "summaryCoverage": "Cobertura aproximada de la vista: {{percent}}%"
         },
         "createProposal": {
+            "kind": {
+                "heading": "¿Quién decide?",
+                "ownerDeal": "Acuerdo con propietarios",
+                "ownerVote": "Voto de propietarios",
+                "communityVote": "Voto vecinal",
+                "explainOwnerDeal": "Los propietarios aceptan un acuerdo vinculante y tú ofreces dinero por él.",
+                "explainSale": "Ofreces tus propias parcelas y un comprador paga. Vinculante.",
+                "explainOwnerVote": "Votan los propietarios de estas parcelas. No vinculante: no se paga nada y ningún terreno cambia.",
+                "explainCommunityVote": "Los vecinos participan a través de la organización. No vinculante: no se paga nada y ningún terreno cambia."
+            },
             "title": "Crear propuesta",
             "editTitle": "Propuesta",
             "titlePark": "Crear propuesta de parque",
@@ -5006,6 +5016,8 @@
     },
     "alerts": {
         "messages": {
+            "community_vote_has_no_owner_action": "Un voto vecinal lo deciden los vecinos a través de la organización; los propietarios no tienen nada que aceptar.",
+            "owner_vote_not_on_solana": "Los votos de propietarios aún no se pueden acuñar en Solana. Elige otro tipo o mantén la propuesta fuera de la cadena.",
             "a_proposal_with_the_same_parcels_already_exists": "Ya existe una propuesta con las mismas parcelas.",
             "an_identical_proposal_already_exists": "Ya existe una propuesta idéntica.",
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",

@@ -36,6 +36,15 @@ describe('proposalContentFingerprint (v2, upload identity)', () => {
         expect(sharing.proposalContentFingerprint(churned)).not.toBe(reference);
     });
 
+    it('commits the kind only when a record has one, so older records keep their fingerprints', () => {
+        const reference = sharing.proposalContentFingerprint(base());
+        expect(sharing.proposalContentFingerprint({ ...base(), kind: undefined })).toBe(reference);
+        const deal = sharing.proposalContentFingerprint({ ...base(), kind: 'owner-deal' });
+        const vote = sharing.proposalContentFingerprint({ ...base(), offer: null, kind: 'community-vote' });
+        expect(deal).not.toBe(reference);
+        expect(vote).not.toBe(deal);
+    });
+
     it('moves when the content actually changes', () => {
         const wider = base();
         wider.roadProposal.definition.width = 7.5;

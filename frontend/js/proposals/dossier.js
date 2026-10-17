@@ -87,7 +87,7 @@
 
     // Which channel one proposal lands in for one parcel root. `ctx`:
     //   flow          — this proposal's ownership flow entries
-    //   isVote        — the app's real vote predicate (isVoteProposal)
+    //   isVote        — the app's real predicate for either vote kind (isNonBindingProposal)
     //   cedingFlows   — [{ id, createdAt, footprint, cededM2 }] of formations ceding this ground
     //   parcelFeature — the parcel's polygon, for the on-ceded-ground geometry checks
     function channelFor(proposal, parcelRoot, ctx) {
@@ -96,7 +96,7 @@
         const context = ctx || {};
         const isVote = typeof context.isVote === 'function'
             ? context.isVote
-            : (p => !!(p && p.isVote === true));
+            : (p => !!(p && (p.kind === 'owner-vote' || p.kind === 'community-vote')));
         const goal = String(proposal && proposal.goal !== undefined && proposal.goal !== null ? proposal.goal : '').trim();
 
         // Rules are political whatever ground they touch; votes reuse the same channel.

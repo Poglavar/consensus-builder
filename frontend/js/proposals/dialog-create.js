@@ -439,6 +439,36 @@ function setProposalModalInteractivity(enabled) {
     modal.classList.toggle('proposal-modal-disabled', !enabled);
 }
 
+// The "Who decides?" row (proposal-kinds.md), first in both create dialogs. The overlay's
+// data-proposal-kind (create.js applyProposalKindToDialog) shows the terms that belong to the kind:
+// rows marked .proposal-deal-term for an owner deal, .proposal-vote-term for a vote.
+function proposalKindRowHtml(t) {
+    const kinds = window.ProposalKind;
+    const labels = {
+        'owner-deal': t('modal.createProposal.kind.ownerDeal', 'Owner deal'),
+        'owner-vote': t('modal.createProposal.kind.ownerVote', 'Owner vote'),
+        'community-vote': t('modal.createProposal.kind.communityVote', 'Community vote')
+    };
+    const options = kinds.KINDS.map(kind => `<label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalKind" value="${kind}"${kind === kinds.DEFAULT_PUBLISH_KIND ? ' checked' : ''} onchange="applyProposalKindToDialog(); updateCreateProposalSubmitState()"><span>${labels[kind]}</span></label>`).join('');
+    return `<div class="proposal-choices" id="proposalKindGroup">
+                    <div class="cb-kicker" id="proposalKindHeading">${t('modal.createProposal.kind.heading', 'Who decides?')}</div>
+                    <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalKindHeading">${options}</div>
+                    <p class="proposal-kind-explain" id="proposalKindExplain" aria-live="polite"></p>
+                </div>`;
+}
+
+function proposalVoteTermRowHtml(t) {
+    return `<div class="proposal-option-row proposal-option-row--split proposal-vote-term" id="proposalVoteExpiryWrap">
+                                <div class="proposal-option-toggle">
+                                    <label for="proposalVoteExpiryDays">${t('modal.createProposal.options.voteExpiry', 'Voting period')}</label>
+                                </div>
+                                <div class="proposal-option-value proposal-option-value--end">
+                                    <input type="number" id="proposalVoteExpiryDays" class="proposal-option-number" min="1" max="365" value="365">
+                                    <span class="proposal-option-suffix">${t('modal.createProposal.options.voteExpiryDaysSuffix', 'days (max 365)')}</span>
+                                </div>
+                            </div>`;
+}
+
 // Cash is authored per owner in the LR ledger; the generic offer input cannot change that total.
 function refreshReparcellizationCashTerms(modal) {
     const plan = window.pendingReparcellizationPlan;
@@ -719,8 +749,6 @@ function showProposalDialog(overrides = null) {
     const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Payout only when all parcels accept');
     const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
     const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
-    const voteExpiryLabel = t('modal.createProposal.options.voteExpiry', 'Voting period');
-    const voteExpiryDaysSuffix = t('modal.createProposal.options.voteExpiryDaysSuffix', 'days (max 365)');
     const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
     const decayHelperText = t('modal.createProposal.options.decayHelper', 'Offer amount will decrease with time to entice acceptance.');
     const decayPercentSuffix = t('modal.createProposal.options.decayPercentSuffix', '% over');
@@ -869,6 +897,7 @@ function showProposalDialog(overrides = null) {
                     <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
                     <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
                 </div>
+                ${proposalKindRowHtml(t)}
                 <div class="proposal-choices" id="proposalMainTypeGroup" hidden>
                     <div class="cb-kicker" id="proposalMainTypeHeading">${proposalTypeLabel}</div>
                     <div class="cb-segmented" role="group" aria-labelledby="proposalMainTypeHeading">
@@ -995,7 +1024,7 @@ function showProposalDialog(overrides = null) {
                         <i id="proposalOptionsChevron" class="fas fa-chevron-down proposal-collapsible-chevron" aria-hidden="true"></i>
                     </div>
                     <div id="proposalOptionsContent" style="display:none;">
-                        <div class="form-group">
+                        <div class="form-group proposal-deal-term">
                             <label for="proposalOffer">${offerLabel}</label>
                             <div class="proposal-offer-row">
                                 <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" oninput="handleProposalOfferInput(this)">
@@ -1010,7 +1039,7 @@ function showProposalDialog(overrides = null) {
                             </div>
                         </div>
                         <div class="form-group proposal-options-section">
-                            <div class="proposal-option-row" id="proposalOptionConditional">
+                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionConditional">
                                 <div class="proposal-option-toggle">
                                     <input type="checkbox" id="proposalConditionalCheckbox" checked>
                                     <label for="proposalConditionalCheckbox">${conditionalLabel}</label>
@@ -1019,7 +1048,7 @@ function showProposalDialog(overrides = null) {
                                     ${conditionalHelperOnText}
                                 </div>
                             </div>
-                            <div class="proposal-option-row proposal-option-row--split" id="proposalOptionExpire">
+                            <div class="proposal-option-row proposal-option-row--split proposal-deal-term" id="proposalOptionExpire">
                                 <div class="proposal-option-toggle">
                                     <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
                                     <label for="proposalExpireCheckbox">${expireAfterLabel}</label>
@@ -1028,23 +1057,15 @@ function showProposalDialog(overrides = null) {
                                     <input type="text" id="proposalExpiryTime" class="proposal-option-time" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" disabled>
                                 </div>
                             </div>
-                            <div class="proposal-option-row proposal-option-row--split" id="proposalVoteExpiryWrap" style="display:none;">
-                                <div class="proposal-option-toggle">
-                                    <label for="proposalVoteExpiryDays">${voteExpiryLabel}</label>
-                                </div>
-                                <div class="proposal-option-value proposal-option-value--end">
-                                    <input type="number" id="proposalVoteExpiryDays" class="proposal-option-number" min="1" max="365" value="365">
-                                    <span class="proposal-option-suffix">${voteExpiryDaysSuffix}</span>
-                                </div>
-                            </div>
-                            <div class="proposal-option-row" id="proposalOptionDecay">
+                            ${proposalVoteTermRowHtml(t)}
+                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionDecay">
                                 <div class="proposal-option-toggle">
                                     <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
                                     <label for="proposalDecayCheckbox">${decayLabel}</label>
                                 </div>
                                 <div class="proposal-option-helper">${decayHelperText}</div>
                             </div>
-                            <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs" id="proposalOptionDecayInputs">
+                            <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs proposal-deal-term" id="proposalOptionDecayInputs">
                                 <div class="proposal-option-value proposal-option-value--indent">
                                     <input type="text" id="proposalDecayPercent" class="proposal-option-number" value="50" pattern="[0-9]*" inputmode="numeric" disabled>
                                     <span class="proposal-option-suffix">${decayPercentSuffix}</span>
@@ -1053,7 +1074,7 @@ function showProposalDialog(overrides = null) {
                                     <input type="text" id="proposalDecayTime" class="proposal-option-time" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" disabled>
                                 </div>
                             </div>
-                            <div class="proposal-option-row" id="proposalOptionDeposit">
+                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionDeposit">
                                 <div class="proposal-option-toggle">
                                     <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
                                     <label for="proposalDepositCheckbox">${depositLabel}</label>
@@ -1068,7 +1089,7 @@ function showProposalDialog(overrides = null) {
                                 <input type="number" id="proposalToleranceM" min="0" max="1" step="0.01" value="${toleranceValue}" inputmode="decimal">
                                 <p class="proposal-tolerance-help">${toleranceHelp}</p>
                             </div>
-                            <div class="proposal-option-row" id="proposalOptionAreaProportional">
+                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionAreaProportional">
                                 <div class="proposal-option-toggle">
                                     <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
                                     <label for="proposalAreaProportionalCheckbox">${areaProportionalText}</label>
@@ -1495,15 +1516,6 @@ function showProposalDialog(overrides = null) {
         }
     }
 
-    // Pre-fill the offer amount with a random value between 1 and 1,000,000 EUR
-    const offerInput = document.getElementById('proposalOffer');
-    if (offerInput) {
-        const minOfferEur = 1;
-        const maxOfferEur = 1000000;
-        const randomOffer = Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur;
-        offerInput.value = window.formatProposalOfferValue(randomOffer);
-    }
-
     // Apply user-provided defaults when available
     const authorInput = document.getElementById('proposalAuthor');
     if (authorInput && overridePrefill.author) {
@@ -1680,6 +1692,8 @@ function showProposalDialog(overrides = null) {
 function decorateProposalDialogChrome(dialogApi, { submitId, lensTooltip, hintId = null }) {
     const submit = dialogApi.getActionButton('create');
     if (submit) submit.id = submitId;
+    // The kind row starts on its default; its terms follow before the dialog is first seen.
+    applyProposalKindToDialog();
     const close = dialogApi.header ? dialogApi.header.querySelector('.close-circle-btn') : null;
     if (close) close.classList.add('proposal-modal-close');
     if (!dialogApi.footer) return;
@@ -1876,6 +1890,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                         <input type="text" id="proposalAuthor" placeholder="${authorPlaceholder}" disabled>
                     </div>
                 </div>
+                ${proposalKindRowHtml(t)}
                 <div class="form-group">
                     <label for="proposalName">${nameLabel}</label>
                     <input type="text" id="proposalName" value="${defaultName}" placeholder="${namePlaceholder}">
@@ -1888,7 +1903,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                     <label for="proposalDescription">${descriptionLabel}</label>
                     <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="${descriptionPlaceholder}"></textarea>
                 </div>
-                <div class="form-group">
+                <div class="form-group proposal-deal-term">
                     <label for="proposalOffer">${offerLabel}</label>
                     <div class="proposal-offer-row">
                         <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" oninput="handleProposalOfferInput(this)">
@@ -1904,7 +1919,8 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 </div>
                 <div class="form-group proposal-options-section">
                     <label>${optionsLabel}</label>
-                    <div class="proposal-option-row proposal-option-row--split">
+                    ${proposalVoteTermRowHtml(t)}
+                    <div class="proposal-option-row proposal-option-row--split proposal-deal-term">
                         <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
                             <label for="proposalExpireCheckbox">${expireAfterLabel}</label>
@@ -1913,14 +1929,14 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                             <input type="text" id="proposalExpiryTime" class="proposal-option-time" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" disabled>
                         </div>
                     </div>
-                    <div class="proposal-option-row">
+                    <div class="proposal-option-row proposal-deal-term">
                         <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
                             <label for="proposalDecayCheckbox">${decayLabel}</label>
                         </div>
                         <div class="proposal-option-helper">${decayHelperText}</div>
                     </div>
-                    <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs">
+                    <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs proposal-deal-term">
                         <div class="proposal-option-value proposal-option-value--indent">
                             <input type="text" id="proposalDecayPercent" class="proposal-option-number" value="50" pattern="[0-9]*" inputmode="numeric" disabled>
                             <span class="proposal-option-suffix">${decayPercentSuffix}</span>
@@ -1929,7 +1945,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                             <input type="text" id="proposalDecayTime" class="proposal-option-time" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" disabled>
                         </div>
                     </div>
-                    <div class="proposal-option-row">
+                    <div class="proposal-option-row proposal-deal-term">
                         <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
                             <label for="proposalDepositCheckbox">${depositLabel}</label>
@@ -1939,7 +1955,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                             <span class="proposal-option-suffix">${depositHelperText}</span>
                         </div>
                     </div>
-                    <div class="proposal-option-row">
+                    <div class="proposal-option-row proposal-deal-term">
                         <div class="proposal-option-toggle">
                             <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
                             <label for="proposalAreaProportionalCheckbox">${areaProportionalText}</label>
@@ -1991,17 +2007,12 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         refreshLensPatternPreviews();
     }
 
-    // Prefill author and random offer
+    // Prefill author
     populateProposalAuthorUI();
 
     // Pre-fill description with default text
     const proposalTypeName = typeDisplay;
     updateProposalDescription(proposalTypeName);
-    const offerInput = document.getElementById('proposalOffer');
-    if (offerInput) {
-        const minOfferEur = 1000, maxOfferEur = 100000;
-        offerInput.value = window.formatProposalOfferValue(Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur);
-    }
     attachProposalCurrencyHandlers();
     document.getElementById('proposalName').focus();
 }

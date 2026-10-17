@@ -6621,6 +6621,13 @@
       "controlType": "number"
     },
     {
+      "id": "control-0d942c64563e46-1",
+      "source": "js/proposals/dialog-create.js",
+      "markup": "<input type=\"radio\" name=\"proposalKind\" value=\"${kind}\"${kind === kinds.DEFAULT_PUBLISH_KIND ? ' checked' : ''} onchange=\"applyProposalKindToDialog(); updateCreateProposalSubmitState()\">",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
       "id": "control-89efe47e0b4d9e-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "<input type=\"checkbox\" id=\"proposalDecayCheckbox\" onchange=\"toggleDecayInput()\">",

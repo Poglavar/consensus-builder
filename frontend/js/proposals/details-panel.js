@@ -944,8 +944,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
                 : '';
-            const payout = `<span class="cb-badge" title="${conditionalBadgeTitle}">${conditionalBadgeLabel}</span>`;
-            return ladderBadge + applied + modifier + payout;
+            // A vote pays nothing, so it has no payout mode to show.
+            const payout = isNonBindingProposal(fullProposal) ? ''
+                : `<span class="cb-badge" title="${conditionalBadgeTitle}">${conditionalBadgeLabel}</span>`;
+            return ladderBadge + proposalKindBadgeHtml(fullProposal, ladder !== 'draft') + applied + modifier + payout;
         })()}
                 ${agentBadgeHtml}
             </div>

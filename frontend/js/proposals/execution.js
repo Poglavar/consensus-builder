@@ -72,6 +72,8 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
         return '';
     }
+    // A community vote asks residents, through its organiser: owners have nothing to accept.
+    if (window.ProposalKind?.isCommunityVote(proposal)) return '';
     const proposalId = proposal && proposal.proposalId ? proposal.proposalId : '';
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
@@ -269,6 +271,7 @@ function buildReadjustmentCashReviewHtml(proposal) {
 }
 
 function buildParcelAcceptanceStatusHtml(proposal) {
+    if (window.ProposalKind?.isCommunityVote(proposal)) return '';
     refreshProposalAcceptanceValidity(proposal);
     const tProposalUI = getProposalI18nHelper();
     const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
@@ -1334,7 +1337,7 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
         ? window.ReparcellizationValidation?.validate(proposal, { turf: window.turf }) : null;
     const canExecute = !withdraw && result.passed
         && (proposalRequiresDealConsent(proposal) ? lrValidation?.readyForApproval && lrValidation.fundingReady : proposal.funded !== false)
-        && !(typeof isVoteProposal === 'function' && isVoteProposal(proposal))
+        && !isNonBindingProposal(proposal)
         && proposalRecipientConsentSatisfied(proposal);
     if (canExecute) {
         proposal.lifecycleStatus = 'Executed';
@@ -1550,10 +1553,10 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
 
         let proposalExecuted = false;
         // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed.
-        // Vote proposals never execute or transfer — they only accumulate yes-votes in this same
-        // structure (so the tally UI is shared), staying "Open for voting" until they conclude.
+        // Votes never execute or transfer — an owner vote only accumulates yes-votes in this same
+        // structure (so the tally UI is shared), staying "Open for voting" until it concludes.
         const canExecute = proposal.funded !== false
-            && !isVoteProposal(proposal)
+            && !isNonBindingProposal(proposal)
             && proposalRecipientConsentSatisfied(proposal);
         // Execution counts only acceptances valid against the CURRENT effect — consent given to a
         // since-edited proposal must never carry it over the line (§12 step 4).

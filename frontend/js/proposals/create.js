@@ -23,10 +23,9 @@ function updateCreateProposalSubmitState() {
 
     if (btn) {
         btn.disabled = !hasGeometry;
-        // Relabel the submit action for vote proposals (no ownership/parcel change), so the
-        // proposer sees the outcome ("Submit for voting" → status "Open for voting").
-        const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
-        const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
+        // Relabel the submit action for either vote kind, so the proposer sees the outcome
+        // ("Submit for voting" → status "Open for voting").
+        const isVote = window.ProposalKind.isNonBinding({ kind: getSelectedProposalKind() });
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
         const createsReplacement = !!(typeof window !== 'undefined'
             && window.pendingProposalReplacementSource?.proposalId);
@@ -40,10 +39,8 @@ function updateCreateProposalSubmitState() {
     if (hint) {
         hint.textContent = (!hasGeometry) ? 'Please add a geometry first.' : '';
     }
-    // Show/hide the vote expiry field alongside the relabel.
-    if (typeof updateVoteExpiryFieldVisibility === 'function') {
-        updateVoteExpiryFieldVisibility();
-    }
+    // The kind's terms follow the relabel.
+    applyProposalKindToDialog();
     refreshReparcellizationAgreementSubmit();
 }
 
@@ -147,17 +144,57 @@ async function finishReparcellizationAgreementBatch(batch, draftId) {
     return true;
 }
 
-// Show the "voting period (days)" input only for vote proposals, and clamp it to 1..365.
-function updateVoteExpiryFieldVisibility() {
-    const wrap = document.getElementById('proposalVoteExpiryWrap');
-    if (!wrap) return;
-    const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
-    const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
-    wrap.style.display = isVote ? '' : 'none';
+// ---- Kind ("Who decides?", proposal-kinds.md) ----
+// The kind is chosen first in both create dialogs; the overlay's data-proposal-kind shows the terms
+// that belong to it (css/proposals.css): money for an owner deal, a voting period for a vote.
+const PROPOSAL_VOTE_MAX_DAYS = 365;
+
+// The owner offers their own parcels: always an owner deal, whatever the row shows.
+function isOwnerSaleOfferInDialog() {
+    return !!window.proposalOwnerOfferMode
+        || (typeof getSelectedProposalTool === 'function' && getSelectedProposalTool() === 'ownership-transfer-from-me');
+}
+
+function getSelectedProposalKind() {
+    const kinds = window.ProposalKind;
+    if (isOwnerSaleOfferInDialog()) return kinds.OWNER_DEAL;
+    const checked = document.querySelector('.create-proposal-modal input[name="proposalKind"]:checked');
+    return checked && kinds.KINDS.includes(checked.value) ? checked.value : kinds.DEFAULT_PUBLISH_KIND;
+}
+
+function proposalKindExplanation(kind, sale) {
+    const t = getProposalI18nHelper();
+    if (sale) return t('modal.createProposal.kind.explainSale', 'You offer your own parcels and a buyer pays. Binding.');
+    if (kind === 'owner-vote') return t('modal.createProposal.kind.explainOwnerVote', 'The owners of these parcels vote. Non-binding: nothing is paid and no one\'s land changes.');
+    if (kind === 'community-vote') return t('modal.createProposal.kind.explainCommunityVote', 'Residents take part through the organiser. Non-binding: nothing is paid and no one\'s land changes.');
+    return t('modal.createProposal.kind.explainOwnerDeal', 'The owners accept a binding deal, and you offer money for it.');
+}
+
+function applyProposalKindToDialog() {
+    const modal = document.querySelector('.create-proposal-modal');
+    if (!modal) return;
+    const kinds = window.ProposalKind;
+    const sale = isOwnerSaleOfferInDialog();
+    modal.querySelectorAll('input[name="proposalKind"]').forEach(input => {
+        input.disabled = sale && input.value !== kinds.OWNER_DEAL;
+        if (sale) input.checked = input.value === kinds.OWNER_DEAL;
+    });
+    const kind = getSelectedProposalKind();
+    modal.dataset.proposalKind = kind;
+    const explain = modal.querySelector('#proposalKindExplain');
+    if (explain) explain.textContent = proposalKindExplanation(kind, sale);
+}
+
+// The kind and the deadline it brings: a vote runs for whole days (default and max one year) and
+// carries no money; an owner deal keeps the expiry and money options the dialog holds.
+function readProposalKindTerms() {
+    const kind = getSelectedProposalKind();
+    const nonBinding = window.ProposalKind.isNonBinding({ kind });
+    if (!nonBinding) return { kind, nonBinding, voteExpiryDays: undefined, voteExpiresAt: null };
     const input = document.getElementById('proposalVoteExpiryDays');
-    if (input && !input.value) {
-        input.value = '365';
-    }
+    const rawDays = input ? parseInt(input.value, 10) : NaN;
+    const voteExpiryDays = (Number.isFinite(rawDays) && rawDays > 0) ? Math.min(rawDays, PROPOSAL_VOTE_MAX_DAYS) : PROPOSAL_VOTE_MAX_DAYS;
+    return { kind, nonBinding, voteExpiryDays, voteExpiresAt: new Date(Date.now() + voteExpiryDays * 86400000).toISOString() };
 }
 
 // ---- Owner offer ("Offer my land") ----
@@ -324,6 +361,8 @@ function onProposalOwnerOfferChange() {
         setProposalOwnershipMode('third-party');
         syncProposalFacets();
     }
+    // An owner offer is always an owner deal.
+    applyProposalKindToDialog();
 }
 
 function resolveProposalAuthorName() {
@@ -487,9 +526,10 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
     const author = getProposalAuthorValue();
     const title = (document.getElementById('proposalName')?.value || '').trim();
     const description = (document.getElementById('proposalDescription')?.value || '').trim();
-    const offer = window.parseProposalOfferValue(document.getElementById('proposalOffer')?.value) || 0;
+    const kindTerms = readProposalKindTerms();
+    const offer = kindTerms.nonBinding ? 0 : (window.parseProposalOfferValue(document.getElementById('proposalOffer')?.value) || 0);
     const offerCurrency = document.getElementById('proposalCurrency')?.value || 'USDT';
-    if (!author || !title || offer <= 0) {
+    if (!author || !title || (!kindTerms.nonBinding && offer <= 0)) {
         showProposalAlertMessage('please_provide_author_name_and_a_valid_offer', 'Please provide author, name, and a valid offer.');
         return;
     }
@@ -532,6 +572,11 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         // Clamp between 10% and 200%
         depositPercent = Math.min(200, Math.max(10, parseInt(depositPercentInput.value, 10) || 100));
     }
+    if (kindTerms.nonBinding) {
+        expiresAt = kindTerms.voteExpiresAt;
+        decayEnabled = false;
+        depositEnabled = false;
+    }
 
     let lakeGraphics = null;
     let structureGeometry = geometry;
@@ -557,10 +602,12 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         name: title,
         proposalName: title,
         description: description || title,
-        offer,
+        kind: kindTerms.kind,
+        offer: kindTerms.nonBinding ? null : offer,
         offerCurrency,
-        budget: offer,
+        budget: kindTerms.nonBinding ? null : offer,
         budgetCurrency: offerCurrency,
+        voteExpiryDays: kindTerms.voteExpiryDays,
         cadastreParcelIds,
         city: getProposalCityId(),
         type: 'structure',
@@ -680,9 +727,10 @@ async function createProposal() {
     }
     const proposalName = (document.getElementById('proposalName') && document.getElementById('proposalName').value || '').trim();
     const description = document.getElementById('proposalDescription').value.trim();
-    const offer = proposalMainType === 'Reparcellization'
+    const kindTerms = readProposalKindTerms();
+    const offer = kindTerms.nonBinding ? 0 : (proposalMainType === 'Reparcellization'
         ? window.ReparcellizationAgreements.cashOfferTotal(pendingReparcelPlan)
-        : window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0;
+        : window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0);
     const offerCurrencySelect = document.getElementById('proposalCurrency');
     const offerCurrency = proposalMainType === 'Reparcellization' ? 'EUR'
         : (offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT');
@@ -694,6 +742,13 @@ async function createProposal() {
     // Validation
     if (!author) {
         showProposalAlertMessage('please_enter_an_author_name', 'Please enter an author name.');
+        return;
+    }
+    // Owners have no way to cast a vote on Solana yet (proposal-kinds.md M3): minting one there
+    // would leave a vote nobody can take part in.
+    if (kindTerms.kind === window.ProposalKind.OWNER_VOTE
+        && typeof window.isSolanaLensPath === 'function' && window.isSolanaLensPath()) {
+        showProposalAlertMessage('owner_vote_not_on_solana', 'Owner votes cannot be minted on Solana yet. Choose another kind, or keep the proposal off-chain.');
         return;
     }
     // A Solana mint needs a lens the proposer chose; nothing substitutes one.
@@ -724,7 +779,7 @@ async function createProposal() {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
         return;
     }
-    if (!Number.isFinite(offer) || offer < 0 || (offer === 0 && proposalMainType !== 'Reparcellization')) {
+    if (!kindTerms.nonBinding && (!Number.isFinite(offer) || offer < 0 || (offer === 0 && proposalMainType !== 'Reparcellization'))) {
         showProposalAlertMessage('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
         return;
     }
@@ -931,19 +986,9 @@ async function createProposal() {
             }
         }
 
-        // A proposal that changes neither ownership nor parcels is a non-binding VOTE. It gets a
-        // voting deadline (default and max 1 year) instead of the short auction-style expiry above,
-        // and carries no offer/budget — the tally is a public record of support, nothing settles.
-        const voteFacets = (typeof window !== 'undefined' && window.proposalFacets) || {};
-        const isVoteCreate = voteFacets.ownership === 'no-change' && voteFacets.parcels === 'as-is';
-        const VOTE_MAX_DAYS = 365;
-        let voteExpiryDays = 0;
-        if (isVoteCreate) {
-            const voteExpiryInput = document.getElementById('proposalVoteExpiryDays');
-            const rawDays = voteExpiryInput ? parseInt(voteExpiryInput.value, 10) : NaN;
-            voteExpiryDays = (Number.isFinite(rawDays) && rawDays > 0) ? Math.min(rawDays, VOTE_MAX_DAYS) : VOTE_MAX_DAYS;
-            expiresAt = new Date(Date.now() + voteExpiryDays * 86400000).toISOString();
-        }
+        // A vote (either kind) runs to its voting deadline instead of the short auction-style
+        // expiry above, and carries no money: nothing settles.
+        if (kindTerms.nonBinding) expiresAt = kindTerms.voteExpiresAt;
 
         // Check for decay option
         const decayCheckbox = document.getElementById('proposalDecayCheckbox');
@@ -971,7 +1016,11 @@ async function createProposal() {
 
         // Check for conditional proposal option (default to false if not available)
         const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
-        const isConditional = conditionalCheckbox ? conditionalCheckbox.checked : false;
+        const isConditional = !kindTerms.nonBinding && (conditionalCheckbox ? conditionalCheckbox.checked : false);
+        if (kindTerms.nonBinding) {
+            decayEnabled = false;
+            depositEnabled = false;
+        }
 
         if (publishingDraftId && window.proposalDraftStore?.getDraft?.(publishingDraftId)) {
             window.proposalDraftStore.updateDraft(publishingDraftId, {
@@ -1000,9 +1049,9 @@ async function createProposal() {
             name: proposalName || proposalType,
             proposalName: proposalName || proposalType,
             description: description || proposalName || proposalType,
-            offer,
+            offer: kindTerms.nonBinding ? null : offer,
             offerCurrency,
-            budget: offer, // Add budget field - initially same as offer
+            budget: kindTerms.nonBinding ? null : offer, // Add budget field - initially same as offer
             budgetCurrency: offerCurrency,
             acquisitionMode: acquisitionMode,
             boundaryAdjustment: boundaryMode,
@@ -1026,8 +1075,8 @@ async function createProposal() {
             epochYear: (typeof window !== 'undefined' && window.__proposalEpoch)
                 ? window.__proposalEpoch.readCreateDialogEpoch()
                 : null,
-            isVote: isVoteCreate, // non-binding vote proposal (no ownership/parcel change, no funds)
-            voteExpiryDays: isVoteCreate ? voteExpiryDays : undefined, // voting period in days (≤365)
+            kind: kindTerms.kind, // who decides: owner deal, owner vote or community vote (proposal-kinds.md)
+            voteExpiryDays: kindTerms.voteExpiryDays, // voting period in days (≤365), votes only
             // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a
             // proposal made in Zagreb and uploaded later from New York is still labelled Zagreb —
             // and so a shared link can be recognised as cross-city even without a ?city= param.
@@ -1949,7 +1998,9 @@ async function createProposal() {
                             // An approval setup escrows nothing on chain: the contract would split it
                             // equally per parcel, not by the deal's cash terms (land-readjustmend.md §20).
                             const approvalSetup = window.ProposalApprovalRuntime?.uses(proposal) === true;
-                            const escrowAmount = proposal.proposalRole === 'owner-offer' || approvalSetup ? 0 : nativeAmount;
+                            // A vote holds no money and never executes (proposal-kinds.md).
+                            const nonBinding = window.ProposalKind.isNonBinding(proposal);
+                            const escrowAmount = proposal.proposalRole === 'owner-offer' || approvalSetup || nonBinding ? 0 : nativeAmount;
                             // proposal_nft v3: the site and its binding give site_hash and open_ground
                             // (frontend/js/proposals/site-hash.js). Owners of bound parcels always
                             // consent; open ground (or an empty binding) also needs a lens member's
@@ -1968,7 +2019,7 @@ async function createProposal() {
                                 imageURI: metadataUri,
                                 lens: solanaLens.keys,
                                 approvalSetup,
-                                verdictMayExecute: approvalSetup ? false : siteArgs.openGround,
+                                verdictMayExecute: approvalSetup || nonBinding ? false : siteArgs.openGround,
                                 siteHash: siteArgs.siteHash,
                                 openGround: siteArgs.openGround
                             });
@@ -1980,9 +2031,9 @@ async function createProposal() {
                                 tokenAmount: 0n,
                                 imageURI: metadataUri,
                                 lens: lensAddressesForMint,
-                                // Vote proposals mint fund-less via mintVote with a voting deadline (EVM only).
-                                isVote: proposal.isVote === true,
-                                expiryDays: proposal.isVote === true ? proposal.voteExpiryDays : undefined
+                                // Both vote kinds mint fund-less via mintVote with a voting deadline.
+                                isVote: window.ProposalKind.isNonBinding(proposal),
+                                expiryDays: window.ProposalKind.isNonBinding(proposal) ? proposal.voteExpiryDays : undefined
                             });
                         }
                         console.debug('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');

@@ -150,6 +150,9 @@ function proposalContentPayload(proposal, includeCadastre = false) {
     // The authored site is content (two designs on different drawn sites are different proposals).
     // Only present on site-first records, so older fingerprints and share ids do not move.
     if (proposal.site) content.site = proposal.site;
+    // The kind is chosen at publish (proposal-kinds.md); only records that have one commit it, so
+    // fingerprints of records published before kinds existed do not move.
+    if (proposal.kind) content.kind = proposal.kind;
     if (Number(proposal.toleranceM) > 0) content.toleranceM = Number(proposal.toleranceM);
     // A re-bind (binding-drift.js) carries the same site and design as its source; the binding it
     // was derived for makes it a different record, so its upload is not deduplicated onto the source.
@@ -191,6 +194,8 @@ function proposalConsentFingerprint(proposal) {
         const terms = Object.fromEntries([
             'facets', 'proposalFacets', 'ownershipFlow', 'acquisitionMode', 'boundaryAdjustment',
             'disbursementMode', 'expiresAt', 'decayEnabled', 'decayPercent', 'decayDurationMs',
+            // 'isVote' is no longer written (the kind replaced it, and sits in `content`); it stays
+            // in this list so the consent hashes owners already signed keep their value.
             'depositEnabled', 'depositPercent', 'isVote', 'voteExpiryDays', 'ownershipTransferProposal'
         ].map(key => [key, proposal[key] ?? null]));
         const approval = approvalApiForFingerprint();

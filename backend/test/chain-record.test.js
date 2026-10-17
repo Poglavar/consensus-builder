@@ -33,6 +33,21 @@ describe('portable chain proposal record', () => {
         expect(restored).toEqual(record);
     });
 
+    it('carries the proposal kind and refuses a vote with money (proposal-kinds.md)', () => {
+        const record = authored({ kind: 'community-vote', voteExpiryDays: 30 });
+        expect(chainRecord.fromMetadata({ properties: chainRecord.metadataProperties(record) }).kind).toBe('community-vote');
+        expect(() => authored({ kind: 'owner-vote', offer: 1000 })).toThrow(/kind is invalid/);
+        expect(() => authored({ kind: 'petition' })).toThrow(/kind is invalid/);
+        const forged = { properties: { ...chainRecord.metadataProperties(record) } };
+        forged.properties.proposal = { ...forged.properties.proposal, offer: 5 };
+        expect(() => chainRecord.fromMetadata(forged)).toThrow(/kind is invalid/);
+    });
+
+    it('no longer carries the retired isVote flag', () => {
+        expect(chainRecord.FIELDS).not.toContain('isVote');
+        expect(authored({ isVote: true }).isVote).toBeUndefined();
+    });
+
     it('preserves the authored free-placement marker through the portable record', () => {
         const record = authored({ freePlacement: true });
         const metadata = chainRecord.metadataProperties(record);

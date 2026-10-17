@@ -75,7 +75,8 @@ beforeAll(() => {
 describe('channelFor', () => {
     it('rules and votes are political whatever ground they touch', () => {
         expect(dossier.channelFor({ goal: 'urban-rule' }, ROOT, {})).toBe('vote');
-        expect(dossier.channelFor({ goal: 'as-is', isVote: true }, ROOT, {})).toBe('vote');
+        expect(dossier.channelFor({ goal: 'as-is', kind: 'owner-vote' }, ROOT, {})).toBe('vote');
+        expect(dossier.channelFor({ goal: 'as-is', kind: 'community-vote' }, ROOT, {})).toBe('vote');
     });
 
     it('a formation taking this ground with no geometry to check ASKS the owner', () => {

@@ -75,6 +75,7 @@ function fixture() {
         },
         proposalRecipientConsentSatisfied: () => true,
         isVoteProposal: () => false,
+        isNonBindingProposal: () => false,
         showProposalAlertMessage: showAlert,
         showStyledAlert: showAlert,
         alert: showAlert,

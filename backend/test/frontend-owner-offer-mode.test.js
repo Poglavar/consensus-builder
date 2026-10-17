@@ -4,6 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const ProposalKind = createRequire(import.meta.url)('../../frontend/js/proposals/proposal-kind.js');
 
 const createSource = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/create.js', import.meta.url)), 'utf8');
 
@@ -11,7 +14,15 @@ function loadOwnerOfferToggle({ checked, disabled = false, goal = null, facets =
     const calls = [];
     const checkbox = { checked, disabled };
     const explain = { hidden: false };
-    const window = { proposalOwnerOfferMode: false, proposalFacets: { ...facets } };
+    const window = { proposalOwnerOfferMode: false, proposalFacets: { ...facets }, ProposalKind };
+    // The dialog's "Who decides?" row, community vote preselected (proposal-kinds.md).
+    const kindRadios = ProposalKind.KINDS.map(value => ({ value, checked: value === 'community-vote', disabled: false }));
+    const kindExplain = { textContent: '' };
+    const modal = {
+        dataset: {},
+        querySelectorAll: selector => selector === 'input[name="proposalKind"]' ? kindRadios : [],
+        querySelector: selector => selector === '#proposalKindExplain' ? kindExplain : null
+    };
     const context = createContext({
         window,
         document: {
@@ -19,8 +30,14 @@ function loadOwnerOfferToggle({ checked, disabled = false, goal = null, facets =
                 if (id === 'proposalOwnerOfferCheckbox') return checkbox;
                 if (id === 'proposalOwnerOfferExplain') return explain;
                 return null;
+            },
+            querySelector(selector) {
+                if (selector === '.create-proposal-modal') return modal;
+                if (selector === '.create-proposal-modal input[name="proposalKind"]:checked') return kindRadios.find(radio => radio.checked) || null;
+                return null;
             }
         },
+        getProposalI18nHelper: () => (_key, fallback) => fallback,
         getSelectedProposalTool: () => goal,
         setProposalOwnershipMode(mode) {
             calls.push(['setProposalOwnershipMode', mode]);
@@ -33,10 +50,21 @@ function loadOwnerOfferToggle({ checked, disabled = false, goal = null, facets =
     });
     runInContext(createSource, context, { filename: 'frontend/js/proposals/create.js' });
     context.onProposalOwnerOfferChange();
-    return { window, calls, explain, checkbox };
+    return { window, calls, explain, checkbox, modal, kindRadios };
 }
 
 describe('create.js owner-offer mode', () => {
+    it('makes the kind an owner deal and locks the vote kinds while an owner offers their land', () => {
+        const on = loadOwnerOfferToggle({ checked: true, goal: 'square' });
+        expect(on.modal.dataset.proposalKind).toBe('owner-deal');
+        expect(on.kindRadios.map(radio => [radio.value, radio.checked, radio.disabled])).toEqual([
+            ['owner-deal', true, false], ['owner-vote', false, true], ['community-vote', false, true]
+        ]);
+        const off = loadOwnerOfferToggle({ checked: false, goal: 'square' });
+        expect(off.modal.dataset.proposalKind).toBe('community-vote');
+        expect(off.kindRadios.every(radio => !radio.disabled)).toBe(true);
+    });
+
     it('sets the real open-sale ownership facet when enabled with no selected goal', () => {
         const result = loadOwnerOfferToggle({ checked: true });
 

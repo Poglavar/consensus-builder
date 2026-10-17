@@ -34,8 +34,9 @@
     const MAX_INTRUSION_TOLERANCE_M = 1;
 
     // Goals that ARE acts on parcels: their subject is the parcels themselves, so their binding
-    // must not be empty. (Votes are flagged with isVote, owner offers with proposalRole
-    // 'owner-offer'; road designations are recognised by shape.)
+    // must not be empty. (An owner vote needs owners to vote, so it is one whatever its design
+    // (proposal-kinds.md); owner offers are flagged with proposalRole 'owner-offer'; road
+    // designations are recognised by shape.)
     const PARCEL_ACT_GOALS = Object.freeze([
         'offer',
         'ownership-transfer',
@@ -91,7 +92,7 @@
 
     function isParcelAct(record) {
         if (!record || typeof record !== 'object') return false;
-        if (record.isVote === true) return true;
+        if (record.kind === 'owner-vote') return true;
         if (record.proposalRole === 'owner-offer') return true;
         if (PARCEL_ACT_GOAL_SET.has(normalizeGoal(record.goal))) return true;
         return isRoadDesignation(record);

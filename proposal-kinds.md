@@ -46,7 +46,11 @@ Owner deal has two directions:
 10. The platform stays agnostic about how an NGO runs its vote and shows as little of the result as
     makes sense: no counts, methods or periods in our schema, so we are never part of a dispute
     about procedure. The NGO's own page carries the detail.
-11. Backfilling `kind` onto existing server rows: yes, but last, after everything else is settled.
+11. Backfilling `kind` onto existing server rows: agreed, then dropped (2026-10-17, during M1).
+    Prod holds no real votes (0 of 663 rows set `isVote`; the 5 the old inference called votes are
+    July "Urban Rule" test records with offers), and writing `kind` into a published record would
+    move its consent hash, which owners' signed decisions bind to. A record without a kind reads as
+    an owner deal instead (`ProposalKind.kindOf`).
 
 ## What changes in the model
 
@@ -182,9 +186,10 @@ attributed: *"greenzagreb.org ✓ says: …"*. `url` is optional.
 
 The link an NGO sends through its own channels (newsletter, WhatsApp, Facebook):
 
-- `/proposals/:id` gets an Open Graph head served by the backend, the same way `/bets/:account`
-  already does (`backend/routes/bets-share.js`, nginx proxy), so chats unfurl it with the
-  proposal's image, title and summary. `OG-IMAGE-PLAN.md` holds the image-hosting analysis.
+- `/proposals/:id` already unfurls through the `og-proposals` Cloudflare Worker
+  (`workers/og-proposals/`, built from `OG-IMAGE-PLAN.md`): proposal image, title and description.
+  M5 extends its description with the kind and the plain-language summary rather than adding a
+  second preview path.
 - The page shows: plain-language summary (what changes, who asks, kind, deadline), before/after
   pictures (the existing dividers work, `dividers.md`), the kind badge, and for a community vote
   the latest reported statement and one button, "Take part", linking to the NGO's own URL.
@@ -204,23 +209,18 @@ mainnet.
 | # | Milestone | Main files | Tests |
 |---|---|---|---|
 | M0 | Wording: "ownership not established", no-cadastre status, "Local road draft created" | i18n ×4, `site-drawing.js`, `road-drawing.js` | done, `cc349880` |
+| M1 status | Built 2026-10-17: `proposals/proposal-kind.js`; kind row in both create dialogs (community vote preselected; deal/vote terms by CSS); random offer prefills removed; votes store no money and run to a day-count deadline; owner vote refused on Solana until M3; server and chain record refuse a vote with money; kind badges | | see the M1 commit |
 | M1 | `kind` in the model: validation, hash commitment, `isVoteProposal` reads `kind`, facet inference removed, badges | `lifecycle.js`, `create.js`, consent/effect hash, list/details UI | unit: each kind × design (a park over a taken parcel can be either vote kind); owner's sale offer stays an open sale offer, never a vote; changing kind changes the hash |
 | M2 | Publish step: kind cards in the create dialog, per-kind sections, no random offer, days not ms, summary line; all publish entry points go through it | `dialog-create.js`, `create.js`, `dialog-upload.js`, `sharing-routes.js` | unit for the summary text and per-kind validation; targeted headless Playwright spec for the kind step |
 | M3 | Owner vote on Solana (today the Solana bridge has no `castVote`, so owner votes exist only on EVM) | `solana/proposal-bridge.js`; reuse `proposal-approval/v1` + memo anchors marked non-binding, if it fits | unit on the reader/tally |
 | M4 | Community vote: `did:web` resolver (pure parse module + thin fetch), optional attester field, result document, Solana memo anchor first, EAS on EVM second, badge | new `frontend/js/proposals/did-web.js`, `community-result.js` | unit: DID→URL mapping, CAIP-10 matching, signer not listed → rejected, wallet removed → grey, tampered document → hash fails, over-long statement → refused |
-| M5 | Shareable proposal page with OG head and "Take part" link | new backend route next to `bets-share.js`, nginx | route test like `bets-share-route.test.js` |
+| M5 | Shareable proposal page: kind and summary in the existing `og-proposals` preview, "Take part" link in the app | `workers/og-proposals/`, details panel | Worker unit test for the description |
 | M6 | Devnet/testnet drip so demo proposers can mint | backend route + demo wallet, rate limit per wallet/IP | unit on the limiter; refuses on a mainnet cluster |
-| M7 | Backfill `kind` on existing server rows (low priority, last): dry run, backup table, `--apply`, idempotent | `scripts/` | dry-run counts per kind read back; rerun is a no-op |
+| ~~M7~~ | Backfill dropped, see decision 11 | | |
 
 Later, not in this plan: "Follow this proposal / this area" with an email digest; keeping the map
 preview's parcels as provisional when the server has no cadastre (audit O2, second half); labelling
 mock road costs and TEAD (audit O3).
-
-## Backfill mapping (M7)
-
-Stamp `kind` on existing server rows once, as was done for legacy parcel declarations and effect
-hashes: `isVote`/vote facets → owner vote, `ownership-transfer-from-me` → owner's sale offer,
-everything else → offer to owners. On-chain records keep what they committed.
 
 ## Open questions
 

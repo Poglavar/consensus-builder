@@ -253,17 +253,19 @@ function initializeDecayCountdown() {
     decayCountdownInterval = setInterval(updateDecay, 1000);
 }
 
-// A proposal is a non-binding VOTE when it changes neither ownership nor parcel boundaries:
-// facets.ownership === 'no-change' AND facets.parcels === 'as-is'. Such a proposal alters
-// nobody's property, so owners cast yes-votes instead of binding acceptances — nothing transfers
-// or executes. Note: 'no-change' ownership alone is NOT sufficient (a reparcellization keeps
-// ownership 'no-change' while reshaping parcels — that is a binding change, not a vote).
-// Chain-loaded proposals carry an explicit boolean `isVote` (from getVoteInfo) which wins.
+// The kind (proposals/proposal-kind.js) is chosen at publish and says who decides
+// (proposal-kinds.md). An owner vote is the one where owners cast yes-votes instead of binding
+// acceptances; a community vote has no owner action at all. Neither ever executes or transfers.
+const proposalKindApiForLifecycle = (typeof ProposalKind === 'object' && ProposalKind)
+    ? ProposalKind
+    : require('./proposal-kind.js');
+
 function isVoteProposal(proposal) {
-    if (!proposal) return false;
-    if (typeof proposal.isVote === 'boolean') return proposal.isVote;
-    const facets = proposal.facets || {};
-    return facets.ownership === 'no-change' && facets.parcels === 'as-is';
+    return proposalKindApiForLifecycle.isOwnerVote(proposal);
+}
+
+function isNonBindingProposal(proposal) {
+    return proposalKindApiForLifecycle.isNonBinding(proposal);
 }
 
 // Status label for a vote proposal: "Open for voting" until the expiry deadline, then "Vote concluded".
@@ -277,9 +279,9 @@ function getProposalVoteStatusLabel(proposal) {
 
 function getProposalLifecycleKey(proposal) {
     if (!proposal) return 'active';
-    // Vote proposals have their own lifecycle: "Open for voting" until the deadline, then
+    // Both vote kinds have their own lifecycle: "Open for voting" until the deadline, then
     // "Vote concluded". They never execute, so this is checked before the executed/active keys.
-    if (isVoteProposal(proposal)) {
+    if (isNonBindingProposal(proposal)) {
         return isProposalExpired(proposal) ? 'vote-concluded' : 'vote-open';
     }
     // Check for ownership-transfer-from-me proposals which are accepted but not funded
@@ -362,6 +364,7 @@ function parseProposalOfferValue(value) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         isVoteProposal,
+        isNonBindingProposal,
         isProposalExpired,
         checkAndUpdateProposalExpiry,
         parseExpiryTime

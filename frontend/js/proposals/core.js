@@ -1230,6 +1230,10 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
         return;
     }
+    if (window.ProposalKind?.isCommunityVote(proposal)) {
+        showProposalAlertMessage('community_vote_has_no_owner_action', 'A community vote is decided by residents through its organiser; owners have nothing to accept.');
+        return;
+    }
 
     // Validate the full LR deal before opening a wallet flow. The local receipt must bind to
     // exactly the reviewed terms; a malformed allocation must not reach a chain call first.

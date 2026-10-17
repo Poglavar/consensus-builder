@@ -116,7 +116,7 @@ describe('proposal API serializer', () => {
             .toMatch(/cadastre_parcel_ids is required/);
         expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'ownership-transfer', cadastreParcelIds: [], site } }).detail)
             .toMatch(/cadastre_parcel_ids is required/);
-        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'park', isVote: true, cadastreParcelIds: [], site } }).detail)
+        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'park', kind: 'owner-vote', cadastreParcelIds: [], site } }).detail)
             .toMatch(/cadastre_parcel_ids is required/);
     });
 

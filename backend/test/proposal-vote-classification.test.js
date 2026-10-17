@@ -1,45 +1,46 @@
-// Unit tests for isVoteProposal() in frontend/js/proposals/lifecycle.js — the single predicate
-// that decides whether a proposal is a non-binding VOTE (owners cast yes-votes, nothing transfers)
-// versus a binding ACCEPT proposal. Getting this wrong would turn a binding parcel change into a
-// mere vote (or vice versa), so the tricky cases are pinned down here.
+// Unit tests for isVoteProposal() / isNonBindingProposal() in frontend/js/proposals/lifecycle.js.
+// Whether a proposal is a vote is the kind chosen at publish (proposal-kinds.md), never inferred
+// from its design: getting this wrong would turn a binding parcel change into a mere vote (or vice
+// versa), so the cases the old design-based inference got wrong are pinned down here.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { isVoteProposal } = require('../../frontend/js/proposals/lifecycle.js');
+const { isVoteProposal, isNonBindingProposal } = require('../../frontend/js/proposals/lifecycle.js');
 
-describe('isVoteProposal', () => {
-    it('is a vote when it changes neither ownership nor parcels (e.g. an urban rule / public-realm change)', () => {
-        expect(isVoteProposal({ facets: { ownership: 'no-change', parcels: 'as-is' } })).toBe(true);
+describe('isVoteProposal (owners cast votes)', () => {
+    it('is the owner-vote kind, whatever the design changes', () => {
+        expect(isVoteProposal({ kind: 'owner-vote', facets: { ownership: 'no-change', parcels: 'as-is' } })).toBe(true);
+        // A park that takes a car park's parcel can be put to the owners as a vote.
+        expect(isVoteProposal({ kind: 'owner-vote', goal: 'park', facets: { ownership: 'to-city', parcels: 'merge' } })).toBe(true);
     });
 
-    it('is NOT a vote when ownership transfers to the proposer', () => {
-        expect(isVoteProposal({ facets: { ownership: 'to-me', parcels: 'as-is' } })).toBe(false);
+    it('is never inferred from the design', () => {
+        expect(isVoteProposal({ facets: { ownership: 'no-change', parcels: 'as-is' } })).toBe(false);
+        expect(isVoteProposal({ kind: 'owner-deal', facets: { ownership: 'no-change', parcels: 'as-is' } })).toBe(false);
     });
 
-    it('is NOT a vote when ownership transfers to the city', () => {
-        expect(isVoteProposal({ facets: { ownership: 'to-city', parcels: 'merge' } })).toBe(false);
+    it('is not a community vote: residents vote there, not owners', () => {
+        expect(isVoteProposal({ kind: 'community-vote' })).toBe(false);
     });
 
-    it('is NOT a vote when ownership transfers to a third party', () => {
-        expect(isVoteProposal({ facets: { ownership: 'third-party', parcels: 'as-is' } })).toBe(false);
+    it('ignores the retired isVote flag', () => {
+        expect(isVoteProposal({ isVote: true })).toBe(false);
     });
 
-    // The critical case: a reparcellization keeps ownership 'no-change' but reshapes parcels.
-    // That is a binding change requiring owner acceptance — it must NOT be classified as a vote.
-    it('is NOT a vote when parcels are reshaped even if ownership is no-change (reparcellization)', () => {
-        expect(isVoteProposal({ facets: { ownership: 'no-change', parcels: 'readjust' } })).toBe(false);
-        expect(isVoteProposal({ facets: { ownership: 'no-change', parcels: 'merge' } })).toBe(false);
-    });
-
-    it('honors an explicit boolean isVote flag (chain-loaded proposals) over facet derivation', () => {
-        expect(isVoteProposal({ isVote: true, facets: { ownership: 'to-me', parcels: 'merge' } })).toBe(true);
-        expect(isVoteProposal({ isVote: false, facets: { ownership: 'no-change', parcels: 'as-is' } })).toBe(false);
-    });
-
-    it('defaults to NOT a vote when facets are missing (legacy/binding proposals stay binding)', () => {
+    it('a record without a kind, or no record, is not a vote', () => {
         expect(isVoteProposal({})).toBe(false);
         expect(isVoteProposal(null)).toBe(false);
         expect(isVoteProposal(undefined)).toBe(false);
+    });
+});
+
+describe('isNonBindingProposal (never executes, holds no money)', () => {
+    it('covers both vote kinds and nothing else', () => {
+        expect(isNonBindingProposal({ kind: 'owner-vote' })).toBe(true);
+        expect(isNonBindingProposal({ kind: 'community-vote' })).toBe(true);
+        expect(isNonBindingProposal({ kind: 'owner-deal' })).toBe(false);
+        expect(isNonBindingProposal({})).toBe(false);
+        expect(isNonBindingProposal({ kind: 'petition' })).toBe(false);
     });
 });

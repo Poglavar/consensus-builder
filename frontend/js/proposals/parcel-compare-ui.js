@@ -123,7 +123,7 @@
                 // Unstamped records compute their take from this; without it every formation would
                 // read "takes nothing" and triage as a disclosure.
                 baseParcels: parcel.feature ? parcel.cadastreIds.map(id => ({ id, feature: parcel.feature })) : [],
-                isVote: typeof global.isVoteProposal === 'function' ? global.isVoteProposal : undefined,
+                isVote: typeof global.isNonBindingProposal === 'function' ? global.isNonBindingProposal : undefined,
                 isApplied: typeof global.isProposalApplied === 'function' ? global.isProposalApplied : undefined,
                 parcelFeature: parcel.feature || undefined
             });

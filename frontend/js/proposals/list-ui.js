@@ -685,8 +685,22 @@ function getProposalLadder(proposal) {
     return { rung, label, modifier };
 }
 
-// The ladder as badges: the rung, "Applied" when the proposal is on this map (options.applied,
-// else read from the proposal) and the modifier.
+// Who decides (proposal-kinds.md), once the kind is settled: chosen in the dialog, or published
+// (a published record without one is an owner deal). A quick local drawing has no kind yet.
+function proposalKindBadgeHtml(proposal, published) {
+    if (!proposal || (!proposal.kind && !published)) return '';
+    const kind = window.ProposalKind.kindOf(proposal);
+    if (!kind) return '';
+    const t = getProposalI18nHelper();
+    const label = kind === 'owner-vote' ? t('modal.createProposal.kind.ownerVote', 'Owner vote')
+        : kind === 'community-vote' ? t('modal.createProposal.kind.communityVote', 'Community vote')
+            : t('modal.createProposal.kind.ownerDeal', 'Owner deal');
+    const variant = kind === 'owner-deal' ? 'cb-badge--neutral' : 'cb-badge--info';
+    return `<span class="cb-badge ${variant}" data-proposal-kind="${kind}">${escapeHtml(label)}</span>`;
+}
+
+// The ladder as badges: the rung, the kind, "Applied" when the proposal is on this map
+// (options.applied, else read from the proposal) and the modifier.
 function proposalLadderBadgesHtml(proposal, options = {}) {
     const t = getProposalI18nHelper();
     const ladder = getProposalLadder(proposal);
@@ -695,6 +709,7 @@ function proposalLadderBadgesHtml(proposal, options = {}) {
         : (typeof isProposalApplied === 'function' && isProposalApplied(proposal));
     return [
         `<span class="cb-badge cb-badge--${ladder.rung}">${escapeHtml(ladder.label)}</span>`,
+        proposalKindBadgeHtml(proposal, ladder.rung !== 'draft'),
         applied ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(t('common.lifecycle.applied', 'Applied'))}</span>` : '',
         ladder.modifier ? `<span class="cb-badge ${ladder.modifier.className}">${escapeHtml(ladder.modifier.label)}</span>` : ''
     ].join('');

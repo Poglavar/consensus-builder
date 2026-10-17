@@ -56,7 +56,7 @@ describe('hasOpenGround', () => {
 
     it('is never true for a parcel act', () => {
         expect(openGround.hasOpenGround({ proposalId: 'o', goal: 'offer', cadastreParcelIds: [] })).toBe(false);
-        expect(openGround.hasOpenGround(park({ isVote: true }))).toBe(false);
+        expect(openGround.hasOpenGround(park({ kind: 'owner-vote' }))).toBe(false);
     });
 });
 

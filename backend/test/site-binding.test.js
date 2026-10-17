@@ -162,7 +162,8 @@ describe('which records act on parcels', () => {
         expect(requiresParcels({ goal: 'ownership-transfer', site })).toBe(true);
         expect(requiresParcels({ goal: 'Ownership-transfer-to-me', site })).toBe(true);
         expect(requiresParcels({ proposalRole: 'owner-offer', goal: 'square', site })).toBe(true);
-        expect(requiresParcels({ ...park, isVote: true })).toBe(true);
+        expect(requiresParcels({ ...park, kind: 'owner-vote' })).toBe(true);
+        expect(requiresParcels({ ...park, kind: 'community-vote' })).toBe(false);
         expect(requiresParcels({ goal: 'decide-later', site })).toBe(true);
         expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { polygon: site, centerline: [] } } })).toBe(true);
     });

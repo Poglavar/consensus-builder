@@ -422,7 +422,7 @@
         if (!lensAddresses.length) {
             throw new Error('Lens list is required for minting proposals on-chain.');
         }
-        // A vote proposal (facets.ownership === 'no-change') mints fund-less via mintVote:
+        // A vote (either kind, proposal-kinds.md) mints fund-less via mintVote:
         // no ETH/token, an expiry deadline instead, and it never executes. Both paths share
         // the receipt/proposalId handling below.
         const isVote = Boolean(options.isVote);

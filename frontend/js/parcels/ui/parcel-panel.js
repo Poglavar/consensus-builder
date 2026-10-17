@@ -420,7 +420,7 @@
                     // cut — measuring against that makes the road's own take zero). Without it every
                     // formation reads "takes nothing" and triages as information, not consent.
                     baseParcels: cadastralBase,
-                    isVote: (typeof global.isVoteProposal === 'function') ? global.isVoteProposal : undefined,
+                    isVote: (typeof global.isNonBindingProposal === 'function') ? global.isNonBindingProposal : undefined,
                     isApplied: (typeof global.isProposalApplied === 'function') ? global.isProposalApplied : undefined,
                     parcelFeature: parcelOutline
                 });
