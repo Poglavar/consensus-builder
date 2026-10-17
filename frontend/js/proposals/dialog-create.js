@@ -1551,9 +1551,18 @@ function showProposalDialog(overrides = null) {
     if (descriptionInputEl && overridePrefill.description) {
         descriptionInputEl.value = overridePrefill.description;
     }
+    const offerInput = document.getElementById('proposalOffer');
     if (offerInput && Number.isFinite(overridePrefill.offer)) {
         offerInput.value = window.formatProposalOfferValue ? window.formatProposalOfferValue(overridePrefill.offer) : overridePrefill.offer;
     }
+    const kindInput = overridePrefill.kind
+        ? document.querySelector(`.create-proposal-modal input[name="proposalKind"][value="${CSS.escape(overridePrefill.kind)}"]`) : null;
+    if (kindInput) {
+        kindInput.checked = true;
+        applyProposalKindToDialog();
+    }
+    const voteDaysInput = document.getElementById('proposalVoteExpiryDays');
+    if (voteDaysInput && Number.isFinite(overridePrefill.voteExpiryDays)) voteDaysInput.value = String(overridePrefill.voteExpiryDays);
 
     // Restore the currency + the advanced Options toggles. Used by "Copy into new proposal" so a
     // fork starts from the source's terms, not the defaults. Each toggle drives its own enable

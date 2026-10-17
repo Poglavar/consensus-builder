@@ -202,6 +202,9 @@ function buildCopyPrefill(source) {
         description: source.description || '',
         offerCurrency: source.offerCurrency || null
     };
+    // A copy starts from its source's kind (proposal-kinds.md) and voting period.
+    if (source.kind) prefill.kind = source.kind;
+    if (Number.isFinite(Number(source.voteExpiryDays)) && Number(source.voteExpiryDays) > 0) prefill.voteExpiryDays = Number(source.voteExpiryDays);
     const offer = Number(source.offer);
     if (Number.isFinite(offer) && offer > 0) prefill.offer = offer;
 
