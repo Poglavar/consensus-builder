@@ -2771,7 +2771,7 @@ body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
 /* Terms for a record that already exists (create.js openPublishTermsDialog): its design, site and
    parcel summary are done, so only the kind, details and terms show. */
 .create-proposal-modal[data-publish-in-place] :is(.proposal-design-fields, .proposal-mint-target,
-    .proposal-site-summary, #proposalToleranceRow, #proposalSummarySection) {
+    .proposal-site-summary, .proposal-tolerance-row, .proposal-summary) {
     display: none;
 }
 

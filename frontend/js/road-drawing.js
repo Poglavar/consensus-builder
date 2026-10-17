@@ -2302,7 +2302,7 @@ function setRoadPanelLabelsForMode(mode = 'road') {
     const isTrack = mode === 'track';
     const modeLabels = [
         ['road-panel-title', isTrack ? 'panel.road.titleTrack' : 'panel.road.title', isTrack ? 'Draw track' : 'Draw road'],
-        ['finishRoadButton', isTrack ? 'panel.road.finishButtonShortTrack' : 'panel.road.finishButtonShort', 'Finish'],
+        ['finishRoadButton', 'panel.road.finishButtonShort', 'Finish'],
         ['road-length-label', isTrack ? 'panel.road.lengthLabelTrack' : 'panel.road.lengthLabel', isTrack ? 'Track length:' : 'Road length:'],
         ['road-area-label', isTrack ? 'panel.road.areaLabelTrack' : 'panel.road.areaLabel', isTrack ? 'Track area:' : 'Road area:']
     ];

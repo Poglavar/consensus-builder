@@ -596,7 +596,7 @@
             ['is-piece-shades', t('pieceShades', 'Each shade identifies a block')],
             ['is-acceptable', t('legendAcceptable', 'Within hard limits (outline)')],
             ['is-oversized', t('legendOversized', 'Exceeds a hard limit (dashed outline)')],
-            ['is-cut', t('legendCut', 'New street')]
+            ['is-cut', t('newStreet', 'New street')]
         );
         entries.push(
             ['is-t', t('tJunctionShort', 'T-junction')],

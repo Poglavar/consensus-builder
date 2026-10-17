@@ -279,7 +279,7 @@
                 member.missing ? `<span class="cb-badge cb-badge--danger">${escapeText(t('plans.view.member.missing', 'Missing'))}</span>` : ''
             ].join('');
             return `<li>
-                <button type="button" class="plan-view-member" data-plan-member="${escapeText(id)}"${state.layers.has(id) ? '' : ' disabled'}>
+                <button type="button" class="btn btn-quiet plan-view-member" data-plan-member="${escapeText(id)}"${state.layers.has(id) ? '' : ' disabled'}>
                     <span class="plan-view-member__index">${index + 1}</span>
                     <span class="plan-view-member__text"><span class="plan-view-member__title">${escapeText(title)}</span>${typeLabel ? `<span class="plan-view-member__type">${escapeText(typeLabel)}</span>` : ''}</span>
                     ${badges}

@@ -416,7 +416,9 @@ async function fetchOSMRoads() {
             const base = typeof getBackendBase === 'function' ? getBackendBase() : '';
             const answer = await window.OsmRoadsSource.fetchFromBackend([west, south, east, north], { base });
             if (answer.tooLarge) {
-                updateStatus('Zoom in to fetch OSM roads: this view is too large');
+                const key = 'status.messages.zoom_in_to_fetch_osm_roads';
+                const text = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+                updateStatus(typeof text === 'string' && text && text !== key ? text : 'Zoom in to fetch OSM roads: this view is too large');
                 return null;
             }
             data = { elements: answer.elements };

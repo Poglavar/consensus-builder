@@ -191,35 +191,12 @@
     gap: 2px;
 }
 
+/* The row is a quiet button (css/primitives.css); this only lays it out as a list row. */
 .plan-view-member {
-    display: flex;
-    align-items: center;
-    gap: var(--cb-space-2);
+    justify-content: flex-start;
     width: 100%;
     padding: var(--cb-space-1) var(--cb-space-2);
-    border: 0;
-    border-radius: var(--cb-radius-md);
-    background: transparent;
-    color: inherit;
-    font: inherit;
     text-align: left;
-    cursor: pointer;
-}
-
-.plan-view-member:hover,
-.plan-view-member.is-hovered,
-.plan-view-member:focus-visible {
-    background: var(--cb-surface-2);
-}
-
-.plan-view-member:focus-visible {
-    outline: 2px solid var(--cb-focus);
-    outline-offset: -2px;
-}
-
-.plan-view-member:disabled {
-    cursor: default;
-    opacity: 0.6;
 }
 
 .plan-view-member__index {
