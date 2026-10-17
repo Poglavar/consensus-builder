@@ -19,7 +19,8 @@ describe('parcel alignment audit inventory and safe observations', () => {
         expect(inventory).toHaveLength(649);
         expect(inventory.every(city => city.center && city.bindings.length > 0)).toBe(true);
         expect(inventory.flatMap(city => city.bindings)).toHaveLength(652);
-        expect(inventory.flatMap(city => city.bindings).filter(binding => binding.optIn)).toHaveLength(10);
+        // Nine: Denver's Colorado OIT source became the city's default (6875b43f).
+        expect(inventory.flatMap(city => city.bindings).filter(binding => binding.optIn)).toHaveLength(9);
         expect(cities).toHaveLength(650);
     });
 

@@ -9,22 +9,20 @@ describe('public SEO entry points', () => {
         expect(html).toMatch(/<html lang="en">/);
         expect(html).toContain('<title>Consensus Builder · Free urban planning software</title>');
         expect(html).toContain('<meta property="og:site_name" content="Consensus Builder">');
-        expect(html).toMatch(/<meta name="description" content="[^"]*(real parcels|community zoning)[^"]*"/);
+        expect(html).toMatch(/<meta name="description" content="[^"]*real cadastral parcels[^"]*"/);
         expect(html).toContain('<link rel="canonical" href="https://urbangametheory.xyz/">');
         expect(html).toContain('href="/urban-planning.html"');
-        const description = html.match(/<meta name="description" content="([^"]*)"/);
-        expect(description?.[1]).toContain('ArcGIS alternative');
         const visibleDocument = html.slice(html.indexOf('<body'), html.indexOf('</body>'));
         expect(visibleDocument).not.toMatch(/ArcGIS|Esri/i);
     });
 
     it('publishes a useful, scoped landing page with an app handoff', () => {
         const html = read('urban-planning.html');
-        expect(html).toContain('<title>Consensus Builder · Free urban planning software</title>');
+        expect(html).toContain('<title>Free urban planning software for real parcels · Consensus Builder</title>');
         expect(html).toContain('<h1>Consensus Builder: free urban planning software</h1>');
         expect(html).toContain('<meta property="og:site_name" content="Consensus Builder" />');
         expect(html).toMatch(/<meta name="description" content="[^"]*community zoning proposals[^"]*"/);
-        expect(html).toContain('focused ArcGIS alternative'); // search description only
+        expect(html).toContain('an open ArcGIS alternative'); // search description only
         expect(html).toContain('does not create an adopted zoning plan');
         expect(html).toContain('href="/">Explore the urban planning map</a>');
         const visibleDocument = html.slice(html.indexOf('<body'), html.indexOf('</body>'));
@@ -41,7 +39,7 @@ describe('public SEO entry points', () => {
         const sitemap = read('sitemap.xml');
         expect(robots).toContain('Sitemap: https://urbangametheory.xyz/sitemap.xml');
         expect(sitemap).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>/);
-        expect(sitemap).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+        expect(sitemap).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"');
         const paths = [...sitemap.matchAll(/<loc>https:\/\/urbangametheory\.xyz(\/[^<]*)<\/loc>/g)]
             .map(match => match[1]);
         expect(paths).toContain('/urban-planning.html');

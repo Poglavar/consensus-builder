@@ -192,7 +192,9 @@ test.describe('Settings maintenance @features', () => {
     await confirm.getByRole('button', { name: /^OK$/i }).click();
     await reloaded;
     await waitForMapReady(page);
-    expect(new URL(page.url()).searchParams.get('city')).toBe('zagreb');
+    // The address carries only the point once booted (location-first.md); the city follows from it.
+    await expect.poll(() => new URL(page.url()).searchParams.get('at')).toBeTruthy();
+    expect(new URL(page.url()).searchParams.get('city')).toBe(null);
     await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
   });
 });

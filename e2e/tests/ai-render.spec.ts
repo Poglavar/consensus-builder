@@ -64,7 +64,8 @@ test('AI scene captures real pixels and height map, validates prompt, retries ge
   await modal.locator('.ai-scene-share').click();
   await expect.poll(() => page.evaluate(() => (window as any).__nativeSceneShare?.url)).toBe(link);
   expect(await page.evaluate(() => (window as any).__nativeSceneShare.title)).toBe('Urban Game Theory');
-  expect(saved[0]).toMatchObject({ image: png, city: 'zg', model: 'fixture-b' });
+  // The canonical city id, not the address's alias (ai-scene.js currentCity).
+  expect(saved[0]).toMatchObject({ image: png, city: 'zagreb', model: 'fixture-b' });
   await expect(modal.locator('.ai-scene-tweet')).toHaveAttribute('href', /twitter\.com\/intent\/tweet/);
   let intentUrl: URL | null = null;
   await page.context().route('https://twitter.com/intent/tweet**', async route => {
