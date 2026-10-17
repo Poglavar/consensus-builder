@@ -52,3 +52,6 @@ frontend/rpc-config.js
 /rekonstrukcije/avenue-v/**/*.jpeg
 /rekonstrukcije/avenue-v/**/*.webp
 /rekonstrukcije/avenue-v/**/*.html
+
+# Raw guide-video renders (the packaged clips live in frontend/videos/howto); too large for git.
+data/video/
