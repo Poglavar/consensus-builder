@@ -4628,7 +4628,7 @@ async function finishRoadDrawingOnce() {
             markCorridorFinishPhase('atomic-create');
             if (createdId && typeof updateStatus === 'function') {
                 const builtKey = isTrack ? 'panel.road.builtStatusTrack' : 'panel.road.builtStatus';
-                const builtFallback = isTrack ? 'Track built — click it to edit or propose.' : 'Road built — click it to edit or propose.';
+                const builtFallback = isTrack ? 'Local track draft created — only on this device until you share it. Click it to edit or propose.' : 'Local road draft created — only on this device until you share it. Click it to edit or propose.';
                 updateStatus(translateRoadText(builtKey, builtFallback));
             }
         } finally {

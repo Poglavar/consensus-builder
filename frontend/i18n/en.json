@@ -2104,8 +2104,8 @@
             "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcels affected",
             "parcelsNone": "None",
-            "builtStatus": "Road built — click it to edit or propose.",
-            "builtStatusTrack": "Track built — click it to edit or propose.",
+            "builtStatus": "Local road draft created — only on this device until you share it. Click it to edit or propose.",
+            "builtStatusTrack": "Local track draft created — only on this device until you share it. Click it to edit or propose.",
             "nodeHint": "Drag to move · ⌥-click to remove this node",
             "edgeActionsHint": "＋ Add a node · × Bulldoze this stretch",
             "edgeActionsProtectedHint": "A node cannot be added on a ramp, tunnel, or grade-separated stretch · × Bulldoze this stretch",
@@ -5858,7 +5858,7 @@
             "noCadastre": "Open ground"
         },
         "facts": {
-            "bare": "Unsurveyed ground or a gap between parcels: nobody's land that we know of.",
+            "bare": "Unsurveyed ground or a gap between parcels: ownership not established.",
             "noCadastre": "No parcel data here. A proposal can only execute through an authority's verdict."
         },
         "notLoaded": "Parcels are not loaded here yet — zoom in or wait for them to load.",
@@ -5894,7 +5894,7 @@
             "bound": "Bound parcels ({{count}})",
             "drawingEmpty": "Close the outline to see the parcels it binds.",
             "noParcels": "Binds no parcel: it can only execute through an authority's verdict.",
-            "openGround": "Hatched: open ground nobody can consent for; executing needs an authority's verdict.",
+            "openGround": "Hatched: open ground with no owner on record; executing needs an authority's verdict.",
             "touched": "Reaches {{width}} into {{parcel}} — below the tolerance, not bound.",
             "smallIntrusion": "Reaches {{width}} into {{parcel}} — include it, or change the design.",
             "include": "Include it",
@@ -5903,6 +5903,7 @@
             "checking": "Checking with the cadastre…",
             "serverFailed": "Could not check with the server: {{reason}}",
             "serverChecked": "Checked against the full cadastre.",
+            "serverNoRecords": "The server holds no cadastre for this place, so parcels and ownership are not established. The parcels on the map are only a preview.",
             "previewOnly": "Preview from the parcels loaded on the map.",
             "serverNoCadastre": "Confirmed by the server: no cadastre covers this place."
         },
@@ -5910,7 +5911,7 @@
             "complete": "complete — the whole site lies on cadastral parcels",
             "partial": "partial — part of the site is open ground (no parcel)",
             "none": "none — no parcels here; the whole site is open ground",
-            "unknown": "unknown — can't check parcels here",
+            "unknown": "unknown — no cadastre on record here",
             "partialAll": "partial — the whole site is open ground: no parcel here, though the cadastre covers the area"
         },
         "palette": {

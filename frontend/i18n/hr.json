@@ -2138,8 +2138,8 @@
             "openGroundLabel": "Otvoreno tlo:",
             "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Broj čestica:",
-            "builtStatus": "Cesta izgrađena — kliknite je za uređivanje ili prijedlog.",
-            "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili prijedlog.",
+            "builtStatus": "Stvoren lokalni nacrt ceste — samo na ovom uređaju dok ga ne podijelite. Kliknite ga za uređivanje ili prijedlog.",
+            "builtStatusTrack": "Stvoren lokalni nacrt pruge — samo na ovom uređaju dok ga ne podijelite. Kliknite ga za uređivanje ili prijedlog.",
             "nodeHint": "Povucite za pomicanje · ⌥-klik uklanja ovaj čvor",
             "edgeActionsHint": "＋ Dodaj čvor · × Sruši ovu dionicu",
             "edgeActionsProtectedHint": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor · × Sruši ovu dionicu",
@@ -5912,7 +5912,7 @@
             "noCadastre": "Otvoreno tlo"
         },
         "facts": {
-            "bare": "Neizmjereno tlo ili razmak između čestica: koliko znamo, ničije zemljište.",
+            "bare": "Neizmjereno tlo ili razmak između čestica: vlasništvo nije utvrđeno.",
             "noCadastre": "Ovdje nema podataka o česticama. Prijedlog se može izvršiti samo odlukom nadležnog tijela."
         },
         "notLoaded": "Čestice ovdje još nisu učitane — približite kartu ili pričekajte da se učitaju.",
@@ -5948,7 +5948,7 @@
             "bound": "Vezane čestice ({{count}})",
             "drawingEmpty": "Zatvorite obris da vidite koje čestice veže.",
             "noParcels": "Ne veže nijednu česticu: može se izvršiti samo odlukom nadležnog tijela.",
-            "openGround": "Šrafirano: otvoreno tlo za koje nitko ne može dati pristanak; za izvršenje treba odluka nadležnog tijela.",
+            "openGround": "Šrafirano: otvoreno tlo bez upisanog vlasnika; za izvršenje treba odluka nadležnog tijela.",
             "touched": "Zadire {{width}} u {{parcel}} — ispod tolerancije, nije vezana.",
             "smallIntrusion": "Zadire {{width}} u {{parcel}} — uključite je ili promijenite projekt.",
             "include": "Uključi je",
@@ -5957,6 +5957,7 @@
             "checking": "Provjera u katastru…",
             "serverFailed": "Provjera na poslužitelju nije uspjela: {{reason}}",
             "serverChecked": "Provjereno prema cijelom katastru.",
+            "serverNoRecords": "Poslužitelj nema katastar za ovo mjesto, pa čestice i vlasništvo nisu utvrđeni. Čestice na karti samo su pregled.",
             "previewOnly": "Pregled prema česticama učitanima na karti.",
             "serverNoCadastre": "Poslužitelj potvrđuje: ovo mjesto ne pokriva nijedan katastar."
         },
@@ -5964,7 +5965,7 @@
             "complete": "potpuna — cijela lokacija leži na katastarskim česticama",
             "partial": "djelomična — dio lokacije je otvoreno tlo (bez čestice)",
             "none": "nema — ovdje nema čestica; cijela lokacija je otvoreno tlo",
-            "unknown": "nepoznata — ovdje se čestice ne mogu provjeriti",
+            "unknown": "nepoznata — ovdje nema upisanog katastra",
             "partialAll": "djelomična — cijela lokacija je otvoreno tlo: ovdje nema čestice, iako katastar pokriva područje"
         },
         "palette": {

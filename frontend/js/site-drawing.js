@@ -652,7 +652,7 @@
             complete: t('siteTool.coverage.complete', 'complete — the whole site lies on cadastral parcels'),
             partial: t('siteTool.coverage.partial', 'partial — part of the site is open ground (no parcel)'),
             none: t('siteTool.coverage.none', 'none — no parcels here; the whole site is open ground'),
-            unknown: t('siteTool.coverage.unknown', 'unknown — can\'t check parcels here')
+            unknown: t('siteTool.coverage.unknown', 'unknown — no cadastre on record here')
         };
         if (sum.coverage === 'partial' && sum.allOpen) {
             return `${prefix}: ${t('siteTool.coverage.partialAll', 'partial — the whole site is open ground: no parcel here, though the cadastre covers the area')}`;
@@ -730,7 +730,7 @@
         if (sum) {
             parts.push(`<p class="site-panel__coverage site-panel__coverage--${sum.coverage}">${escapeHtml(coverageText(sum))}</p>`);
             if (sum.openGround && sum.coverage !== 'none') {
-                parts.push(`<p class="site-panel__note">${escapeHtml(t('siteTool.binding.openGround', 'Hatched: open ground nobody can consent for; executing needs an authority\'s verdict.'))}</p>`);
+                parts.push(`<p class="site-panel__note">${escapeHtml(t('siteTool.binding.openGround', 'Hatched: open ground with no owner on record; executing needs an authority\'s verdict.'))}</p>`);
             }
         }
         const status = state.serverPending
@@ -739,7 +739,9 @@
                 ? t('siteTool.binding.serverFailed', 'Could not check with the server: {{reason}}', { reason: state.serverError })
                 : (state.server ? (state.server.coverage === 'none'
                     ? t('siteTool.binding.serverNoCadastre', 'Confirmed by the server: no cadastre covers this place.')
-                    : t('siteTool.binding.serverChecked', 'Checked against the full cadastre.'))
+                    : state.server.coverage === 'unknown'
+                        ? t('siteTool.binding.serverNoRecords', 'The server holds no cadastre for this place, so parcels and ownership are not established. The parcels on the map are only a preview.')
+                        : t('siteTool.binding.serverChecked', 'Checked against the full cadastre.'))
                     : t('siteTool.binding.previewOnly', 'Preview from the parcels loaded on the map.')));
         parts.push(`<p class="site-panel__status">${escapeHtml(status)}</p>`);
         return parts.join('');
