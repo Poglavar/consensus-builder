@@ -12,7 +12,6 @@ Current route-level coverage status for modules wired in [backend/index.js](../i
 | `routes/city-stats.js`    | Covered | `test/city-stats.test.js`    |
 | `routes/docs.js`          | Covered | `test/docs.test.js`          |
 | `routes/file-storage.js`  | Covered | `test/file-storage.test.js`  |
-| `routes/geo.js`           | Covered | `test/geo.test.js`           |
 | `routes/health.js`        | Covered | `test/health.test.js`        |
 | `routes/ipfs.js`          | Covered | `test/ipfs.test.js`          |
 | `routes/land-uses.js`     | Covered | `test/land-uses.test.js`     |

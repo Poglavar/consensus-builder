@@ -441,13 +441,13 @@ function generateStructureName(kind) {
     return `${_randomFrom(adj)} ${_randomFrom(noun)}`;
 }
 
+// The city id the API files and filters by, for an id or any short code the city config knows
+// (CityConfigManager.resolveCityParam: zg, st, ny, ...); an unknown value passes through.
 function normalizeCityCodeForApi(code) {
     const raw = (code || '').toString().trim().toLowerCase();
     if (!raw) return 'city';
-    if (raw === 'zg' || raw === 'zgb') return 'zagreb';
-    if (raw === 'bg') return 'belgrade';
-    if (raw === 'ba' || raw === 'caba' || raw === 'ar-ba') return 'buenos_aires';
-    return raw;
+    const manager = typeof globalThis !== 'undefined' ? globalThis.CityConfigManager : null;
+    return (manager && typeof manager.resolveCityParam === 'function' && manager.resolveCityParam(raw)) || raw;
 }
 
 // Bring one card in the proposal list up to date with the fact that it is now downloaded.

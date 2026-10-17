@@ -83,7 +83,7 @@ El Paso / Juárez is configured today.
 | 2 | Geography sources by coordinates only (backend + 3D + 2D buildings) | done 2026-10-17 |
 | 2b | Coverage at least 10 km, not 3–8 km sample circles | done 2026-10-17 |
 | 3 | Declared coverage per parcel source; border precision | planned |
-| 4 | Proposals by geography: binding, lists, counts, markets, plans by site; city a derived label | planned |
+| 4 | Proposals by geography: binding, lists, counts, markets, plans by site; city a derived label | done 2026-10-17 |
 
 ### Phase 1: URL and boot
 
@@ -163,20 +163,45 @@ declared area, phase 3.
 User, 2026-10-17: which city a proposal is "filed under" should not matter once the switch is done;
 proposals are geography-first.
 
-- Binding takes the parcel source from the site's location (the city at the site), never from the
-  view or a requested city, so the "publish it from <city>" refusal goes away.
-- `/proposals/count|summary`, `/markets`, `/plans` by area (site geometry; `proposal.site` has a GIST
-  index; explore already lists proposals by box). `proposal.city` becomes a derived label.
-- The browser's per-city database is the last coupling (one IndexedDB per city); decide whether
-  records move to one store keyed by place.
-- Defects found in the survey, fixed where they are:
-  - `ens_plan.city` stores the raw request (`zg`), so `/markets?city=zagreb` misses those plans.
-  - `area-monitors.js` prefix inference tests `NY-`/`CO-`, but ids are `US-NY-`/`US-CO-`, so those
-    monitors default to Zagreb.
-  - `ens/slug.js` maps every `HR-` parcel to Zagreb (Split and Šibenik too).
-  - `/geo/default-city` defaults everything outside HR/RS/AR to Zagreb (only the dead client path calls it).
-  - `normalizeCityCodeForApi` (frontend `proposals/core.js`) maps back only zg/zgb/bg/ba, while
-    `resolveCurrentCityCode` emits ny/st/si/….
+Built:
+
+- **Binding by the site.** `publication-city.js` files a new publication under the city whose parcels
+  apply at its site (`jurisdictionAt`, the boot's rule) and binds it against that city's cadastre,
+  whatever city the request names. The 422 `site-in-other-city` refusal ("publish it from <city>") is
+  gone, with its message in four languages. A requested city decides only where no city covers the
+  site (its own source may reach beyond the coverage area); a requested parcel source applies only
+  where it serves the placed city. The prepared artifact records the source that bound it, and the
+  browser publishes with that source rather than the view city's.
+- **Lists by area = lists by label.** With every new label derived from the site, `?city=` already
+  filters by geography. The read-only audit (`scripts/audit-publication-cities.mjs --db`) on the
+  local database: 716 of 717 measurable records carry the city their site lies in; the 6 exceptions
+  are explore records in Tokyo from before Tokyo was covered (records are immutable; a correction is
+  a fork). So `/proposals/count|summary` and `/markets` keep `?city=`; explore keeps `?bbox=`. No
+  new area queries.
+- **Plans by their members.** `/plans?city=` and `/markets` list a plan in every city one of its
+  members is filed in; a new plan's `city` is its members' city (most members, earliest on a tie),
+  not the view's, and `?city=` takes short codes. Stored labels like `st` stop mattering, so no data
+  migration.
+- **Defects fixed:** area monitors take their city from their polygon (the six-city list and the
+  `NY-`/`CO-` prefix guess are gone; any configured city is accepted); ENS names a parcel's city from
+  its coordinates when known, and Croatian ids (one countrywide cadastre) no longer claim Zagreb;
+  `/geo/default-city` is removed (no caller since phase 1; it also sent visitor IPs to ipapi.co);
+  `normalizeCityCodeForApi` resolves every code through `CityConfigManager.resolveCityParam`.
+
+Recommended, nothing changed (the user's call):
+
+- Keep one IndexedDB per city. A session keeps its boot jurisdiction for parcels and
+  proposals (decision of 2026-10-17 below), and a switch reloads into the other city's store, so a
+  single store keyed by place would change nothing a visitor sees today. A publication drawn past an
+  edge is filed by the server under the site's city and stays in the session's store until
+  reopened there.
+
+Open:
+
+- The production audit (read-only, `--input` rows exported from prod) has not been run.
+- `proposal-prepare-db.test.js` (RUN_DB_TESTS=1) fails at HEAD before any placement code: its street
+  fixture uses the legacy `width/points/segments` road shape the OSM-form road record no longer
+  accepts (`parcels-required`). Its expectations are updated to the new rule but unverified.
 
 ## Tests
 
@@ -224,3 +249,5 @@ Headed (a launched Chrome over agent-browser, checked by eye):
 - 2026-10-17: explore is derived, never asked for; `?city=explore` is legacy.
 - 2026-10-17: a session keeps its boot jurisdiction for parcels/proposals/storage; geography follows
   the camera.
+- 2026-10-17: a publication's city is the site's, never the request's; nothing is refused for where
+  it was drawn from. Lists filter by that label (it is the site's city), plans by their members'.

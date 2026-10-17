@@ -6,6 +6,7 @@
 import { createRequire } from 'node:module';
 import { Connection } from '@solana/web3.js';
 import { buildContests, proposalAccountOf } from '../markets/contests.js';
+import { PLAN_IN_CITY_SQL } from '../plans/plan-store.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { EFFECTIVE_STATUS_SQL, normalizeCityCode } from './proposals.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
@@ -46,8 +47,8 @@ const PROPOSALS_SQL = `
 // the version it supersedes, so older versions fold under the current one.
 const PLANS_SQL = `
     SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, supersedes
-    FROM ens_plan
-    WHERE city = $1
+    FROM ens_plan e
+    WHERE ${PLAN_IN_CITY_SQL('e', '$1')}
     ORDER BY created_at DESC
     LIMIT 500`;
 

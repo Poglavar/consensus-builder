@@ -3,7 +3,8 @@
 // or by scripts. There is no update: a revision is a new plan (`<name>-v2`) that records `supersedes`.
 // Each member's content is hashed at creation, so a member repaired in place later shows up as
 // changed instead of silently altering a plan people bet on. Design of record: plans.md.
-import { createPlanStore } from '../plans/plan-store.js';
+import { createPlanStore, membersCity } from '../plans/plan-store.js';
+import { normalizeCityCode } from './proposals.js';
 import { changedMembers, memberHash, nextVersionSlug, planHash } from '../plans/plan-hash.js';
 import { proposalAccountOf } from '../markets/contests.js';
 
@@ -93,7 +94,7 @@ export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } 
     // narrows to the plans naming any of those proposal rows (which plans a proposal is part of);
     // ?parcel_ids=a,b to the plans with a member on any of those cadastral parcels.
     app.get('/plans', async (req, res) => {
-        const city = text(req.query.city, 32);
+        const city = normalizeCityCode(text(req.query.city, 32));
         const proposalIds = idList(req.query.proposal_ids, PROPOSAL_ID_RE);
         const parcelIds = idList(req.query.parcel_ids, PARCEL_ID_RE);
         if (proposalIds === false || parcelIds === false) {
@@ -153,7 +154,9 @@ export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } 
                 // Over stable proposal ids, not row ids: the same plan hashes the same in every database.
                 planHash: planHash(ids.map(id => ({ proposalId: byId.get(id).proposal_id, hash: memberHashes[id] }))),
                 title: text(req.body?.title, 200), description: text(req.body?.description, 4000),
-                author: text(req.body?.author, 200), place: text(req.body?.place, 120), city: text(req.body?.city, 32),
+                author: text(req.body?.author, 200), place: text(req.body?.place, 120),
+                // where its members' sites are, not the view it was named from (location-first.md phase 4)
+                city: membersCity(members, ids) || normalizeCityCode(text(req.body?.city, 32)),
                 supersedes, creatorIp: req.ip || null, creatorFingerprint: text(req.body?.fingerprint, 64),
             });
             res.status(201).json(planView(row));

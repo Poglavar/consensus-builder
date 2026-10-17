@@ -215,48 +215,31 @@ describe('POST /area-monitors', () => {
         expect(unsupportedField.body).toEqual({ error: 'Request body contains unsupported fields.' });
     });
 
-    it('accepts a supported cityId and rejects an unsupported one', async () => {
-        pool.setResults([
-            { rows: [{ cnt: 0 }], rowCount: 1 },
-            {
-                rows: [{
-                    id: 8,
-                    name: 'Belgrade Test Monitor',
-                    created_at: '2026-03-28T13:00:00.000Z'
-                }],
-                rowCount: 1
-            }
-        ]);
+    it('files a monitor under the city its polygon lies in, and rejects an unknown cityId', async () => {
+        const created = { rows: [{ id: 8, name: 'Test Monitor', created_at: '2026-03-28T13:00:00.000Z' }], rowCount: 1 };
+        pool.setResults([{ rows: [{ cnt: 0 }], rowCount: 1 }, created, { rows: [{ cnt: 0 }], rowCount: 1 }, created]);
 
-        const accepted = await request(app)
+        // drawn from Belgrade's view, but the polygon lies in Zagreb
+        const fromBelgrade = await request(app)
             .post('/area-monitors')
-            .send({
-                name: 'Belgrade Test Monitor',
-                cityId: 'belgrade',
-                polygon: buildPolygon(),
-                parcelIds: ['HR-339318-1']
-            });
+            .send({ name: 'Test Monitor', cityId: 'belgrade', polygon: buildPolygon(), parcelIds: ['HR-339318-1'] });
+        expect(fromBelgrade.status).toBe(201);
+        expect(fromBelgrade.body.cityId).toBe('zagreb');
+        expect(pool.getCalls()[1].params[8]).toBe('zagreb');
 
-        expect(accepted.status).toBe(201);
-        expect(accepted.body).toEqual({
-            id: 8,
-            name: 'Belgrade Test Monitor',
-            cityId: 'belgrade',
-            createdAt: '2026-03-28T13:00:00.000Z'
-        });
-        expect(pool.getCalls()[1].params[8]).toBe('belgrade');
+        // a polygon in Belgrade is Belgrade's, whatever the request says
+        const belgrade = { type: 'Polygon', coordinates: [[[20.46, 44.81], [20.47, 44.81], [20.47, 44.82], [20.46, 44.81]]] };
+        const inBelgrade = await request(app)
+            .post('/area-monitors')
+            .send({ name: 'Test Monitor', cityId: 'zagreb', polygon: belgrade, parcelIds: ['HR-339318-1'] });
+        expect(inBelgrade.status).toBe(201);
+        expect(inBelgrade.body.cityId).toBe('belgrade');
 
         const rejected = await request(app)
             .post('/area-monitors')
-            .send({
-                name: 'Belgrade Test Monitor',
-                cityId: 'atlantis',
-                polygon: buildPolygon(),
-                parcelIds: ['HR-339318-1']
-            });
-
+            .send({ name: 'Test Monitor', cityId: 'atlantis', polygon: buildPolygon(), parcelIds: ['HR-339318-1'] });
         expect(rejected.status).toBe(400);
-        expect(rejected.body).toEqual({ error: 'cityId must be one of: zagreb, belgrade, ljubljana, buenos_aires, colorado, new_york.' });
+        expect(rejected.body).toEqual({ error: 'cityId must be a configured city id.' });
     });
 
     it('rejects invalid polygon coordinate payloads', async () => {

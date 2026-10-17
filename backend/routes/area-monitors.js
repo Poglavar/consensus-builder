@@ -5,6 +5,7 @@
 // HEAD /area-monitors/:id - Check area monitor existence
 
 import { POSTGIS_SRID } from '../utils/helpers.js';
+import { isConfiguredCity, jurisdictionOf } from '../jurisdiction.js';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import {
     buildOwnershipDetailBatchQuery,
@@ -18,15 +19,6 @@ const MIN_NAME_LENGTH = 3;
 const MAX_MONITORS_PER_IP = 20;
 const MAX_URL_LENGTH = 2048;
 const MAX_FINGERPRINT_LENGTH = 64;
-const AREA_MONITOR_CITY_IDS = Object.freeze([
-    'zagreb',
-    'belgrade',
-    'ljubljana',
-    'buenos_aires',
-    'colorado',
-    'new_york'
-]);
-const AREA_MONITOR_CITY_ID_SET = new Set(AREA_MONITOR_CITY_IDS);
 
 // Lightweight in-memory rate limiter (no external dependency)
 function createRateLimiter({ windowMs, max, message }) {
@@ -93,34 +85,17 @@ function normalizeParcelId(parcelId) {
 function normalizeAreaMonitorCityId(cityId) {
     if (typeof cityId !== 'string') return null;
     const normalized = cityId.trim().toLowerCase();
-    if (!AREA_MONITOR_CITY_ID_SET.has(normalized)) {
-        return null;
-    }
-    return normalized;
+    return isConfiguredCity(normalized) ? normalized : null;
 }
 
-function inferAreaMonitorCityIdFromParcelIds(parcelIds) {
-    if (!Array.isArray(parcelIds) || !parcelIds.length) {
-        return null;
-    }
-
-    for (const parcelId of parcelIds) {
-        const value = typeof parcelId === 'string' ? parcelId.trim().toUpperCase() : '';
-        if (value.startsWith('HR-')) return 'zagreb';
-        if (value.startsWith('SR-')) return 'belgrade';
-        if (value.startsWith('SI-')) return 'ljubljana';
-        if (value.startsWith('BA-')) return 'buenos_aires';
-        if (value.startsWith('CO-')) return 'colorado';
-        if (value.startsWith('NY-')) return 'new_york';
-    }
-
-    return null;
+// A monitor's city is the one whose parcels apply where its polygon lies (location-first.md phase 4,
+// jurisdiction.js); the requested one only for a polygon no city covers.
+function areaMonitorCityAt(polygon, requestedCityId = null) {
+    return (polygon && jurisdictionOf(polygon)) || requestedCityId || 'explore';
 }
 
 function resolveAreaMonitorCityId(monitor) {
-    return normalizeAreaMonitorCityId(monitor?.city_id || monitor?.cityId)
-        || inferAreaMonitorCityIdFromParcelIds(monitor?.parcel_ids || monitor?.parcelIds)
-        || 'zagreb';
+    return normalizeAreaMonitorCityId(monitor?.city_id || monitor?.cityId) || areaMonitorCityAt(monitor?.polygon);
 }
 
 const areaMonitorCreateBodyValidator = createJsonBodyValidator({
@@ -192,7 +167,7 @@ const areaMonitorCreateBodyValidator = createJsonBodyValidator({
             validate: validators.optional(validators.custom((value) => {
                 const normalized = normalizeAreaMonitorCityId(value);
                 if (!normalized) {
-                    return validators.fail(`cityId must be one of: ${AREA_MONITOR_CITY_IDS.join(', ')}.`);
+                    return validators.fail('cityId must be a configured city id.');
                 }
                 return validators.ok(normalized);
             }))
@@ -358,7 +333,7 @@ export function setupAreaMonitorsRoute(app, pool) {
                 fingerprint,
                 cityId
             } = req.validatedBody;
-            const monitorCityId = cityId || 'zagreb';
+            const monitorCityId = areaMonitorCityAt(polygon, cityId);
 
             // Resolve creator IP (trust proxy is configured in index.js)
             const creatorIp = req.ip || req.connection?.remoteAddress || null;

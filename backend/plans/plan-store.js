@@ -13,6 +13,25 @@ const MEMBER_COLUMNS = `p.id, p.proposal_id, COALESCE(p.title, p.name) AS title,
 const PLAN_COLUMNS = `slug, proposal_ids, title, description, author, place, city, member_hashes, plan_hash,
     supersedes, onchain_data, created_at, (site IS NOT NULL) AS has_site`;
 
+// A plan (alias `alias`) has a member filed in the city bound to `param`.
+export const PLAN_IN_CITY_SQL = (alias, param) => `EXISTS (
+    SELECT 1 FROM proposal p
+    WHERE p.id IN (SELECT jsonb_array_elements_text(${alias}.proposal_ids)::int) AND p.city = ${param})`;
+
+// The city a plan is filed under: the one most of its members are filed in (their sites'), the
+// earliest member's on a tie; null when none has a city.
+export function membersCity(members, ids) {
+    const byId = new Map(members.map(member => [String(member.id), member]));
+    const counts = new Map();
+    for (const id of ids) {
+        const city = byId.get(String(id))?.city;
+        if (city) counts.set(city, (counts.get(city) || 0) + 1);
+    }
+    let best = null;
+    for (const [city, n] of counts) if (best === null || n > counts.get(best)) best = city;
+    return best;
+}
+
 export function createPlanStore(pool) {
     return {
         async members(ids) {
@@ -39,15 +58,17 @@ export function createPlanStore(pool) {
             return new Set(rows.map(row => row.slug));
         },
 
-        // Plans of a city, newest first. proposalIds keeps the plans naming any of those proposal
-        // rows; parcelIds the plans with a member declaring any of those cadastral parcels. Each row
-        // carries its member count and whether a later version supersedes it.
+        // Plans of a city, newest first: those with a member filed in it, i.e. a member whose site
+        // lies there (location-first.md phase 4), not the city the plan was named from. proposalIds
+        // keeps the plans naming any of those proposal rows; parcelIds the plans with a member
+        // declaring any of those cadastral parcels. Each row carries its member count and whether a
+        // later version supersedes it.
         async list(city, { proposalIds = null, parcelIds = null } = {}) {
             const { rows } = await pool.query(`SELECT ${PLAN_COLUMNS},
                     jsonb_array_length(e.proposal_ids) AS member_count,
                     EXISTS (SELECT 1 FROM ens_plan n WHERE n.supersedes = e.slug) AS superseded
                 FROM ens_plan e
-                WHERE ($1::text IS NULL OR e.city = $1)
+                WHERE ($1::text IS NULL OR ${PLAN_IN_CITY_SQL('e', '$1')})
                   AND ($2::text[] IS NULL OR e.proposal_ids ?| $2::text[])
                   AND ($3::text[] IS NULL OR EXISTS (
                       SELECT 1 FROM proposal p

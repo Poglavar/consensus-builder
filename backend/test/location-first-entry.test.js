@@ -8,6 +8,7 @@ import { createContext, runInContext } from 'node:vm';
 import { bootCoverage, bootCoverageScript } from '../../scripts/build-boot-coverage.mjs';
 import { coverageRadiusKm, MIN_CITY_RADIUS_KM } from '../../scripts/build-world-coverage.mjs';
 import { resolvePublicationCity } from '../proposals/publication-city.js';
+import { cityNameAt, isConfiguredCity } from '../jurisdiction.js';
 
 const require = createRequire(import.meta.url);
 const WorldEntryModel = require('../../frontend/js/world/world-entry-model.js');
@@ -135,6 +136,17 @@ describe('jurisdictionAt over the configured cities', () => {
             const place = full.tierAt(lat, lon);
             if (place.kind === 'live-city') expect(place.cityId).toBe(full.jurisdictionAt(lat, lon));
         }
+    });
+});
+
+describe('server labels by place (phase 4)', () => {
+    it('names the city whose data applies at a point, and knows the configured ids', () => {
+        expect(cityNameAt(16.4402, 43.5081)).toBe('Split');
+        expect(cityNameAt(15.9775, 45.8131)).toBe('Zagreb');
+        expect(cityNameAt(-30, 30)).toBeNull();
+        expect(isConfiguredCity('split')).toBe(true);
+        expect(isConfiguredCity('atlantis')).toBe(false);
+        expect(isConfiguredCity(null)).toBe(false);
     });
 });
 

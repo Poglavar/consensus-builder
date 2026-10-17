@@ -40,9 +40,24 @@ export function representativePoint(geometry) {
     return { lon: (minLon + maxLon) / 2, lat: (minLat + maxLat) / 2 };
 }
 
+// Configured cities by id (the coverage's live cities).
+let liveById = null;
+const liveCity = id => {
+    if (!liveById) liveById = new Map(worldCoverage().liveCities.map(city => [city.id, city]));
+    return typeof id === 'string' ? liveById.get(id) || null : null;
+};
+
+// Whether `id` is a configured city.
+export const isConfiguredCity = id => !!liveCity(id);
+
 export function jurisdictionAt(lon, lat) {
     if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
     return worldCoverage().jurisdictionAt(lat, lon);
+}
+
+// The name of the city whose data applies at a point (Split), or null (explore).
+export function cityNameAt(lon, lat) {
+    return liveCity(jurisdictionAt(lon, lat))?.name || null;
 }
 
 export function jurisdictionOf(geometry) {

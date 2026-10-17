@@ -7,6 +7,7 @@ import { JsonRpcProvider, Contract } from 'ethers';
 import { createRequire } from 'node:module';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
+import { cityNameAt } from '../jurisdiction.js';
 
 const require = createRequire(import.meta.url);
 const { buildChainProposalPath } = require('../../frontend/js/proposals/chain-ref.js');
@@ -90,8 +91,11 @@ export function setupEnsRoute(app, pool) {
         );
         if (!rows.length) return null;
         const row = rows[0];
-        const city = parcelIdToCity(row.parcel_id);
-        return { ...row, city_name: city ? city.cityName : null };
+        // where the parcel lies when it is known (location-first.md phase 4), else its id's city
+        const hasPoint = row.lon !== null && row.lat !== null && Number.isFinite(Number(row.lon)) && Number.isFinite(Number(row.lat));
+        const placed = hasPoint ? cityNameAt(Number(row.lon), Number(row.lat)) : null;
+        const city = placed ? null : parcelIdToCity(row.parcel_id);
+        return { ...row, city_name: placed || (city ? city.cityName : null) };
     }
 
     // Resolve a proposals label to a legacy proposal id list or one chain mirror:

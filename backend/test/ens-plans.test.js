@@ -126,6 +126,22 @@ describe('named plans CRUD', () => {
         expect(res.body.plans.map(plan => [plan.slug, plan.place])).toEqual([['zg-plan', 'Borovje']]);
     });
 
+    it('files a plan under its members\' city, not the view it was named from', async () => {
+        store.proposals.set('5', { id: 5, proposal_id: 'p-5', title: 'Split one', type: 'building', city: 'split',
+            site: { type: 'MultiPolygon', coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]]]] }, cadastre_parcel_ids: ['HR-1-5'] });
+        store.proposals.set('6', { ...store.proposals.get('5'), id: 6, proposal_id: 'p-6' });
+        store.proposals.set('7', { ...store.proposals.get('5'), id: 7, proposal_id: 'p-7', city: 'zagreb' });
+        const res = await request(app).post('/plans').send({ slug: 'riva', proposalIds: ['7', '5', '6'], city: 'st' });
+        expect(res.status).toBe(201);
+        expect(res.body.city).toBe('split');
+        // members without a city: the requested one, normalised
+        const coded = await request(app).post('/plans').send({ slug: 'coded', proposalIds: ['1'], city: 'zg' });
+        expect(coded.body.city).toBe('zagreb');
+        // a short code reads the same city
+        await request(app).get('/plans?city=st');
+        expect(store.listCalls.at(-1).city).toBe('split');
+    });
+
     it('lists the plans a proposal is part of, with member counts and superseded versions marked', async () => {
         await request(app).post('/plans').send({ slug: 'harbor', proposalIds: ['1', '2'], city: 'zagreb' });
         await request(app).post('/plans').send({ slug: 'harbor-v2', proposalIds: ['2', '3', '4'], city: 'zagreb', supersedes: 'harbor' });

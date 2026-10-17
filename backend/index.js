@@ -61,7 +61,6 @@ import { setupBetsShareRoute } from './routes/bets-share.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupReparcellizationRoute } from './routes/reparcellization.js';
-import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 import { setupEnsRoute } from './routes/ens.js';
@@ -494,7 +493,6 @@ export function createApp({
     setupBetsShareRoute(app, activePool, { env }); // /bets/<account>: link preview for one bet, then on to the app
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);
-    setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);

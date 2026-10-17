@@ -11683,6 +11683,7 @@
         // from the address when the entry says so.
         getBootEntry: () => Object.assign({}, bootEntry),
         cityAt,
+        resolveCityParam,
         getCityConfigAt,
         // Keep a city the visitor picked on the globe without a reload (the default city it booted on).
         // Writes only the pointer: the city is unchanged, so no cityChanged event.
