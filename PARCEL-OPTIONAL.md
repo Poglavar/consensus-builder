@@ -46,8 +46,10 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
    STORED site at the record's own tolerance (`GET /proposals/:id/binding-drift`, a read). A record
    with drift says so in its details; **Re-bind** publishes a new record with the same site and design,
    the current binding as its declaration, and `sourceProposalId`/`replacementOfProposalId` + `rebind`
-   pointing at the source, through the ordinary publish path (server binding again). Applying the new
-   record supersedes the source like any replacement; owner acceptances never carry over.
+   pointing at the source, through the ordinary publish path (server binding again). The new record is a
+   counterproposal of the published source: applying it stands the source down only where their ground
+   overlaps, as for any two proposals (`proposals/claims.js` `appliedRivals`); owner acceptances never
+   carry over.
 6. **Execution follows the binding.**
    - Bound parcels: every attested owner of every bound parcel signs (unchanged).
    - Open ground (`coverage` partial or none): no owner can consent for it, so execution additionally
@@ -909,7 +911,7 @@ in the status, Cancel closed without an unsaved-changes prompt.
 - i18n en/hr/es/sr: `modal.corridorPlots.*`, `panel.proposal.bindingDrift.*`; CSS in proposals.css.
 
 **Decisions**
-- The derived record uses the existing replacement lineage (`sourceProposalId`/`replacementOfProposalId`)
+- The derived record uses the existing counterproposal lineage (`sourceProposalId`/`replacementOfProposalId`)
   plus a `rebind` block; it is added parked (not applied), so the source keeps its place on the map
   until the user applies the re-bound record.
 - The drift check is per page session (cache); a later cadastre change is seen after a reload.

@@ -914,7 +914,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // so that "the published source stays immutable". Nothing local is immutable: the server and
     // the chain hold their own copies and those are the immutable ones, so there was never a local
     // record needing protection. What the fork actually bought was a new proposal id on every node
-    // drag, a supersession chain per drag, and an editor that reasoned about provenance at all.
+    // drag, a chain of replaced records per drag, and an editor that reasoned about provenance at all.
     //
     // The published POINTERS do go, on the first edit that changes the geometry: once this record's
     // shape differs from what was uploaded or minted under that id, it is no longer that thing, and

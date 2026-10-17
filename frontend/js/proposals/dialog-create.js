@@ -778,8 +778,8 @@ function showProposalDialog(overrides = null) {
     const submitLabel = publishInPlace
         ? t('modal.createProposal.publishSubmit', 'Save terms')
         : isEditingExisting
-        ? (window.ProposalLineage?.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId)
-            || t('proposalDrafts.actions.createReplacement', 'Create replacement proposal'))
+        ? window.ProposalLineage.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId,
+            { fork: window.pendingProposalReplacementSource.fork === true })
         : t('modal.createProposal.submit', 'Create Proposal');
     const cancelLabel = t('common.cancel', 'Cancel');
 

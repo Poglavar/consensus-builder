@@ -195,7 +195,7 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('conflict').applied).toBe(false);
     });
 
-    it('rematerializes an explicitly superseded record without adding a geometry-only pseudo proposal', async () => {
+    it('rematerializes an explicitly displaced rival without adding a geometry-only pseudo proposal', async () => {
         store.getProposal('target').goal = 'park';
         store.getProposal('target').cadastreParcelIds = ['HR-1'];
         store.getProposal('conflict').goal = 'park';
@@ -226,7 +226,7 @@ describe('ProposalManager mutation boundary', () => {
         }
     });
 
-    it('resolves superseded ids to authored records in the same local scope', async () => {
+    it('resolves released records to authored records in the same local scope', async () => {
         store.getProposal('target').goal = 'park';
         store.getProposal('target').cadastreParcelIds = ['HR-2'];
         store.getProposal('conflict').goal = 'park';
@@ -238,7 +238,7 @@ describe('ProposalManager mutation boundary', () => {
         };
 
         await expect(ProposalManager.deriveForNewProposal(store.getProposal('target'), {
-            supersededIds: ['conflict']
+            releasedRecords: [{ proposalId: 'conflict' }]
         })).resolves.toMatchObject({ applied: true });
     });
 
@@ -286,5 +286,64 @@ describe('ProposalManager mutation boundary', () => {
         expect(componentRestores).toBe(0);
         expect(store.getProposal('target')).toEqual({ proposalId: 'target', applied: false, value: 'before' });
         expect(store.getProposal('conflict')).toEqual({ proposalId: 'conflict', applied: true, value: 'before' });
+    });
+
+    // User decision 2026-10-17: a local, unpublished record is edited in place.
+    describe('updateProposalInPlace', () => {
+        beforeEach(() => {
+            Object.assign(store.getProposal('target'), {
+                goal: 'park', applied: true, createdAt: '2026-10-01T10:00:00.000Z',
+                structureProposal: { kind: 'park' }, cadastreParcelIds: ['HR-1']
+            });
+            Object.assign(store.getProposal('conflict'), { goal: 'buildings', buildingProposal: {}, cadastreParcelIds: ['HR-1'] });
+        });
+        const edited = () => ({
+            goal: 'park', value: 'after', structureProposal: { kind: 'park' }, cadastreParcelIds: ['HR-1', 'HR-2'],
+            sourceProposalId: 'target', replacementOfProposalId: 'target', proposalDraftId: 'draft-1'
+        });
+
+        it('keeps the id and the record count, and re-derives the old and new ground', async () => {
+            let seeds = null;
+            ProposalManager.rematerializeFlatScope = async records => {
+                seeds = records.map(record => ({ id: record.proposalId, parcels: record.cadastreParcelIds }));
+                return { ok: true, failed: [] };
+            };
+
+            await expect(ProposalManager.updateProposalInPlace('target', edited())).resolves.toMatchObject({ applied: true, proposalId: 'target' });
+
+            expect([...store.proposals.keys()]).toEqual(['target', 'conflict']);
+            const target = store.getProposal('target');
+            expect(target).toMatchObject({ proposalId: 'target', value: 'after', applied: true, createdAt: '2026-10-01T10:00:00.000Z' });
+            expect(target.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
+            // An edit is not its own source.
+            expect(target.sourceProposalId).toBeUndefined();
+            expect(target.replacementOfProposalId).toBeUndefined();
+            expect(seeds).toEqual([{ id: 'target', parcels: ['HR-1'] }, { id: 'target', parcels: ['HR-1', 'HR-2'] }]);
+            expect(store.getProposal('conflict').applied).toBe(true);
+        });
+
+        it('takes the confirmed dependents off the map in the same transaction', async () => {
+            let seedIds = null;
+            ProposalManager.rematerializeFlatScope = async records => {
+                seedIds = records.map(record => record.proposalId);
+                return { ok: true, failed: [] };
+            };
+
+            await expect(ProposalManager.updateProposalInPlace('target', edited(), { unapplyIds: ['conflict'] }))
+                .resolves.toMatchObject({ unappliedIds: ['conflict'] });
+
+            expect(store.getProposal('conflict').applied).toBe(false);
+            expect(seedIds).toEqual(['target', 'target', 'conflict']);
+        });
+
+        it('leaves the record and its dependents as they were when the ground refuses the edit', async () => {
+            ProposalManager.rematerializeFlatScope = async () => ({ ok: false, failed: [{ proposalId: 'target', message: 'ground missing' }] });
+
+            await expect(ProposalManager.updateProposalInPlace('target', edited(), { unapplyIds: ['conflict'] })).resolves.toBeNull();
+
+            expect(store.getProposal('target').value).toBe('before');
+            expect(store.getProposal('conflict').applied).toBe(true);
+            expect(ProposalManager.getLastApplyFailure('target')).toBe('ground missing');
+        });
     });
 });

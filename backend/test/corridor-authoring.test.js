@@ -112,7 +112,6 @@ function managerHarness(existing, derive) {
     installGlobal('window', browserRoot);
     installGlobal('proposalStorage', storage);
     installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
-    installGlobal('commitReplacementSupersession', () => null);
     const manager = {
         createCorridorProposalAtomically: ProposalManager.createCorridorProposalAtomically,
         _createCorridorProposalTransactionBody: ProposalManager._createCorridorProposalTransactionBody,

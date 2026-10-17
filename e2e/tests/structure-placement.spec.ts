@@ -363,10 +363,8 @@ test.describe('Whole-site placement editing @features', () => {
     await expect(height).toHaveValue('12');
     await editor.locator('[data-station-editor-action="save"]').click();
     await expect(editor).toHaveCount(0);
-    const savedStation = () => page.evaluate(id => {
-      const proposal = (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.sourceProposalId === id);
-      return proposal?.structureProposal || null;
-    }, id);
+    // A local station is saved in place (same id).
+    const savedStation = () => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal || null, id);
     await expect.poll(savedStation).toMatchObject({ stationType: 'elevated', center: movedCenter, bearing: 37, platformHeightM: 12 });
     const saved = await savedStation();
     await openCity(page);

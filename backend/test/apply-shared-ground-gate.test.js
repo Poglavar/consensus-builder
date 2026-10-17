@@ -1,7 +1,7 @@
 // Applying a shared PLAN must not stand down work the reader already had applied.
 //
-// Superseding is what an explicit Apply click means — "this design, not that one" — and
-// proposal-supersession.js implements it deliberately (one design per parcel). The bug was that the
+// Standing rivals down is what an explicit Apply click means — "this design, not that one"
+// (proposals/claims.js appliedRivals, one design per piece of ground). The bug was that the
 // shared-plan route reached the very same path, so opening someone's plan link could quietly unapply
 // your proposals and say so only in a toast. The plan path now runs the same holder validation in
 // memory, then goes straight to the one-boundary replay materializer.
@@ -20,9 +20,8 @@ const sharingSource = readFileSync(
     fileURLToPath(new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url)), 'utf8');
 
 // Exercise the shipped validator with its collaborators replaced for one synchronous call.
-function runGuard({ supersede, held, planMemberIds }) {
+function runGuard({ held, planMemberIds }) {
     const failures = [];
-    if (supersede !== false) return { refused: false, failures };
     const priorStorage = globalThis.proposalStorage;
     const priorCollect = ProposalManager._collectAppliedAlternativesForExplicitApply;
     const priorFailure = ProposalManager._setLastApplyFailure;
@@ -45,7 +44,6 @@ const alternative = (id, title) => ({ proposalId: id, title });
 describe('a plan apply refuses ground another proposal holds', () => {
     it('refuses instead of standing the holder down', () => {
         const { refused, failures } = runGuard({
-            supersede: false,
             held: [alternative('other-1', 'Block 1108-0112')]
         });
 
@@ -59,7 +57,6 @@ describe('a plan apply refuses ground another proposal holds', () => {
 
     it('names every holder, so the report is not "1 of several"', () => {
         const { failures } = runGuard({
-            supersede: false,
             held: [alternative('a', 'Block A'), alternative('b', 'Block B')]
         });
         expect(failures[0].failure.message).toContain('Block A');
@@ -68,19 +65,8 @@ describe('a plan apply refuses ground another proposal holds', () => {
     });
 
     it('does not refuse when the ground is free', () => {
-        const { refused, failures } = runGuard({ supersede: false, held: [] });
+        const { refused, failures } = runGuard({ held: [] });
         expect(refused).toBe(false);
-        expect(failures).toEqual([]);
-    });
-
-    // The click path must keep superseding: that is what choosing a design means, and it is the
-    // behaviour proposal-supersession.js exists to provide.
-    it('leaves an explicit apply free to supersede', () => {
-        const { refused, failures } = runGuard({
-            supersede: undefined,
-            held: [alternative('other-1', 'Block 1108-0112')]
-        });
-        expect(refused, 'blocked an explicit Apply from choosing its design').toBe(false);
         expect(failures).toEqual([]);
     });
 });
@@ -90,7 +76,6 @@ describe('a plan apply refuses ground another proposal holds', () => {
 describe('a plan\'s own members are not blockers', () => {
     it('ignores holders that belong to the plan being applied', () => {
         const { refused, failures } = runGuard({
-            supersede: false,
             held: [alternative('mate-1', 'Block A'), alternative('mate-2', 'Block B')],
             planMemberIds: new Set(['mate-1', 'mate-2'])
         });
@@ -100,7 +85,6 @@ describe('a plan\'s own members are not blockers', () => {
 
     it('still refuses on ground held from outside the plan', () => {
         const { refused, failures } = runGuard({
-            supersede: false,
             held: [alternative('mate-1', 'Block A'), alternative('stranger', 'Someone else')],
             planMemberIds: new Set(['mate-1'])
         });
@@ -110,7 +94,7 @@ describe('a plan\'s own members are not blockers', () => {
     });
 
     it('refuses as before when the caller names no plan', () => {
-        const { refused } = runGuard({ supersede: false, held: [alternative('x', 'Block X')] });
+        const { refused } = runGuard({ held: [alternative('x', 'Block X')] });
         expect(refused).toBe(true);
     });
 });
@@ -121,8 +105,7 @@ describe('the shared-plan route asks for that behaviour', () => {
             .toMatch(/validateSharedProposalGround\(\s*id,\s*planMemberIds,\s*preexistingAppliedRecords\s*\)/);
     });
 
-    it('uses the direct replay path without the interactive supersession transaction', () => {
+    it('uses the direct replay path without the interactive rival transaction', () => {
         expect(sharingSource).toMatch(/\{ replay: true, silent: true, deferPresentation: true \}/);
-        expect(sharingSource).not.toMatch(/\{ silent: true, supersede: false, planMemberIds \}/);
     });
 });

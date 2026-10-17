@@ -657,7 +657,7 @@ function reportSharedPlanProgress(event) {
 // Rebuilding that whole plan again made opening ONE proposal proportional to everything the user
 // happened to have applied locally (and, on a 26-member plan, paid the same 20-second replay twice).
 // Each parked member goes directly through the canonical replay materializer. It keeps the rollback
-// boundary, but avoids the explicit-click state transition and supersession pass that used to run
+// boundary, but avoids the explicit-click state transition and rival pass that used to run
 // before the same materializer. Package dependency order remains immutable inside each phase.
 async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // Package dependencies outrank URL and creation order. Ordinary packages form road-bounded
@@ -692,7 +692,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
         && typeof batchStore.endBatch === 'function');
     // Who belongs to THIS plan. A member standing on ground another member holds is the plan
     // working as designed — on a re-open that is nearly every member — so those are not the
-    // "someone else's applied work" the supersede refusal is protecting.
+    // "someone else's applied work" the shared-ground refusal is protecting.
     const planMemberIds = new Set(orderedIds.map(id => String(id)));
     const suppliedPlanMembership = options.planMemberIds;
     if (suppliedPlanMembership && typeof suppliedPlanMembership[Symbol.iterator] === 'function') {
@@ -843,7 +843,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                 // Refuse unrelated holders in memory, then use the direct one-boundary materializer for
                 // every shared member. The old non-coordinated path first marked state in one full-map
                 // transaction and then replay-applied in a second; neither extra snapshot nor the
-                // explicit-Apply supersession path belongs to opening a plan link.
+                // explicit-Apply rival path belongs to opening a plan link.
                 if (!coordinatedPlanIdOfSharedRecord(record)
                     && ProposalManager && typeof ProposalManager.validateSharedProposalGround === 'function') {
                     const validation = ProposalManager.validateSharedProposalGround(

@@ -185,7 +185,7 @@ test.describe('Shared proposal editor shell controls @core', () => {
     expect(await page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), sourceId)).toBe(true);
   });
 
-  test('review returns to editing and Publish creates a replacement proposal from the draft', async ({ mockApi: page }) => {
+  test('review returns to editing and Publish saves the draft onto its local source in place', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await page.locator('#username-display').click();
@@ -217,11 +217,11 @@ test.describe('Shared proposal editor shell controls @core', () => {
     expect(await page.evaluate(() => (window as any).pendingProposalReplacementSource.proposalId)).toBe(sourceId);
 
     await page.locator('#createProposalSubmitButton').click();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.sourceProposalId === id), sourceId), { timeout: 45_000 })
-      .toMatchObject({ sourceProposalId: sourceId, proposalDraftId: draftId, description: 'Updated description from the proposal editor.' });
+    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.description, sourceId), { timeout: 45_000 })
+      .toBe('Updated description from the proposal editor.');
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id), draftId)).toBeNull();
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
-    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).description, sourceId))
-      .toBe('Original source description.');
+    expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.sourceProposalId === id), sourceId)).toBe(false);
   });
 });

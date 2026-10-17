@@ -19,7 +19,7 @@ function install(name, value) {
     globalThis[name] = value;
 }
 
-function loadInstantCreate({ lands, reason = 'The live fabric could not be validated.', throws = false, replacement = false, publishedSource = null }) {
+function loadInstantCreate({ lands, reason = 'The live fabric could not be validated.', throws = false, replacement = false, publishedSource = null, editOf = null, dependents = [] }) {
     const draft = {
         id: 'draft-park',
         goal: 'park',
@@ -33,6 +33,8 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
         },
         validation: { valid: true, errors: [] }
     };
+    // An edit opened from an existing record (editProposalGeometry) names it as the draft's source.
+    if (editOf) draft.sourceProposalId = editOf.proposalId;
     const proposal = {
         proposalId: 'local-park',
         goal: 'park',
@@ -53,11 +55,16 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
     });
     install('proposalStorage', {
         addProposal: vi.fn(() => proposal.proposalId),
-        getProposal: vi.fn(id => id === 'source-lake' && publishedSource ? publishedSource : proposal),
+        getProposal: vi.fn(id => (editOf && id === editOf.proposalId ? editOf
+            : (id === 'source-lake' && publishedSource ? publishedSource : proposal))),
         save: vi.fn()
     });
     const ProposalManager = {
-        _commitReplacementSupersession: vi.fn(),
+        findEditDependents: vi.fn(() => dependents),
+        updateProposalInPlace: vi.fn(async () => {
+            editOf.applied = lands;
+            return lands ? { applied: true, proposalId: editOf.proposalId } : null;
+        }),
         deriveForNewProposal: vi.fn(async () => {
             if (throws) throw new Error(reason || 'derive exploded');
             proposal.applied = lands;
@@ -69,7 +76,9 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
     };
     install('ProposalManager', ProposalManager);
     install('isProposalApplied', value => value.applied === true);
-    install('isPublishedProposalRecord', require('../../frontend/js/proposal-supersession.js').isPublishedProposalRecord);
+    const lineage = require('../../frontend/js/proposals/lineage.js');
+    install('ProposalLineage', lineage);
+    install('isPublishedProposalRecord', lineage.isPublished);
     install('selectAndHighlightProposal', selectAndHighlightProposal);
     install('showStyledAlert', showStyledAlert);
     install('showEphemeralMessage', showEphemeralMessage);
@@ -399,7 +408,7 @@ describe('one-click structure creation focus', () => {
         expect(showStyledAlert).toHaveBeenCalledOnce();
         expect(showStyledAlert.mock.calls[0][0]).toContain('The live fabric could not be validated.');
         expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
-        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
         expect(selectAndHighlightProposal).not.toHaveBeenCalled();
         expect(releaseEditorSeededMultiSelection).not.toHaveBeenCalled();
     });
@@ -428,7 +437,7 @@ describe('one-click structure creation focus', () => {
         expect(result).toBe(proposal.proposalId);
         expect(showStyledAlert.mock.calls[0][0]).toContain('Lake geometry could not be derived.');
         expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
-        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
     });
 
     it('announces a geometry edit only after replacement geometry lands', async () => {
@@ -438,7 +447,7 @@ describe('one-click structure creation focus', () => {
 
         expect(showStyledAlert).not.toHaveBeenCalled();
         expect(showEphemeralMessage).toHaveBeenCalledWith('Geometry updated.', 4000, 'success');
-        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
     });
 
     it('derives a published-source geometry fork without releasing the applied source', async () => {
@@ -447,12 +456,11 @@ describe('one-click structure creation focus', () => {
 
         await globalThis.instantCreateProposalFromDraft('draft-park');
 
-        expect(ProposalManager.deriveForNewProposal).toHaveBeenCalledWith(
-            expect.objectContaining({ proposalId: proposal.proposalId }),
-            { supersededIds: [] }
+        expect(ProposalManager.deriveForNewProposal).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ proposalId: proposal.proposalId })
         );
         expect(source.applied).toBe(true);
-        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
     });
 
     it('releases the editor-seeded multi-select once the structure lands', async () => {
@@ -467,5 +475,65 @@ describe('one-click structure creation focus', () => {
         expect(releaseEditorSeededMultiSelection).toHaveBeenCalledOnce();
         expect(releaseEditorSeededMultiSelection.mock.invocationCallOrder[0])
             .toBeLessThan(selectAndHighlightProposal.mock.invocationCallOrder[0]);
+    });
+});
+
+// User decision 2026-10-17: "local should work in place … no need to change ids on every edit."
+// Published and minted proposals are immutable; editing one forks a counterproposal.
+describe('saving an edit of an existing record', () => {
+    const localLake = () => ({ proposalId: 'own-lake', goal: 'lake', applied: true, createdAt: '2026-10-01T10:00:00.000Z' });
+
+    it('saves an edit of a local record in place: the same id and no new record', async () => {
+        const source = localLake();
+        const { proposal, ProposalManager } = loadInstantCreate({ lands: true, editOf: source });
+
+        const result = await globalThis.instantCreateProposalFromDraft('draft-park');
+
+        expect(result).toBe('own-lake');
+        expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
+        expect(ProposalManager.deriveForNewProposal).not.toHaveBeenCalled();
+        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledExactlyOnceWith('own-lake', proposal, { unapplyIds: [] });
+        expect(globalThis.proposalDraftStore.consumeAfterPublish).toHaveBeenCalledWith('draft-park', 'own-lake');
+    });
+
+    it('still forks a counterproposal of a published source, which stays standing', async () => {
+        const source = { ...localLake(), serverProposalId: '901' };
+        const { proposal, ProposalManager } = loadInstantCreate({ lands: true, editOf: source });
+
+        const result = await globalThis.instantCreateProposalFromDraft('draft-park');
+
+        expect(result).toBe(proposal.proposalId);
+        expect(globalThis.proposalStorage.addProposal).toHaveBeenCalledExactlyOnceWith(proposal);
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
+        expect(source.applied).toBe(true);
+    });
+
+    it('names the proposals built on the changed ground and saves nothing when the user keeps editing', async () => {
+        const source = localLake();
+        const { ProposalManager } = loadInstantCreate({
+            lands: true, editOf: source, dependents: [{ proposalId: 'block-1', title: 'Block on plot 2' }]
+        });
+        const confirm = vi.fn(async () => false);
+        install('CbDialog', { confirm });
+        install('openProposalDraftDesign', vi.fn(async () => true));
+
+        await expect(globalThis.instantCreateProposalFromDraft('draft-park')).resolves.toBeNull();
+
+        expect(confirm).toHaveBeenCalledOnce();
+        expect(confirm.mock.calls[0][0]).toContain('Block on plot 2');
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
+        expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
+    });
+
+    it('takes the confirmed dependents off the map with the save', async () => {
+        const source = localLake();
+        const { ProposalManager } = loadInstantCreate({
+            lands: true, editOf: source, dependents: [{ proposalId: 'block-1', title: 'Block on plot 2' }]
+        });
+        install('CbDialog', { confirm: vi.fn(async () => true) });
+
+        await expect(globalThis.instantCreateProposalFromDraft('draft-park')).resolves.toBe('own-lake');
+
+        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledWith('own-lake', expect.anything(), { unapplyIds: ['block-1'] });
     });
 });

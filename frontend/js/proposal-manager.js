@@ -20,6 +20,11 @@ const proposalClaims = (typeof window !== 'undefined' && window.__claims)
     ? window.__claims
     : require('./proposals/claims.js');
 
+// What saving an edit does to its source (in place, or a counterproposal fork): proposals/lineage.js.
+const proposalLineageApi = (typeof window !== 'undefined' && window.ProposalLineage)
+    ? window.ProposalLineage
+    : require('./proposals/lineage.js');
+
 // Which proposals may stand on a map at all (a cancelled one may not): proposals/display-state.js.
 const proposalDisplayStateApi = (typeof window !== 'undefined' && window.__proposalDisplayState)
     ? window.__proposalDisplayState
@@ -865,13 +870,6 @@ const ProposalManager = {
             });
             try { this._refreshUIAfterProposalChange?.(_getProposalRecord(result.proposalId)); } catch (_) { }
             try { browserRoot.refreshRoadNodeHandles?.(); } catch (_) { }
-            if (result.supersession && typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(
-                    `Applied the replacement and removed “${result.supersession.sourceName}” from the map.`,
-                    5000,
-                    'success'
-                );
-            }
         }
         return result;
     },
@@ -950,15 +948,6 @@ const ProposalManager = {
         const stored = _getProposalRecord(proposalId, options);
         if (!stored) fail('The new corridor was not available after it was saved.');
 
-        // A replacement and the source it parks belong to this same transaction. Use the
-        // state-only primitive here; its success toast is emitted only after commit above.
-        const supersededRecords = excludedIds
-            .map(id => _getProposalRecord(id, options))
-            .filter(Boolean);
-        const supersession = (typeof commitReplacementSupersession === 'function')
-            ? commitReplacementSupersession(stored, proposalId, id => _getProposalRecord(id, options))
-            : null;
-
         try { setProposalApplied(stored, true); } catch (_) { stored.applied = true; }
         store._indexProposal?.(stored);
         const recordsMs = _now() - recordsStarted;
@@ -994,7 +983,7 @@ const ProposalManager = {
         const fabricStarted = _now();
         // The joined roads are in the scope too: their land moved at the junction.
         const derived = await this.rematerializeCorridorScope(
-            [stored, ...supersededRecords, ...changedRecords],
+            [stored, ...changedRecords],
             {
                 _parcelMutation: options._parcelMutation,
                 deferSave: true,
@@ -1024,12 +1013,6 @@ const ProposalManager = {
                 junctionRecords: plan.junctionRecords,
                 changedProposalIds: changedRecords.map(record => String(record.proposalId))
             },
-            supersession: supersession ? {
-                sourceId: supersession.sourceId,
-                sourceName: supersession.source?.title
-                    || supersession.source?.name
-                    || supersession.sourceId
-            } : null,
             timings: {
                 topologyMs,
                 recordsMs,
@@ -1135,7 +1118,7 @@ const ProposalManager = {
         this._rebuildInProgress = true;
         // A whole-plan derivation is the longest thing this app does — several seconds of ground
         // fetching before the first proposal can even be applied. The status LINES describe it, but
-        // each is superseded within a second; the spinner is the part that stays on screen for as
+        // each is replaced within a second; the spinner is the part that stays on screen for as
         // long as the work does.
         const spinnerHeld = (typeof window !== 'undefined' && typeof window.beginStatusActivity === 'function')
             ? window.beginStatusActivity()
@@ -1721,7 +1704,7 @@ const ProposalManager = {
 
             if (!failed.length) {
                 this._reconcileStructurePresentation(seedById.values(), opts);
-                // Every removed or replayed output changes its presentation layer. Superseded
+                // Every removed or replayed output changes its presentation layer. Released
                 // records are no longer applied, so they are absent from orderedReplay even though
                 // their old rendered output must disappear. Redraw each affected kind after commit.
                 const affectedKinds = new Set(Array.from(seedById.values(), record => {
@@ -2387,28 +2370,19 @@ const ProposalManager = {
         try { setProposalApplied(proposal, true, priorAppliedAt ? { appliedAt: priorAppliedAt } : {}); }
         catch (_) { proposal.applied = true; }
 
-        // Alternatives were parked as record-state changes above. Name the records as seeds so
-        // their proposal-owned output is removed and their immutable cadastral declarations extend
-        // the local scope. A geometry-only pseudo-record has no declaration to validate and caused
-        // every explicit conflict replacement to be refused as incomplete ground.
-        const supersededById = new Map();
-        const addSuperseded = record => {
-            const id = String(record?.proposalId || '');
-            if (!id || id === String(proposal.proposalId || '') || supersededById.has(id)) return;
-            supersededById.set(id, _getProposalRecord(id, options) || record);
-        };
-        (Array.isArray(options.supersededRecords) ? options.supersededRecords : [])
+        // Rivals were parked as record-state changes by the caller (applyProposal). Name the
+        // records as seeds so their proposal-owned output is removed and their immutable cadastral
+        // declarations extend the local scope. A geometry-only pseudo-record has no declaration to
+        // validate and caused every explicit conflict replacement to be refused as incomplete ground.
+        const releasedById = new Map();
+        (Array.isArray(options.releasedRecords) ? options.releasedRecords : [])
             .filter(Boolean)
-            .forEach(addSuperseded);
-        (Array.isArray(options.supersededIds) ? options.supersededIds : [])
-            .map(id => _getProposalRecord(id, options))
-            .filter(Boolean)
-            .forEach(addSuperseded);
-        // A failed edit must leave its source standing. Supersession is part of this private
-        // mutation, so both the source flag and its map output roll back with a refused result.
-        const supersession = this._commitReplacementSupersession?.(proposal.proposalId, proposal, options);
-        if (supersession?.source) addSuperseded(supersession.source);
-        const localSeeds = [proposal, ...supersededById.values()];
+            .forEach(record => {
+                const id = String(record?.proposalId || '');
+                if (!id || id === String(proposal.proposalId || '') || releasedById.has(id)) return;
+                releasedById.set(id, _getProposalRecord(id, options) || record);
+            });
+        const localSeeds = [proposal, ...releasedById.values()];
         const materialize = goalKey === 'road-track'
             ? this.rematerializeCorridorScope
             : this.rematerializeFlatScope;
@@ -2438,6 +2412,93 @@ const ProposalManager = {
             return false;
         }
         return { applied: true, goalKey, ...summary };
+    },
+
+    // Which applied records stand on ground an in-place edit of `proposalId` would change
+    // (proposals/claims.js editDependents), oldest first. Read-only: the editor names them and asks
+    // before it saves, and passes the confirmed ones to updateProposalInPlace as unapplyIds.
+    findEditDependents(proposalId, edited, options = {}) {
+        const store = _proposalStore(options);
+        const before = _getProposalRecord(proposalId, options);
+        if (!store || !before || !edited) return [];
+        const runtime = typeof window !== 'undefined' ? window : globalThis;
+        return proposalClaims.editDependents(before, edited, _peekProposals(store), {
+            planOrder: runtime.__planOrder || null,
+            area: runtime.turf && typeof runtime.turf.area === 'function' ? runtime.turf.area : null,
+            isApplied: appliedOf
+        });
+    },
+
+    // Save an edit of one's own local record IN PLACE (proposals/lineage.js editsInPlace): the
+    // record keeps its id and its place in the replay order, takes the edited content and stands on
+    // the map with it. Only the ground under its old and new versions is re-derived, the local
+    // scope a road edit uses (road-drawing.js runLocalCorridorGeometryUpdate). `unapplyIds` are the
+    // dependents the user agreed to take off the map (findEditDependents). They come off in the same
+    // transaction, so a refused edit leaves the record and its dependents exactly as they were.
+    async updateProposalInPlace(proposalId, edited, options = {}) {
+        if (!options._parcelMutation) {
+            const result = await _runProposalMutationBoundary(this, 'proposal-derive', proposalId, options,
+                (_context, transactionOptions) => this.updateProposalInPlace(proposalId, edited, transactionOptions));
+            return result === false ? null : result;
+        }
+        const store = _proposalStore(options);
+        const live = _getProposalRecord(proposalId, options);
+        if (!store || !live || !edited) {
+            this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-not-found'));
+            return false;
+        }
+        const key = String(live.proposalId);
+        const before = JSON.parse(JSON.stringify(live));
+        const next = proposalLineageApi.inPlaceRecord(before, edited);
+        Object.keys(live).forEach(field => { delete live[field]; });
+        Object.assign(live, next);
+        live.updatedAt = new Date().toISOString();
+        try { setProposalApplied(live, true, before.appliedAt ? { appliedAt: before.appliedAt } : {}); }
+        catch (_) { live.applied = true; }
+        store._indexProposal?.(live);
+
+        const dependents = [];
+        for (const id of (Array.isArray(options.unapplyIds) ? options.unapplyIds : [])) {
+            const dependent = _getProposalRecord(id, options);
+            if (!dependent || String(dependent.proposalId) === key) continue;
+            const unapplied = await this._unapplyProposalTransactionBody(dependent.proposalId, { ...options, deferSave: true });
+            if (unapplied !== true) {
+                this._setLastApplyFailure(key, {
+                    code: 'edit-dependent-unapply-failed',
+                    message: `“${dependent.title || dependent.name || dependent.proposalId}” could not be taken off the map, so the edit was not saved.`
+                });
+                return false;
+            }
+            dependents.push(_getProposalRecord(dependent.proposalId, options) || dependent);
+        }
+
+        const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+            ? applyRoute.normalizeGoalKey(live.goal)
+            : String(live.goal || '');
+        const materialize = goalKey === 'road-track'
+            ? this.rematerializeCorridorScope
+            : this.rematerializeFlatScope;
+        const summary = await materialize.call(this, [before, live, ...dependents], {
+            _parcelMutation: options._parcelMutation,
+            silent: options.silent === true,
+            purpose: 'apply',
+            statusMode: 'apply'
+        });
+        const failed = Array.isArray(summary?.failed) ? summary.failed : [];
+        if (!summary || summary.ok !== true || failed.some(entry => String(entry.proposalId) === key)) {
+            const failure = failed.find(entry => String(entry.proposalId) === key) || failed[0];
+            if (failure?.message || failure?.reason) this._setLastApplyFailure?.(key, failure);
+            else if (!this.getLastApplyFailure?.(key)) this._setLastApplyFailure?.(key, _proposalApplyFailure('proposal-apply-failed'));
+            return false;
+        }
+        store.save?.();
+        return {
+            ...summary,
+            applied: true,
+            proposalId: key,
+            goalKey,
+            unappliedIds: dependents.map(record => String(record.proposalId))
+        };
     },
 
     // Several consecutive corridors in one shared package are one change to the cadastral fabric,
@@ -2914,47 +2975,21 @@ const ProposalManager = {
         return null;
     },
 
-    _commitReplacementSupersession(proposalId, proposalData, options = {}) {
-        if (typeof commitReplacementSupersession !== 'function') return null;
-        const store = _proposalStore(options);
-        const transaction = commitReplacementSupersession(
-            proposalData,
-            proposalId,
-            id => _getProposalRecord(id, options)
-        );
-        if (!transaction) return null;
-        store?.save?.();
-        const source = transaction.source;
-        const sourceName = source.title || source.name || source.proposalName || source.proposalId || 'the previous proposal';
-        const announce = () => {
-            try {
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage(`Applied the replacement and removed “${sourceName}” from the map.`, 5000, 'success');
-                }
-            } catch (_) { }
-        };
-        if (options._parcelMutation) options._parcelMutation.afterCommit(announce);
-        else announce();
-        return transaction;
-    },
-
     _collectAppliedAlternativesForExplicitApply(proposalData, candidateRecords = null, options = {}) {
         const store = _proposalStore(options);
         if (!proposalData || !store) return [];
         const runtime = typeof window !== 'undefined' ? window : globalThis;
-        const collect = runtime && runtime.collectAppliedProposalAlternatives;
-        if (typeof collect !== 'function') return [];
         try {
             // Shared-plan application supplies the records that were already standing before the
-            // plan began. Include the target so replacement-family links originating on it remain
-            // visible, without rescanning every parked/incoming record for every member. The full
-            // listing is a read-only scan (peek); the alternatives it yields are re-fetched through
-            // the draft below before anyone edits them.
+            // plan began, without rescanning every parked/incoming record for every member. The full
+            // listing is a read-only scan (peek); the rivals it yields are re-fetched through the
+            // draft below before anyone edits them. The rule is proposals/claims.js appliedRivals.
             const records = Array.isArray(candidateRecords)
-                ? [proposalData, ...candidateRecords.filter(record => record && record !== proposalData)]
+                ? candidateRecords.filter(record => record && record !== proposalData)
                 : _peekProposals(store);
-            const alternatives = collect(proposalData, records, {
-                planOrder: runtime.__planOrder || null
+            const alternatives = proposalClaims.appliedRivals(proposalData, records, {
+                planOrder: runtime.__planOrder || null,
+                isApplied: appliedOf
             });
             // Each alternative is about to be parked (applied=false, re-indexed): hand back the
             // draft's own copy so the edit is journaled, persisted and restorable.
@@ -2965,8 +3000,8 @@ const ProposalManager = {
         }
     },
 
-    // Shared plans never supersede unrelated work. This is the same live check the ordinary
-    // supersede:false path uses, exposed so a parked shared record can go straight through the
+    // Shared plans never stand down unrelated work: a plan member whose ground an applied record
+    // outside the plan holds is refused, so a parked shared record can go straight through the
     // one-boundary replay apply instead of first paying a separate mark-state transaction.
     validateSharedProposalGround(proposalId, planMemberIds, candidateRecords = null, options = {}) {
         const proposal = _getProposalRecord(proposalId, options);
@@ -3034,18 +3069,8 @@ const ProposalManager = {
             return false;
         }
 
-        // Superseding is what an explicit Apply click means. Shared-plan application passes
-        // supersede:false and is refused before any draft state changes.
-        if (applyOptions.supersede === false) {
-            const validation = this.validateSharedProposalGround(
-                proposalId,
-                applyOptions.planMemberIds,
-                null,
-                applyOptions
-            );
-            if (!validation.ok) return false;
-        }
-
+        // Standing rivals down is what an explicit Apply click means: "this design, not that one".
+        // Shared-plan application validates with validateSharedProposalGround instead.
         const switchedAlternatives = this._collectAppliedAlternativesForExplicitApply(
             proposal,
             null,
@@ -3059,7 +3084,7 @@ const ProposalManager = {
         store._indexProposal?.(proposal);
         const derived = await this.deriveForNewProposal(proposal, {
             ...applyOptions,
-            supersededRecords: switchedAlternatives
+            releasedRecords: switchedAlternatives
         });
         if (!derived || derived.ok !== true || !appliedOf(proposal)) return false;
         store.save?.();
@@ -3183,7 +3208,6 @@ const ProposalManager = {
         }, applyOptions);
 
         if (result && applyOptions.preserveAppliedSet !== true) {
-            this._commitReplacementSupersession(safeId, proposalData, applyOptions);
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
         }
         return result;

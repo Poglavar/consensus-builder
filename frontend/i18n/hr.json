@@ -741,7 +741,7 @@
             "discardShort": "Odbaci",
             "review": "Pregledaj promjene",
             "back": "Natrag",
-            "createReplacement": "Stvori zamjenski prijedlog",
+            "saveChanges": "Spremi promjene",
             "createCounterproposal": "Stvori protuprijedlog",
             "createProposal": "Stvori prijedlog",
             "resume": "Nastavi",
@@ -786,6 +786,13 @@
         "reverted": "Vraćena je prethodna verzija.",
         "revertFailed": "Prethodnu verziju nije bilo moguće vratiti.",
         "geometryUpdated": "Geometrija ažurirana.",
+        "dependents": {
+            "title": "Prijedlozi izgrađeni na ovome",
+            "message": "Spremanje ove izmjene mijenja tlo na kojem stoji {{count}} prijedlog(a): {{names}}. Bit će uklonjeni s karte.",
+            "confirm": "Spremi i ukloni ih",
+            "cancel": "Nastavi uređivati",
+            "notSaved": "Izmjena nije spremljena. Dizajn je ponovno otvoren."
+        },
         "builtButParked": "Objekt je stvoren, ali ga nije bilo moguće postaviti na kartu (blokirao ga je sukob). Parkiran je u vašem popisu prijedloga — odaberite ga tamo da ga vidite i primijenite.",
         "builtButParkedBecause": "Objekt je stvoren, ali ga nije bilo moguće postaviti na kartu: {{reason}} Parkiran je u vašem popisu prijedloga — odaberite ga tamo da ga vidite i primijenite.",
         "uploadRateLimitedAt": {

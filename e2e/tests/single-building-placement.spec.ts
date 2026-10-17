@@ -296,7 +296,7 @@ test.describe('Single-building placement and immutable replacement @features', (
       .some((p: any) => p.applied && p.buildingProposal?.typologyType === 'single'))).toBe(false);
   });
 
-  test('a non-overlapping edit of a published source preserves it; a local replacement still supersedes', async ({ mockApi: page }) => {
+  test('a non-overlapping edit of a published source preserves it; a local edit saves in place', async ({ mockApi: page }) => {
     const publishedId = await createAppliedSingle(page);
     const publishedBefore = await proposalState(page, publishedId);
     await page.evaluate(async id => {
@@ -354,14 +354,19 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(publishedAfter.geometry).toEqual(publishedBefore.geometry);
 
     // The published source and its applied fork may reserve the first parcel. Create the local
-    // replacement fixture on a separate parcel so this assertion does not depend on reopening it.
+    // fixture on a separate parcel so this assertion does not depend on reopening it.
     const localId = await createAppliedSingle(page, INDEPENDENT_PARCEL_ID);
+    const localBefore = await proposalState(page, localId);
+    const countBefore = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
     await beginGeometryEdit(page, localId);
     await dragActive(page, -190);
     await finishSingle(page);
-    await expect.poll(async () => (await proposalState(page, localId)).applied).toBe(false);
-    const localFork = await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .find((p: any) => p.sourceProposalId === id && p.applied), localId);
-    expect(localFork).toBeTruthy();
+    // "local should work in place … no need to change ids on every edit" (the user, 2026-10-17).
+    await expect.poll(async () => JSON.stringify((await proposalState(page, localId)).geometry))
+      .not.toBe(JSON.stringify(localBefore.geometry));
+    expect((await proposalState(page, localId)).applied).toBe(true);
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(countBefore);
+    expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .some((p: any) => p.sourceProposalId === id), localId)).toBe(false);
   });
 });

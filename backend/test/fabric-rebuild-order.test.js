@@ -247,9 +247,9 @@ describe('ProposalManager.reapplyAppliedProposals — reload barrier', () => {
 
 // These harnesses stand in for `this`, so every collaborator applyProposal reaches for has to be on
 // them — adding one to the real object without adding it here is a TypeError, not a skipped step.
-// _collectAppliedAlternativesForExplicitApply is borrowed rather than stubbed: with no
-// collectAppliedProposalAlternatives global installed it returns [], which is exactly these tests'
-// premise (no alternative is standing), and borrowing keeps that premise honest if the guard changes.
+// _collectAppliedAlternativesForExplicitApply is borrowed rather than stubbed: these harnesses hold
+// no applied rival (claims.js appliedRivals), which is exactly these tests' premise, and borrowing
+// keeps that premise honest if the guard changes.
 // Applying from the proposal list used to run the WHOLE-PLAN rebuild just to materialise one
 // record — 13 s on a 112-road plan. It now derives only the ground whose take set changed, exactly
 // like a create or an edit. None of these harnesses carries `rebuildAppliedFabric`, so a fallback

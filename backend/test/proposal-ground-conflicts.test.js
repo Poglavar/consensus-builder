@@ -1,17 +1,18 @@
-// Unit tests for generic immutable-replacement source supersession.
+// Unit tests for the ground-conflict rules in proposals/claims.js: which applied records an apply
+// displaces (appliedRivals: geometry only, no lineage exception) and which ones an in-place edit
+// takes the ground from (editDependents), plus the edit-in-place rule in proposals/lineage.js.
 import { describe, it, expect } from 'vitest';
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 globalThis.turf = turf;
-const {
-    proposalIsAppliedForReplacement,
-    proposalReplacementSourceId,
-    proposalReplacementFamilyIds,
-    collectAppliedProposalAlternatives,
-    commitReplacementSupersession
-} = require('../../frontend/js/proposal-supersession.js');
+const { appliedRivals, editDependents } = require('../../frontend/js/proposals/claims.js');
+const lineage = require('../../frontend/js/proposals/lineage.js');
+const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const { isApplied } = require('../../frontend/js/proposals/status.js');
+const collectAppliedProposalAlternatives = (proposal, records, options = {}) =>
+    appliedRivals(proposal, records, { isApplied, ...options });
 
 const building = (proposalId, west, applied = false) => ({
     proposalId,
@@ -33,33 +34,8 @@ const building = (proposalId, west, applied = false) => ({
     }
 });
 
-describe('proposal replacement supersession', () => {
-    it('recognizes only the canonical root application flag', () => {
-        expect(proposalIsAppliedForReplacement({ applied: true, buildingProposal: {} })).toBe(true);
-        expect(proposalIsAppliedForReplacement({ applied: false, reparcellization: {} })).toBe(false);
-        expect(proposalIsAppliedForReplacement({ buildingProposal: { status: 'applied' } })).toBe(false);
-    });
-
-    it('accepts new provenance fields before the legacy copied-from field', () => {
-        expect(proposalReplacementSourceId({ sourceProposalId: 'new', copiedFromProposalId: 'old' })).toBe('new');
-        expect(proposalReplacementSourceId({ replacementOfProposalId: 'replacement-source' })).toBe('replacement-source');
-    });
-
-    it('parks an applied source after its replacement succeeds', () => {
-        const source = { proposalId: 'source', applied: true, appliedAt: 'before', buildingProposal: {} };
-        const replacement = { proposalId: 'replacement', sourceProposalId: 'source', applied: true, buildingProposal: {} };
-        const records = new Map([['source', source], ['replacement', replacement]]);
-
-        const committed = commitReplacementSupersession(replacement, 'replacement', id => records.get(id));
-
-        expect(committed).toMatchObject({ source, sourceId: 'source', replacementId: 'replacement' });
-        expect(source.applied).toBe(false);
-        expect(source.appliedAt).toBeUndefined();
-        expect(replacement.replacementLifecycle).toBeUndefined();
-        expect(replacement.supersedesProposalIds).toBeUndefined();
-    });
-
-    it('preserves a published source for a moved non-overlapping fork but still finds real overlap', () => {
+describe('lineage is not a ground conflict', () => {
+    it('a published source and its moved, non-overlapping fork both stay applied; real overlap still counts', () => {
         const source = {
             proposalId: 'published-source', lifecycleStatus: 'published', applied: true, appliedAt: 'before',
             goal: 'park', structureProposal: { kind: 'park', geometry: turf.polygon([[[15.9, 45.8], [15.901, 45.8], [15.901, 45.801], [15.9, 45.801], [15.9, 45.8]]]) }
@@ -68,14 +44,9 @@ describe('proposal replacement supersession', () => {
             proposalId: 'moved-fork', sourceProposalId: source.proposalId, applied: true, goal: 'park', freePlacement: true,
             structureProposal: { kind: 'park', geometry: turf.polygon([[[16.1, 45.8], [16.101, 45.8], [16.101, 45.801], [16.1, 45.801], [16.1, 45.8]]]) }
         };
-        const records = [source, moved];
         const sourceBefore = structuredClone(source);
 
-        expect([...proposalReplacementFamilyIds(moved, records)]).toEqual(['moved-fork']);
-        expect(collectAppliedProposalAlternatives(moved, records, {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        })).toEqual([]);
-        expect(commitReplacementSupersession(moved, moved.proposalId, id => records.find(record => record.proposalId === id))).toBeNull();
+        expect(collectAppliedProposalAlternatives(moved, [source, moved], { planOrder })).toEqual([]);
         expect(source).toEqual(sourceBefore);
 
         const overlapping = {
@@ -83,12 +54,11 @@ describe('proposal replacement supersession', () => {
             proposalId: 'overlapping-fork',
             structureProposal: { kind: 'park', geometry: source.structureProposal.geometry }
         };
-        expect(collectAppliedProposalAlternatives(overlapping, [source, overlapping], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        }).map(record => record.proposalId)).toEqual(['published-source']);
+        expect(collectAppliedProposalAlternatives(overlapping, [source, overlapping], { planOrder })
+            .map(record => record.proposalId)).toEqual(['published-source']);
     });
 
-    it('does not treat a disjoint land fork as an alternative to its applied source', () => {
+    it('does not treat a disjoint land fork as an alternative to its applied source, in either direction', () => {
         const source = {
             proposalId: 'source', applied: true, goal: 'park',
             structureProposal: { kind: 'park', geometry: turf.polygon([[[15.9, 45.8], [15.901, 45.8], [15.901, 45.801], [15.9, 45.801], [15.9, 45.8]]]) }
@@ -97,58 +67,20 @@ describe('proposal replacement supersession', () => {
             proposalId: 'fork', sourceProposalId: 'source', landFork: { relation: 'disjoint' }, applied: true, goal: 'park',
             structureProposal: { kind: 'park', geometry: turf.polygon([[[16.0, 45.8], [16.001, 45.8], [16.001, 45.801], [16.0, 45.801], [16.0, 45.8]]]) }
         };
-        const records = [source, fork];
-
-        expect([...proposalReplacementFamilyIds(fork, records)]).toEqual(['fork']);
-        expect([...proposalReplacementFamilyIds(source, records)]).toEqual(['source']);
-        expect(collectAppliedProposalAlternatives(fork, records, {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        })).toEqual([]);
-        expect(collectAppliedProposalAlternatives(source, records, {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        })).toEqual([]);
-
-        const overlappingFork = {
-            ...fork,
-            proposalId: 'overlapping-fork',
-            structureProposal: { kind: 'park', geometry: source.structureProposal.geometry }
-        };
-        expect(collectAppliedProposalAlternatives(overlappingFork, [source, overlappingFork], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        }).map(record => record.proposalId)).toEqual(['source']);
-        expect(source.applied).toBe(true);
+        expect(collectAppliedProposalAlternatives(fork, [source, fork], { planOrder })).toEqual([]);
+        expect(collectAppliedProposalAlternatives(source, [source, fork], { planOrder })).toEqual([]);
     });
 
-    it('keeps an applied source standing for a changed-land counterproposal', () => {
-        const source = { proposalId: 'source', applied: true, appliedAt: 'before', buildingProposal: {} };
-        const replacement = {
-            proposalId: 'fork', sourceProposalId: 'source', applied: true, buildingProposal: {},
-            landFork: { originParcelIds: ['HR-1'], relation: 'disjoint' }
-        };
-        const records = new Map([['source', source], ['fork', replacement]]);
-        const before = structuredClone(source);
-
-        expect(commitReplacementSupersession(replacement, 'fork', id => records.get(id))).toBeNull();
-        expect(source).toEqual(before);
-    });
-
-    it('leaves an already-unapplied source alone', () => {
-        const source = { proposalId: 'source', applied: false };
-        const replacement = { proposalId: 'replacement', sourceProposalId: 'source' };
-        const records = new Map([['source', source], ['replacement', replacement]]);
-        expect(commitReplacementSupersession(replacement, 'replacement', id => records.get(id))).toBeNull();
-        expect(source.applied).toBe(false);
-    });
-
-    it('treats a replacement chain as one switchable family in either direction', () => {
-        const source = { proposalId: 'source', applied: false };
-        const replacement = { proposalId: 'replacement', sourceProposalId: 'source', applied: false };
-        const secondReplacement = { proposalId: 'second', sourceProposalId: 'replacement', applied: true };
+    // Supersession made a replacement chain one switchable family: applying any member parked the
+    // others however far apart they stood. Removed with it (2026-10-17): lineage alone is no rival.
+    it('a replacement chain left over from older edits is no family: only overlapping ground counts', () => {
+        const source = { proposalId: 'source', applied: false, goal: 'single', buildingProposal: {} };
+        const replacement = { proposalId: 'replacement', sourceProposalId: 'source', applied: false, goal: 'single', buildingProposal: {} };
+        const secondReplacement = { proposalId: 'second', sourceProposalId: 'replacement', applied: true, goal: 'single', buildingProposal: {} };
         const records = [source, replacement, secondReplacement];
 
-        expect([...proposalReplacementFamilyIds(source, records)].sort()).toEqual(['replacement', 'second', 'source']);
-        expect(collectAppliedProposalAlternatives(source, records).map(record => record.proposalId)).toEqual(['second']);
-        expect(collectAppliedProposalAlternatives(replacement, records).map(record => record.proposalId)).toEqual(['second']);
+        expect(collectAppliedProposalAlternatives(source, records, { planOrder })).toEqual([]);
+        expect(collectAppliedProposalAlternatives(replacement, records, { planOrder })).toEqual([]);
     });
 
     it('switches an independently drawn overlapping building plan, but keeps a separate one', () => {
@@ -296,7 +228,10 @@ describe('a road across an applied structure', () => {
     });
 });
 
-describe('reparcellization agreement replacement families', () => {
+// Parcel agreements split one saved layout by owner. Siblings are readjustments, which never
+// displace one another by apply (a reshaped fabric is not a rival design); the batch takes its
+// local source layout off the map itself (proposals/create.js finishReparcellizationAgreementBatch).
+describe('reparcellization agreement siblings', () => {
     const plot = (west, east, south = 0, north = 1) => turf.polygon([[
         [west, south], [east, south], [east, north], [west, north], [west, south]
     ]]);
@@ -306,51 +241,16 @@ describe('reparcellization agreement replacement families', () => {
         reparcellization: { polygons: [{ geometry, jointPool: false }] }
     });
 
-    it('allows two disjoint siblings from the same source to remain applied alternatives', () => {
-        const first = agreement('agreement-1', plot(0, 1).geometry, true, 0);
-        const second = agreement('agreement-2', plot(2, 3).geometry, false, 1);
-        expect(collectAppliedProposalAlternatives(second, [first, second], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        })).toEqual([]);
-    });
-
-    it('parks both applied siblings when the original source is the target', () => {
-        const source = { proposalId: 'source-plan', applied: false,
-            reparcellization: { polygons: [{ geometry: plot(0, 3).geometry }] } };
-        const first = agreement('agreement-1', plot(0, 1).geometry, true, 0);
-        const second = agreement('agreement-2', plot(2, 3).geometry, true, 1);
-        expect(collectAppliedProposalAlternatives(source, [source, first, second], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        }).map(record => record.proposalId)).toEqual(['agreement-1', 'agreement-2']);
-    });
-
-    it('parks the original source when publishing a sibling agreement', () => {
-        const source = { proposalId: 'source-plan', applied: true };
-        const first = agreement('agreement-1', plot(0, 1).geometry, true, 0);
-        const second = agreement('agreement-2', plot(2, 3).geometry, false, 1);
-        expect(collectAppliedProposalAlternatives(second, [source, first, second], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        }).map(record => record.proposalId)).toEqual(['source-plan']);
-    });
-
-    it('still treats overlapping siblings in one group as rivals', () => {
+    it('leaves disjoint and overlapping siblings, and their source, standing', () => {
+        const source = { proposalId: 'source-plan', applied: true, reparcellization: { polygons: [{ geometry: plot(0, 3).geometry }] } };
         const first = agreement('agreement-1', plot(0, 2).geometry, true, 0);
         const second = agreement('agreement-2', plot(1, 3).geometry, false, 1);
-        expect(collectAppliedProposalAlternatives(second, [first, second], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        }).map(record => record.proposalId)).toEqual(['agreement-1']);
-    });
-
-    it('keeps a same-index replacement as an alternative even when its sibling is disjoint', () => {
-        const original = agreement('agreement-1', plot(0, 1).geometry, true, 0);
-        const replacement = { ...agreement('agreement-1b', plot(0, 1).geometry, false, 0), sourceProposalId: 'agreement-1' };
-        expect(collectAppliedProposalAlternatives(replacement, [original, replacement], {
-            planOrder: require('../../frontend/js/proposals/plan-order.js')
-        }).map(record => record.proposalId)).toEqual(['agreement-1']);
+        expect(collectAppliedProposalAlternatives(second, [source, first, second], { planOrder })).toEqual([]);
+        expect(collectAppliedProposalAlternatives(source, [source, first, second], { planOrder })).toEqual([]);
     });
 });
 
-describe('collectAppliedProposalAlternatives reads the footprint lazily', () => {
+describe('appliedRivals reads the footprint lazily', () => {
     it('never unions the target when no applied rival is there to compare with', () => {
         const planOrder = require('../../frontend/js/proposals/plan-order.js');
         let unions = 0;
@@ -364,5 +264,86 @@ describe('collectAppliedProposalAlternatives reads the footprint lazily', () => 
         const rival = { proposalId: 'rival', applied: true, goal: 'buildings', buildingProposal: {}, geometry: square.geometry };
         expect(collectAppliedProposalAlternatives(target, [target, rival], { planOrder: counting }).map(r => r.proposalId)).toEqual(['rival']);
         expect(unions).toBeGreaterThan(0);
+    });
+});
+
+// "Editing and saving a land readjustment that has had something built on top of its child parcels
+// unapplies … anything proposed on top" (the user). Reproduced 2026-10-17: a Block urban rule on a
+// readjustment's child plot declares the PARENT cadastre parcels, so a check keyed on child plots
+// found nothing and the block stayed applied over changed ground. The link is geometric.
+describe('editDependents: who stands on ground an in-place edit changes', () => {
+    const box = (west, east) => ({
+        type: 'Polygon',
+        coordinates: [[[west, 45.8], [east, 45.8], [east, 45.8004], [west, 45.8004], [west, 45.8]]]
+    });
+    const readjustment = (plots, createdAt = '2026-10-01T10:00:00.000Z') => ({
+        proposalId: 'readjustment', goal: 'reparcellization', applied: true, createdAt,
+        cadastreParcelIds: ['HR-1', 'HR-2'],
+        reparcellization: { polygons: plots.map(geometry => ({ geometry })) }
+    });
+    const blockOnPlot = (proposalId, west, east, createdAt = '2026-10-02T10:00:00.000Z') => ({
+        proposalId, goal: 'buildings', applied: true, createdAt,
+        // The parents, exactly as a Block built on a child plot stores them.
+        cadastreParcelIds: ['HR-1', 'HR-2'],
+        buildingProposal: {},
+        geometry: { buildings: [turf.polygon(box(west, east).coordinates)] }
+    });
+    const options = { planOrder, area: turf.area, isApplied };
+    const plotA = box(15.9000, 15.9010);
+    const plotB = box(15.9010, 15.9020);
+
+    it('finds a block on a child plot the edit reshaped', () => {
+        const before = readjustment([plotA, plotB]);
+        const after = readjustment([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)]);
+        const onB = blockOnPlot('block-on-b', 15.9012, 15.9014);
+        expect(editDependents(before, after, [before, onB], options).map(record => record.proposalId)).toEqual(['block-on-b']);
+    });
+
+    it('leaves a block on a plot the edit did not touch, and a parked one', () => {
+        const before = readjustment([plotA, plotB]);
+        const after = readjustment([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)]);
+        const onA = blockOnPlot('block-on-a', 15.9002, 15.9004);
+        const parked = { ...blockOnPlot('parked-on-b', 15.9012, 15.9014), applied: false };
+        expect(editDependents(before, after, [before, onA, parked], options)).toEqual([]);
+    });
+
+    it('does not count what the edited record itself stands on (older records)', () => {
+        const before = readjustment([plotA, plotB], '2026-10-05T10:00:00.000Z');
+        const after = readjustment([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)], '2026-10-05T10:00:00.000Z');
+        const older = blockOnPlot('older-block', 15.9012, 15.9014, '2026-10-01T10:00:00.000Z');
+        expect(editDependents(before, after, [before, older], options)).toEqual([]);
+    });
+
+    it('finds nothing when the edit changed no ground', () => {
+        const before = readjustment([plotA, plotB]);
+        const onB = blockOnPlot('block-on-b', 15.9012, 15.9014);
+        expect(editDependents(before, readjustment([plotA, plotB]), [before, onB], options)).toEqual([]);
+    });
+});
+
+describe('lineage: what saving an edit does to its source', () => {
+    it('edits one\'s own local record in place, forks a published or minted one, and forks on an explicit Fork', () => {
+        expect(lineage.editsInPlace({ proposalId: 'own', applied: true })).toBe(true);
+        expect(lineage.editsInPlace({ proposalId: 'p', serverProposalId: '901' })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'p', isMinted: true })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'published' })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'own' }, { fork: true })).toBe(false);
+        expect(lineage.editsInPlace(null)).toBe(false);
+    });
+
+    it('keeps the record\'s id, replay place and own lineage; the edit is not its own source', () => {
+        const source = {
+            proposalId: 'own', createdAt: '2026-10-01T10:00:00.000Z', lifecycleStatus: 'active',
+            sourceProposalId: 'published-original', title: 'Old'
+        };
+        const edited = {
+            proposalId: undefined, title: 'New', sourceProposalId: 'own', replacementOfProposalId: 'own',
+            proposalDraftId: 'draft-1', roadProposal: { definition: {} }
+        };
+        expect(lineage.inPlaceRecord(source, edited)).toEqual({
+            proposalId: 'own', createdAt: '2026-10-01T10:00:00.000Z', lifecycleStatus: 'active',
+            sourceProposalId: 'published-original', title: 'New',
+            roadProposal: { definition: {}, id: 'own', proposalId: 'own' }
+        });
     });
 });

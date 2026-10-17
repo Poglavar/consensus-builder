@@ -107,7 +107,8 @@ implemented (§17). See §13 for the earlier integration scope and verification.
 - Consent and identity: [execution.js](frontend/js/proposals/execution.js),
   [ownership-flow.js](frontend/js/proposals/ownership-flow.js),
   [proposal contracts](frontend/js/proposal-contracts.js), [lens model](lens-model.md).
-- Composition: [supersession](frontend/js/proposal-supersession.js),
+- Composition: [ground conflicts](frontend/js/proposals/claims.js) (`appliedRivals`, `editDependents`),
+  [edit in place or fork](frontend/js/proposals/lineage.js) (`editsInPlace`),
   [plan hashes](backend/plans/plan-hash.js), [plans](plans.md).
 
 ## 3. Correctness findings and acceptance criteria
@@ -186,9 +187,11 @@ cash and policy. §14 replaces that LR path with the shared `land-readjustment-d
 **Observed reproduction:** changing a 50/50 internal split to 25/75, swapping recipients and changing
 cash from 100 to 900 while keeping the exterior/flow yielded the same effect fingerprint.
 
-**Qualification:** normal shared-editor edits create a fresh proposal and strip prior acceptances
-([adapter](frontend/js/proposal-editor-adapters.js), `stripImmutableProposalIdentity`, lines
-403–409; [shell](frontend/js/proposal-editor-shell.js), publish path around 1765–1812). The audit
+**Qualification:** normal shared-editor edits strip prior acceptances
+([adapter](frontend/js/proposal-editor-adapters.js), `stripImmutableProposalIdentity`;
+[drafts](frontend/js/proposal-drafts.js) `buildProposalFromDraft`). Since 2026-10-17 an edit of a
+local record keeps its id (`ProposalManager.updateProposalInPlace`) but still drops its acceptances;
+an edit of a published one forks a fresh counterproposal. The audit
 did not demonstrate stale execution through that normal UI. This is a structural binding gap for
 in-place mutations or reuse of acceptance records, not proof of an ordinary edit-flow exploit.
 
@@ -268,7 +271,7 @@ anchors. Store that condition explicitly using immutable member/version hashes.
 | Situation | Present behavior / recommended treatment |
 |---|---|
 | LR preview, then building or zoning preview on its plots | Composition is supported in the model. Content can stand over formed ground; actual apply gates depend on type, geometry and ownership. A new freeform building can itself form/take ground, so it is not always harmless content. |
-| Two disjoint proposals share one original cadastral parcel | Shared base ID alone must not imply conflict. Current [supersession](frontend/js/proposal-supersession.js) uses geometry for relevant alternatives. |
+| Two disjoint proposals share one original cadastral parcel | Shared base ID alone must not imply conflict. [`appliedRivals`](frontend/js/proposals/claims.js) uses geometry for relevant alternatives. |
 | Two competing allocations of the same land | Keep both as alternatives/counterproposals. A preview has one consistent chosen partition. Neither competing proposal should silently acquire an execution right from merely being displayed. |
 | A road precedes LR | LR may use remaining untaken ground. It cannot form plots over the road corridor. |
 | A road follows LR | Current replay carves the later road from the LR's private materialization. This is preview composition, not renewed owner consent to the changed settlement. |
@@ -1737,9 +1740,32 @@ the tool card covered the land. **All fixed below.**
   records with a source pointed at a published row. A fork's upload copy now names the source's
   published record when the source has been uploaded since (`publishedSourceIds`). Records already
   published keep their old ids.
-- A fork of a published record saves with *Create counterproposal*; a fork of one's own draft
-  still says *Create replacement proposal*. The "· Variant xxxx" title suffix appears only when a
-  version kept its source's name.
+- A fork of a published record saves with *Create counterproposal*. An edit of one's own local
+  record saves with *Save changes*, in place: the same id, no new record (decided 2026-10-17, see
+  below); an explicit *Fork proposal* of it saves with *Create proposal*. The "· Variant xxxx" title
+  suffix appears only when a version kept its source's name.
+
+### Local records are edited in place (2026-10-17)
+
+User: "local should work in place … no need to change ids on every edit." Proposal supersession is
+gone (`proposal-supersession.js` removed).
+
+- `proposals/lineage.js` `editsInPlace(source)`: one's own local, unpublished record is edited in
+  place; a published or minted one is immutable, and an edit of it forks a counterproposal that links
+  back through `sourceProposalId` and leaves the source standing. *Fork proposal* always makes a new
+  record. `inPlaceRecord` keeps the record's id, `createdAt` (its replay order) and its own lineage.
+- `ProposalManager.updateProposalInPlace(id, edited, { unapplyIds })` rewrites the record in one
+  parcel mutation and re-derives only the ground under its old and new versions, like a road edit.
+  Both the design tools (`instantCreateProposalFromDraft`) and the create dialog's save use it.
+- Dependents are found by geometry (`proposals/claims.js` `editDependents`): a later applied record
+  whose parts stand on a part of the edited record's previous ground that the edit changed. A Block
+  on a readjustment's child plot declares the parent cadastre parcels, so neither its
+  `cadastreParcelIds` nor the replay-local child ids link it to the plot. The editor names the
+  dependents and asks (*Save and take them off* / *Keep editing*); confirmed ones come off the map in
+  the same transaction.
+- Applying a counterproposal over its applied source is the ordinary apply conflict
+  (`appliedRivals`: overlapping building content or structures), with no lineage exception. Parcel
+  agreements split from a local layout take that layout off the map before the first one applies.
 
 ### Verification
 

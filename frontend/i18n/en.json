@@ -741,7 +741,7 @@
             "discardShort": "Discard",
             "review": "Review changes",
             "back": "Back",
-            "createReplacement": "Create replacement proposal",
+            "saveChanges": "Save changes",
             "createCounterproposal": "Create counterproposal",
             "createProposal": "Create proposal",
             "resume": "Resume",
@@ -786,6 +786,13 @@
         "reverted": "Restored the previous version.",
         "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
+        "dependents": {
+            "title": "Proposals built on this one",
+            "message": "Saving this edit changes the ground {{count}} proposal(s) stand on: {{names}}. They will be taken off the map.",
+            "confirm": "Save and take them off",
+            "cancel": "Keep editing",
+            "notSaved": "The edit was not saved. The design has been reopened."
+        },
         "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.",
         "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.",
         "uploadRateLimitedAt": {

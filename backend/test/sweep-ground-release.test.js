@@ -33,7 +33,7 @@ describe('boot replay owns no proposal-state transition', () => {
         expect(pass).not.toContain('invalidatedIds');
     });
 
-    it('does not let supersession or demolition mutate the snapshot', () => {
+    it('does not let rival parking or demolition mutate the snapshot', () => {
         expect(manager).toContain('if (result && applyOptions.preserveAppliedSet !== true)');
         expect(tunnel).toContain('if (options.preserveAppliedSet === true) continue;');
     });

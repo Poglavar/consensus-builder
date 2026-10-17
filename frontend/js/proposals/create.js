@@ -34,8 +34,8 @@ function updateCreateProposalSubmitState() {
         btn.textContent = publishesInPlace
             ? (t ? t('modal.createProposal.publishSubmit', 'Save terms') : 'Save terms')
             : createsReplacement
-            ? (window.ProposalLineage?.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId)
-                || (t ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : 'Create replacement proposal'))
+            ? window.ProposalLineage.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId,
+                { fork: window.pendingProposalReplacementSource.fork === true })
             : (isVote
                 ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
                 : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal'));
@@ -122,6 +122,22 @@ function refreshReparcellizationAgreementSubmit() {
 
 async function finishReparcellizationAgreementBatch(batch, draftId) {
     const t = getProposalI18nHelper();
+    // The agreements are the draft's layout split by owner, on the same plots. When that layout is
+    // one's own local record (proposals/lineage.js editsInPlace), the split is its edit: the layout
+    // comes off the map once, before the first agreement applies. A published layout stays
+    // standing, as any counterproposal's source does.
+    const layoutId = draftId ? window.proposalDraftStore?.getDraft(draftId)?.sourceProposalId : null;
+    let layoutReleased = !layoutId;
+    const releaseLocalLayout = async () => {
+        if (layoutReleased) return true;
+        const layout = proposalStorage.getProposal(String(layoutId));
+        if (!window.ProposalLineage.editsInPlace(layout) || !isProposalApplied(layout)) {
+            layoutReleased = true;
+            return true;
+        }
+        layoutReleased = await ProposalManager.unapplyProposal(layout.proposalId) === true;
+        return layoutReleased;
+    };
     const result = await window.ReparcellizationAgreements.resumeBatch(batch, {
         storage: proposalStorage,
         persistBatch(next) {
@@ -132,7 +148,7 @@ async function finishReparcellizationAgreementBatch(batch, draftId) {
                 window.proposalDraftStore.flush();
             }
         },
-        apply: id => ProposalManager.applyProposal(id),
+        apply: async id => (await releaseLocalLayout()) && ProposalManager.applyProposal(id),
         isApplied: proposal => typeof isProposalApplied === 'function' ? isProposalApplied(proposal) : proposal?.applied === true,
         applyFailure: id => ProposalManager.getLastApplyFailure?.(id)?.message
     });
@@ -640,6 +656,8 @@ async function createProposal() {
         ? String(window.pendingProposalDraftId)
         : null;
     const publishingDraft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+    // Set below when this save edits one's own local record in place (proposals/lineage.js).
+    let inPlaceSourceId = null;
     const draftOwnFields = publishingDraft?.fields && typeof publishingDraft.fields === 'object'
         ? publishingDraft.fields : {};
     // The dialog's own Ownership and approval row (dialog-create.js) is what the author chose last.
@@ -1018,6 +1036,12 @@ async function createProposal() {
             if (immutableSourceId) {
                 proposal.sourceProposalId = String(immutableSourceId);
                 proposal.replacementOfProposalId = String(immutableSourceId);
+                // One's own local record is saved in place; a published one, or an explicit Fork,
+                // makes a new record that links back (proposals/lineage.js editsInPlace).
+                const editSource = proposalStorage.getProposal(String(immutableSourceId));
+                if (window.ProposalLineage.editsInPlace(editSource, { fork: source.fork === true })) {
+                    inPlaceSourceId = String(editSource.proposalId);
+                }
             }
             proposal.proposalDraftId = publishingDraftId;
             proposal.proposalDraftRevision = draft?.revision ?? source.revision ?? null;
@@ -1917,16 +1941,32 @@ async function createProposal() {
             waitingPopupVisible = true;
             setProposalModalDimmed(true);
         }
-        // A save always mints a new local snapshot. The source record is never rewritten; if this
-        // is an edit, replacement supersession parks that source before the canonical replay.
-        const proposalId = proposalStorage.addProposal(proposal);
+        // An edit of one's own local record rewrites it in place, and takes what stands on ground
+        // the edit changes off the map once the user agrees; every other save adds a new record.
+        let proposalId = null;
+        if (inPlaceSourceId) {
+            const dependents = ProposalManager.findEditDependents(inPlaceSourceId, proposal);
+            if (dependents.length && !(await window.confirmProposalEditDependents(dependents))) {
+                hideWaitingPopupSafe();
+                updateStatus(t('proposalDrafts.dependents.notSaved', 'The edit was not saved. The design has been reopened.'));
+                setProposalModalInteractivity(true);
+                setProposalCreateButtonState(false);
+                return;
+            }
+            const updated = await ProposalManager.updateProposalInPlace(inPlaceSourceId, proposal, {
+                unapplyIds: dependents.map(record => String(record.proposalId))
+            });
+            if (updated) proposalId = inPlaceSourceId;
+        } else {
+            proposalId = proposalStorage.addProposal(proposal);
+        }
         console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
         if (proposalId === null) {
             hideWaitingPopupSafe();
             updateStatus('Unable to save proposal.');
             setProposalModalInteractivity(true);
             setProposalCreateButtonState(false);
-            markDraftPublishFailed(Object.assign(new Error('Unable to save the replacement proposal.'), { code: 'PROPOSAL_STORAGE_FAILED' }));
+            markDraftPublishFailed(Object.assign(new Error('Unable to save the proposal.'), { code: 'PROPOSAL_STORAGE_FAILED' }));
             return;
         }
         const storedForOnchain = proposalStorage.getProposal(proposalId);
@@ -2029,8 +2069,8 @@ async function createProposal() {
             }
         }
 
-        // Records are the only source of live fabric. The canonical apply path flips the snapshot,
-        // handles replacement supersession, and derives the entire tessellation once.
+        // Records are the only source of live fabric. The canonical apply path flips the snapshot
+        // and derives the local tessellation once (an in-place save already stands applied).
         try {
             const applied = await ProposalManager.applyProposal(proposalId);
             if (!applied) throw new Error('The saved proposal could not be derived from the cadastral fabric.');

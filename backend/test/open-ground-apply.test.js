@@ -424,8 +424,6 @@ describe('geometric interaction on open ground', () => {
     it('takes an overlapping bare-ground proposal off the map when another is applied on the same spot', async () => {
         const first = structureRecord('first', 'park', rect(0, 0, 10, 10), { binding: { parcels: [], coverage: 'none' } });
         const second = structureRecord('second', 'square', rect(5, 0, 15, 10), { binding: { parcels: [], coverage: 'none' } });
-        const supersession = require('../../frontend/js/proposal-supersession.js');
-        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
         const { manager, fabric } = await harness({ records: [first, second] });
         await expect(manager.applyProposal('first')).resolves.toBe(true);
         await expect(manager.applyProposal('second')).resolves.toBe(true);
@@ -439,8 +437,6 @@ describe('geometric interaction on open ground', () => {
         const targetId = `new-${newKind}`;
         const oldRecord = openGroundProposal(oldId, oldKind);
         const target = openGroundProposal(targetId, newKind);
-        const supersession = require('../../frontend/js/proposal-supersession.js');
-        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
         const published = new Map();
         const ids = name => (globalThis[name] || []).map(feature => feature.properties.proposalId);
         proposalFamilies.forEach(([, collection, updater]) => install(updater, vi.fn(() => {
@@ -477,7 +473,7 @@ describe('geometric interaction on open ground', () => {
         }
     });
 
-    it('does not publish supersession when the replacement fails materialization', async () => {
+    it('does not stand the rival down when the chosen proposal fails materialization', async () => {
         const block = {
             proposalId: 'block-before-invalid-lake', title: 'Block', goal: 'buildings', applied: false,
             createdAt: '2026-10-01T00:00:00.000Z', cadastreParcelIds: [],
@@ -490,8 +486,6 @@ describe('geometric interaction on open ground', () => {
             type: 'MultiPolygon',
             coordinates: [rect(0, 0, 10, 10).coordinates, rect(30, 30, 40, 40).coordinates]
         }, { site: rect(0, 0, 20, 20), binding: { parcels: [], coverage: 'none', source: 'client-preview' } });
-        const supersession = require('../../frontend/js/proposal-supersession.js');
-        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
         const redraw = vi.fn();
         install('updateProposedBuildingsLayer', redraw);
         install('updateLakesLayer', redraw);
@@ -768,7 +762,6 @@ describe('the site rule for parcels a structure covers in part', () => {
 // road still refuses a newer structure over it (nothing is built over a street).
 describe('a road built through an applied park', () => {
     const PARK = rect(0, 0, 20, 10);
-    const supersession = require('../../frontend/js/proposal-supersession.js');
     const ROAD = rect(-5, 4, 40, 6);
     const road = (id, extra = {}) => ({
         proposalId: id,
@@ -790,8 +783,7 @@ describe('a road built through an applied park', () => {
         const park = structureRecord('bt-park', 'park', PARK, { binding: { parcels: [], coverage: 'none' } });
         const authored = JSON.stringify(park.structureProposal.geometry);
         const { manager, fabric } = await harness({ records: [park, road('bt-road')] });
-        // Explicit "Apply to map" checks applied alternatives: a crossed park is not one.
-        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
+        // Explicit "Apply to map" checks applied rivals (claims.js appliedRivals): a crossed park is not one.
         await expect(manager.applyProposal('bt-park')).resolves.toBe(true);
 
         await expect(manager.applyProposal('bt-road')).resolves.toBe(true);
@@ -886,8 +878,7 @@ describe('proposal ground refusal diagnostics', () => {
         expect(lake.cadastreParcelIds).toEqual(['HR-330264-1']);
     });
 
-    it('retains the original lake and fabric after a refused replacement, and clears the error after correction', async () => {
-        const supersession = require('../../frontend/js/proposal-supersession.js');
+    it('keeps the lake and fabric as they were after a refused in-place edit, and saves the corrected edit in place', async () => {
         const source = structureRecord('lake-source', 'lake', rect(2, 1, 18, 9), {
             declared: ['HR-330264-1'], site: HR1.geometry,
             binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete' }
@@ -895,28 +886,28 @@ describe('proposal ground refusal diagnostics', () => {
         const edited = structureRecord('lake-edit', 'lake', rect(2, 1, 30, 9), {
             declared: ['HR-330264-1'], site: HR1.geometry, binding: source.binding
         });
-        edited.sourceProposalId = source.proposalId;
-        const { manager, store, fabric } = await harness({ facts: [HR1], records: [source, edited] });
-        install('commitReplacementSupersession', supersession.commitReplacementSupersession);
-        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
+        delete edited.proposalId;
+        const { manager, store, fabric } = await harness({ facts: [HR1], records: [source] });
         const notify = vi.fn();
         install('showEphemeralMessage', notify);
         await expect(manager.applyProposal(source.proposalId)).resolves.toBe(true);
         const before = JSON.stringify(fabric.list());
+        const authored = JSON.stringify(store.getProposal(source.proposalId).structureProposal.geometry);
         notify.mockClear();
 
-        await expect(manager.deriveForNewProposal(edited, { supersededIds: [source.proposalId] })).resolves.toBeNull();
+        await expect(manager.updateProposalInPlace(source.proposalId, edited)).resolves.toBeNull();
         expect(store.getProposal(source.proposalId).applied).toBe(true);
-        expect(store.getProposal(edited.proposalId).applied).toBe(false);
+        expect(JSON.stringify(store.getProposal(source.proposalId).structureProposal.geometry)).toBe(authored);
         expect(JSON.stringify(fabric.list())).toBe(before);
         expect(notify).not.toHaveBeenCalled();
-        expect(manager.getLastApplyFailureInfo(edited.proposalId)?.code).toBe('proposal-footprint-outside-cadastre');
+        expect(manager.getLastApplyFailureInfo(source.proposalId)?.code).toBe('proposal-footprint-outside-cadastre');
 
-        store.getProposal(edited.proposalId).structureProposal.geometry = rect(3, 1, 17, 9);
-        await expect(manager.applyProposal(edited.proposalId)).resolves.toBe(true);
-        expect(store.getProposal(edited.proposalId).applied).toBe(true);
-        expect(store.getProposal(source.proposalId).applied).toBe(false);
-        expect(manager.getLastApplyFailure(edited.proposalId)).toBeNull();
+        edited.structureProposal.geometry = rect(3, 1, 17, 9);
+        await expect(manager.updateProposalInPlace(source.proposalId, edited)).resolves.toMatchObject({ applied: true, proposalId: source.proposalId });
+        expect(store.getAllProposals().map(record => record.proposalId)).toEqual([source.proposalId]);
+        expect(store.getProposal(source.proposalId).applied).toBe(true);
+        expect(store.getProposal(source.proposalId).structureProposal.geometry).toEqual(rect(3, 1, 17, 9));
+        expect(manager.getLastApplyFailure(source.proposalId)).toBeNull();
     });
 
     it('distinguishes a declared parcel that is absent from geometry outside loaded parcels', async () => {

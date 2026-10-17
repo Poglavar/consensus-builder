@@ -80,6 +80,57 @@
         return entries;
     }
 
+    // Publication is an identity boundary. A generic content hash is not evidence that a local
+    // copy has been minted or stored by the server.
+    function isPublished(proposal) {
+        if (!proposal || typeof proposal !== 'object') return false;
+        try {
+            if (typeof root?.isProposalImmutable === 'function' && root.isProposalImmutable(proposal)) return true;
+            if (typeof root?.isProposalMinted === 'function' && root.isProposalMinted(proposal)) return true;
+        } catch (_) { }
+        if (proposal.serverProposalId || proposal.onchain?.transactionHash || proposal.onchainData
+            || proposal.isMinted === true || proposal.tokenId || proposal.chainProposalId) return true;
+        const status = typeof root?.getLifecycleStatus === 'function'
+            ? root.getLifecycleStatus(proposal)
+            : String(proposal.lifecycleStatus || proposal.effectiveStatus || proposal.status || '').toLowerCase();
+        return ['published', 'minted', 'on-chain', 'onchain'].includes(String(status).toLowerCase());
+    }
+
+    // What saving an edit of `source` does. One's own local, unpublished record is edited in place:
+    // same id, no new record. A published or minted record is immutable, so an edit of it forks a
+    // counterproposal that links back through sourceProposalId and leaves the source standing.
+    // `fork: true` is the explicit Fork action, which always makes a new record.
+    function editsInPlace(source, options = {}) {
+        return !!source && typeof source === 'object' && options.fork !== true && !isPublished(source);
+    }
+
+    // The fields an in-place save keeps from the record it rewrites: its identity, its place in the
+    // replay order (createdAt, plan-order.js) and its own lineage. A fork of a published proposal
+    // stays that proposal's counterproposal however often it is edited. The defaulted fields come
+    // from the record only where the edit says nothing: a design edit leaves the record's lifecycle
+    // and terms as they were, a save from the create dialog writes the terms it confirmed.
+    const KEPT_IDENTITY_KEYS = ['proposalId', 'createdAt'];
+    const KEPT_LINEAGE_KEYS = [...SOURCE_KEYS, 'copiedFromName', 'landFork', 'proposalDraftId', 'proposalDraftRevision'];
+    const DEFAULTED_KEYS = ['authorAgentId', 'lifecycleStatus', 'termsConfirmed'];
+    const copyOf = value => JSON.parse(JSON.stringify(value));
+
+    // The edited content (an editor's built proposal) with the identity of the record it rewrites.
+    function inPlaceRecord(source, edited) {
+        const out = copyOf(edited || {});
+        [...KEPT_IDENTITY_KEYS, ...KEPT_LINEAGE_KEYS].forEach(key => {
+            if (source && source[key] !== undefined && source[key] !== null) out[key] = copyOf(source[key]);
+            else delete out[key];
+        });
+        DEFAULTED_KEYS.forEach(key => {
+            if (out[key] === undefined && source && source[key] !== undefined && source[key] !== null) out[key] = copyOf(source[key]);
+        });
+        if (out.roadProposal && typeof out.roadProposal === 'object') {
+            out.roadProposal.id = out.proposalId;
+            out.roadProposal.proposalId = out.proposalId;
+        }
+        return out;
+    }
+
     // ---- browser ------------------------------------------------------------------------------
 
     const t = (key, fallback, params) => {
@@ -180,16 +231,22 @@
             ${entries.length ? `<ul class="proposal-lineage__list">${entries.map(entryHtml).join('')}</ul>` : ''}`;
     }
 
-    // What saving a fork does, said on its button. A fork of a published record is a counterproposal:
-    // the source stays standing and lists it. A fork of one's own unpublished draft replaces that
-    // draft (proposal-supersession.js draws the same line).
-    function forkSubmitLabel(sourceId) {
+    // What saving an edit does, said on its button (editsInPlace above draws the line). A published
+    // source gets a counterproposal that it lists; one's own local record is saved in place; an
+    // explicit Fork of a local record is a new proposal beside it.
+    function forkSubmitLabel(sourceId, options = {}) {
         const source = typeof root.getProposalByIdOrHash === 'function' && sourceId ? root.getProposalByIdOrHash(sourceId) : null;
-        const published = !!source && typeof root.isPublishedProposalRecord === 'function' && root.isPublishedProposalRecord(source);
-        return published
-            ? t('proposalDrafts.actions.createCounterproposal', 'Create counterproposal')
-            : t('proposalDrafts.actions.createReplacement', 'Create replacement proposal');
+        if (isPublished(source)) return t('proposalDrafts.actions.createCounterproposal', 'Create counterproposal');
+        return editsInPlace(source, options)
+            ? t('proposalDrafts.actions.saveChanges', 'Save changes')
+            : t('proposalDrafts.actions.createProposal', 'Create proposal');
     }
 
-    return { SOURCE_KEYS, sourceIdsOf, publishedSourceIds, localDerived, mergeDerived, mount, open, forkSubmitLabel };
+    // The publication test is read as a global by the classic scripts (editor shell, sharing, copy).
+    if (root && typeof root.document !== 'undefined') root.isPublishedProposalRecord = isPublished;
+
+    return {
+        SOURCE_KEYS, sourceIdsOf, publishedSourceIds, localDerived, mergeDerived,
+        isPublished, editsInPlace, inPlaceRecord, mount, open, forkSubmitLabel
+    };
 });

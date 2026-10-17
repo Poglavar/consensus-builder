@@ -356,13 +356,12 @@ describe('shared-plan import boundary', () => {
             failedIds: ['bad']
         });
         // Shared members go straight through the one-boundary replay materializer. The live
-        // unrelated-holder check is a separate in-memory gate, not the interactive supersede path.
+        // unrelated-holder check is a separate in-memory gate, not the interactive rival path.
         expect(applyProposal.mock.calls.map(([id]) => id)).toEqual(['new-b', 'new-a', 'bad']);
         applyProposal.mock.calls.forEach(([id, options]) => {
             expect(options.silent, id).toBe(true);
             expect(options.replay, id).toBe(true);
             expect(options.deferPresentation, id).toBe(true);
-            expect(options.supersede, id).toBeUndefined();
         });
         expect(ProposalManager.rebuildAppliedFabric).toBeUndefined();
     });

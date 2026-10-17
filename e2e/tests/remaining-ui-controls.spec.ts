@@ -405,8 +405,10 @@ test.describe('Remaining UI controls @features', () => {
     await height.press('Tab');
     await expect(height).toHaveValue('14.5');
     await editor.locator('[data-station-editor-action="save"]').click();
+    // A local station is saved in place: same record, same id.
+    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.bearing, stationId)).toBe(53);
     const saved = await page.evaluate(id => {
-      const proposal = (window as any).proposalStorage.getAllProposals().find((item: any) => item.sourceProposalId === id);
+      const proposal = (window as any).proposalStorage.getProposal(id);
       return {
         id: proposal?.proposalId,
         bearing: proposal?.structureProposal?.bearing,
@@ -414,6 +416,7 @@ test.describe('Remaining UI controls @features', () => {
         geometry: proposal?.structureProposal?.geometry,
       };
     }, stationId);
+    expect(saved.id).toBe(stationId);
     expect(saved.bearing).toBe(53);
     expect(saved.height).toBe(14.5);
     expect(saved.geometry).toBeTruthy();

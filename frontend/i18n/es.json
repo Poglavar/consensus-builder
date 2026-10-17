@@ -741,7 +741,7 @@
             "discardShort": "Descartar",
             "review": "Revisar cambios",
             "back": "Atrás",
-            "createReplacement": "Crear propuesta de reemplazo",
+            "saveChanges": "Guardar cambios",
             "createCounterproposal": "Crear contrapropuesta",
             "createProposal": "Crear propuesta",
             "resume": "Continuar",
@@ -786,6 +786,13 @@
         "reverted": "Se restauró la versión anterior.",
         "revertFailed": "No se pudo restaurar la versión anterior.",
         "geometryUpdated": "Geometría actualizada.",
+        "dependents": {
+            "title": "Propuestas construidas sobre esta",
+            "message": "Guardar este cambio modifica el terreno sobre el que se apoyan {{count}} propuesta(s): {{names}}. Se retirarán del mapa.",
+            "confirm": "Guardar y retirarlas",
+            "cancel": "Seguir editando",
+            "notSaved": "El cambio no se guardó. El diseño se ha reabierto."
+        },
         "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
         "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
         "uploadRateLimitedAt": {

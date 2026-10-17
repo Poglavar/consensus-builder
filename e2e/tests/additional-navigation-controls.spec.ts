@@ -17,7 +17,7 @@ test('the proposal list returns from model 3D through its Open 2D map action', a
   await expect(page.locator('#map')).toBeVisible();
 });
 
-test('deleting a lake boundary point persists a closed triangular replacement', async ({ mockApi: page }) => {
+test('deleting a lake boundary point saves a closed triangle onto the same lake', async ({ mockApi: page }) => {
   await openCity(page);
   const sourceId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
     proposalId: 'lake-boundary-delete', title: 'Lake boundary delete', goal: 'lake', city: 'zagreb',
@@ -35,16 +35,13 @@ test('deleting a lake boundary point persists a closed triangular replacement', 
   await expect(vertices).toHaveCount(3);
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
-  await expect.poll(() => page.evaluate(id => {
-    const replacement = (window as any).proposalStorage.getAllProposals()
-      .find((proposal: any) => proposal.sourceProposalId === id && proposal.structureProposal?.kind === 'lake');
-    return replacement?.structureProposal.geometry.coordinates[0].length || 0;
-  }, sourceId)).toBe(4);
-  const geometry = await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-    .find((proposal: any) => proposal.sourceProposalId === id).structureProposal.geometry, sourceId);
+  // A local lake is edited in place: the same record takes the triangle, and no copy appears.
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)
+    ?.structureProposal?.geometry?.coordinates?.[0]?.length || 0, sourceId)).toBe(4);
+  const geometry = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).structureProposal.geometry, sourceId);
   expect(geometry.coordinates[0][0]).toEqual(geometry.coordinates[0].at(-1));
-  expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).structureProposal.geometry, sourceId))
-    .toEqual(PARCEL_GEOMETRY);
+  expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+    .some((proposal: any) => proposal.sourceProposalId === id), sourceId)).toBe(false);
 });
 
 test('floor plan archive Sites tab loads and exposes its empty result', async ({ mockApi: page }) => {

@@ -29,7 +29,7 @@
         'createdAt', 'updatedAt', 'created_at', 'updated_at', 'authoredAt',
         'ownershipFlow', 'cadastreFrame', 'effectHash', 'screenshotUrl', 'screenshot_url',
         'editToken', 'agentPaymentId', 'agent_payment_id',
-        'proposalDraftId', 'proposalDraftRevision', 'supersededBy', 'supersededByProposalId',
+        'proposalDraftId', 'proposalDraftRevision',
         'replacementOfProposalId', 'sourceProposalId', 'copiedFromProposalId', 'copiedFromName',
         'landFork', 'rebind'
     ]);
@@ -157,8 +157,9 @@
         const drift = response.drift || bindingDrift(response.stored, current);
         derived.binding = clone(current);
         derived.cadastreParcelIds = boundParcelIds(current);
-        // The ordinary immutable-replacement lineage: applying the derived record supersedes the
-        // source, removing it gives the source back (proposal-supersession.js).
+        // The ordinary counterproposal lineage back to the published source. Applying the derived
+        // record stands the source down only where their ground overlaps, as for any two
+        // proposals (proposals/claims.js appliedRivals).
         derived.sourceProposalId = String(sourceId);
         derived.replacementOfProposalId = String(sourceId);
         derived.copiedFromName = source.title || source.name || null;

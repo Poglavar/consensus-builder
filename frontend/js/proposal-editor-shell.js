@@ -570,7 +570,7 @@
             <footer class="proposal-editor-footer">
                 <button type="button" class="btn btn-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
                 ${reviewing
-                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? (global.ProposalLineage?.forkSubmitLabel(draft.sourceProposalId) || tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')) : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
+                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? global.ProposalLineage.forkSubmitLabel(draft.sourceProposalId) : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
                     : `<button type="button" class="btn btn-primary" data-editor-action="review">${escapeHtml(tDraft('proposalDrafts.actions.review', 'Review changes'))}</button>`}
             </footer>`;
         shell.classList.add('is-open');
@@ -752,6 +752,19 @@
     // is the inviting one.
     async function confirmDestructive(message, options = {}) {
         return global.CbDialog.confirm(message, { ...options, destructive: true });
+    }
+
+    // An in-place edit that changes ground other proposals stand on names the ones that come off
+    // the map and asks first (ProposalManager.findEditDependents). Keep editing is the safe answer.
+    async function confirmEditDependents(dependents) {
+        const names = dependents.map(record => `“${record.title || record.name || record.proposalId}”`).join(', ');
+        return confirmDestructive(tDraft('proposalDrafts.dependents.message',
+            'Saving this edit changes the ground {{count}} proposal(s) stand on: {{names}}. They will be taken off the map.',
+            { count: dependents.length, names }), {
+            title: tDraft('proposalDrafts.dependents.title', 'Proposals built on this one'),
+            okText: tDraft('proposalDrafts.dependents.confirm', 'Save and take them off'),
+            cancelText: tDraft('proposalDrafts.dependents.cancel', 'Keep editing')
+        });
     }
 
     async function handleShellClick(event) {
@@ -986,15 +999,15 @@
         return openProposalEditorShell(draft.id, { tab: options.tab || null });
     }
 
-    // The details panel's way into the editor's Approval tab (rights, rule, lens); publishing the
-    // edit creates a replacement record, as every edit does.
+    // The details panel's way into the editor's Approval tab (rights, rule, lens). Saving edits a
+    // local record in place and forks a published one (proposals/lineage.js editsInPlace).
     function editProposalApproval(proposalIdOrHash) {
         return editProposal(proposalIdOrHash, { tab: 'approval' });
     }
 
-    // "Create proposal" on an existing map object: skip the editor entirely and go straight to
-    // the create dialog, prefilled from the object. On submit the object is absorbed into the
-    // proposal that replaces it (see createProposal), so one thing remains on the map.
+    // "Fork proposal" on an existing map object: skip the editor entirely and go straight to the
+    // create dialog, prefilled from the object. A fork is always a new record that links back
+    // through sourceProposalId; the object it was made from stays as it is.
     async function proposeExistingProposal(proposalIdOrHash, options = {}) {
         // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
         const proposal = proposalById(proposalIdOrHash);
@@ -1004,7 +1017,7 @@
         if (!draft) return null;
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
         closeProposalEditorShell();
-        return stageProposalDraftForPublishing(draft.id, options);
+        return stageProposalDraftForPublishing(draft.id, { ...options, fork: true });
     }
 
     function createNewProposalDraft(options = {}) {
@@ -1511,8 +1524,9 @@
         // The design tool seeded multi-select for its parcel context; closing the tool must
         // disarm it, or the "Multiparcel selection" panel resurfaces on later clicks.
         try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
-        // A confirmed design tool commits its session here: a changed draft mints a replacement
-        // snapshot; an untouched one dissolves without residue.
+        // A confirmed design tool commits its session here: a changed draft saves (in place for
+        // one's own local record, as a counterproposal of a published one); an untouched one
+        // dissolves without residue.
         // An abandoned session (X/Esc) never reaches this point — discardProposalDraftDesignSession
         // clears the commit id first, so tearing the tool down publishes nothing.
         if (geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) {
@@ -1744,7 +1758,9 @@
             proposalId: draft.sourceProposalId || null,
             name: draft.sourceSnapshot?.title || draft.sourceSnapshot?.name || null,
             draftId: draft.id,
-            revision: draft.revision
+            revision: draft.revision,
+            // The explicit Fork action makes a new record even from a local source (lineage.js).
+            fork: options.fork === true
         };
         const overrides = {
             goal: dialogGoal(draft),
@@ -1783,14 +1799,13 @@
         if (submit) {
             const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
             // A vote (either kind chosen in the dialog, proposal-kinds.md) wins over the
-            // create/replacement label, matching updateCreateProposalSubmitState().
+            // create/save/counterproposal label, matching updateCreateProposalSubmitState().
             const isVote = typeof global.getSelectedProposalKind === 'function'
                 && global.ProposalKind.isNonBinding({ kind: global.getSelectedProposalKind() });
             submit.textContent = isVote
                 ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
                 : (source
-                    ? (global.ProposalLineage?.forkSubmitLabel(draft.sourceProposalId)
-                        || tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal'))
+                    ? global.ProposalLineage.forkSubmitLabel(draft.sourceProposalId, { fork: options.fork === true })
                     : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
@@ -1926,11 +1941,25 @@
         try { proposal = store.buildProposalFromDraft(draftId); }
         catch (error) { return keepAsDraft(error?.message || String(error)); }
         if (!proposal) return keepAsDraft();
-        // An edit produces a fresh, not-yet-proposed object even when its source had terms.
+        // A fork is a fresh, not-yet-proposed object even when its source had terms; an in-place
+        // save keeps the record's own terms (proposals/lineage.js inPlaceRecord).
         delete proposal.termsConfirmed;
         if (!proposal.author) {
             try { proposal.author = global.getCurrentUserAgent?.()?.name || undefined; } catch (_) { }
         }
+
+        // An edit of one's own local, unpublished record saves in place; a published or minted
+        // source is immutable and gets a counterproposal (proposals/lineage.js editsInPlace).
+        // Corridors are edited in place by their own editors (road-drawing.js
+        // updateLocalCorridorGeometry), so a corridor draft here is always a new road.
+        const editSource = draft.sourceProposalId ? (global.proposalStorage?.getProposal?.(draft.sourceProposalId) || null) : null;
+        const inPlaceSource = !proposal.roadProposal?.definition
+            && global.ProposalLineage?.editsInPlace?.(editSource) === true ? editSource : null;
+        const keepEditing = message => {
+            if (typeof global.updateStatus === 'function') global.updateStatus(message);
+            reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
+            return null;
+        };
 
         // Every corridor draft uses the same atomic authoring boundary, whichever UI committed it.
         // The drawing tool passes atomicCorridorAuthoring explicitly as a source-level contract;
@@ -1962,6 +1991,39 @@
             clearProposalDraftComparison();
             try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
             profile.mark('ui');
+        } else if (inPlaceSource) {
+            // One's own local record is edited in place (proposals/lineage.js editsInPlace): same
+            // id, no new record. What stands on ground the edit changes comes off the map, but only
+            // once the user has seen it named and agreed.
+            const sourceId = String(inPlaceSource.proposalId);
+            const dependents = global.ProposalManager?.findEditDependents?.(sourceId, proposal) || [];
+            if (dependents.length && !(await confirmEditDependents(dependents))) {
+                return keepEditing(tDraft('proposalDrafts.dependents.notSaved', 'The edit was not saved. The design has been reopened.'));
+            }
+            profile.mark('record');
+            let updated = null;
+            try {
+                updated = await global.ProposalManager?.updateProposalInPlace?.(sourceId, proposal, {
+                    unapplyIds: dependents.map(record => String(record.proposalId))
+                });
+            } catch (error) {
+                deriveFailure = error;
+                console.warn('[ProposalEditor] In-place save failed; the record is unchanged', error);
+            }
+            profile.mark('derive');
+            if (!updated) {
+                let failureInfo = null;
+                try { failureInfo = global.ProposalManager?.getLastApplyFailureInfo?.(sourceId) || null; } catch (_) { }
+                return keepAsDraft(failureInfo?.message || deriveFailure?.message || '');
+            }
+            proposalId = sourceId;
+            store.consumeAfterPublish(draftId, proposalId);
+            clearProposalDraftComparison();
+            try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
+            dependents.forEach(record => {
+                try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(record.proposalId)); } catch (_) { }
+            });
+            profile.mark('ui');
         } else {
             proposalId = global.proposalStorage?.addProposal?.(proposal);
             if (!proposalId) {
@@ -1977,24 +2039,15 @@
             // Non-corridor objects keep the ordinary create/apply lifecycle. Corridors take the
             // atomic path above because their junction can also mutate existing authored records.
             try {
+                // A new record, or a counterproposal of a published source: the source stays
+                // standing, and only the new proposal's own ground is materialised.
                 const stored = global.proposalStorage?.getProposal?.(proposalId) || proposal;
-                // Changed-land forks are counterproposals: their source remains standing while
-                // only the new proposal's own ground is materialised. Ordinary replacements
-                // still release and replay their source's scope.
-                const sourceRecord = stored.sourceProposalId
-                    ? (global.proposalStorage?.getProposal?.(stored.sourceProposalId)
-                        || (String(draft.sourceProposalId || '') === String(stored.sourceProposalId)
-                            ? draft.sourceSnapshot : null))
-                    : null;
-                const supersededIds = (stored.landFork || global.isPublishedProposalRecord?.(sourceRecord) === true) ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
-                    .filter(Boolean).map(String);
                 profile.mark('record');
 
                 // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
-                // re-derived — the parcels under a corridor, the parcels a readjustment takes, and on an
-                // edit the parcels the superseded record has just released. Anything that merely stands
-                // on the fabric changes no parcel at all, so only it is applied.
-                const derived = await global.ProposalManager?.deriveForNewProposal?.(stored, { supersededIds });
+                // re-derived — the parcels under a corridor, the parcels a readjustment takes. Anything
+                // that merely stands on the fabric changes no parcel at all, so only it is applied.
+                const derived = await global.ProposalManager?.deriveForNewProposal?.(stored);
                 profile.mark('derive');
                 if (!derived) {
                     // The derivation refused. The record stays unapplied rather than being forced onto
@@ -2031,7 +2084,7 @@
                     : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
             }
         } catch (_) { }
-        if (landed && (proposal.sourceProposalId || proposal.replacementOfProposalId)
+        if (landed && (inPlaceSource || proposal.sourceProposalId || proposal.replacementOfProposalId)
             && typeof global.showEphemeralMessage === 'function') {
             global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
         }
@@ -2234,6 +2287,7 @@
     global.editProposalAsReplacement = editProposal;
     global.editProposalApproval = editProposalApproval;
     global.proposeExistingProposal = proposeExistingProposal;
+    global.confirmProposalEditDependents = confirmEditDependents;
     global.editProposalGeometry = editProposalGeometry;
     global.canEditProposalGeometry = canEditProposalGeometry;
     global.startInstantProposalDesign = startInstantProposalDesign;

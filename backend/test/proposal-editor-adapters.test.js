@@ -16,7 +16,7 @@ const turf = globalThis.turf;
 const listUiSource = readFileSync(new URL('../../frontend/js/proposals/list-ui.js', import.meta.url), 'utf8');
 const proposalEditorShellSource = readFileSync(new URL('../../frontend/js/proposal-editor-shell.js', import.meta.url), 'utf8');
 const proposalEditorAdaptersSource = readFileSync(new URL('../../frontend/js/proposal-editor-adapters.js', import.meta.url), 'utf8');
-const { isPublishedProposalRecord } = require('../../frontend/js/proposal-supersession.js');
+const { isPublished: isPublishedProposalRecord } = require('../../frontend/js/proposals/lineage.js');
 
 const {
     CREATABLE_PROPOSAL_GOALS,
