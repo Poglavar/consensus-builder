@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const supportView = require('../../frontend/js/proposals/support-view.js');
 const displayText = require('../../frontend/js/proposals/display-text.js');
 const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
+const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const renderStart = source.indexOf('function safeAgentText(');
 const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
@@ -90,6 +91,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalMapAction: { presentation: isApplied => ({ label: isApplied ? 'Unapply' : 'Apply', iconClass: 'fa-check', className: 'btn-warning' }) },
         computeProposalCategoryFlags: () => ({ isRoadProposal: road, isBuildingProposal: false, isStructureProposal: false, isReparcellizationProposal: false, supportsMapToggle: true }),
         resolveProposalActionTypeKey: () => 'building', getLifecycleStatus: () => lifecycle,
+        isNonBindingProposal: proposal => ProposalKind.isNonBinding(proposal),
+        proposalKindBadgeHtml: () => '',   // list-ui.js; the kind badge is not this test's subject
         getProposalLifecycleKey: () => lifecycle.toLowerCase(), getProposalLifecycleClass: () => '', getProposalLifecycleLabel: () => lifecycle,
         buildProposalOwnerAcceptanceSummaryFast: () => ({ totalOwners: 0 }),
         getProposalLensEntries: () => [], getLensPatternDataUrl: () => null,
