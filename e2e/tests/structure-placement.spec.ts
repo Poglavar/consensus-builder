@@ -207,14 +207,10 @@ test.describe('Whole-site placement editing @features', () => {
       await dragMapPoint(page, from, to);
       await editor.locator('[data-action="save"]').click();
       await expect(editor).toHaveCount(0);
-      await expect.poll(() => page.evaluate(id => {
-        const kind = id.includes('-park-') ? 'park' : 'square';
-        return (window as any).proposalStorage.getAllProposals().some((proposal: any) => proposal.proposalId !== id && proposal.structureProposal?.kind === kind);
-      }, id)).toBe(true);
-      const fork = await page.evaluate(id => {
-        const proposals = (window as any).proposalStorage.getAllProposals();
-        return [...proposals].reverse().find((proposal: any) => proposal.proposalId !== id && proposal.structureProposal?.kind === (id.includes('-park-') ? 'park' : 'square'))?.structureProposal;
-      }, id);
+      // The unpublished record is saved in place (c7ef3630): its own tree moves.
+      await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)
+        ?.structureProposal?.decorations?.trees?.[0]?.[0] ?? null, id)).toBeGreaterThan(before.decorations.trees[0][0]);
+      const fork = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal, id);
       expect(fork).toBeTruthy();
       const movedTree = fork.decorations.trees[0];
       expect(movedTree[0]).toBeGreaterThan(before.decorations.trees[0][0]);
@@ -252,8 +248,8 @@ test.describe('Whole-site placement editing @features', () => {
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toHaveCount(0);
     const savedLake = (id: string) => page.evaluate(id => {
-      const proposal = [...(window as any).proposalStorage.getAllProposals()].reverse().find((item: any) => item.proposalId !== id && item.structureProposal?.kind === 'lake');
-      return proposal?.structureProposal?.geometry || null;
+      // The unpublished lake is saved in place (c7ef3630).
+      return (window as any).proposalStorage.getProposal(id)?.structureProposal?.geometry || null;
     }, id);
     await expect.poll(async () => {
       const geometry = await savedLake(id);

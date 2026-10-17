@@ -508,9 +508,9 @@ test.describe('Editor button effects @features', () => {
     await expect(editor.locator('[data-station-editor-bearing-range]')).toHaveValue('45');
     await editor.locator('[data-station-editor-action="save"]').click();
     await expect(editor).toBeHidden();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) =>
-      p.proposalId !== id && p.structureProposal?.stationType === 'bus' && Number(p.structureProposal.bearing) === 45
-    ), stationId)).toBe(true);
+    // The unpublished station is saved in place (c7ef3630): same id, one bus station.
+    await expect.poll(() => page.evaluate(id => Number((window as any).proposalStorage.getProposal(id)?.structureProposal?.bearing), stationId)).toBe(45);
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.structureProposal?.stationType === 'bus').length)).toBe(1);
   });
 
   test('placed corridor tabs switch views and section lane buttons select and remove a lane', async ({ mockApi: page }) => {

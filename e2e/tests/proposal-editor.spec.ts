@@ -70,9 +70,8 @@ test.describe('SimCity proposal lifecycle @core', () => {
     // each tool ADDED something rather than pinning absolute counts.
     await expect.poll(() => page.evaluate((sourceId) => {
       const w = window as any;
-      const saved = w.proposalStorage.getAllProposals().find((proposal: any) =>
-        proposal.proposalId !== sourceId && proposal.structureProposal?.kind === 'square'
-      )?.structureProposal?.decorations;
+      // An unpublished record is edited in place (c7ef3630).
+      const saved = w.proposalStorage.getProposal(sourceId)?.structureProposal?.decorations;
       if (!saved) return null;
       return {
         hasFountain: (saved.fountains || []).length >= 1,
@@ -117,10 +116,8 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     await expect.poll(() => page.evaluate((sourceId) => {
       const w = window as any;
-      const replacement = w.proposalStorage.getAllProposals().find((proposal: any) =>
-        proposal.proposalId !== sourceId && proposal.structureProposal?.kind === 'park'
-      );
-      const decorations = replacement?.structureProposal?.decorations;
+      // An unpublished record is edited in place (c7ef3630).
+      const decorations = w.proposalStorage.getProposal(sourceId)?.structureProposal?.decorations;
       return decorations ? {
         trees: decorations.trees?.length,
         flowerbeds: decorations.flowerbeds?.length,

@@ -118,7 +118,7 @@ test.describe('Map context actions @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(false);
   });
 
-  test('editing a proposal forks its geometry on the ground beneath it', async ({ mockApi: page }) => {
+  test('editing an unpublished proposal saves in place on the ground beneath it', async ({ mockApi: page }) => {
     await openCity(page);
     const sourceId = await createSpace(page, 'park');
     const sourceBefore = await proposalState(page, sourceId);
@@ -168,37 +168,21 @@ test.describe('Map context actions @features', () => {
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toHaveCount(0);
 
-    await expect.poll(() => page.evaluate(sourceId => {
+    // An unpublished record is edited in place (c7ef3630): same id, no second park.
+    const treesBefore = sourceBefore.structureProposal?.decorations?.trees?.length || 0;
+    await expect.poll(() => page.evaluate(sourceId => (window as any).proposalStorage.getProposal(sourceId)
+      ?.structureProposal?.decorations?.trees?.length || 0, sourceId), { timeout: 10000 }).toBeGreaterThan(treesBefore);
+    const result = await page.evaluate(sourceId => {
       const w = window as any;
-      const source = w.proposalStorage.getProposal(sourceId);
-      const sourceTrees = source?.structureProposal?.decorations?.trees || [];
-      const fork = w.proposalStorage.getAllProposals().find((proposal: any) =>
-        proposal.proposalId !== sourceId
-        && proposal.structureProposal?.kind === 'park'
-        && (proposal.structureProposal?.decorations?.trees || []).length > sourceTrees.length
-      );
-      if (!fork) return null;
-      return JSON.parse(JSON.stringify(fork));
-    }, sourceId), { timeout: 10000 }).toBeTruthy();
-
-    const result = await page.evaluate(({ sourceId, sourceBefore }) => {
-      const w = window as any;
-      const source = w.proposalStorage.getProposal(sourceId);
-      const fork = w.proposalStorage.getAllProposals().find((proposal: any) =>
-        proposal.proposalId !== sourceId
-        && proposal.structureProposal?.kind === 'park'
-        && (proposal.structureProposal?.decorations?.trees || []).length
-          > (sourceBefore.structureProposal?.decorations?.trees || []).length
-      );
-      return { source, fork };
-    }, { sourceId, sourceBefore });
-    expect(result.fork).toBeTruthy();
-    expect(result.fork.cadastreParcelIds).toEqual(sourceBefore.cadastreParcelIds);
-    expect(result.fork.site).toEqual(sourceBefore.site);
-    expect(result.fork.structureProposal.geometry).toEqual(sourceBefore.structureProposal.geometry);
-    expect(result.fork.structureProposal.decorations.trees.length)
-      .toBeGreaterThan(sourceBefore.structureProposal?.decorations?.trees?.length || 0);
-    expect(result.source.title).toBe(sourceBefore.title);
-    expect(result.source.structureProposal).toEqual(sourceBefore.structureProposal);
+      return {
+        saved: JSON.parse(JSON.stringify(w.proposalStorage.getProposal(sourceId))),
+        parks: w.proposalStorage.getAllProposals().filter((proposal: any) => proposal.structureProposal?.kind === 'park').length
+      };
+    }, sourceId);
+    expect(result.parks).toBe(1);
+    expect(result.saved.cadastreParcelIds).toEqual(sourceBefore.cadastreParcelIds);
+    expect(result.saved.site).toEqual(sourceBefore.site);
+    expect(result.saved.structureProposal.geometry).toEqual(sourceBefore.structureProposal.geometry);
+    expect(result.saved.title).toBe(sourceBefore.title);
   });
 });
