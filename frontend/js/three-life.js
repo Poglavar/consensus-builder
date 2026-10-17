@@ -46,15 +46,15 @@
         }
         const r = v.wheelRadius;
         if (v.kind === 'moto') {
-            parts.wheels.push({ ox: 0.7, oy: 0, oz: r, r, w: 0.12 }, { ox: -0.7, oy: 0, oz: r, r, w: 0.12 });
+            parts.wheels.push({ ox: v.frontAxle, oy: 0, oz: r, r, w: 0.12, steers: true }, { ox: -v.rearAxle, oy: 0, oz: r, r, w: 0.12 });
             parts.rider = true;
         } else {
-            const axle = v.len * (v.kind === 'bus' ? 0.36 : 0.33);
+            // The axles where the simulation steers them from (VEHICLE_KINDS frontAxle/rearAxle).
             const tyre = v.kind === 'bus' ? 0.3 : 0.22;
             const y = v.width / 2 - tyre / 2;
             parts.wheels.push(
-                { ox: axle, oy: y, oz: r, r, w: tyre }, { ox: axle, oy: -y, oz: r, r, w: tyre },
-                { ox: -axle, oy: y, oz: r, r, w: tyre }, { ox: -axle, oy: -y, oz: r, r, w: tyre });
+                { ox: v.frontAxle, oy: y, oz: r, r, w: tyre, steers: true }, { ox: v.frontAxle, oy: -y, oz: r, r, w: tyre, steers: true },
+                { ox: -v.rearAxle, oy: y, oz: r, r, w: tyre }, { ox: -v.rearAxle, oy: -y, oz: r, r, w: tyre });
         }
         return parts;
     }
@@ -221,7 +221,10 @@
                     const slot = (i * 4 + w) * 16;
                     const wheel = parts.wheels[w];
                     if (!wheel) { writeHidden(wheels, slot); continue; }
-                    writeMatrix(wheels, slot, v.x, v.y, v.z, v.heading, 0, wheel.r, wheel.w, wheel.r, wheel.ox, wheel.oy, wheel.oz);
+                    // A steered wheel turns about its own hub, so place the hub on the body and yaw it there.
+                    const c = Math.cos(v.heading), s = Math.sin(v.heading);
+                    const yaw = v.heading + (wheel.steers ? v.steer || 0 : 0);
+                    writeMatrix(wheels, slot, v.x + c * wheel.ox - s * wheel.oy, v.y + s * wheel.ox + c * wheel.oy, v.z, yaw, 0, wheel.r, wheel.w, wheel.r, 0, 0, wheel.oz);
                 }
                 if (parts.rider) { writeFigure(riderIndex, v.x, v.y, v.z, v.heading, rider); riderIndex++; }
             });

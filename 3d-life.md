@@ -64,8 +64,12 @@ Four classic scripts, three of them pure and node-tested:
    - park lawns and plazas as walking polygons, park paths as bands, ponds and plaza furniture
      (fountain, stalls, statues, benches, trees) as blocked; buildings, water and lakes as blocked.
    Tracks connect through node ids, so a driver reaching the end of one picks another outgoing
-   track; offset lane ends do not coincide geometrically, so vehicles drive a straight join from
-   where they are to the next track's start (negative `s` on the new track). A corridor's loose end
+   track. Turns (2026-10-17): `junctionCurve` trims both lanes back by the tangent length of the
+   vehicle's turn radius (car 7 m, bus 11 m, moto 6 m; hairpins and U-turns turn at the node) and
+   joins them with a tangent cubic Bézier; drivers brake to √(2.5 m/s² · R) for it. Vehicles steer
+   like a bicycle model: the front axle rides the path, the rear axle trails it at the wheelbase (a
+   tractrix, so a bus's rear wheels cut inside the corner and never slide sideways), and the front
+   wheels show the steering angle. A corridor's loose end
    within 8 m of an OSM node is merged into it so traffic flows between proposal and street.
 2. `frontend/js/life/life-surface.js` (pure). The user's rule, 2026-10-15: **walkable = everything
    that is not a car lane and not a building, structure or water footprint.** A grid (1 m cells,

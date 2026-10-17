@@ -224,7 +224,7 @@ describe('vehicles: motion', () => {
                 const before = previous[v.id];
                 const track = graph.tracks[v.track];
                 if (before.track === deadEnd.id && (v.track !== deadEnd.id || v.s < before.s - 1)) {
-                    respawns.push({ kind: track.kind, s: v.s, len: track.len, joinLen: v.joinLen, v: v.v, entry: 0.6 * track.speed * v.speedFactor });
+                    respawns.push({ kind: track.kind, s: v.s, len: track.len, v: v.v, entry: 0.6 * track.speed * v.speedFactor });
                 }
                 if (v.s > track.len) pastTheEnd.push({ t: i * 0.1, id: v.id, s: v.s, len: track.len });
                 previous[v.id] = { track: v.track, s: v.s };
@@ -233,7 +233,7 @@ describe('vehicles: motion', () => {
         expect(respawns.length).toBeGreaterThan(0);
         respawns.forEach(r => {
             expect(r.kind).toBe('drive');
-            expect(r.s).toBeGreaterThanOrEqual(-r.joinLen);
+            expect(r.s).toBeGreaterThanOrEqual(0); // a respawn starts on a lane, not on a junction curve
             expect(r.s).toBeLessThanOrEqual(r.len);
             expect(r.v).toBeCloseTo(r.entry, 9); // re-enters at 0.6 × cruise, like a fresh spawn
         });
@@ -268,6 +268,107 @@ describe('vehicles: motion', () => {
         expect(atEnds.length).toBeGreaterThan(0);
         expect(atEnds.every(uTurn)).toBe(true); // a dead-end arm offers only the way back
     }, SLOW_MS);
+});
+
+describe('vehicles: junction turns', () => {
+    // Largest heading change between consecutive 0.05 s poses, per vehicle, over 60 s at the cross.
+    it('turns through the 4-way junction on a curve, never snapping its heading', () => {
+        const graph = crossGraph();
+        const snaps = [];
+        let turns = 0;
+        for (const seed of [1, 2, 3]) {
+            const sim = simulate(graph, { seed });
+            const last = sim.vehicles.map(v => ({ heading: v.heading, track: v.track, x: v.x, y: v.y }));
+            for (let i = 0; i < 1200; i++) {
+                sim.step(0.05);
+                for (const v of sim.vehicles) {
+                    const before = last[v.id];
+                    const jumped = Math.hypot(v.x - before.x, v.y - before.y) > 3; // a dead-end respawn
+                    let d = Math.abs(v.heading - before.heading);
+                    if (d > Math.PI) d = 2 * Math.PI - d;
+                    if (!jumped && d > 0.2) snaps.push({ seed, t: i * 0.05, id: v.id, d: Number(d.toFixed(2)) });
+                    if (v.track !== before.track) turns++;
+                    last[v.id] = { heading: v.heading, track: v.track, x: v.x, y: v.y };
+                }
+            }
+        }
+        expect(turns).toBeGreaterThan(20);
+        expect(snaps).toEqual([]);
+    }, SLOW_MS);
+
+    it('slows down for a right-angle turn and is back at cruise on the straight after it', () => {
+        // One oneway lane turning 90° left at (100, 0).
+        const graph = graphOf([
+            street({ highway: 'residential', oneway: 'yes' }, [[0, 0], [100, 0]]),
+            street({ highway: 'residential', oneway: 'yes' }, [[100, 0], [100, 200]])
+        ]);
+        const sim = simulate(graph, { seed: 1, maxVehicles: 1 });
+        const [vehicle] = sim.vehicles;
+        const first = graph.tracks.find(track => track.wayId === 'osm:0');
+        vehicle.track = first.id; vehicle.s = 0; vehicle.v = first.speed * vehicle.speedFactor; vehicle.curve = null;
+        vehicle.next = graph.nodes.get(first.to).out[0];
+        vehicle.nextCurve = lifeGraph.junctionCurve(first, graph.tracks[vehicle.next]);
+        vehicle.nextJoinLen = vehicle.nextCurve.len - (first.len - vehicle.nextCurve.exitS) - vehicle.nextCurve.entryS;
+        const cruise = first.speed * vehicle.speedFactor;
+        let slowest = Infinity;
+        for (let i = 0; i < 1200; i++) {
+            sim.step(0.05);
+            if (vehicle.x > 85 && vehicle.y < 15) slowest = Math.min(slowest, vehicle.v);
+            if (vehicle.track !== first.id && vehicle.y > 150) break;
+        }
+        expect(vehicle.y).toBeGreaterThan(150);
+        expect(slowest).toBeLessThan(0.8 * cruise);
+        expect(slowest).toBeGreaterThan(2);
+        expect(vehicle.v).toBeCloseTo(cruise, 6);
+        expect(Math.abs(vehicle.heading - Math.PI / 2)).toBeLessThan(1e-6);
+    });
+});
+
+describe('vehicles: bicycle-model steering', () => {
+    it('drives a bus round a right angle on its front axle, the rear axle trailing inside it without sliding sideways', () => {
+        // One oneway lane turning 90° left at (100, 0); a bus's 11 m curve centres on (89, 11).
+        const graph = graphOf([
+            street({ highway: 'residential', oneway: 'yes' }, [[0, 0], [100, 0]]),
+            street({ highway: 'residential', oneway: 'yes' }, [[100, 0], [100, 200]])
+        ]);
+        const sim = simulate(graph, { seed: 1, maxVehicles: 1 });
+        const [bus] = sim.vehicles;
+        Object.assign(bus, { kind: 'bus', ...VEHICLE_KINDS.bus, rear: null, curve: null });
+        const first = graph.tracks.find(track => track.wayId === 'osm:0');
+        bus.track = first.id; bus.s = 20; bus.v = 0;
+        bus.next = graph.nodes.get(first.to).out[0];
+        bus.nextCurve = lifeGraph.junctionCurve(first, graph.tracks[bus.next], VEHICLE_KINDS.bus.turnRadius);
+        bus.nextJoinLen = bus.nextCurve.len - (first.len - bus.nextCurve.exitS) - bus.nextCurve.entryS;
+        sim.step(0.05);
+        const wheelbase = bus.frontAxle + bus.rearAxle;
+        const axles = () => {
+            const c = Math.cos(bus.heading), s = Math.sin(bus.heading);
+            return { front: [bus.x + c * bus.frontAxle, bus.y + s * bus.frontAxle], rear: [bus.x - c * bus.rearAxle, bus.y - s * bus.rearAxle] };
+        };
+        const fromCentre = p => Math.hypot(p[0] - 89, p[1] - 11);
+        let last = axles(), slide = 0, maxSteer = 0, rearInside = Infinity, frontInside = Infinity;
+        for (let i = 0; i < 1200 && bus.y < 120; i++) {
+            sim.step(0.05);
+            const now = axles();
+            const dx = now.rear[0] - last.rear[0], dy = now.rear[1] - last.rear[1];
+            const moved = Math.hypot(dx, dy);
+            // Rear axle motion is along the body: its sideways component stays ~0.
+            if (moved > 1e-3) slide = Math.max(slide, Math.abs(-Math.sin(bus.heading) * dx + Math.cos(bus.heading) * dy) / moved);
+            if (now.front[0] > 89 && now.front[1] < 11) frontInside = Math.min(frontInside, fromCentre(now.front));
+            if (now.rear[0] > 89 && now.rear[1] < 11) rearInside = Math.min(rearInside, fromCentre(now.rear));
+            maxSteer = Math.max(maxSteer, Math.abs(bus.steer));
+            expect(Math.hypot(now.front[0] - now.rear[0], now.front[1] - now.rear[1])).toBeCloseTo(wheelbase, 6);
+            last = now;
+        }
+        expect(bus.y).toBeGreaterThan(120);
+        expect(slide).toBeLessThan(0.05);
+        expect(frontInside).toBeGreaterThan(10.5); // the front axle rides the 11 m curve…
+        expect(rearInside).toBeLessThan(frontInside - 1); // …and the rear cuts inside it (√(11² − 5.9²) ≈ 9.3)
+        expect(rearInside).toBeGreaterThan(8.5);
+        expect(maxSteer).toBeGreaterThan(0.3); // the front wheels turned into the corner
+        expect(Math.abs(bus.steer)).toBeLessThan(1e-3); // and are straight again on the straight
+        expect(Math.abs(bus.heading - Math.PI / 2)).toBeLessThan(1e-3);
+    });
 });
 
 describe('step', () => {

@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-    createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, pointInArea, parseOneway, LANE_WIDTH_M, DRIVE_CLASSES
+    createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea, parseOneway, LANE_WIDTH_M, DRIVE_CLASSES
 } = require('../../frontend/js/life/life-graph.js');
 
 // Test coordinates are already local metres, so the projection is the identity.
@@ -441,5 +441,64 @@ describe('build: stats', () => {
             expect(track.id).toBe(index); // agents look tracks up by id
             expect(track.cum[track.cum.length - 1]).toBe(track.len);
         });
+    });
+});
+
+describe('junctionCurve', () => {
+    const track = pts => {
+        const cum = [0];
+        for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+        return { pts, cum, len: cum[cum.length - 1] };
+    };
+    const headingAt = (curve, i) => Math.atan2(curve.pts[i + 1][1] - curve.pts[i][1], curve.pts[i + 1][0] - curve.pts[i][0]);
+
+    it('joins a right-angle turn tangent to both lanes, trimmed back by the turn radius', () => {
+        const a = track([[0, 0, 0], [50, 0, 0]]);
+        const b = track([[50, 0, 0], [50, 50, 0]]);
+        const curve = junctionCurve(a, b);
+        expect(curve.exitS).toBeCloseTo(43, 6); // 7 m × tan 45°
+        expect(curve.entryS).toBeCloseTo(7, 6);
+        expect(curve.pts[0]).toEqual([43, 0, 0]);
+        const end = curve.pts[curve.pts.length - 1];
+        expect(end[0]).toBeCloseTo(50, 9);
+        expect(end[1]).toBeCloseTo(7, 9);
+        // The first and last chords of a 12-sample curve sit within half a sample's turn of the lanes.
+        expect(Math.abs(headingAt(curve, 0))).toBeLessThan(0.1);
+        expect(Math.abs(headingAt(curve, curve.pts.length - 2) - Math.PI / 2)).toBeLessThan(0.1);
+        // Close to the quarter circle it approximates, and no faster than 2.5 m/s² sideways.
+        expect(curve.len).toBeGreaterThan(Math.PI / 2 * 7 - 0.2);
+        expect(curve.len).toBeLessThan(Math.PI / 2 * 7 + 0.2);
+        expect(curve.vmax).toBeCloseTo(Math.sqrt(2.5 * 7), 0);
+    });
+
+    it('keeps a straight continuation straight and unlimited in speed', () => {
+        const curve = junctionCurve(track([[0, 0, 1], [30, 0, 1]]), track([[30, 0, 1], [60, 0, 3]]));
+        curve.pts.forEach(p => expect(p[1]).toBeCloseTo(0, 9));
+        expect(curve.vmax).toBe(Infinity);
+        expect(curve.pts[curve.pts.length - 1][2]).toBeGreaterThan(1); // follows the climb of the next lane
+    });
+
+    it('never trims more than 40 % of a short lane and U-turns at the node itself', () => {
+        const short = junctionCurve(track([[0, 0, 0], [10, 0, 0]]), track([[10, 0, 0], [10, 10, 0]]));
+        expect(short.exitS).toBeCloseTo(6, 9);
+        expect(short.entryS).toBeCloseTo(4, 9);
+        const uTurn = junctionCurve(track([[0, 0, 0], [60, 0, 0]]), track([[60, 3.5, 0], [0, 3.5, 0]]));
+        expect(uTurn.exitS).toBeCloseTo(58.5, 9);
+        expect(uTurn.entryS).toBeCloseTo(1.5, 9);
+        expect(Math.max(...uTurn.pts.map(p => p[0]))).toBeGreaterThan(59); // bulges round the end
+    });
+
+    it('turns the heading continuously round a U-turn, not in chord-sized steps', () => {
+        const uTurn = junctionCurve(track([[0, 0, 0], [60, 0, 0]]), track([[60, 3.5, 0], [0, 3.5, 0]]));
+        expect(curveHeading(uTurn, 0)).toBeCloseTo(0, 9);
+        expect(Math.abs(curveHeading(uTurn, uTurn.len))).toBeCloseTo(Math.PI, 9);
+        let worst = 0, previous = curveHeading(uTurn, 0);
+        for (let s = 0.05; s <= uTurn.len; s += 0.05) {
+            const h = curveHeading(uTurn, s);
+            let d = Math.abs(h - previous); if (d > Math.PI) d = 2 * Math.PI - d;
+            worst = Math.max(worst, d);
+            previous = h;
+        }
+        expect(worst).toBeLessThan(0.1); // 12 chords would step π / 12 ≈ 0.26
     });
 });

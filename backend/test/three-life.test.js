@@ -107,9 +107,8 @@ describe('vehicleParts', () => {
         expect(cabin.x[1]).toBeLessThanOrEqual(body.x[1]);
         expect(cabin.y[1] - cabin.y[0]).toBeLessThan(car.width);
         expect(parts.wheels).toHaveLength(4);
-        const axle = 0.33 * car.len;
-        expect(parts.wheels.filter(wheel => Math.abs(wheel.ox - axle) < 1e-9)).toHaveLength(2);
-        expect(parts.wheels.filter(wheel => Math.abs(wheel.ox + axle) < 1e-9)).toHaveLength(2);
+        expect(parts.wheels.filter(wheel => Math.abs(wheel.ox - car.frontAxle) < 1e-9 && wheel.steers)).toHaveLength(2);
+        expect(parts.wheels.filter(wheel => Math.abs(wheel.ox + car.rearAxle) < 1e-9 && !wheel.steers)).toHaveLength(2);
         expect(parts.wheels.filter(wheel => wheel.oy > 0)).toHaveLength(2);
         expect(parts.rider).toBeNull();
     });
@@ -139,7 +138,8 @@ describe('vehicleParts', () => {
         expect(band.z[0]).toBeGreaterThan(body.z[0]);
         expect(band.z[1]).toBeLessThan(body.z[1]);
         expect(parts.wheels).toHaveLength(4);
-        parts.wheels.forEach(wheel => expect(Math.abs(wheel.ox)).toBeCloseTo(0.36 * bus.len, 9));
+        expect(parts.wheels.map(wheel => wheel.ox)).toEqual([bus.frontAxle, bus.frontAxle, -bus.rearAxle, -bus.rearAxle]);
+        expect(bus.frontAxle + bus.rearAxle).toBeCloseTo(5.9, 9); // a 12 m city bus's wheelbase
     });
 
     it('keeps every glass part visible outside its opaque body and every wheel on the road, flush inside the sides', () => {

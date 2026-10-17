@@ -466,6 +466,74 @@
         return out;
     }
 
+    // The curve a vehicle drives from track `a` into track `b` through their shared node: both lanes
+    // are trimmed back by the tangent length of a `radius` (default TURN_RADIUS_M) arc for the turn
+    // angle and joined
+    // by a cubic Bézier along their tangents (a circular-arc approximation). Hairpins and U-turns
+    // turn tightly at the node instead of 14 m before it. The result is track-shaped (pts/cum/len,
+    // so sampleTrack reads it; point i is the Bézier at t = i / CURVE_SAMPLES) plus `ctrl` (the four
+    // control points, for curveHeading), `exitS` on `a`, `entryS` on `b` and `vmax`, the speed that
+    // keeps the lateral acceleration under LATERAL_ACCEL.
+    const TURN_RADIUS_M = 7;
+    const TURN_TRIM_MIN_M = 1.5;
+    const TURN_TRIM_MAX_M = 14;
+    const TURN_TRIM_SHARE = 0.4;      // a trim never takes more of a track than this, so both ends fit
+    const HAIRPIN_RAD = 3 * Math.PI / 4;
+    const LATERAL_ACCEL = 2.5;        // m/s²
+    const CURVE_SAMPLES = 12;
+
+    function angleBetween(h0, h1) {
+        let d = h1 - h0;
+        while (d > Math.PI) d -= 2 * Math.PI;
+        while (d < -Math.PI) d += 2 * Math.PI;
+        return Math.abs(d);
+    }
+
+    function junctionCurve(a, b, radius) {
+        const turnRadius = radius > 0 ? radius : TURN_RADIUS_M;
+        const na = a.pts.length;
+        const endHeading = Math.atan2(a.pts[na - 1][1] - a.pts[na - 2][1], a.pts[na - 1][0] - a.pts[na - 2][0]);
+        const startHeading = Math.atan2(b.pts[1][1] - b.pts[0][1], b.pts[1][0] - b.pts[0][0]);
+        const angle = angleBetween(endHeading, startHeading);
+        const trim = angle > HAIRPIN_RAD ? TURN_TRIM_MIN_M
+            : Math.min(TURN_TRIM_MAX_M, Math.max(TURN_TRIM_MIN_M, turnRadius * Math.tan(angle / 2)));
+        const exitS = Math.max(0, a.len - Math.min(trim, TURN_TRIM_SHARE * a.len));
+        const entryS = Math.min(b.len, Math.min(trim, TURN_TRIM_SHARE * b.len));
+        const p0 = sampleTrack(a, exitS, {}, 0);
+        const p3 = sampleTrack(b, entryS, {}, 0);
+        const turn = angleBetween(p0.heading, p3.heading);
+        const chord = Math.hypot(p3.x - p0.x, p3.y - p0.y);
+        const handle = (2 / 3) * chord / (1 + Math.cos(turn / 2));
+        const c1 = [p0.x + Math.cos(p0.heading) * handle, p0.y + Math.sin(p0.heading) * handle];
+        const c2 = [p3.x - Math.cos(p3.heading) * handle, p3.y - Math.sin(p3.heading) * handle];
+        const pts = [];
+        for (let i = 0; i <= CURVE_SAMPLES; i++) {
+            const t = i / CURVE_SAMPLES, u = 1 - t;
+            const w0 = u * u * u, w1 = 3 * u * u * t, w2 = 3 * u * t * t, w3 = t * t * t;
+            pts.push([
+                w0 * p0.x + w1 * c1[0] + w2 * c2[0] + w3 * p3.x,
+                w0 * p0.y + w1 * c1[1] + w2 * c2[1] + w3 * p3.y,
+                p0.z + (p3.z - p0.z) * t
+            ]);
+        }
+        const curve = { pts, exitS, entryS, ctrl: [[p0.x, p0.y], c1, c2, [p3.x, p3.y]], startHeading: p0.heading };
+        finishTrack(curve);
+        curve.vmax = turn > 0.05 ? Math.sqrt(LATERAL_ACCEL * curve.len / turn) : Infinity;
+        return curve;
+    }
+
+    // Heading along a junction curve at arc length `s`, from the Bézier's tangent rather than its
+    // chords, so a tight curve turns the body continuously instead of in CURVE_SAMPLES steps.
+    function curveHeading(curve, s, segHint) {
+        const sample = sampleTrack(curve, s, {}, segHint);
+        const i = sample.seg, segLen = curve.cum[i + 1] - curve.cum[i];
+        const t = Math.min(1, Math.max(0, (i + (segLen > 0 ? (Math.min(Math.max(s, 0), curve.len) - curve.cum[i]) / segLen : 0)) / CURVE_SAMPLES));
+        const [p0, c1, c2, p3] = curve.ctrl, u = 1 - t;
+        const dx = 3 * u * u * (c1[0] - p0[0]) + 6 * u * t * (c2[0] - c1[0]) + 3 * t * t * (p3[0] - c2[0]);
+        const dy = 3 * u * u * (c1[1] - p0[1]) + 6 * u * t * (c2[1] - c1[1]) + 3 * t * t * (p3[1] - c2[1]);
+        return Math.hypot(dx, dy) > 1e-9 ? Math.atan2(dy, dx) : curve.startHeading;
+    }
+
     function fill(out, a, b, t) {
         out.x = a[0] + (b[0] - a[0]) * t;
         out.y = a[1] + (b[1] - a[1]) * t;
@@ -483,7 +551,7 @@
 
     return {
         NODE_SNAP_M, LANE_WIDTH_M, SIDEWALK_DEPTH_M, DRIVE_CLASSES, ZCODE,
-        createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, pointInArea,
+        createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea,
         parseOneway, sidewalkSides, ringArea, pointInRing
     };
 });

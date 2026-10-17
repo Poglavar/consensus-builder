@@ -1,5 +1,6 @@
 // Life agents: the schematic population moving in the 3D model view — vehicles following directed
-// lane tracks (life-graph.js) with simple car-following, and people wandering the walkable surface
+// lane tracks (life-graph.js) with simple car-following, steered like real vehicles (the front axle
+// rides the lane and the junction curve, the rear axle trails it), and people wandering the walkable surface
 // (life-surface.js). Pure and deterministic (seeded), no DOM, no THREE; true metres and seconds.
 // The renderer reads the agents' x/y/z/heading/stride each frame. Behaviour is deliberately minimal:
 // stay on the path or the surface, pick a random continuation, never drive into the vehicle ahead.
@@ -15,17 +16,22 @@
     const HEADWAY_S = 0.9;        // time headway kept to the vehicle ahead
     const ACCEL = 2.5;            // m/s²
     const DECEL = 5.0;            // m/s²
+    const TURN_BRAKE = 2.5;       // m/s², the comfortable braking used to slow down for a turn
     const STRIDE_RAD_PER_M = 5.2; // Station3D's walk cycle: limb phase advance per metre walked
     const MAX_STEP_S = 0.1;       // one step never integrates more than this
     const WANDER_RADIUS_M = 40;   // how far a person looks for the next destination
     const PERSON_PER_M2 = 1 / 250; // crowd density over preferred walking space
 
-    // To-scale schematic vehicle classes (metres). `clearance` is the body's height above the road.
+    // To-scale schematic vehicle classes (metres). `clearance` is the body's height above the road;
+    // `frontAxle`/`rearAxle` are the axles' distances ahead of and behind the body centre (a city bus
+    // has a 5.9 m wheelbase with 2.7 m / 3.4 m overhangs); `turnRadius` sizes its junction curves,
+    // wider for a bus so its trailing rear axle does not cut across the corner.
     const VEHICLE_KINDS = {
-        car: { len: 4.4, width: 1.8, height: 1.5, clearance: 0.3, wheelRadius: 0.32, weight: 0.86, speedFactor: 1.0 },
-        bus: { len: 12.0, width: 2.5, height: 3.2, clearance: 0.4, wheelRadius: 0.5, weight: 0.06, speedFactor: 0.8 },
-        moto: { len: 2.1, width: 0.6, height: 0.95, clearance: 0.4, wheelRadius: 0.3, weight: 0.08, speedFactor: 1.1 }
+        car: { len: 4.4, width: 1.8, height: 1.5, clearance: 0.3, wheelRadius: 0.32, frontAxle: 1.4, rearAxle: 1.3, turnRadius: 7, weight: 0.86, speedFactor: 1.0 },
+        bus: { len: 12.0, width: 2.5, height: 3.2, clearance: 0.4, wheelRadius: 0.5, frontAxle: 3.3, rearAxle: 2.6, turnRadius: 11, weight: 0.06, speedFactor: 0.8 },
+        moto: { len: 2.1, width: 0.6, height: 0.95, clearance: 0.4, wheelRadius: 0.3, frontAxle: 0.7, rearAxle: 0.7, turnRadius: 6, weight: 0.08, speedFactor: 1.1 }
     };
+    const MAX_STEER_RAD = 0.6;
     // No greys and no near-whites: those vanish against the grey buildings and the pale ground.
     const CAR_COLORS = [0x1a1a1a, 0x1a1a1a, 0xc0392b, 0xc0392b, 0x1f5fbf, 0x1f5fbf, 0x2e7d32, 0xf1c40f, 0xe67e22, 0x8e6e53, 0x6c3483, 0x16a085, 0x2c3e50, 0xd35400];
     const BUS_COLORS = [0x1e63c3];
@@ -95,11 +101,28 @@
             return pick(rng, pool);
         }
 
-        function joinLength(track, nextId) {
-            if (nextId == null) return 0;
-            const a = track.pts[track.pts.length - 1];
-            const b = tracks[nextId].pts[0];
-            return Math.hypot(b[0] - a[0], b[1] - a[1]);
+        // The curve from `track` into `nextId` (life-graph.junctionCurve) at a turn radius, cached
+        // per pair and radius.
+        const curves = new Map();
+        function curveTo(track, nextId, radius) {
+            if (nextId == null) return null;
+            const key = track.id + '>' + nextId + '@' + radius;
+            let curve = curves.get(key);
+            if (!curve) { curve = lifeGraph.junctionCurve(track, tracks[nextId], radius); curves.set(key, curve); }
+            return curve;
+        }
+
+        // Path length from s = len on `track` to s = 0 on the next track, through the curve. It is
+        // negative when the trims are longer than the curve, and it keeps every gap below measured
+        // along the path actually driven: (exitS − s) + curve + (s' − entryS).
+        function joinOffset(track, curve) {
+            return curve ? curve.len - (track.len - curve.exitS) - curve.entryS : 0;
+        }
+
+        function setNext(v, track) {
+            v.next = chooseNext(track);
+            v.nextCurve = curveTo(track, v.next, v.turnRadius);
+            v.nextJoinLen = joinOffset(track, v.nextCurve);
         }
 
         // Free along the track AND clear of every vehicle in plan, so a spawn next to a node never
@@ -118,15 +141,15 @@
             for (let attempt = 0; attempt < 24; attempt++) {
                 const track = pickTrackByLength(rng, driveTracks, driveLength);
                 if (!track) return false;
-                const s = rng() * track.len;
+                setNext(v, track);
+                // Before the turn into the next track starts, so nobody spawns half-way round it.
+                const s = rng() * (v.nextCurve ? v.nextCurve.exitS : track.len);
                 if (!spotIsFree(track, s, v)) continue;
                 v.track = track.id;
                 v.s = s;
                 v.v = track.speed * v.speedFactor * 0.6;
-                v.next = chooseNext(track);
-                v.joinLen = 0;
-                v.nextJoinLen = joinLength(track, v.next);
-                v.joinFrom = null;
+                v.curve = null;
+                v.rear = null; // a fresh spawn: the rear axle starts straight behind the front
                 v.seg = 0;
                 return true;
             }
@@ -142,10 +165,11 @@
                 const v = {
                     id: vehicles.length, kind, len: spec.len, width: spec.width, height: spec.height,
                     clearance: spec.clearance, wheelRadius: spec.wheelRadius,
+                    frontAxle: spec.frontAxle, rearAxle: spec.rearAxle, turnRadius: spec.turnRadius,
                     color: pick(rng, kind === 'bus' ? BUS_COLORS : kind === 'moto' ? MOTO_COLORS : CAR_COLORS),
                     speedFactor: spec.speedFactor * (0.85 + 0.3 * rng()),
-                    track: -1, s: 0, v: 0, next: null, joinLen: 0, nextJoinLen: 0, joinFrom: null,
-                    x: 0, y: 0, z: 0, heading: 0, seg: 0
+                    track: -1, s: 0, v: 0, next: null, curve: null, nextCurve: null, nextJoinLen: 0,
+                    x: 0, y: 0, z: 0, heading: 0, steer: 0, seg: 0, rear: null
                 };
                 if (!placeVehicle(v)) { misses++; continue; }
                 vehicles.push(v);
@@ -153,19 +177,56 @@
             }
         }
 
-        function updateVehiclePose(v) {
-            const track = tracks[v.track];
-            if (v.s < 0 && v.joinFrom && v.joinLen > 0) {
-                const t = Math.min(1, Math.max(0, 1 + v.s / v.joinLen));
-                const b = track.pts[0];
-                v.x = v.joinFrom[0] + (b[0] - v.joinFrom[0]) * t;
-                v.y = v.joinFrom[1] + (b[1] - v.joinFrom[1]) * t;
-                v.z = v.joinFrom[2] + (b[2] - v.joinFrom[2]) * t;
-                v.heading = Math.atan2(b[1] - v.joinFrom[1], b[0] - v.joinFrom[0]);
-                return;
+        // The point of the driven path `ahead` metres past the vehicle's s: on the junction curve it
+        // is still on (s runs from entryS − curve.len up to entryS there), its track, the curve into
+        // the next track, or the start of that track. A dead end clamps at the end of the track.
+        function samplePath(v, ahead, out) {
+            const s = v.s + ahead;
+            if (v.curve && s < v.curve.entryS) {
+                const along = s - v.curve.entryS + v.curve.len;
+                lifeGraph.sampleTrack(v.curve, along, out, 0);
+                out.heading = lifeGraph.curveHeading(v.curve, along, out.seg);
+                return out;
             }
-            lifeGraph.sampleTrack(track, Math.max(0, v.s), sample, v.seg);
-            v.x = sample.x; v.y = sample.y; v.z = sample.z; v.heading = sample.heading; v.seg = sample.seg;
+            const c = v.nextCurve;
+            if (c && s > c.exitS) {
+                const along = s - c.exitS;
+                if (along < c.len) {
+                    lifeGraph.sampleTrack(c, along, out, 0);
+                    out.heading = lifeGraph.curveHeading(c, along, out.seg);
+                    return out;
+                }
+                return lifeGraph.sampleTrack(tracks[v.next], c.entryS + along - c.len, out, 0);
+            }
+            lifeGraph.sampleTrack(tracks[v.track], Math.max(0, s), out, v.seg);
+            v.seg = out.seg;
+            return out;
+        }
+
+        // Bicycle-model pose: the front axle sits on the path frontAxle metres ahead of s and the
+        // rear axle is dragged after it at the wheelbase (a tractrix), so the body pivots about its
+        // rear axle and the rear wheels cut inside a corner instead of sliding sideways through it.
+        // `steer` is the front wheels' angle to the body.
+        function updateVehiclePose(v) {
+            if (v.curve && v.s >= v.curve.entryS) v.curve = null;
+            samplePath(v, v.frontAxle, sample);
+            const fx = sample.x, fy = sample.y;
+            const wheelbase = v.frontAxle + v.rearAxle;
+            if (!v.rear) {
+                v.rear = [fx - Math.cos(sample.heading) * wheelbase, fy - Math.sin(sample.heading) * wheelbase];
+            } else {
+                const dx = fx - v.rear[0], dy = fy - v.rear[1];
+                const d = Math.hypot(dx, dy);
+                if (d > 1e-6) { v.rear[0] = fx - dx / d * wheelbase; v.rear[1] = fy - dy / d * wheelbase; }
+            }
+            v.heading = Math.atan2(fy - v.rear[1], fx - v.rear[0]);
+            v.x = fx - Math.cos(v.heading) * v.frontAxle;
+            v.y = fy - Math.sin(v.heading) * v.frontAxle;
+            v.z = sample.z;
+            let steer = sample.heading - v.heading;
+            while (steer > Math.PI) steer -= 2 * Math.PI;
+            while (steer < -Math.PI) steer += 2 * Math.PI;
+            v.steer = Math.max(-MAX_STEER_RAD, Math.min(MAX_STEER_RAD, steer));
         }
 
         // Vehicles heading for the same exit track from different approaches: the one further
@@ -213,26 +274,28 @@
                     }
                 }
                 let target = track.speed * v.speedFactor;
+                // Through a turn no faster than its curve allows, and braked down to that in time.
+                if (v.curve && v.s < v.curve.entryS) target = Math.min(target, v.curve.vmax);
+                if (v.nextCurve) {
+                    const toTurn = Math.max(0, v.nextCurve.exitS - v.s);
+                    target = Math.min(target, Math.sqrt(v.nextCurve.vmax * v.nextCurve.vmax + 2 * TURN_BRAKE * toTurn));
+                }
                 if (gap !== Infinity) target = Math.min(target, Math.max(0, (gap - GAP_MIN_M) / HEADWAY_S));
                 const dv = target - v.v;
                 v.v = Math.max(0, v.v + Math.max(-DECEL * dt, Math.min(ACCEL * dt, dv)));
                 v.s += v.v * dt;
 
-                if (v.s >= track.len) {
-                    if (v.next == null) {
-                        // Dead end: this vehicle leaves the scene and another takes its place elsewhere.
-                        if (!placeVehicle(v)) { v.s = track.len; v.v = 0; }
-                    } else {
-                        const overshoot = v.s - track.len;
-                        const end = track.pts[track.pts.length - 1];
-                        v.joinFrom = [end[0], end[1], end[2] || 0];
-                        v.joinLen = v.nextJoinLen;
-                        v.track = v.next;
-                        v.s = -v.joinLen + overshoot;
-                        v.seg = 0;
-                        v.next = chooseNext(tracks[v.track]);
-                        v.nextJoinLen = joinLength(tracks[v.track], v.next);
-                    }
+                if (v.next == null && v.s >= track.len) {
+                    // Dead end: this vehicle leaves the scene and another takes its place elsewhere.
+                    if (!placeVehicle(v)) { v.s = track.len; v.v = 0; }
+                } else if (v.next != null && v.s >= v.nextCurve.exitS) {
+                    // Leave the lane where the turn starts and continue on the curve into the next one.
+                    const overshoot = v.s - v.nextCurve.exitS;
+                    v.curve = v.nextCurve;
+                    v.track = v.next;
+                    v.s = v.curve.entryS - v.curve.len + overshoot;
+                    v.seg = 0;
+                    setNext(v, tracks[v.track]);
                 }
                 updateVehiclePose(v);
             }
