@@ -40,7 +40,7 @@ class Element {
 function renderParcelPanel(properties) {
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
-        'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements'
+        'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements', 'parcel-plans-content'
     ];
     const elements = new Map(ids.map(id => [id, new Element(id)]));
     const copied = [];
@@ -68,6 +68,12 @@ function renderParcelPanel(properties) {
         },
         requestAnimationFrame: callback => callback(),
         ParcelSetProposals: { renderPublishedOnly() {} },
+        // The Proposals tab's Plans view (cdc103eb); these tests look at the title and Info tab only.
+        ProposalPlans: {
+            decorateParcelRows() {}, bindPlanRows() {}, current: plans => plans, planRowsHtml: () => '',
+            parcelPlans: () => Promise.resolve({ plans: [] })
+        },
+        escapeHtml: text => String(text),
         resetParcelMintStatusState() {},
         window: null
     };
@@ -127,6 +133,20 @@ describe('geometry-derived parcel references', () => {
             parcelId: 'native-123', parcelIdentityKind: 'registry', parcelNumber: '123'
         });
         expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it('keeps the normalised parcel id even when the feature also carries a cadastral number and KO', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'native-123', parcelIdentityKind: 'registry', BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99'
+        });
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+        expect(copyTarget.textContent).toBe('native-123');
+    });
+
+    it('builds HR-<KO>-<number> only for a feature without an id', () => {
+        const rendered = renderParcelPanel({ BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99' });
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+        expect(copyTarget.textContent).toBe('HR-99-7');
     });
 
     it('keeps long parcel ids complete for copy while clamping only their visual layout', () => {

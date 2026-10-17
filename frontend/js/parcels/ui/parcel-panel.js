@@ -279,15 +279,14 @@
         const maticniBrojKo = feature.properties.MATICNI_BROJ_KO ?? feature.properties.maticni_broj_ko ?? (feature.properties.cadastralMunicipality && feature.properties.cadastralMunicipality.id);
         let parcelId = normalizedParcelId;
 
-        if (brojCestice !== undefined && brojCestice !== null && maticniBrojKo !== undefined && maticniBrojKo !== null) {
+        // The normalised id is the parcel's identity everywhere else (proposals, storage, fabric).
+        // The cadastral number and KO only stand in for a feature that carries no id of its own.
+        if (!parcelId && brojCestice !== undefined && brojCestice !== null && maticniBrojKo !== undefined && maticniBrojKo !== null) {
             const numberStr = String(brojCestice).trim();
             const municipalityStr = String(maticniBrojKo).trim();
             if (numberStr && municipalityStr) {
                 parcelId = `HR-${municipalityStr}-${numberStr}`;
             }
-        }
-        if (!parcelId && normalizedParcelId) {
-            parcelId = normalizedParcelId;
         }
         const parcelKey = parcelId ? parcelId.toString() : '';
 
