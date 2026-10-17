@@ -5,6 +5,9 @@
     const activeOwnerCountMarkerIds = new Set();
     let ownerCountLabelFilter = null;
     let ownerCountMapListenersAttached = false;
+    let ownerCountDebounceTimer = null;
+    // A zoom fires zoomend and moveend, and a pan can end several times in a row: redraw once after both.
+    const OWNER_COUNT_DEBOUNCE_MS = 150;
     let ownerCountHotkeyAttached = false;
     let ownerCountLabelCity = null;
 
@@ -167,13 +170,21 @@
         }
     }
 
+    function refreshOwnerCountLabelsDebounced() {
+        if (ownerCountDebounceTimer) clearTimeout(ownerCountDebounceTimer);
+        ownerCountDebounceTimer = setTimeout(() => {
+            ownerCountDebounceTimer = null;
+            refreshOwnerCountLabelsIfVisible();
+        }, OWNER_COUNT_DEBOUNCE_MS);
+    }
+
     function attachOwnerCountMapListeners() {
         if (!global.map || typeof global.map.on !== 'function' || ownerCountMapListenersAttached) {
             return;
         }
         try {
-            global.map.on('moveend', refreshOwnerCountLabelsIfVisible);
-            global.map.on('zoomend', refreshOwnerCountLabelsIfVisible);
+            global.map.on('moveend', refreshOwnerCountLabelsDebounced);
+            global.map.on('zoomend', refreshOwnerCountLabelsDebounced);
             ownerCountMapListenersAttached = true;
         } catch (_) { /* ignore */ }
     }

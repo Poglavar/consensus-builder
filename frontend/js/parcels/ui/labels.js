@@ -5,6 +5,9 @@
     const activeParcelNumberMarkerIds = new Set();
     let parcelNumberLabelFilter = null;
     let parcelNumberMapListenersAttached = false;
+    let parcelNumberDebounceTimer = null;
+    // A zoom fires zoomend and moveend, and a pan can end several times in a row: redraw once after both.
+    const PARCEL_NUMBER_DEBOUNCE_MS = 150;
     let parcelNumberLabelCity = null;
     let centroidCache = new WeakMap();
     let centroidCacheCity = null;
@@ -197,10 +200,18 @@
         if (checkbox && checkbox.checked) drawParcelNumberLabels();
     }
 
+    function refreshParcelNumberLabelsDebounced() {
+        if (parcelNumberDebounceTimer) clearTimeout(parcelNumberDebounceTimer);
+        parcelNumberDebounceTimer = setTimeout(() => {
+            parcelNumberDebounceTimer = null;
+            refreshParcelNumberLabelsIfVisible();
+        }, PARCEL_NUMBER_DEBOUNCE_MS);
+    }
+
     function attachParcelNumberMapListeners() {
         if (!global.map || typeof global.map.on !== 'function' || parcelNumberMapListenersAttached) return;
-        global.map.on('moveend', refreshParcelNumberLabelsIfVisible);
-        global.map.on('zoomend', refreshParcelNumberLabelsIfVisible);
+        global.map.on('moveend', refreshParcelNumberLabelsDebounced);
+        global.map.on('zoomend', refreshParcelNumberLabelsDebounced);
         parcelNumberMapListenersAttached = true;
     }
 
