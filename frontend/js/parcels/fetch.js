@@ -77,7 +77,7 @@
     }
 
     // Settings → Information names the source behind the parcels in view: the last one that answered.
-    function noteSourceInView(city, override = null) {
+    function noteSourceInView(city, override = null, detail = null) {
         try {
             const tracker = global.ParcelSourceInView;
             if (!tracker) return;
@@ -86,7 +86,7 @@
                 let host = null;
                 try { host = described?.url ? new URL(described.url).hostname : null; } catch (_) { /* An unreadable URL keeps the kind. */ }
                 tracker.record(city, { source: 'ground-' + (described?.kind || 'fallback') }, host ? { host } : null);
-            } else tracker.record(city, cityConfig(city)?.parcels);
+            } else tracker.record(city, cityConfig(city)?.parcels, detail);
         } catch (_) { /* Naming the source must never fail a parcel read. */ }
     }
 
@@ -190,6 +190,61 @@
         return features;
     }
 
+    // Croatian cities ('oss-wfs') read parcels from our server's copy of the DGU register; when our
+    // server cannot answer, the browser reads DGU's public WFS itself (parcels/dgu-live.js), so the
+    // map works with our server down. Ownership comes only from our server and is absent then.
+    let dguLiveReader = null;
+    let dguLiveAnnounced = false;
+    function readsDguRegister(city) {
+        return cityConfig(city || currentCity())?.parcels?.source === 'oss-wfs';
+    }
+
+    function dguLive() {
+        if (dguLiveReader) return dguLiveReader;
+        const api = global.DguLiveCadastre;
+        if (!api || typeof global.convertGeoJSON !== 'function' || !global.proj4 || !global.turf) {
+            throw new Error('The direct DGU cadastre reader is unavailable.');
+        }
+        const toDataset = (lon, lat) => global.proj4('EPSG:4326', 'EPSG:3765', [lon, lat]);
+        dguLiveReader = api.createDguLive({
+            requestJson: url => responseJson(url, { headers: { Accept: 'application/json' } }),
+            toWgs84: collection => global.convertGeoJSON(collection, { sourceSrid: 'EPSG:3765' }),
+            // The corners of a WGS84 box, padded 2 m: a TM grid bends meridians by far less over a footprint.
+            toDatasetBox: ([w, s, e, n]) => {
+                const corners = [toDataset(w, s), toDataset(e, s), toDataset(e, n), toDataset(w, n)];
+                const xs = corners.map(c => c[0]), ys = corners.map(c => c[1]);
+                return [Math.min(...xs) - 2, Math.min(...ys) - 2, Math.max(...xs) + 2, Math.max(...ys) + 2].join(',');
+            },
+            turf: global.turf
+        });
+        return dguLiveReader;
+    }
+
+    // Runs `fromServer`; when our server fails, answers from DGU with `fromDgu` instead. A DGU
+    // failure as well rethrows the server's error, which is what the visitor's fallback screen describes.
+    async function serverOrDgu(city, what, fromServer, fromDgu, signal) {
+        try {
+            return await fromServer();
+        } catch (error) {
+            const api = global.DguLiveCadastre;
+            if (!city || !readsDguRegister(city) || !api || !api.shouldFallBack(error, signal)) throw error;
+            console.warn(`[${new Date().toISOString()}] [ParcelFetch] our server failed ${what} (${error && error.message}); reading DGU directly`);
+            try {
+                const answer = await fromDgu();
+                noteSourceInView(city, null, { liveHost: api.HOST });
+                if (!dguLiveAnnounced) {
+                    dguLiveAnnounced = true;
+                    global.updateStatus?.(statusText('parcels_read_from_dgu',
+                        'This site\'s server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.'));
+                }
+                return answer;
+            } catch (dguError) {
+                console.error(`[${new Date().toISOString()}] [ParcelFetch] DGU failed ${what} too: ${dguError && dguError.message}`);
+                throw error;
+            }
+        }
+    }
+
     async function requestOneByOne(ids, route, parameter) {
         const results = await Promise.all(ids.map(async id => {
             const url = `${backendBase()}/${route}?${new URLSearchParams({ [parameter]: id })}`;
@@ -264,7 +319,15 @@
             features = await requestOssIds(ids);
             returnsWGS84 = false;
             sourceSrid = 'EPSG:3765';
-        } else features = await requestBackendIds(ids);
+        } else {
+            const viaDgu = { value: false };
+            features = await serverOrDgu(city, `for ${ids.length} parcel ids`, () => requestBackendIds(ids),
+                async () => { viaDgu.value = true; return dguLive().fetchIds(ids); }, options.signal);
+            if (viaDgu.value) {
+                returnsWGS84 = true;
+                sourceSrid = 'EPSG:4326';
+            }
+        }
 
         const byId = new Map();
         features.forEach(feature => {
@@ -350,6 +413,22 @@
             noteSourceInView(context.city || currentCity());
             return { features: payload.features, returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
         }
+        if (readsDguRegister(context.city)) {
+            let fromDgu = false;
+            const answer = await serverOrDgu(context.city || currentCity(), `for cell ${cell}`,
+                () => fetchCellPages(cell, bbox, latLonBbox, context),
+                async () => { fromDgu = true; return { features: await dguLive().fetchBbox(bbox), returnsWGS84: true, sourceSrid: 'EPSG:4326' }; },
+                context.signal);
+            if (!fromDgu) noteSourceInView(context.city || currentCity());
+            return answer;
+        }
+        const answer = await fetchCellPages(cell, bbox, latLonBbox, context);
+        noteSourceInView(context.city || currentCity());
+        return answer;
+    }
+
+    // A cell's parcels from the city's configured source, page by page.
+    async function fetchCellPages(cell, bbox, latLonBbox, context) {
         const builder = context.builder;
         const count = 2000;
         let startIndex = 0;
@@ -394,7 +473,6 @@
             else more = returned === count && returned > 0;
             startIndex += returned;
         }
-        noteSourceInView(context.city || currentCity());
         return { features, returnsWGS84, sourceSrid };
     }
 
@@ -512,11 +590,16 @@
                 coverage: null, count: payload.features.length, queryMs: null };
         }
         const path = '/parcels/under';
-        const payload = await responseJson(`${backendBase()}${path}`, {
+        const city = String(options.city || currentCity());
+        const wgs84 = !options.srid || options.srid === 4326;
+        const payload = await serverOrDgu(wgs84 ? city : null, 'for a footprint', () => responseJson(`${backendBase()}${path}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
-        });
+        }), async () => {
+            const answer = await dguLive().fetchUnder(geom, { parcelsOnly });
+            return { features: answer.features, coverage: answer.coverage, count: answer.features.length, sourceSrid: 'EPSG:4326' };
+        }, options.signal);
         if (!Array.isArray(payload.features)) throw new Error('/parcels/under response has no features array.');
         return {
             status: 'ready',
@@ -524,7 +607,7 @@
             absentIds: [],
             returnsWGS84: true,
             sourceSrid: payload.sourceSrid || 'EPSG:4326',
-            coverage: payload.coverage === undefined ? null : Number(payload.coverage),
+            coverage: payload.coverage === undefined || payload.coverage === null ? null : Number(payload.coverage),
             count: Number(payload.count) || payload.features.length,
             queryMs: Number(payload.queryMs) || null
         };
@@ -629,11 +712,16 @@
             if (view.signal.aborted) return result;
             const count = result.features.length;
             const source = groundOverride(currentCity());
+            // The last cell came from DGU directly (our server down): the completion line says so,
+            // since it replaces the notice serverOrDgu showed.
+            const inView = global.ParcelSourceInView?.latest?.();
+            const viaDgu = !source && inView?.cityId === currentCity() && !!inView?.detail?.liveHost;
             global.updateStatus?.(result.cached
                 ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
                 : (source
                     ? statusText('loaded_parcels_from_source', `Loaded ${count} parcels from ${source.label || source.kind}.`, { count, source: source.label || source.kind })
-                    : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count })));
+                    : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count })
+                        + (viaDgu ? ` ${statusText('parcels_read_from_dgu', 'This site\'s server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.')}` : '')));
             global.ParcelSourceSettings?.clearFailure?.(global);
             return result;
         } catch (error) {

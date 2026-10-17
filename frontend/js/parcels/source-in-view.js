@@ -22,7 +22,8 @@
         function record(cityId, parcels, detail = null) {
             const key = sourceKeyFor(parcels);
             if (!key) return null;
-            const changed = !latest || latest.sourceKey !== key.sourceKey || latest.cityId !== String(cityId || '');
+            const changed = !latest || latest.sourceKey !== key.sourceKey || latest.cityId !== String(cityId || '')
+                || JSON.stringify(latest.detail || null) !== JSON.stringify(detail || null);
             latest = { cityId: String(cityId || ''), ...key, detail, at: now() };
             if (changed) listeners.forEach(listener => { try { listener(latest); } catch (_) { /* A display listener must not fail a parcel read. */ } });
             return latest;

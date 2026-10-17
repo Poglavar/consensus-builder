@@ -92,6 +92,8 @@
         } else {
             credits.forEach(html => lines.push({ html }));
             if (!credits.length) lines.push({ text: latest.sourceKey, strong: true });
+            // Our server was down and the browser read the register itself (parcels/dgu-live.js).
+            if (latest.detail?.liveHost) lines.push({ text: tr('direct', 'Read by your browser directly from {{host}}', { host: latest.detail.liveHost }) });
         }
         lines.push({ text: recordCityLabel
             ? tr('loadedAtCity', 'Last loaded at {{time}} for {{city}}', { time, city: recordCityLabel })

@@ -4254,6 +4254,7 @@
                 "other": "Loaded {{count}} cadastral parcels."
             },
             "cadastral_ground_already_loaded": "Cadastral ground already loaded.",
+            "parcels_read_from_dgu": "This site's server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.",
             "loaded_parcels_from_source": "Loaded {{count}} parcels from {{source}}.",
             "checking_cadastral_ground": "Checking cadastral ground…",
             "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",

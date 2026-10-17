@@ -3,11 +3,18 @@ import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
+import { surveyResponse } from '../helpers/mocks/survey-data';
 
-// Fail the register at its network boundary; the app must present its real recovery screen.
+const DGU_WFS = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs**';
+
+// Fail the register at its network boundary — our server's copy and DGU's own WFS, which the
+// browser reads directly when our server is down; the app must present its real recovery screen.
 async function unavailableRegister(page: Page) {
   let failing = true;
   let requests = 0;
+  await page.route(DGU_WFS, route => (failing
+    ? route.fulfill({ status: 503, body: 'DGU unavailable' })
+    : route.fallback()));
   await page.route('**/parcels**', route => {
     const request = route.request();
     if (!['fetch', 'xhr'].includes(request.resourceType()) || request.method() !== 'GET') return route.fallback();
@@ -23,6 +30,32 @@ async function unavailableRegister(page: Page) {
   await expect(page.locator('.ground-fallback-dialog')).toBeVisible();
   return { count: () => requests, recover: () => { failing = false; } };
 }
+
+test("with our server down, Zagreb's parcels come straight from DGU's WFS and the recovery screen stays shut", async ({ mockApi: page }) => {
+  const dgu: string[] = [];
+  await page.route('**/parcels**', route => {
+    const request = route.request();
+    if (!['fetch', 'xhr'].includes(request.resourceType()) || request.method() !== 'GET') return route.fallback();
+    return route.fulfill({ status: 503, json: { error: 'Server down', retryAfterSeconds: 0 } });
+  });
+  // DGU's wire shape: DKP_CESTICE properties in upper case, EPSG:3765 coordinates.
+  await page.route(DGU_WFS, route => {
+    dgu.push(route.request().url());
+    const features = sampleParcels.features.map((feature, index) => ({
+      type: 'Feature', id: `DKP_CESTICE.${900 + index}`, geometry: feature.geometry,
+      properties: { CESTICA_ID: 900 + index, MATICNI_BROJ_KO: Number(feature.properties.maticni_broj_ko), BROJ_CESTICE: String(feature.properties.parcel_number) },
+    }));
+    return route.fulfill({ json: { ...surveyResponse(features), totalFeatures: features.length } });
+  });
+  await page.goto('/?city=zg&at=45.80025,15.9822,18&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  await expect.poll(() => page.evaluate(() => (window as any).parcelLayer?.getLayers().length || 0)).toBeGreaterThan(0);
+  const ids = await page.evaluate(() => (window as any).parcelLayer.getLayers().map((layer: any) => layer.feature?.properties?.parcelId).sort());
+  expect(ids).toContain(`HR-${sampleParcels.features[0].properties.maticni_broj_ko}-${sampleParcels.features[0].properties.parcel_number}`);
+  expect(dgu.length).toBeGreaterThan(0);
+  await expect(page.locator('.ground-fallback-dialog')).toHaveCount(0);
+  expect(await page.evaluate(() => (window as any).ParcelSourceInView.latest().detail)).toEqual({ liveHost: 'oss.uredjenazemlja.hr' });
+});
 
 test('register recovery Close, parcel Refresh, and Retry dismiss, reopen, and recover real data', async ({ mockApi: page }) => {
   const source = await unavailableRegister(page);

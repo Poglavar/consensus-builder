@@ -4305,6 +4305,7 @@
                 "other": "Učitano {{count}} katastarskih čestica."
             },
             "cadastral_ground_already_loaded": "Katastarska podloga je već učitana.",
+            "parcels_read_from_dgu": "Poslužitelj ove stranice ne odgovara: čestice se čitaju izravno iz državnog katastra (DGU), bez podataka o vlasništvu.",
             "loaded_parcels_from_source": "Učitano {{count}} čestica iz izvora {{source}}.",
             "checking_cadastral_ground": "Provjera katastarske podloge…",
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",

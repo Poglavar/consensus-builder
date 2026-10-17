@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import.meta.url), 'utf8');
 const progressSource = readFileSync(new URL('../../frontend/js/parcels/source-progress.js', import.meta.url), 'utf8');
+const dguSource = readFileSync(new URL('../../frontend/js/parcels/dgu-live.js', import.meta.url), 'utf8');
 
 function bootPage(city, fetch, parcels = { source: 'parcel-bg' }, BrowserParcelSources = {}, globals = {}) {
     const window = {
@@ -25,12 +26,63 @@ function bootPage(city, fetch, parcels = { source: 'parcel-bg' }, BrowserParcelS
         AbortController
     });
     vm.runInContext(progressSource, context);
+    vm.runInContext(dguSource, context);
     vm.runInContext(source, context);
     return window;
 }
 const bootTransport = (...args) => bootPage(...args).__cadastralGroundTransport;
 
 describe('cadastral parcel fetch transport', () => {
+    it('reads Croatian parcels straight from DGU when our server is down, and says so once', async () => {
+        const dguParcel = (ko, number) => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] },
+            properties: { CESTICA_ID: 7, MATICNI_BROJ_KO: ko, BROJ_CESTICE: number } });
+        const asked = [];
+        const fetch = vi.fn(async url => {
+            asked.push(new URL(url).host);
+            if (String(url).startsWith('https://api.urbangametheory.xyz')) throw new TypeError('Failed to fetch');
+            const filter = new URL(url).searchParams.get('FILTER');
+            return { ok: true, status: 200, json: async () => ({ features: filter ? [dguParcel(335649, '5472/5')] : [dguParcel(335649, '1'), dguParcel(335649, '2')], totalFeatures: filter ? 1 : 2 }) };
+        });
+        const updateStatus = vi.fn();
+        const converted = [];
+        const transport = bootTransport('zagreb', fetch, { source: 'oss-wfs', gridSize: 100 }, {}, {
+            updateStatus,
+            fetchWithRetry: (url, options) => fetch(url, options),
+            convertGeoJSON: (collection, options) => { converted.push(options.sourceSrid); return collection; },
+            proj4: (_from, _to, point) => point,
+            turf: {},
+            datasetToWgs84: (e, n) => [e / 1e5, n / 1e5],
+            buildParcelRequestParams: bbox => ({ url: `https://api.urbangametheory.xyz/parcels?bbox=${bbox}`, isOSS: false, returnsWGS84: true })
+        });
+
+        const byIds = await transport.fetchByIds(['HR-335649-5472/5'], { city: 'zagreb' });
+        expect(byIds.features.map(f => f.properties.parcelId)).toEqual(['HR-335649-5472/5']);
+        expect(byIds).toMatchObject({ returnsWGS84: true, sourceSrid: 'EPSG:4326', absentIds: [] });
+
+        const bounds = await transport.fetchBounds(null, { keys: ['0,0'], city: 'zagreb' });
+        expect(bounds.features.map(f => f.properties.parcelId)).toEqual(['HR-335649-1', 'HR-335649-2']);
+        expect(bounds.returnsWGS84).toBe(true);
+        expect(converted).toEqual(['EPSG:3765', 'EPSG:3765']);
+        expect(asked).toEqual(['api.urbangametheory.xyz', 'oss.uredjenazemlja.hr', 'api.urbangametheory.xyz', 'oss.uredjenazemlja.hr']);
+        expect(updateStatus).toHaveBeenCalledTimes(1);
+        expect(updateStatus.mock.calls[0][0]).toMatch(/directly from the state cadastre \(DGU\)/);
+    });
+
+    it('never asks DGU while our server answers, nor for a city outside Croatia', async () => {
+        const fetch = vi.fn(async url => (String(url).includes('oss.uredjenazemlja.hr')
+            ? { ok: true, status: 200, json: async () => ({ features: [] }) }
+            : { ok: true, status: 200, json: async () => ({ features: [{ type: 'Feature', properties: { parcelId: 'HR-1-1' }, geometry: null }] }) }));
+        const transport = bootTransport('zagreb', fetch, { source: 'oss-wfs' }, {}, { fetchWithRetry: (url, options) => fetch(url, options) });
+        const answer = await transport.fetchByIds(['HR-1-1'], { city: 'zagreb' });
+        expect(answer.features.map(f => f.properties.parcelId)).toEqual(['HR-1-1']);
+        expect(fetch.mock.calls.map(([url]) => new URL(url).host)).toEqual(['api.urbangametheory.xyz']);
+
+        const down = vi.fn(async () => { throw new TypeError('Failed to fetch'); });
+        const lisbon = bootTransport('lisbon', down, { source: 'parcel-lj' }, {}, { fetchWithRetry: (url, options) => down(url, options) });
+        await expect(lisbon.fetchByIds(['PT-1'], { city: 'lisbon' })).rejects.toThrow('Failed to fetch');
+        expect(down.mock.calls.every(([url]) => !String(url).includes('oss.uredjenazemlja.hr'))).toBe(true);
+    });
+
     it('forwards browser source progress through the viewport transport', async () => {
         const detail = { phase: 'source-download', authority: 'Oxford', loadedBytes: 5e6, totalBytes: 20e6 };
         const onProgress = vi.fn();
