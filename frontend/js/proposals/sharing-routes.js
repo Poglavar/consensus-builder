@@ -1087,8 +1087,9 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         normalized.proposalId = targetHash;
 
         let stored = proposalStorage.getProposal(targetHash);
+        if (stored) await followServerLifecycle(stored, normalized.lifecycleStatus);
         if (!stored) {
-            const imported = proposalStorage.importProposal(normalized, { overwrite: false, preserveStatus: true });
+            const imported = proposalStorage.importProposal(normalized, { overwrite: false });
             stored = imported || proposalStorage.getProposal(targetHash);
         }
 
@@ -1301,6 +1302,8 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         const actuallyApplied = [];
         const skipped = [];
         const failures = [];
+        // Members the server reports Cancelled: stored and opened, never applied, never "present".
+        const cancelled = [];
         let lastLoadedProposalIdFor3D = null;
 
         // ONE ordered pass (A6). Records are flat and the ground a formation consumes resolves
@@ -1326,6 +1329,12 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 skipDependencyFetch: true
             });
             const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
+
+            if (result && result.cancelled) {
+                cancelled.push(proposalId);
+                if (proposalId) lastLoadedProposalIdFor3D = proposalId;
+                continue;
+            }
 
             if (result && result.skipped) {
                 skipped.push(proposalId);
@@ -1360,7 +1369,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             }
         }
 
-        if (actuallyApplied.length > 0 || skipped.length > 0 || failures.length > 0) {
+        if (actuallyApplied.length > 0 || skipped.length > 0 || cancelled.length > 0 || failures.length > 0) {
             if (typeof updateProposalLayer === 'function') {
                 updateProposalLayer();
             }
@@ -1373,7 +1382,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             // fit its current derived bounds and open its details panel.
             let lastProposalId = null;
             let lastProposalOrd = -1;
-            [...actuallyApplied, ...skipped].forEach(pid => {
+            [...actuallyApplied, ...skipped, ...cancelled].forEach(pid => {
                 if (!pid) return;
                 const key = String(pid);
                 const ord = payloadOrder.has(key) ? payloadOrder.get(key) : -1;
@@ -1425,6 +1434,15 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             if (skipped.length > 0) {
                 bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposals (already present).', {
                     count: skipped.length
+                })}</p>`);
+            }
+            if (cancelled.length > 0) {
+                const titleOf = id => {
+                    const record = proposalStorage.getProposal(id);
+                    return escapeHtml((record && (record.title || record.name)) || String(id));
+                };
+                bodyLines.push(`<p>${tShare('plan.cancelledToast', 'Not applied, cancelled: {{titles}}.', {
+                    titles: cancelled.map(titleOf).join(', ')
                 })}</p>`);
             }
             if (failures.length > 0) {
@@ -1528,6 +1546,7 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     if (!normalized) return { applied: false, skipped: false, proposalId, reason: 'Unable to normalize shared proposal' };
 
     let existing = proposalStorage.getProposal(normalized.proposalId);
+    if (existing) await followServerLifecycle(existing, normalized.lifecycleStatus);
     if (existing && isProposalCurrentlyApplied(existing)) {
         return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
     }
@@ -1572,6 +1591,13 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     // caller can defer all members to the plan's single batch commit.
     existing = proposalStorage.importProposal(normalized, { overwrite: true, deferSave: true });
     if (!existing) return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
+
+    // A cancelled proposal is stored, so the link still opens it with its Cancelled badge, but it is
+    // not queued: it cannot stand on a map (proposals/display-state.js).
+    if (!window.__proposalDisplayState.isApplicable(existing)) {
+        if (options.deferSave !== true) proposalStorage.save?.();
+        return { applied: false, skipped: false, cancelled: true, proposalId: existing.proposalId || proposalId, reason: 'Cancelled' };
+    }
 
     // Import changes records only. Keep every queued member parked until the complete ordered set
     // is present; the caller then sends them through the direct scoped materializer one by one.
@@ -1774,6 +1800,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         const applied = [];
         const skipped = [];
         const failed = [];
+        // Members the server reports Cancelled: stored and opened, never applied, never "present".
+        const cancelled = [];
 
         const fetchProgressIds = new Set();
         const markFetchProgress = (rawId) => {
@@ -1837,6 +1865,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 status: tShare('plan.rebuildingPlan', 'Replaying its formations from the cadastre…')
             });
             await ProposalManager.reapplyAppliedProposals({ onProgress: reportSharedPlanProgress });
+        }
+
+        // Local copies of the linked records follow the lifecycle the server just sent for them
+        // (followServerLifecycle, server-sync.js), BEFORE the applied-state analysis below: a copy
+        // the server reports Cancelled is unapplied, so the link does not count it as standing.
+        for (const [id, record] of batchRecords.records) {
+            const local = findLocalCopyOfServerProposal({ serverProposalId: id, proposalId: record?.proposalId, id });
+            if (local) await followServerLifecycle(local, record?.lifecycleStatus);
         }
 
         const urlRequests3D = is3DModeRequestedFromUrl();
@@ -2293,6 +2329,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     }
                 } catch (_) { }
 
+                if (result && result.cancelled) {
+                    cancelled.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
+                    continue;
+                }
+
                 if (result && result.skipped) {
                     skipped.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
                     continue;
@@ -2442,7 +2483,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // Link order is a presentation choice; fabric precedence remains immutable record order.
         const lastProposalId = selectSharedPlanFocusId(
             applied,
-            skipped,
+            [...skipped, ...cancelled],
             incomingAlreadyApplied,
             linkOrderForProposal
         );
@@ -2546,13 +2587,18 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     } catch (_) { }
                 }
             });
-        } else if (!options.suppressSummary && (applied.length > 0 || skipped.length > 0) && typeof showEphemeralMessage === 'function') {
+        } else if (!options.suppressSummary && (applied.length > 0 || skipped.length > 0 || cancelled.length > 0) && typeof showEphemeralMessage === 'function') {
             // Clean apply: lightweight feedback instead of a modal.
             const bits = [];
             const appliedOrPresent = applied.length + skipped.length;
             if (appliedOrPresent > 0) {
                 bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposals.', {
                     count: appliedOrPresent
+                }));
+            }
+            if (cancelled.length > 0) {
+                bits.push(tShare('plan.cancelledToast', 'Not applied, cancelled: {{titles}}.', {
+                    titles: cancelled.map(item => item.label).join(', ')
                 }));
             }
             showEphemeralMessage(bits.join(' '), 6000, 'info');

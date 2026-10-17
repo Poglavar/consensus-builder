@@ -562,7 +562,8 @@ function applyProposalListFilters(dataset) {
         }
 
         if (appliedFilter !== 'all') {
-            const applied = (typeof isProposalApplied === 'function') ? !!isProposalApplied(entry.proposal) : !!(entry.proposal && entry.proposal.applied);
+            // The same "Applied" the row's badge shows (proposals/display-state.js).
+            const { applied } = window.__proposalDisplayState.of(entry.proposal);
             if (appliedFilter === 'applied' && !applied) return false;
             if (appliedFilter === 'not-applied' && applied) return false;
         }
@@ -612,26 +613,17 @@ function sortProposalDataset(dataset) {
 }
 
 // The lifecycle rung of one proposal, the ladder every list shows (docs/design-language.md):
-// Draft → Published → Minted → Executed, and a modifier for an expired, concluded or unfunded
-// record. → { rung, label, modifier: { className, label } | null }. The proposals list, the parcel
-// and block panels and the parcel-set list all read it, so a proposal is named the same wherever
-// it is listed.
+// Draft → Published → Minted → Executed, and a modifier for a cancelled, expired, concluded or
+// unfunded record. → { rung, label, modifier: { className, label } | null }. The proposals list, the
+// parcel and block panels and the parcel-set list all read it, so a proposal is named the same
+// wherever it is listed. The derivation is proposals/display-state.js, shared with the details panel.
 function getProposalLadder(proposal) {
     const t = getProposalI18nHelper();
-    const lifecycleKey = getProposalLifecycleKey(proposal);
-    const serial = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
-    const rung = getLifecycleStatus(proposal) === 'Executed' ? 'executed'
-        : isProposalMinted(proposal) ? 'minted'
-            : serial ? 'published' : 'draft';
-    const label = rung === 'executed' ? t('panel.proposal.lifecycle.executed', 'Executed')
-        : rung === 'minted' ? t('panel.proposal.lifecycle.minted', 'Minted')
-            : rung === 'published' ? t('common.lifecycle.published', 'Published')
-                : t('common.lifecycle.draft', 'Draft');
-    const MODIFIER_KEYS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
-    const modifier = MODIFIER_KEYS.includes(lifecycleKey)
-        ? { className: lifecycleKey === 'vote-open' ? 'cb-badge--published' : 'cb-badge--expired', label: getProposalLifecycleLabel(lifecycleKey) }
+    const state = window.__proposalDisplayState.of(proposal, { applied: false });
+    const modifier = state.modifier
+        ? { className: state.modifierTone, label: getProposalLifecycleLabel(state.modifier) }
         : null;
-    return { rung, label, modifier };
+    return { rung: state.rung, label: window.__proposalDisplayState.rungLabel(state.rung, t), modifier };
 }
 
 // Who decides (proposal-kinds.md), once the kind is settled: chosen in the dialog, or published
@@ -649,13 +641,13 @@ function proposalKindBadgeHtml(proposal, published) {
 }
 
 // The ladder as badges: the rung, the kind, "Applied" when the proposal is on this map
-// (options.applied, else read from the proposal) and the modifier.
+// (options.applied, else read from the proposal; never for a cancelled one) and the modifier.
 function proposalLadderBadgesHtml(proposal, options = {}) {
     const t = getProposalI18nHelper();
     const ladder = getProposalLadder(proposal);
-    const applied = typeof options.applied === 'boolean'
-        ? options.applied
-        : (typeof isProposalApplied === 'function' && isProposalApplied(proposal));
+    const { applied } = window.__proposalDisplayState.of(proposal, typeof options.applied === 'boolean'
+        ? { applied: options.applied }
+        : {});
     return [
         `<span class="cb-badge cb-badge--${ladder.rung}">${escapeHtml(ladder.label)}</span>`,
         proposalKindBadgeHtml(proposal, ladder.rung !== 'draft'),
@@ -745,7 +737,9 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             ? findLocalCopyOfServerProposal(proposal)
             : null;
         const appliedSubject = localCopy || proposal;
-        const appliedState = typeof isProposalApplied === 'function' ? isProposalApplied(appliedSubject) : metrics.isApplied;
+        const appliedOnMap = typeof isProposalApplied === 'function' ? isProposalApplied(appliedSubject) : metrics.isApplied;
+        // A cancelled record never reads as applied (proposals/display-state.js).
+        const appliedState = window.__proposalDisplayState.of(proposal, { applied: !!appliedOnMap }).applied;
         if (appliedState) classes.push('is-applied');
         const classAttr = classes.join(' ');
 
@@ -853,14 +847,14 @@ function resetParcelSelectionForProposalListInteraction() {
     } catch (_) { }
 }
 
-// Download a server proposal into local storage. preserveStatus:false — downloading does not apply
-// the proposal to this map, so its status must not survive the trip. Keeping the uploader's
-// "applied" made the details panel announce a proposal as on the map while no geometry had been
-// drawn, and offer "Remove from map" where "Apply to map" belonged. Shared by a list row click and
-// the map search box's proposal results.
+// Download a server proposal into local storage. Downloading does not apply the proposal to this
+// map, so import parks it (applied: false). Keeping the uploader's "applied" made the details panel
+// announce a proposal as on the map while no geometry had been drawn, and offer "Remove from map"
+// where "Apply to map" belonged. The lifecycle is the server's and is kept. Shared by a list row
+// click and the map search box's proposal results.
 async function importServerProposal(serverId) {
     const serverProposal = await fetchServerProposalById(serverId, resolveCurrentCityCode());
-    const proposal = proposalStorage.importProposal(serverProposal, { overwrite: true, preserveStatus: false });
+    const proposal = proposalStorage.importProposal(serverProposal, { overwrite: true });
     if (!proposal) throw new Error(`Failed to import proposal ${serverId}`);
     updateShowProposalsButton();
     return proposal;

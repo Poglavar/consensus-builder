@@ -1740,8 +1740,10 @@ function getProposalDisplayMeta(proposal, fallbackId = '') {
     }
 
     const baseId = proposalId || fallbackRaw || '';
-    // Legacy numeric local ids read as local-<n>; hash ids (p-…) are already unambiguous.
-    const displayId = !minted && /^\d+$/.test(baseId) ? `local-${baseId}` : (baseId || 'unknown');
+    // Legacy numeric local ids read as local-<n>; hash ids (p-…) are already unambiguous. A numeric
+    // id that is the record's server serial is a published proposal's, not a local one.
+    const isServerSerial = !!proposal && String(proposal.serverProposalId ?? '') === baseId;
+    const displayId = !minted && !isServerSerial && /^\d+$/.test(baseId) ? `local-${baseId}` : (baseId || 'unknown');
 
     return {
         minted,
@@ -1853,18 +1855,20 @@ function getAgentProposalTitle(proposal, fallbackId = '') {
 }
 
 // A proposal's rung on the lifecycle ladder as the shared badge (docs/design-language.md: Draft →
-// Published → Minted → Executed), decided the way the proposals list decides it: executed, else
-// minted, else published (it has a server serial), else draft. proposal may be null (a cached id
-// only), and then only minted can be known.
+// Published → Minted → Executed), from the same derivation as the proposals list and the details
+// panel (proposals/display-state.js), with its modifier (Cancelled, Expired…). proposal may be null
+// (a cached id only), and then only minted can be known.
 function agentProposalLifecycleBadgeHtml(proposal, minted) {
-    const executed = !!proposal && typeof getLifecycleStatus === 'function' && getLifecycleStatus(proposal) === 'Executed';
-    const published = !!proposal && typeof getSerialProposalId === 'function' && !!getSerialProposalId(proposal);
-    const rung = executed ? 'executed' : minted ? 'minted' : published ? 'published' : 'draft';
-    const label = rung === 'executed' ? translateText('panel.proposal.lifecycle.executed', 'Executed')
-        : rung === 'minted' ? translateText('panel.proposal.lifecycle.minted', 'Minted')
-            : rung === 'published' ? translateText('common.lifecycle.published', 'Published')
-                : translateText('common.lifecycle.draft', 'Draft');
-    return `<span class="cb-badge cb-badge--${rung}">${label}</span>`;
+    const displayState = window.__proposalDisplayState;
+    if (!proposal) {
+        const rung = minted ? 'minted' : 'draft';
+        return `<span class="cb-badge cb-badge--${rung}">${displayState.rungLabel(rung, translateText)}</span>`;
+    }
+    const state = displayState.of(proposal, { applied: false });
+    const modifier = state.modifier && typeof getProposalLifecycleLabel === 'function'
+        ? `<span class="cb-badge ${state.modifierTone}">${getProposalLifecycleLabel(state.modifier)}</span>`
+        : '';
+    return `<span class="cb-badge cb-badge--${state.rung}">${displayState.rungLabel(state.rung, translateText)}</span>${modifier}`;
 }
 
 // The proposal's type as a neutral badge beside the lifecycle one.

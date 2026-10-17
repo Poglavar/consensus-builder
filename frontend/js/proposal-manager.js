@@ -20,6 +20,11 @@ const proposalClaims = (typeof window !== 'undefined' && window.__claims)
     ? window.__claims
     : require('./proposals/claims.js');
 
+// Which proposals may stand on a map at all (a cancelled one may not): proposals/display-state.js.
+const proposalDisplayStateApi = (typeof window !== 'undefined' && window.__proposalDisplayState)
+    ? window.__proposalDisplayState
+    : require('./proposals/display-state.js');
+
 // Open ground (PARCEL-OPTIONAL.md phase 3): hosting the part of a site no bound parcel covers, and
 // the geometric interaction index. Pure UMD module; namespaced global in the browser.
 const openGroundApi = (typeof window !== 'undefined' && window.__openGround)
@@ -610,7 +615,8 @@ const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-apply-failed': ['applyFailed', 'The proposal could not be placed on the map because its geometry could not be derived from the selected land.'],
     'proposal-map-busy': ['busy', 'Another map update is still running. Wait for it to finish and try again.'],
     'proposal-store-unavailable': ['storeUnavailable', 'Proposals are not loaded yet. Wait for the city to finish loading and try again.'],
-    'proposal-not-found': ['notFound', 'This proposal is no longer available. Refresh the proposals list and try again.']
+    'proposal-not-found': ['notFound', 'This proposal is no longer available. Refresh the proposals list and try again.'],
+    'proposal-cancelled': ['cancelled', 'This proposal was cancelled, so it cannot be applied to the map.']
 };
 
 function _proposalApplyFailure(code, params = {}) {
@@ -3022,6 +3028,11 @@ const ProposalManager = {
             return false;
         }
         if (appliedOf(proposal)) return true;
+        // A withdrawn proposal cannot stand on a map (proposals/display-state.js).
+        if (!proposalDisplayStateApi.isApplicable(proposal)) {
+            this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-cancelled'));
+            return false;
+        }
 
         // Superseding is what an explicit Apply click means. Shared-plan application passes
         // supersede:false and is refused before any draft state changes.

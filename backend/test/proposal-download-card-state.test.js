@@ -197,7 +197,10 @@ describe('the renderer shows it in both tabs', () => {
             listUiSource.indexOf('function getProposalLadder('),
             listUiSource.indexOf('function buildProposalActionButtons(')
         );
-        expect(ladderSource).toMatch(/const rung = getLifecycleStatus\(proposal\) === 'Executed' \? 'executed'\s*: isProposalMinted\(proposal\) \? 'minted'\s*: serial \? 'published' : 'draft';/);
+        // The rung and "Applied" come from the one derivation the details panel also reads; its
+        // rules are tested in proposal-display-state.test.js.
+        expect(ladderSource).toMatch(/const state = window\.__proposalDisplayState\.of\(proposal, \{ applied: false \}\);/);
+        expect(ladderSource).toMatch(/const \{ applied \} = window\.__proposalDisplayState\.of\(proposal,/);
         expect(ladderSource).toMatch(/<span class="cb-badge cb-badge--\$\{ladder\.rung\}">/);
         expect(ladderSource).toMatch(/applied \? `<span class="cb-badge cb-badge--applied"/);
         const badgeRow = listSection.slice(listSection.indexOf('proposal-card-badges'));

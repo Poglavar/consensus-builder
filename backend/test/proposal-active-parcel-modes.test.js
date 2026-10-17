@@ -30,7 +30,7 @@ describe('active proposal parcel modes', () => {
     it('does not advertise Decide Later as an active proposal-list filter', () => {
         const activeFilterBlock = dataSource.slice(
             dataSource.indexOf('const PROPOSAL_GOAL_FILTERS'),
-            dataSource.indexOf('const PROPOSAL_INACTIVE_STATUSES')
+            dataSource.indexOf('const PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS')
         );
         expect(activeFilterBlock).not.toContain("value: 'decide-later'");
     });

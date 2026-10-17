@@ -540,10 +540,9 @@ async function handleProposalDownloadClick(event) {
 
     try {
         const proposal = await fetchServerProposalById(proposalId, resolveCurrentCityCode());
-        // preserveStatus: false → resets `Applied` to `Active` (Executed stays Executed) and nested
-        // road/building/structure/reparcel statuses to `unapplied`. Prevents the parcelDataLoaded
-        // auto-apply from immediately re-applying a freshly downloaded server proposal.
-        const imported = proposalStorage.importProposal(proposal, { overwrite: true, preserveStatus: false });
+        // Import parks the record (applied: false) and keeps its lifecycle. Parking prevents the
+        // parcelDataLoaded auto-apply from immediately re-applying a freshly downloaded proposal.
+        const imported = proposalStorage.importProposal(proposal, { overwrite: true });
         if (!imported) {
             throw new Error('Unable to store proposal locally');
         }

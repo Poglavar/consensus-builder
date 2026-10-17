@@ -493,7 +493,8 @@
         "applyFailed": "No se pudo colocar la propuesta en el mapa porque no fue posible derivar su geometría del terreno seleccionado.",
         "busy": "Hay otra actualización del mapa en curso. Espera a que termine e inténtalo de nuevo.",
         "storeUnavailable": "Las propuestas aún no se han cargado. Espera a que termine la carga de la ciudad e inténtalo de nuevo.",
-        "notFound": "Esta propuesta ya no está disponible. Actualiza la lista de propuestas e inténtalo de nuevo."
+        "notFound": "Esta propuesta ya no está disponible. Actualiza la lista de propuestas e inténtalo de nuevo.",
+        "cancelled": "Esta propuesta fue cancelada, por lo que no se puede aplicar al mapa."
     },
     "proposalDrafts": {
         "title": "Borradores",
@@ -1813,7 +1814,7 @@
             },
             "lifecycle": {
                 "active": "Activa",
-                "inactive": "Inactiva",
+                "cancelled": "Cancelada",
                 "expired": "Expirada",
                 "executed": "Ejecutada",
                 "minted": "Acuñada",
@@ -3171,6 +3172,7 @@
                     },
                     "applyBlockedByDependencies": "Bloqueado: dependencias no satisfechas tras los reintentos.",
                     "summary": "Resultado del plan compartido",
+                    "cancelledToast": "No aplicada, cancelada: {{titles}}.",
                     "appliedToast": {
                         "one": "Se aplicó {{count}} propuesta.",
                         "few": "Se aplicaron {{count}} propuestas.",

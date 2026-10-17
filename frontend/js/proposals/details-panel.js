@@ -365,10 +365,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Road proposals should always be able to be applied
     const applyDisabledForType = isRoadProposal ? false : APPLY_DISABLED_TYPE_KEYS.has(normalizedTypeForActions);
 
-    const appliedState = isProposalApplied(fullProposal);
-    // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
-    const isMinted = isProposalMinted(fullProposal);
+    // Badges and the Apply/Unapply action read ONE derived state (proposals/display-state.js), the
+    // one the proposal lists read: a cancelled proposal shows no "Applied" and offers no map action.
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
+    const displayState = window.__proposalDisplayState.of(fullProposal, {
+        applied: !!isProposalApplied(fullProposal),
+        lifecycleKey,
+        serial: typeof getSerialProposalId === 'function' ? getSerialProposalId(fullProposal) : null
+    });
+    const appliedState = displayState.applied;
+    const isMinted = displayState.minted;
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
     const mapStatusBadgeClass = appliedState ? 'applied' : 'not-applied';
@@ -414,7 +420,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const hasProposalManager = typeof ProposalManager !== 'undefined'
         && typeof ProposalManager.applyProposal === 'function'
         && typeof ProposalManager.unapplyProposal === 'function';
-    const canShowMapActions = !!proposalKey && supportsMapToggle && hasProposalManager;
+    const canShowMapActions = !!proposalKey && supportsMapToggle && hasProposalManager && displayState.mapAction !== null;
 
     let mapActionButtonHtml = '';
     if (canShowMapActions) {
@@ -926,20 +932,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${(() => {
             // One lifecycle badge from the ladder (docs/design-language.md), the same as the list
             // rows: Draft → Published → Minted → Executed; "Applied" when it is on this map; a
-            // modifier for expired / concluded / unfunded; the payout mode as a neutral badge.
-            const serial = typeof getSerialProposalId === 'function' ? getSerialProposalId(fullProposal) : null;
-            const ladder = lifecycleKey === 'executed' ? 'executed' : isMinted ? 'minted' : serial ? 'published' : 'draft';
-            const ladderLabel = ladder === 'executed' ? tProposal('panel.proposal.lifecycle.executed', 'Executed')
-                : ladder === 'minted' ? tProposal('panel.proposal.lifecycle.minted', 'Minted')
-                    : ladder === 'published' ? tProposal('common.lifecycle.published', 'Published')
-                        : tProposal('common.lifecycle.draft', 'Draft');
+            // modifier for cancelled / expired / concluded / unfunded; the payout mode as a neutral
+            // badge. All of it is displayState (proposals/display-state.js).
+            const ladder = displayState.rung;
+            const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
             const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
             const ladderBadge = (isMinted && mintedExplorerUrl)
                 ? `<a class="cb-badge cb-badge--minted cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
                 : `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
-            const MODIFIERS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
-            const modifier = MODIFIERS.includes(lifecycleKey)
-                ? `<span class="cb-badge ${lifecycleKey === 'vote-open' ? 'cb-badge--published' : 'cb-badge--expired'}">${statusBadgeLabel}</span>`
+            const modifier = displayState.modifier
+                ? `<span class="cb-badge ${displayState.modifierTone}">${statusBadgeLabel}</span>`
                 : '';
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`

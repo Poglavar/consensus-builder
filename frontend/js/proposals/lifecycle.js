@@ -291,7 +291,7 @@ function getProposalLifecycleKey(proposal) {
     const lifecycleField = lifecyclePhaseOf(proposal).toLowerCase();
     if (lifecycleField === 'executed') return 'executed';
     if (lifecycleField === 'expired') return 'expired';
-    if (PROPOSAL_INACTIVE_STATUSES.has(lifecycleField)) return 'inactive';
+    if (lifecycleField === 'cancelled') return 'cancelled';
     return 'active';
 }
 
@@ -306,8 +306,8 @@ function getProposalLifecycleLabel(key) {
             return t('panel.proposal.lifecycle.executed', 'Executed');
         case 'expired':
             return t('panel.proposal.lifecycle.expired', 'Expired');
-        case 'inactive':
-            return t('panel.proposal.lifecycle.inactive', 'Inactive');
+        case 'cancelled':
+            return t('panel.proposal.lifecycle.cancelled', 'Cancelled');
         case 'accepted-not-funded':
             return t('panel.proposal.lifecycle.acceptedNotFunded', 'Accepted (Not funded)');
         default:
@@ -325,8 +325,8 @@ function getProposalLifecycleClass(key) {
             return 'executed';
         case 'expired':
             return 'expired';
-        case 'inactive':
-            return 'inactive';
+        case 'cancelled':
+            return 'cancelled';
         case 'accepted-not-funded':
             return 'accepted-not-funded';
         default:

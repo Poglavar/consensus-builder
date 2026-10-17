@@ -283,7 +283,7 @@ function renderProposalListModal() {
     // Active/Executed tabs. Every lifecycle status is selectable; labels reuse getProposalLifecycleLabel.
     const lifecycleFilterOptions = [
         { value: 'all', label: t('modal.roadWidth.proposalList.filters.statusAll', 'All statuses') },
-        ...['active', 'executed', 'expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded']
+        ...['active', 'executed', 'expired', 'cancelled', 'vote-open', 'vote-concluded', 'accepted-not-funded']
             .map(key => ({ value: key, label: getProposalLifecycleLabel(key) }))
     ];
     const appliedFilterOptions = [

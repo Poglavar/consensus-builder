@@ -1299,18 +1299,19 @@ const proposalStorage = {
         // §10 M8). Importing it here would apply it over this city's cadastre — or none, in explore.
         refuseForeignProposal(proposalCityOf({ city: proposal.city ?? proposal.proposal_data?.city, cadastreParcelIds: proposal.cadastreParcelIds }));
 
-        const { overwrite = true, preserveStatus = false, deferSave = false } = options;
+        const { overwrite = true, deferSave = false } = options;
         const normalized = this._normalizeProposal({ ...proposal });
 
-        if (!preserveStatus) {
-            const executed = getLifecycleStatus(normalized) === 'Executed';
-            normalized.lifecycleStatus = executed ? 'Executed' : 'Active';
-            // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
-            // cache; they are NOT reproduced. On apply, children are re-derived from (parents +
-            // rule) and get freshly minted ids from the id subsystem. Child-id identity is a local
-            // concern of each apply — the consensus layer is parent-keyed — so we do not try to
-            // match the uploader's ids.
-        }
+        // The lifecycle is the record's own (the server's, for a published proposal), so it is
+        // kept as it arrives: a Cancelled or Expired record stays one. It used to be rewritten to
+        // Active unless the caller passed preserveStatus — a leftover from when lifecycle and
+        // application shared one field — so a cancelled proposal opened from a link read Active,
+        // was applied, and showed "Applied" and "Unapply".
+        // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
+        // cache; they are NOT reproduced. On apply, children are re-derived from (parents + rule)
+        // and get freshly minted ids from the id subsystem. Child-id identity is a local concern of
+        // each apply — the consensus layer is parent-keyed — so we do not try to match the
+        // uploader's ids.
 
         // Importing only stores a definition. Even an Executed proposal has not been materialised
         // in this browser yet; an explicit single-proposal or shared-plan flow applies it afterward.
@@ -2510,17 +2511,6 @@ const PROPOSAL_GOAL_LABELS = {
     parcelBased: 'Parcel-based',
     other: 'Other'
 };
-
-const PROPOSAL_INACTIVE_STATUSES = new Set([
-    'inactive',
-    'expired',
-    'cancelled',
-    'canceled',
-    'rejected',
-    'declined',
-    'void',
-    'archived'
-]);
 
 const PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS = 280;
 

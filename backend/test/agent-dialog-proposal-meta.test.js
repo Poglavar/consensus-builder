@@ -4,6 +4,9 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from '@babel/parser';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
 
 function functionSources(file, names) {
     const source = readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8');
@@ -20,7 +23,7 @@ const code = [
     functionSources('proposals/chain.js', ['getProposalNftInfo', 'isProposalMinted']),
     functionSources('agents.js', ['getProposalChainLabel', 'getProposalDisplayMeta'])
 ].join('\n');
-const getProposalDisplayMeta = new Function(`${code}\nreturn getProposalDisplayMeta;`)();
+const getProposalDisplayMeta = new Function('window', `${code}\nreturn getProposalDisplayMeta;`)({ __proposalDisplayState: displayState });
 
 describe('agent dialog proposal meta', () => {
     it('treats a local hash-id proposal as local and shows its id as is', () => {
@@ -31,6 +34,10 @@ describe('agent dialog proposal meta', () => {
         expect(getProposalDisplayMeta({ proposalId: 'p-abc', nft: { chain: 'solana-devnet', contract: 'Prog', tokenId: 'Mint' } }).minted).toBe(true);
         expect(getProposalDisplayMeta({ proposalId: 'p-abc', onchain: { transactionHash: '0x1' } }).minted).toBe(true);
         expect(getProposalDisplayMeta({ proposalId: 'p-abc', isMinted: true }).minted).toBe(true);
+    });
+
+    it('does not call a published proposal minted for its numeric server serial', () => {
+        expect(getProposalDisplayMeta({ proposalId: '780', serverProposalId: '780' })).toMatchObject({ minted: false, displayId: '780' });
     });
 
     it('keeps the cached-id fallbacks: numeric means minted, legacy local numbers read local-<n>', () => {

@@ -1,14 +1,9 @@
 // proposals/chain.js — extracted from proposals.js (behavior-preserving relocation).
 
+// Minted means a mint record exists (proposals/display-state.js owns the rule). A numeric id is a
+// server serial, i.e. Published: reading it as minted badged published proposals "Minted".
 function isProposalMinted(proposal) {
-    if (!proposal) return false;
-    const flaggedMinted = proposal.isMinted === true;
-    const hasOnchainTx = !!(proposal.onchain && proposal.onchain.transactionHash);
-    const hasNft = !!getProposalNftInfo(proposal);
-    const hasNumericNonLocalId = proposal.proposalId
-        && !isLocalProposalId(proposal.proposalId)
-        && /^[0-9]+$/.test(String(proposal.proposalId));
-    return flaggedMinted || hasOnchainTx || hasNumericNonLocalId || hasNft;
+    return window.__proposalDisplayState.hasMintRecord(proposal);
 }
 
 // Can this proposal's geometry NEVER be rewritten by us? True for on-chain-minted proposals AND for

@@ -9,13 +9,15 @@ function harness(fetch) {
     const cache = { proposals: [], count: null, loading: false, lastCity: 'zagreb', lastFetchedAt: 0 };
     let api;
     const render = vi.fn(() => api.ensure('zagreb'));
+    // Local copies following the server lifecycle is server-sync.js's own concern, outside this slice.
+    const followServerLifecycles = vi.fn(async () => 0);
     api = new Function('serverProposalCache', 'proposalListState', 'normalizeCityCodeForApi',
         'resolveCurrentCityCode', 'resolveBackendBaseUrl', 'normalizeServerProposalSummary',
-        'SERVER_PROPOSAL_SUMMARY_LIMIT', 'window', 'fetch', 'renderProposalListModal',
+        'SERVER_PROPOSAL_SUMMARY_LIMIT', 'window', 'fetch', 'renderProposalListModal', 'followServerLifecycles',
         `${body} return { ensure: ensureServerProposals, fetch: fetchServerProposalSummaries };`)(
         cache, { source: 'server', searchText: '', sortKey: '' }, city => city,
-        () => 'zagreb', () => 'http://backend', row => row, 250, {}, fetch, render);
-    return { ...api, cache, render };
+        () => 'zagreb', () => 'http://backend', row => row, 250, {}, fetch, render, followServerLifecycles);
+    return { ...api, cache, render, followServerLifecycles };
 }
 
 const success = () => ({ ok: true, json: async () => ({ proposals: [], count: 0 }) });

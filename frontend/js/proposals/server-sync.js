@@ -84,6 +84,45 @@ function findLocalCopyOfServerProposal(summary) {
     return null;
 }
 
+// A local copy of a published proposal follows the lifecycle the server reports for it: the server
+// holds the record, and import keeps what it sends (proposalStorage.importProposal). Only a terminal
+// lifecycle (Executed, Cancelled, Expired) is followed; Active never reopens a terminal state stored
+// here, since an owner decision can execute a proposal in this browser before the server hears of
+// it. A copy that becomes Cancelled cannot stand on the map (proposals/display-state.js), so an
+// applied one is unapplied — otherwise the map would keep geometry no badge or button admits to.
+const SERVER_TERMINAL_LIFECYCLES = new Set(['Executed', 'Cancelled', 'Expired']);
+
+async function followServerLifecycle(local, serverLifecycle) {
+    if (!local || !local.proposalId || typeof proposalStorage === 'undefined') return false;
+    const next = serverSyncLifecycleOf({ lifecycleStatus: serverLifecycle });
+    const key = String(local.proposalId);
+    let changed = false;
+    if (SERVER_TERMINAL_LIFECYCLES.has(next) && serverSyncLifecycleOf(local) !== next) {
+        console.info(`[${new Date().toISOString()}] [followServerLifecycle] ${key}: ${serverSyncLifecycleOf(local)} → ${next} (server)`);
+        proposalStorage.setProposalLifecycleStatus(key, next);
+        proposalStorage.save();
+        changed = true;
+    }
+    if (isApplied(local) && !window.__proposalDisplayState.isApplicable(local)) {
+        console.info(`[${new Date().toISOString()}] [followServerLifecycle] ${key}: unapplying, the server reports it ${next}`);
+        const unapplied = await ProposalManager.unapplyProposal(key);
+        if (!unapplied) console.error(`[${new Date().toISOString()}] [followServerLifecycle] ${key}: unapply failed; it stays on the map`);
+        changed = true;
+    }
+    return changed;
+}
+
+// Every local copy the server summaries name follows its server lifecycle (followServerLifecycle).
+async function followServerLifecycles(summaries) {
+    let changed = 0;
+    for (const summary of summaries) {
+        const local = findLocalCopyOfServerProposal(summary);
+        if (local && await followServerLifecycle(local, summary.lifecycleStatus)) changed += 1;
+    }
+    if (changed && typeof updateProposalList === 'function') updateProposalList();
+    return changed;
+}
+
 function isServerProposalDownloaded(summary) {
     return !!findLocalCopyOfServerProposal(summary);
 }
@@ -237,6 +276,9 @@ async function fetchServerProposalSummaries(cityCode) {
             serverProposalCache.proposals = summaries
                 .map(item => normalizeServerProposalSummary(item, city || undefined))
                 .filter(Boolean);
+            followServerLifecycles(serverProposalCache.proposals).catch(error => {
+                console.error(`[${new Date().toISOString()}] [followServerLifecycles] failed`, error);
+            });
             if (!window.__proposalCounts || window.__proposalCounts.summaryUpdatesAreaCount(q)) {
                 serverProposalCache.count = Number.isFinite(summaryPayload?.count)
                     ? Number(summaryPayload.count)

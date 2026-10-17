@@ -288,6 +288,15 @@ describe('proposal rows: a record is stored only in its own city', () => {
         expect(rowKeys(storage)).toEqual([]);
     });
 
+    // A cancelled server record used to be rewritten to Active on import, so a link to it applied it.
+    it('keeps the lifecycle an imported record arrives with', () => {
+        const { store } = bootInCity(['paris']);
+        store.importProposal(record('c1', { lifecycleStatus: 'Cancelled' }));
+        store.importProposal(record('e1', { lifecycleStatus: 'Expired' }));
+        expect(store.getProposal('c1').lifecycleStatus).toBe('Cancelled');
+        expect(store.getProposal('e1').lifecycleStatus).toBe('Expired');
+    });
+
     it('imports its own city\'s records, those of a city on the same cadastre and those naming no city', () => {
         const { store } = bootInCity(['paris']);
         expect(store.importProposal(record('z1', { city: 'zagreb' }))).toBeTruthy();

@@ -1,6 +1,9 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
+
+const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
 
 const source = readFileSync(
     new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url),
@@ -15,6 +18,8 @@ function loadSharedImportHelpers(overrides = {}) {
         ensureArrayOfStrings: value => Array.isArray(value) ? value.map(String) : [],
         isProposalCurrentlyApplied: proposal => proposal?.applied === true,
         setProposalApplied: (proposal, applied) => { proposal.applied = applied; },
+        window: { __proposalDisplayState: displayState },
+        followServerLifecycle: async () => false,
         ...overrides
     };
     vm.createContext(context);
@@ -632,5 +637,53 @@ describe('shared-plan import boundary', () => {
         // The remaining "Rebuilding applied plan" is the boot replay awaiting reapplyAppliedProposals,
         // which is a different phase that happens to share the wording.
         expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\{ onProgress: reportSharedPlanProgress \}\)/);
+    });
+});
+
+// A link to a proposal the server reports Cancelled opens it with its Cancelled badge but never
+// applies it, and a local copy follows that lifecycle before the "already applied" shortcut.
+describe('shared import of a cancelled proposal', () => {
+    it('stores a cancelled record parked and skips it instead of queueing it', async () => {
+        const imported = [];
+        const proposalStorage = {
+            getProposal: vi.fn(() => null),
+            importProposal: vi.fn(proposal => { const stored = structuredClone(proposal); imported.push(stored); return stored; }),
+            _indexProposal: vi.fn(),
+            save: vi.fn()
+        };
+        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage });
+
+        const result = await importAndApplySharedProposal({
+            proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', lifecycleStatus: 'Cancelled',
+            goal: 'road-track', cadastreParcelIds: ['HR-1'], roadProposal: {}
+        }, { skipDependencyFetch: true });
+
+        expect(result).toEqual({ applied: false, skipped: false, cancelled: true, proposalId: 'c2-uh980k1g32gls', reason: 'Cancelled' });
+        expect(imported).toHaveLength(1);
+        expect(imported[0].lifecycleStatus).toBe('Cancelled');
+        expect(proposalStorage.save).toHaveBeenCalledOnce();
+    });
+
+    it('lets an existing local copy follow the server lifecycle before the already-applied check', async () => {
+        const local = { proposalId: 'c2-uh980k1g32gls', lifecycleStatus: 'Active', applied: true };
+        const followServerLifecycle = vi.fn(async (copy, lifecycle) => {
+            copy.lifecycleStatus = lifecycle;
+            copy.applied = false;
+            return true;
+        });
+        const proposalStorage = {
+            getProposal: vi.fn(() => local),
+            importProposal: vi.fn(proposal => structuredClone(proposal)),
+            _indexProposal: vi.fn(),
+            save: vi.fn()
+        };
+        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage, followServerLifecycle });
+
+        const result = await importAndApplySharedProposal({
+            proposalId: 'c2-uh980k1g32gls', lifecycleStatus: 'Cancelled', goal: 'road-track', cadastreParcelIds: ['HR-1'], roadProposal: {}
+        }, { skipDependencyFetch: true });
+
+        expect(followServerLifecycle).toHaveBeenCalledWith(local, 'Cancelled');
+        expect(result).toMatchObject({ applied: false, cancelled: true, reason: 'Cancelled' });
     });
 });

@@ -493,7 +493,8 @@
         "applyFailed": "The proposal could not be placed on the map because its geometry could not be derived from the selected land.",
         "busy": "Another map update is still running. Wait for it to finish and try again.",
         "storeUnavailable": "Proposals are not loaded yet. Wait for the city to finish loading and try again.",
-        "notFound": "This proposal is no longer available. Refresh the proposals list and try again."
+        "notFound": "This proposal is no longer available. Refresh the proposals list and try again.",
+        "cancelled": "This proposal was cancelled, so it cannot be applied to the map."
     },
     "proposalDrafts": {
         "title": "Drafts",
@@ -1775,7 +1776,7 @@
             },
             "lifecycle": {
                 "active": "Active",
-                "inactive": "Inactive",
+                "cancelled": "Cancelled",
                 "expired": "Expired",
                 "executed": "Executed",
                 "minted": "Minted",
@@ -3137,6 +3138,7 @@
                         "few": "Applied {{count}} proposals:",
                         "other": "Applied {{count}} proposals:"
                     },
+                    "cancelledToast": "Not applied, cancelled: {{titles}}.",
                     "appliedToast": {
                         "one": "Applied {{count}} proposal.",
                         "few": "Applied {{count}} proposals.",

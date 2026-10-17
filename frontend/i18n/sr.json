@@ -493,7 +493,8 @@
         "applyFailed": "Predlog nije mogao da se postavi na mapu jer geometrija nije mogla da se izvede iz izabranog zemljišta.",
         "busy": "U toku je druga izmena mape. Sačekajte da se završi pa pokušajte ponovo.",
         "storeUnavailable": "Predlozi još nisu učitani. Sačekajte da se učitavanje grada završi pa pokušajte ponovo.",
-        "notFound": "Ovaj predlog više nije dostupan. Osvežite listu predloga i pokušajte ponovo."
+        "notFound": "Ovaj predlog više nije dostupan. Osvežite listu predloga i pokušajte ponovo.",
+        "cancelled": "Ovaj predlog je otkazan pa ne može da se primeni na mapu."
     },
     "proposalDrafts": {
         "title": "Nacrti",
@@ -1800,7 +1801,7 @@
             },
             "lifecycle": {
                 "active": "Aktivan",
-                "inactive": "Neaktivan",
+                "cancelled": "Otkazan",
                 "expired": "Istekao",
                 "executed": "Izvršen",
                 "minted": "Iskovan",
@@ -3140,6 +3141,7 @@
                     },
                     "applyBlockedByDependencies": "Blokirano: zavisnosti nisu zadovoljene nakon pokušaja.",
                     "summary": "Rezultat podeljenog plana",
+                    "cancelledToast": "Nije primenjeno, otkazano: {{titles}}.",
                     "appliedToast": {
                         "one": "Primenjen {{count}} predlog.",
                         "few": "Primenjena {{count}} predloga.",

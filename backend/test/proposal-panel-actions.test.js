@@ -10,6 +10,9 @@ const supportView = require('../../frontend/js/proposals/support-view.js');
 const displayText = require('../../frontend/js/proposals/display-text.js');
 const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
 const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
+const displayState = require('../../frontend/js/proposals/display-state.js');
+// A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
+const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: 'Prog1111', tokenId: 'Token1111111111111111111111111111111111' });
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const renderStart = source.indexOf('function safeAgentText(');
 const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
@@ -56,6 +59,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         addEventListener() {}, removeEventListener() {},
         MapShell: { closeSheets() {} },
         ProposalDisplayText: displayText,
+        __proposalDisplayState: displayState,
         ProposalPanelPresentation: { resolve: () => 'compact' },
         ProposalSupportView: supportView,
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
@@ -119,6 +123,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         buildOwnerAcceptanceSectionHtml: () => '',
         ...(editable === null ? {} : { getProposalEditCapability: () => ({ editable }), editProposalApproval() {} })
     };
+    if (proposal.lifecycleStatus === undefined) proposal.lifecycleStatus = lifecycle;
     const context = vm.createContext(globals);
     vm.runInContext(`${renderSource}\nthis.renderProposal = showProposalInfo;`, context);
     context.renderProposal(proposal, null, null, { presentation: 'compact' });
@@ -150,7 +155,7 @@ describe('proposal details action footer', () => {
 
     it.each([
         { proposalId: 'local-1', cadastreParcelIds: [] },
-        { proposalId: 'minted-1', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } }
+        { proposalId: 'minted-1', cadastreParcelIds: [], nft: MINT_RECORD }
     ])('offers Bet on outcome last, on its own row of the shared action footer, for every proposal', proposal => {
         const result = render(proposal);
         const footer = parse(result.footer.innerHTML);
@@ -167,7 +172,7 @@ describe('proposal details action footer', () => {
     });
 
     it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {
-        const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } };
+        const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: MINT_RECORD };
         const plain = render(proposal, { connected: true });
         expect(parse(plain.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(1);
         expect(parse(plain.content.innerHTML)('.proposal-pledge-summary, .proposal-market-summary').length).toBe(2);
@@ -191,7 +196,7 @@ describe('proposal details action footer', () => {
     });
 
     it('renders primary and contextual actions, plus disconnected support in the footer once', () => {
-        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' }, saleOffer: true };
+        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD, saleOffer: true };
         const result = render(proposal, { connected: false });
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
@@ -213,7 +218,7 @@ describe('proposal details action footer', () => {
         expect(parse(road.footer.innerHTML)('.btn-cross-section').length).toBe(1);
         expect(parse(road.footer.innerHTML)('.btn-drive-proposal').length, road.footer.innerHTML).toBe(1);
 
-        const onchain = render({ proposalId: 'chain-1', title: 'Garden', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } }, {
+        const onchain = render({ proposalId: 'chain-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD }, {
             connected: true, summary: { wallet: 'wallet', myPledge: { status: 0, amount: 25n } }
         });
         expect(parse(onchain.footer.innerHTML)('.btn-edit-geometry').length).toBe(1);
@@ -224,7 +229,7 @@ describe('proposal details action footer', () => {
         expect(support('.btn-pledge-proposal').length).toBe(1);
         expect(support('.proposal-support-actions').text()).toContain('Revoke my pledge');
 
-        const executed = render({ proposalId: 'chain-executed', title: 'Built', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } }, {
+        const executed = render({ proposalId: 'chain-executed', title: 'Built', cadastreParcelIds: [], nft: MINT_RECORD }, {
             connected: true, lifecycle: 'Executed',
             summary: { wallet: 'wallet', donations: { totalDonated: 25n, totalRefunded: 0n, released: false } }
         });
@@ -232,7 +237,7 @@ describe('proposal details action footer', () => {
         await Promise.resolve();
         expect(parse(executed.footer.innerHTML)('.proposal-support-actions').text()).toContain('Release donations');
 
-        const cancelled = render({ proposalId: 'chain-cancelled', title: 'Cancelled', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } }, {
+        const cancelled = render({ proposalId: 'chain-cancelled', title: 'Cancelled', cadastreParcelIds: [], nft: MINT_RECORD }, {
             connected: true, lifecycle: 'Cancelled',
             summary: { wallet: 'wallet', myDonations: [{ amount: 10n, refunded: false }], myPledge: { status: 0, amount: 5n } }
         });
@@ -240,5 +245,32 @@ describe('proposal details action footer', () => {
         await Promise.resolve();
         expect(parse(cancelled.footer.innerHTML)('.proposal-support-actions').text()).toContain('Refund my donations');
         expect(parse(cancelled.footer.innerHTML)('.proposal-support-actions').text()).toContain('Clear my pledge');
+    });
+
+    // Proposal 781 on the local stack: Cancelled on the server, applied in this browser. The panel
+    // showed Published + Applied and an Unapply button.
+    it('shows a cancelled proposal applied in this browser as Cancelled, without Applied or a map action', () => {
+        const cancelled = render({ proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', title: 'Road 1008-1649', cadastreParcelIds: [] },
+            { applied: true, lifecycle: 'Cancelled' });
+        const badges = parse(cancelled.content.innerHTML)('.proposal-badges-row');
+        expect(badges.find('.cb-badge--applied')).toHaveLength(0);
+        expect(badges.text()).toContain('Cancelled');
+        expect(badges.find('.cb-badge--minted')).toHaveLength(0);
+        const footer = parse(cancelled.footer.innerHTML);
+        expect(footer('[onclick^="removeProposalFromMap"]')).toHaveLength(0);
+        expect(footer('[onclick^="applyProposalToMap"]')).toHaveLength(0);
+        expect(footer.text()).not.toContain('Unapply');
+
+        const active = render({ proposalId: 'c2-cyjp51xcmdh3', serverProposalId: '780', title: 'Block 1108-0124', cadastreParcelIds: [] },
+            { applied: true, lifecycle: 'Active' });
+        expect(parse(active.content.innerHTML)('.proposal-badges-row .cb-badge--applied')).toHaveLength(1);
+        expect(parse(active.footer.innerHTML)('[onclick^="removeProposalFromMap"]')).toHaveLength(1);
+    });
+
+    it('badges a mint record Minted and a bare numeric id only by its serial', () => {
+        const minted = render({ proposalId: 'chain-2', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD });
+        expect(parse(minted.content.innerHTML)('.proposal-badges-row .cb-badge--minted')).toHaveLength(1);
+        const serial = render({ proposalId: '780', title: 'Block', cadastreParcelIds: [] });
+        expect(parse(serial.content.innerHTML)('.proposal-badges-row .cb-badge--minted')).toHaveLength(0);
     });
 });

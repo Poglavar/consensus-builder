@@ -182,7 +182,7 @@ describe('buildProposalRecord — with a mint', () => {
         const scope = {};
         // chain.js is a classic script of bare top-level functions; evaluate it and hand back the
         // two the records must satisfy. Its other helpers are stubbed to what a Solana ref implies.
-        const load = new Function('scope', `
+        const load = new Function('scope', 'window', `
             function isLocalProposalId(id) { return String(id).startsWith('local-'); }
             function normalizeChainId(id) { return String(id); }
             function resolveProposalResourceUrl() { return ''; }
@@ -191,7 +191,7 @@ describe('buildProposalRecord — with a mint', () => {
             scope.isProposalMinted = isProposalMinted;
             scope.getProposalNftInfo = getProposalNftInfo;
         `);
-        load(scope);
+        load(scope, { __proposalDisplayState: require('../../frontend/js/proposals/display-state.js') });
 
         expect(scope.isProposalMinted(record)).toBe(true);
         expect(scope.getProposalNftInfo(record)).toEqual({
