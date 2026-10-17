@@ -7,12 +7,16 @@ const createSource = readFileSync(new URL('../../frontend/js/proposals/create.js
 const uploadSource = readFileSync(new URL('../../frontend/js/proposals/dialog-upload.js', import.meta.url), 'utf8');
 const approvalSource = readFileSync(new URL('../../frontend/js/proposals/approval.js', import.meta.url), 'utf8');
 const cryptoSource = readFileSync(new URL('../../frontend/vendor/noble-hashes-1.8.0/sha256.js', import.meta.url), 'utf8');
+const kindSource = readFileSync(new URL('../../frontend/js/proposals/proposal-kind.js', import.meta.url), 'utf8');
+const termsSource = readFileSync(new URL('../../frontend/js/proposals/publish-terms.js', import.meta.url), 'utf8');
 
 function loadCreateHelpers() {
     const context = createContext({ TextEncoder });
     context.window = context;
     runInContext(cryptoSource, context);
     runInContext(approvalSource, context);
+    runInContext(kindSource, context);
+    runInContext(termsSource, context);
     runInContext(createSource, context);
     return context;
 }
@@ -69,10 +73,19 @@ describe('proposal create approval publication boundary', () => {
         expect(legacy.acceptedParcelIds).toEqual(['parcel-a']);
         expect(legacy.ownerAcceptances).toEqual({ a: { accepted: true } });
 
-        const geometryOnly = { goal: 'park' };
+        // A draft whose author set no approval publishes without a setup, so any chain mints it;
+        // a readjustment from a draft always has one.
+        const geometryOnly = { goal: 'park', kind: 'owner-deal' };
         context.applyPublishingDraftApproval(geometryOnly, { approvalConfig: null, lens: [] });
-        expect(geometryOnly.approvalConfig).toEqual({ schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } });
-        expect(geometryOnly.ownerApprovals).toEqual({});
+        expect(geometryOnly).not.toHaveProperty('approvalConfig');
+        const readjustment = { goal: 'reparcellization', kind: 'community-vote' };
+        context.applyPublishingDraftApproval(readjustment, { approvalConfig: null, lens: [] });
+        expect(readjustment.approvalConfig).toEqual({ schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } });
+        expect(readjustment.ownerApprovals).toEqual({});
+        // Owners do not decide a community vote, so a setup carried from its source is dropped.
+        const vote = { goal: 'park', kind: 'community-vote', approvalConfig: approvalConfig() };
+        context.applyPublishingDraftApproval(vote, { approvalConfig: approvalConfig(), lens: [] });
+        expect(vote).not.toHaveProperty('approvalConfig');
 
         const oldAdapter = {};
         expect(context.shouldSkipUnsupportedApprovalMint({ selectedTool: 'reparcellization', proposalMainType: 'Reparcellization' }, oldAdapter)).toBe(true);

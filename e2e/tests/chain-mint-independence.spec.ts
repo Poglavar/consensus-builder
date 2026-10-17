@@ -1,14 +1,17 @@
 // Minting commits the complete proposal record to chain metadata first. The optional server row
 // mirrors that immutable chain location; no signed /proposals/prepare step gates the mint.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, showProposal, createSpace, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { selectNativeOption } from '../helpers/controls';
 import { connectWalletByConnectorId, injectMockEvmWallet } from '../helpers/blockchain';
 
 const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
 const CONTRACT = '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F';
+const SOLANA_AUTHOR = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
+const SOLANA_LENS = 'GsbwXfJraMomNxBcjYLcG3mxkBUiyWXAB32fGbSMQRdW';
 const METADATA_URI = 'ipfs://QmMintedProposalMetadata000000000000000000000000000000000000';
 
-async function prepareShareMint(page: import('@playwright/test').Page, uploadFails = false): Promise<void> {
+async function connectAuthorWallet(page: import('@playwright/test').Page): Promise<void> {
   await injectMockEvmWallet(page, { account: WALLET, chainIdHex: '0x14a34', walletKind: 'metamask' });
   await page.addInitScript(() => {
     const wallet = (window as any).ethereum;
@@ -26,20 +29,13 @@ async function prepareShareMint(page: import('@playwright/test').Page, uploadFai
   await page.locator('#welcome-submit-btn').click();
   await expect(page.locator('#welcome-modal')).toBeHidden();
   await connectWalletByConnectorId(page, 'metamask');
-  const proposalId = await page.evaluate(({ parcelId, geometry, wallet }) => (window as any).proposalStorage.addProposal({
-    proposalId: 'chain-mint-independence-legacy-source', title: 'Chain mint independence proposal',
-    description: 'A legacy parcel proposal used to exercise the chain mint path.', goal: 'park', lifecycleStatus: 'Active',
-    city: 'zagreb', cadastreParcelIds: [parcelId], geometry,
-    structureProposal: { kind: 'park', geometry, applied: true },
-    lens: [{ address: wallet }], screenshotDataUrl: 'data:image/png;base64,iVBORw0KGgo=',
-  }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY, wallet: WALLET });
-  await page.evaluate(({ id, fails, metadataUri, contract }) => {
+}
+
+// Keep the mint path real while replacing the asset upload, the final wallet transaction and its
+// RPC prerequisite lookup, so these specs never submit or simulate a paid transaction.
+async function stubChain(page: import('@playwright/test').Page, uploadFails = false): Promise<void> {
+  await page.evaluate(({ fails, metadataUri, contract }) => {
     const w = window as any;
-    const proposal = w.proposalStorage.getProposal(id);
-    if (!proposal) throw new Error(`Missing test proposal ${id}`);
-    if (proposal.approvalConfig != null || w.ProposalApprovalRuntime?.uses(proposal)) {
-      throw new Error('Mint fixture must remain a legacy proposal without abstract approval configuration.');
-    }
     w.__chainMintE2e = { uploadCalls: [], mintCalls: [] };
     w.AssetService = {
       uploadProposalAssets: async (args: any) => {
@@ -48,8 +44,6 @@ async function prepareShareMint(page: import('@playwright/test').Page, uploadFai
         return { metadataUri, metadataGatewayUrl: 'https://gateway.example/metadata.json' };
       }
     };
-    // Keep the mint dialog path real while replacing the final wallet transaction and its RPC
-    // prerequisite lookup, so this spec never submits or simulates a paid transaction.
     w.checkParcelsHaveNFTs = async (parcelIds: string[], chainId: string) => ({
       allHaveNFTs: true, missingParcels: [], chainId, chainName: 'Base Sepolia'
     });
@@ -60,11 +54,37 @@ async function prepareShareMint(page: import('@playwright/test').Page, uploadFai
         return { transactionHash: '0xfake-mint', proposalId: '77', chainId: '84532', contractAddress: contract };
       }
     };
-  }, { id: proposalId, fails: uploadFails, metadataUri: METADATA_URI, contract: CONTRACT });
+  }, { fails: uploadFails, metadataUri: METADATA_URI, contract: CONTRACT });
+}
+
+// A legacy parcel proposal whose terms were chosen (kind and money below), so Share opens the
+// share dialog straight away.
+const OWNER_DEAL_TERMS = { kind: 'owner-deal', offer: 0.25, offerCurrency: 'ETH', budget: 0.25, budgetCurrency: 'ETH', isConditional: true, termsConfirmed: true };
+
+async function prepareShareMint(page: import('@playwright/test').Page, uploadFails = false, terms: Record<string, unknown> = OWNER_DEAL_TERMS): Promise<void> {
+  await connectAuthorWallet(page);
+  const proposalId = await page.evaluate(({ parcelId, geometry, wallet, terms }) => (window as any).proposalStorage.addProposal({
+    proposalId: 'chain-mint-independence-legacy-source', title: 'Chain mint independence proposal',
+    description: 'A legacy parcel proposal used to exercise the chain mint path.', goal: 'park', lifecycleStatus: 'Active',
+    city: 'zagreb', cadastreParcelIds: [parcelId], geometry,
+    structureProposal: { kind: 'park', geometry, applied: true },
+    lens: [{ address: wallet }], screenshotDataUrl: 'data:image/png;base64,iVBORw0KGgo=', ...terms,
+  }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY, wallet: WALLET, terms });
+  await page.evaluate(id => {
+    const w = window as any;
+    const proposal = w.proposalStorage.getProposal(id);
+    if (!proposal) throw new Error(`Missing test proposal ${id}`);
+    if (proposal.approvalConfig != null || w.ProposalApprovalRuntime?.uses(proposal)) {
+      throw new Error('Mint fixture must remain a legacy proposal without abstract approval configuration.');
+    }
+  }, proposalId);
+  await stubChain(page, uploadFails);
   await showProposal(page, proposalId);
   await page.locator('.btn-share-proposal').click();
   await expect(page.locator('.share-modal-overlay')).toBeVisible();
 }
+
+const traits = (metadata: any) => Object.fromEntries(metadata.attributes.map((a: any) => [a.trait_type, a.value]));
 
 async function interceptMirrorRequests(page: import('@playwright/test').Page) {
   const calls: Array<{ method: string; path: string; body: any }> = [];
@@ -105,12 +125,119 @@ test.describe('chain mint independence @features', () => {
     expect(proposalRecord.cadastreParcelIds).toEqual(expect.arrayContaining(proposalRecord.binding.parcels.map((p: any) => p.parcelId)));
     expect(proposalRecord.cadastreSnapshot.parcels[0]).toMatchObject({ id: proposalRecord.cadastreParcelIds[0], geometry: expect.any(Object), geometryHash: expect.any(String) });
 
+    expect(proposalRecord).toMatchObject({ kind: 'owner-deal', offer: 0.25, offerCurrency: 'ETH' });
+    expect(traits(metadata)).toMatchObject({ Kind: 'owner-deal', Offer: '0.25 ETH' });
+
     expect(evidence.mintCalls).toHaveLength(1);
-    expect(evidence.mintCalls[0]).toMatchObject({ parcelIds: proposalRecord.cadastreParcelIds, imageURI: METADATA_URI });
+    // An owner deal escrows its offer in the chain's own currency.
+    expect(evidence.mintCalls[0]).toMatchObject({ parcelIds: proposalRecord.cadastreParcelIds, imageURI: METADATA_URI, ethAmount: 0.25, isVote: false, isConditional: true });
     expect(requests.filter(call => call.path.endsWith('/proposals/prepare'))).toHaveLength(0);
     const mirror = requests.find(call => call.path.endsWith('/proposals/mirror'));
     expect(mirror).toMatchObject({ method: 'POST', body: { chainRef: { chainType: 'evm', chainId: '84532', contract: CONTRACT, tokenId: '77' } } });
     expect(Object.keys(mirror!.body)).toEqual(['chainRef']);
+  });
+
+  test('the Share dialog mints a community vote fund-less, with its voting deadline and no offer', async ({ mockApi: page }) => {
+    await interceptMirrorRequests(page);
+    await prepareShareMint(page, false, { kind: 'community-vote', offer: null, budget: null, voteExpiryDays: 30, isConditional: false, termsConfirmed: true });
+    await page.locator('.share-modal-overlay').getByRole('button', { name: 'Mint', exact: true }).click();
+    await expect(page.locator('.share-modal-overlay')).toContainText(/Success!|Minted/i, { timeout: 30_000 });
+
+    const evidence = await page.evaluate(() => (window as any).__chainMintE2e);
+    const metadata = evidence.uploadCalls[0].metadata;
+    expect(metadata.properties.proposal).toMatchObject({ kind: 'community-vote', offer: null, voteExpiryDays: 30 });
+    expect(traits(metadata)).toMatchObject({ Kind: 'community-vote' });
+    expect(traits(metadata)).not.toHaveProperty('Offer');
+    expect(evidence.mintCalls).toHaveLength(1);
+    expect(evidence.mintCalls[0]).toMatchObject({ isVote: true, expiryDays: 30, ethAmount: 0 });
+  });
+
+  test('Share on a quick drawing mints through the create dialog on Solana, then shares the minted record', async ({ mockApi: page }) => {
+    test.setTimeout(90_000);
+    const requests = await interceptMirrorRequests(page);
+    await openCity(page);
+    await page.locator('#username-display').click();
+    await page.locator('#username-input').fill('Chain proposal author');
+    await page.locator('#welcome-submit-btn').click();
+    await expect(page.locator('#welcome-modal')).toBeHidden();
+    const drawingId = await createSpace(page, 'park');
+    await stubChain(page);
+    await page.evaluate(({ author, lens }) => {
+      const w = window as any;
+      w.solanaWalletManager.getState = () => ({ status: 'connected', accounts: [author], walletId: 'solana-phantom' });
+      w.solanaWalletManager.getCluster = () => 'devnet';
+      w.LensPicker.isActive = () => true;
+      w.LensPicker.getEntries = () => [{ address: lens }];
+      w.checkParcelsHaveNFTsSolana = async (parcelIds: string[], chainId: string) => ({ allHaveNFTs: true, missingParcels: [], chainId });
+      w.SolanaProposalChainBridge = {
+        isSupported: () => true,
+        supportsProposalApproval: (schema: string) => schema === 'proposal-approval/v1',
+        mintProposal: async (args: any) => {
+          w.__chainMintE2e.mintCalls.push(args);
+          return { transactionHash: 'solanaMintSignature', proposalId: 'ProposalPda111', chainId: 'solana-devnet', contractAddress: 'ProposalProgram111' };
+        }
+      };
+    }, { author: SOLANA_AUTHOR, lens: SOLANA_LENS });
+    await showProposal(page, drawingId);
+    await page.locator('.btn-share-proposal').click();
+
+    const form = page.locator('.create-proposal-modal:visible');
+    await expect(form).toBeVisible();
+    await expect(form.locator('input[name="proposalKind"][value="community-vote"]')).toBeChecked();
+    await form.locator('#createProposalSubmitButton').click();
+    // The create path shows its mint receipt; closing it opens the share dialog for the saved record.
+    const shareDialog = page.locator('.share-modal-overlay');
+    const receipt = page.locator('#proposal-mint-success-modal');
+    await expect(receipt).toContainText('Success!', { timeout: 45_000 });
+    await receipt.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(shareDialog).toBeVisible({ timeout: 30_000 });
+
+    const evidence = await page.evaluate(() => (window as any).__chainMintE2e);
+    expect(evidence.mintCalls).toHaveLength(1);
+    // A community vote escrows nothing and its verdict never executes.
+    expect(evidence.mintCalls[0]).toMatchObject({ solAmount: 0, verdictMayExecute: false, approvalSetup: false, lens: [SOLANA_LENS], imageURI: METADATA_URI });
+    expect(evidence.mintCalls[0].siteHash).toHaveLength(32);
+    const metadata = evidence.uploadCalls[0].metadata;
+    expect(metadata.properties.proposal).toMatchObject({ kind: 'community-vote', offer: null, voteExpiryDays: 365 });
+    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.kind === 'community-vote' && p.termsConfirmed));
+    expect(saved.proposalId).not.toBe(drawingId);
+    expect(saved.onchain).toMatchObject({ proposalId: 'ProposalPda111', chainId: 'solana-devnet', metadataUri: METADATA_URI });
+    expect(requests.filter(call => call.path.endsWith('/proposals/mirror'))).toHaveLength(1);
+  });
+
+  test('Share on a quick drawing mints an owner deal on EVM through the create dialog, with its offer escrowed', async ({ mockApi: page }) => {
+    // A drawing whose author set no approval carries no approval setup, so EVM mints it.
+    test.setTimeout(90_000);
+    const requests = await interceptMirrorRequests(page);
+    await connectAuthorWallet(page);
+    const drawingId = await createSpace(page, 'park');
+    await stubChain(page);
+    await showProposal(page, drawingId);
+    await page.locator('.btn-share-proposal').click();
+
+    const form = page.locator('.create-proposal-modal:visible');
+    await expect(form).toBeVisible();
+    await chooseProposalKind(form, 'owner-deal');
+    if (!(await form.locator('#proposalOffer').isVisible())) {
+      await form.locator('#proposalOptionsSection > .collapsible-header').click();
+    }
+    await form.locator('#proposalOffer').fill('2');
+    await selectNativeOption(form.locator('#proposalCurrency'), 'ETH');
+    await form.locator('#createProposalSubmitButton').click();
+    const receipt = page.locator('#proposal-mint-success-modal');
+    await expect(receipt).toContainText('Success!', { timeout: 45_000 });
+    await receipt.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(page.locator('.share-modal-overlay')).toBeVisible({ timeout: 30_000 });
+
+    const evidence = await page.evaluate(() => (window as any).__chainMintE2e);
+    expect(evidence.mintCalls).toHaveLength(1);
+    expect(evidence.mintCalls[0]).toMatchObject({ ethAmount: 2, isVote: false, approvalSetup: false, imageURI: METADATA_URI });
+    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.kind === 'owner-deal' && p.termsConfirmed));
+    expect(saved).toMatchObject({ offer: 2, offerCurrency: 'ETH', onchain: { proposalId: '77', contractAddress: CONTRACT } });
+    expect(saved).not.toHaveProperty('approvalConfig');
+    expect(requests.filter(call => call.path.endsWith('/proposals/mirror'))).toHaveLength(1);
   });
 
   test('metadata upload failure stops before the wallet mint bridge', async ({ mockApi: page }) => {

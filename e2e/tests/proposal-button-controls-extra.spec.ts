@@ -1,7 +1,7 @@
 import { selectNativeOption } from '../helpers/controls';
 // Exercise proposal modal buttons through the UI, with local server and wallet boundaries.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, chooseTermsForShare, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockEvmWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
@@ -61,6 +61,7 @@ async function prepareMissingParcelShareMint(page: import('@playwright/test').Pa
   const id = await page.evaluate(({ parcelId, geometry, wallet }) => (window as any).proposalStorage.addProposal({
     proposalId: 'missing-parcel-share-mint-source', title: 'Share mint prerequisite',
     description: 'A legacy proposal with land that has not been minted.', goal: 'park', lifecycleStatus: 'Active',
+    kind: 'community-vote', termsConfirmed: true,
       city: 'zagreb',
     cadastreParcelIds: [parcelId], geometry, structureProposal: { kind: 'park', geometry, applied: true },
     lens: [{ address: wallet }], screenshotDataUrl: 'data:image/png;base64,iVBORw0KGgo=',
@@ -187,6 +188,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await prepareProposalCreationMint(page, false);
     const create = page.locator('.create-proposal-modal:visible');
     await create.locator('#proposalName').fill('Mint confirmation test');
+    await chooseProposalKind(create, 'owner-deal');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
     await selectNativeOption(create.locator('#proposalCurrency'), 'EUR');
@@ -216,6 +218,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await prepareProposalCreationMint(page, true);
     const create = page.locator('.create-proposal-modal:visible');
     await create.locator('#proposalName').fill('Retry mint failure');
+    await chooseProposalKind(create, 'owner-deal');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
     await selectNativeOption(create.locator('#proposalCurrency'), 'EUR');
@@ -238,6 +241,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await prepareProposalCreationMint(page, true);
     const create = page.locator('.create-proposal-modal:visible');
     await create.locator('#proposalName').fill('Fallback in-memory proposal');
+    await chooseProposalKind(create, 'owner-deal');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
     await selectNativeOption(create.locator('#proposalCurrency'), 'EUR');
@@ -300,6 +304,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
+    await chooseTermsForShare(page);
     await page.locator('.share-modal-plan-btn').click();
 
     const plan = page.locator('.share-plan-panel');
@@ -348,6 +353,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const id = await createSpace(page, 'park');
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
+    await chooseTermsForShare(page);
     const share = page.locator('.share-modal-overlay');
     await share.getByRole('button', { name: 'Upload', exact: true }).click();
     await expect(share.locator('.share-modal-share-actions')).toBeVisible();

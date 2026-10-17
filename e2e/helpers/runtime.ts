@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { sampleParcels } from './mocks/parcel-data';
 import { waitForMapReady } from './app';
 import { selectNativeOption } from './controls';
@@ -97,4 +97,29 @@ export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range'
   await page.locator('#btn-blockify-done').click();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.geometry?.buildings?.length && p.applied))).toBe(true);
   return page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.geometry?.buildings?.length && p.applied).proposalId);
+}
+
+/**
+ * Share on a local proposal whose terms were never chosen opens the create dialog first
+ * (proposal-kinds.md): pick who decides, save, and the share dialog opens for the saved record,
+ * whose id this returns.
+ */
+export async function chooseTermsForShare(page: Page, kind: 'owner-deal'|'owner-vote'|'community-vote' = 'community-vote'): Promise<string> {
+  const form = page.locator('.create-proposal-modal:visible');
+  await expect(form).toBeVisible();
+  await expect(form.locator('input[name="proposalKind"][value="community-vote"]')).toBeChecked();
+  await form.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
+  await form.locator('#createProposalSubmitButton').click();
+  await expect(form).toBeHidden({ timeout: 30_000 });
+  await expect(page.locator('.share-modal-overlay')).toBeVisible({ timeout: 30_000 });
+  return page.evaluate(kind => {
+    const saved = (window as any).proposalStorage.getAllProposals().filter((p: any) => p.termsConfirmed && p.kind === kind);
+    return saved[saved.length - 1].proposalId;
+  }, kind);
+}
+
+/** Pick who decides in an open create dialog; only an owner deal shows the money terms. */
+export async function chooseProposalKind(dialog: Locator, kind: 'owner-deal'|'owner-vote'|'community-vote'): Promise<void> {
+  await dialog.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
+  await expect(dialog).toHaveAttribute('data-proposal-kind', kind);
 }

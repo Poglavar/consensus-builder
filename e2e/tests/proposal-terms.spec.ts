@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, proposalState, showProposal, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 test.describe('Proposal terms @features', () => {
   test('fork persists changed ownership recipient and advanced payment terms', async ({ mockApi: page }) => {
@@ -20,6 +20,7 @@ test.describe('Proposal terms @features', () => {
     await expect(dialog.locator('#proposalRecipientAddress')).toBeHidden();
     await dialog.locator('input[name="proposalRecipientScope"][value="specific"]').locator('..').click();
     await dialog.locator('#proposalRecipientAddress').fill('0x1234567890abcdef1234567890abcdef12345678');
+    await chooseProposalKind(dialog, 'owner-deal');
     const optionsHeader = dialog.locator('#proposalOptionsSection > .collapsible-header');
     if (!await dialog.locator('#proposalOffer').isVisible()) await optionsHeader.click();
     await expect(dialog.locator('#proposalOptionsContent')).toBeVisible();

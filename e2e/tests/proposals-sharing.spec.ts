@@ -1,7 +1,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, createSpace, proposalState, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, proposalState, showProposal, chooseTermsForShare, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
@@ -62,6 +62,8 @@ async function expectAppliedOnFabric(page: Page, proposalId: string): Promise<vo
 
 test.describe('Proposal sharing @core', () => {
   test('individual share UI publishes an applied proposal that imports and replays on another device', async ({ mockApi: sender, browser, baseURL }) => {
+    // Two devices, and a quick drawing passes through the create dialog before it is shared.
+    test.setTimeout(90_000);
     const server = createSharedProposalServer();
     await attachSharedProposalServer(sender, server);
     await openCity(sender);
@@ -72,6 +74,9 @@ test.describe('Proposal sharing @core', () => {
 
     await showProposal(sender, proposalId);
     await sender.locator('.btn-share-proposal').click();
+    // A quick drawing has no terms yet: Share opens the create dialog and shares what it saves.
+    const savedId = await chooseTermsForShare(sender, 'community-vote');
+    expect(savedId).not.toBe(proposalId);
     const downloadPromise = sender.waitForEvent('download');
     await sender.locator('.share-modal-overlay').getByRole('button', { name: 'Download', exact: true }).click();
     const download = await downloadPromise;
@@ -83,7 +88,7 @@ test.describe('Proposal sharing @core', () => {
     expect(server.records.size).toBe(1);
     const publishedRecord = server.records.values().next().value;
     if (!publishedRecord) throw new Error('The publish API did not persist a proposal record.');
-    expect(publishedRecord).toMatchObject({ goal: 'park' });
+    expect(publishedRecord).toMatchObject({ goal: 'park', kind: 'community-vote', offer: null, voteExpiryDays: 365 });
     expect(String(publishedRecord.proposalId)).toMatch(/^c2-/);
     expect(publishedRecord.proposalId).not.toBe(proposalId);
     expect(publishedRecord).not.toHaveProperty('applied');
@@ -110,6 +115,8 @@ test.describe('Proposal sharing @core', () => {
   });
 
   test('whole applied plan UI publishes selected members and a fresh device applies the plan once', async ({ mockApi: sender, browser, baseURL }) => {
+    // Two devices, and a quick drawing passes through the create dialog before it is shared.
+    test.setTimeout(90_000);
     const server = createSharedProposalServer();
     await attachSharedProposalServer(sender, server);
     await openCity(sender);
@@ -134,6 +141,10 @@ test.describe('Proposal sharing @core', () => {
     await expect(sender.locator('#proposal-list-actions')).toHaveAttribute('open', '');
     await expect(sender.locator('#shareAppliedProposalsButton')).toBeEnabled();
     await sender.locator('#shareAppliedProposalsButton').click();
+    // Who decides is asked once for the whole plan; community vote is preselected.
+    const planKind = sender.locator('.share-plan-panel input[name="sharePlanKind"]');
+    await expect(planKind.and(sender.locator('[value="community-vote"]'))).toBeChecked();
+    await planKind.and(sender.locator('[value="owner-vote"]')).locator('..').click();
     // The local proposal key in the row metadata is replaced by the canonical c2 identity when
     // the first publish binds it. Goal labels remain stable across that identity rewrite.
     const row = sender.locator('.share-plan-row').filter({ hasText: /·\s*park/i });
@@ -152,6 +163,9 @@ test.describe('Proposal sharing @core', () => {
       .map(record => [String(record.goal), String(record.proposalId)] as [string, string]));
     const publishedParkId = publishedByGoal.get('park');
     const publishedSquareId = publishedByGoal.get('square');
+    for (const record of server.records.values()) {
+      expect(record).toMatchObject({ kind: 'owner-vote', offer: null, voteExpiryDays: 365 });
+    }
     expect(publishedParkId).toMatch(/^c2-/);
     expect(publishedSquareId).toMatch(/^c2-/);
 

@@ -2,7 +2,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { createSpace, openCity, proposalState, showProposal, chooseTermsForShare, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
@@ -122,6 +122,7 @@ test.describe('shared dialog button controls @features', () => {
     const localId = await createSpace(authorPage, 'park');
     await showProposal(authorPage, localId);
     await authorPage.locator('.btn-share-proposal').click();
+    await chooseTermsForShare(authorPage);
     const shareModal = authorPage.locator('.share-modal-overlay');
     await shareModal.getByRole('button', { name: 'Download', exact: true }).click();
     await shareModal.getByRole('button', { name: 'Upload', exact: true }).click();

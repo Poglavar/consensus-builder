@@ -1,6 +1,6 @@
 // Exercise proposal action buttons and assert the resulting UI and stored state.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, chooseTermsForShare, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, routeSolanaReads, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
@@ -240,6 +240,7 @@ test.describe('proposal detail button controls @features', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showExpandedProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
+    await chooseTermsForShare(page);
 
     const share = page.locator('.share-modal-overlay');
     await share.getByRole('button', { name: 'Upload', exact: true }).click();
@@ -296,6 +297,7 @@ test.describe('proposal detail button controls @features', () => {
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       proposalId: 'missing-parcel-prerequisite-source', title: 'Missing parcel prerequisite',
       description: 'A saved legacy proposal with an existing geometry.', goal: 'park', lifecycleStatus: 'Active',
+      kind: 'community-vote', termsConfirmed: true,
       city: 'zagreb',
       cadastreParcelIds: [parcelId], geometry, structureProposal: { kind: 'park', geometry, applied: true },
       lens: [{ address: '0x1234567890abcdef1234567890abcdef12345678' }],

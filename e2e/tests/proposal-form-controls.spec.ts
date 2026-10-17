@@ -56,6 +56,39 @@ test('kind, epoch, voting period and parcel tolerance persist from the proposal 
   expect(restored).toMatchObject({ kind: 'owner-vote', voteExpiryDays: 30, toleranceM: 0.12, expiresAt: saved.expiresAt });
 });
 
+test('an owner\'s offer of their own land locks who decides to an owner deal', async ({ mockApi: page }) => {
+  await openCity(page);
+  const sourceId = await createSpace(page, 'park');
+  // Eligibility is a lens member's attestation of the wallet's parcels (Solana lens path); this
+  // spec checks the dialog once that attestation is in, so the check itself answers eligible.
+  await page.evaluate(() => {
+    const w = window as any;
+    w.LensPicker.isActive = () => true;
+    w.checkOwnerOfferEligibility = async () => ({ ok: true, parcelIds: ['p'], eligibility: { eligible: true, submittable: true, attestedParcelIds: ['p'], unattestedParcelIds: [] } });
+  });
+  await showProposal(page, sourceId);
+  const panel = page.locator('#proposal-details-panel');
+  const expand = panel.getByRole('button', { name: 'Expand', exact: true });
+  if (await expand.isVisible()) await expand.click();
+  const more = panel.locator('summary').filter({ hasText: 'More actions' });
+  if (await more.isVisible()) await more.click();
+  await panel.locator('.btn-counterpropose-proposal').click();
+  const form = page.locator('.create-proposal-modal:visible');
+  await expect(form).toBeVisible();
+  const kind = (value: string) => form.locator(`input[name="proposalKind"][value="${value}"]`);
+  await expect(kind('community-vote')).toBeChecked();
+  const offerMine = form.locator('#proposalOwnerOfferCheckbox');
+  await expect(offerMine).toBeEnabled();
+  await offerMine.check();
+  await expect(kind('owner-deal')).toBeChecked();
+  await expect(kind('owner-vote')).toBeDisabled();
+  await expect(kind('community-vote')).toBeDisabled();
+  await expect(form).toHaveAttribute('data-proposal-kind', 'owner-deal');
+  await offerMine.uncheck();
+  await expect(kind('community-vote')).toBeEnabled();
+  await expect(kind('owner-vote')).toBeEnabled();
+});
+
 test('lifecycle, applied-state and author filters narrow the actual proposal list', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(parcelId => {

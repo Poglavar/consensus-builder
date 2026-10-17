@@ -213,6 +213,7 @@ mainnet.
 | M1 | `kind` in the model: validation, hash commitment, `isVoteProposal` reads `kind`, facet inference removed, badges | `lifecycle.js`, `create.js`, consent/effect hash, list/details UI | unit: each kind × design (a park over a taken parcel can be either vote kind); owner's sale offer stays an open sale offer, never a vote; changing kind changes the hash |
 | M2 | Publish step: kind cards in the create dialog, per-kind sections, no random offer, days not ms, summary line; all publish entry points go through it | `dialog-create.js`, `create.js`, `dialog-upload.js`, `sharing-routes.js` | unit for the summary text and per-kind validation; targeted headless Playwright spec for the kind step |
 | M2 status | Built 2026-10-17 as one draft → publish flow: dead parks/squares dialog deleted (`71fdd4bd`); one terms builder `proposals/publish-terms.js`, no placeholder offer (`9e87edd5`); one mint `proposals/publish-mint.js` for both dialogs, mirrored to the server after every mint (`0e0fdd3d`); Share on a local proposal without terms opens the create dialog first, Share entire plan asks the kind once (`a28d4980`). The create dialog is the publish step; no separate panel. | | |
+| M2 tests | Browser specs (headless Playwright): Share on a quick drawing goes through the create dialog and uploads the record it saved with its kind; Share entire plan uploads every member under the one kind it asks; the share dialog mints an owner deal with its escrow and a community vote fund-less with its deadline (stubbed EVM bridge); the create dialog mints a community vote on Solana (stubbed bridge) and the share dialog then shows the minted record; an owner's offer of their land locks the kind row to owner deal. A fork or edit now starts from its source's kind (`ProposalPublishTerms.chosenKind`: its own kind, owner deal for a published record without one, nothing for a local drawing). | `chain-mint-independence.spec.ts`, `proposals-sharing.spec.ts`, `proposal-form-controls.spec.ts`; helpers `chooseTermsForShare`, `chooseProposalKind` | |
 | M3 | Owner vote on Solana (today the Solana bridge has no `castVote`, so owner votes exist only on EVM) | `solana/proposal-bridge.js`; reuse `proposal-approval/v1` + memo anchors marked non-binding, if it fits | unit on the reader/tally |
 | M4 | Community vote: `did:web` resolver (pure parse module + thin fetch), optional attester field, result document, Solana memo anchor first, EAS on EVM second, badge | new `frontend/js/proposals/did-web.js`, `community-result.js` | unit: DID→URL mapping, CAIP-10 matching, signer not listed → rejected, wallet removed → grey, tampered document → hash fails, over-long statement → refused |
 | M5 | Shareable proposal page: kind and summary in the existing `og-proposals` preview, "Take part" link in the app | `workers/og-proposals/`, details panel | Worker unit test for the description |
@@ -225,4 +226,12 @@ mock road costs and TEAD (audit O3).
 
 ## Open questions
 
-None yet; the five from the first draft were answered 2026-10-17 (decisions 7–11).
+The five from the first draft were answered 2026-10-17 (decisions 7–11).
+
+1. ~~Should a community vote carry an owner approval setup?~~ Answered 2026-10-17 (user: no).
+   Every record published from an editor draft used to get the default approval setup, which
+   only Solana mints, so Share sent every quick drawing down a path EVM refuses and that escrows
+   nothing on Solana. Now `ProposalPublishTerms.approvalSetupFor` decides: a community vote has
+   none; an owner deal or owner vote only the setup its author set in the Approval tab; a land
+   readjustment keeps its setup whatever the kind (its rights snapshot also says who owns which
+   plot), with the default when published from a draft without one.

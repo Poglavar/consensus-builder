@@ -14,6 +14,8 @@ async function addLocalEditableProposal(page: import('@playwright/test').Page, k
       author: 'E2E author',
       goal: 'park',
       lifecycleStatus: 'Active',
+      kind: 'community-vote',
+      termsConfirmed: true,
       applied: false,
       cadastreParcelIds: [parcelId],
       geometry,

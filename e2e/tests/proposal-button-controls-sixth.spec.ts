@@ -1,6 +1,6 @@
 // Additional proposal-control coverage for chain, editor, ownership, and sharing actions uses local external boundaries.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, chooseTermsForShare, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
@@ -225,6 +225,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await create.locator('#proposalName').fill('Solana explorer button test');
     await create.locator('#proposalDescription').fill('A bounded devnet transaction explorer test.');
     await create.locator('label.proposal-radio:has(input[name="proposalLandUse"][value="park"])').click();
+    await chooseProposalKind(create, 'owner-deal');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
     await create.locator('#createProposalSubmitButton').click();
@@ -556,6 +557,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await page.evaluate(id => {
       const proposal = (window as any).proposalStorage.getProposal(id);
       proposal.approvalConfig = { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } };
+      Object.assign(proposal, { kind: 'community-vote', termsConfirmed: true });
       (window as any).proposalStorage.save();
     }, proposalId);
     await showProposal(page, proposalId);
@@ -585,6 +587,7 @@ test.describe('proposal button controls sixth pass @features', () => {
       proposalId: 'legacy-share-wallet-picker', title: 'Legacy wallet picker proposal',
       description: 'A parcel proposal without abstract approval configuration.',
       goal: 'park', lifecycleStatus: 'Active', city: 'zagreb', cadastreParcelIds: [parcelId], geometry,
+      kind: 'community-vote', termsConfirmed: true,
       structureProposal: { kind: 'park', geometry, applied: true },
       lens: [{ address: '0x1234567890123456789012345678901234567890' }],
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
@@ -611,6 +614,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
+    await chooseTermsForShare(page);
     const modal = page.locator('.share-modal-overlay');
     await modal.getByRole('button', { name: 'Upload', exact: true }).click();
     await expect(modal.locator('.share-modal-share-actions')).toBeVisible();

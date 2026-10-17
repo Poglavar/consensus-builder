@@ -1,6 +1,6 @@
 // Exercise activity links emitted by real simulation and user proposal actions.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, chooseProposalKind, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -249,6 +249,7 @@ test.describe('simulation log links @features', () => {
     await expect(dialog).toBeVisible();
     const title = `Simulation log user action ${Date.now()}`;
     await dialog.locator('#proposalName').fill(title);
+    await chooseProposalKind(dialog, 'owner-deal');
     const offer = dialog.locator('#proposalOffer');
     if (!(await offer.isVisible())) await dialog.locator('#proposalOptionsSection > .collapsible-header').click();
     await offer.fill('100');

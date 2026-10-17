@@ -120,7 +120,7 @@ test.describe('Proposal browsing @features', () => {
     await page.locator('#username-input').fill('Fork author');
     await page.locator('#welcome-submit-btn').click();
     const sourceId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-      title: 'Original park terms', goal: 'park', author: 'Ada', lifecycleStatus: 'Active', offer: 100, cadastreParcelIds: [parcelId],
+      title: 'Original park terms', goal: 'park', author: 'Ada', lifecycleStatus: 'Active', kind: 'owner-deal', termsConfirmed: true, offer: 100, cadastreParcelIds: [parcelId],
       geometry, structureProposal: { kind: 'park', geometry, applied: true },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await showProposal(page, sourceId);

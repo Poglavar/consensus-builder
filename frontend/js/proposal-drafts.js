@@ -9,6 +9,8 @@
     const DEFAULT_COALESCE_MS = 800;
     const VALID_DRAFT_STATES = new Set(['editing', 'review', 'publishing', 'error']);
 
+    const publishTerms = () => global.ProposalPublishTerms || require('./proposals/publish-terms.js');
+
     function cloneDraftValue(value) {
         if (value === undefined || value === null) return value;
         try {
@@ -188,6 +190,9 @@
             ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
             recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,
             recipientAddress: proposal?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.facets?.recipientAddress || null,
+            // Who decides carries over from the source (proposal-kinds.md); null when never chosen.
+            kind: publishTerms().chosenKind(proposal, { isPublished: record => global.isPublishedProposalRecord?.(record) === true }),
+            voteExpiryDays: Number(proposal?.voteExpiryDays) > 0 ? Number(proposal.voteExpiryDays) : null,
             offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
             offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,

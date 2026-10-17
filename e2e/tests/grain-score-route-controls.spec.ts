@@ -2,7 +2,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, showProposal } from '../helpers/runtime';
+import { createSpace, openCity, showProposal, chooseTermsForShare } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
@@ -45,10 +45,11 @@ test('named-plan grain-score route prepares the real plan and Start runs its ins
   await attachSharedProposalServer(authorPage, server);
   await openCity(authorPage);
   await personalize(authorPage);
-  const localId = await createSpace(authorPage, 'park');
-  const proposal = await authorPage.evaluate(id => JSON.parse(JSON.stringify((window as any).proposalStorage.getProposal(id))), localId);
-  await showProposal(authorPage, localId);
+  const drawingId = await createSpace(authorPage, 'park');
+  await showProposal(authorPage, drawingId);
   await authorPage.locator('.btn-share-proposal').click();
+  const localId = await chooseTermsForShare(authorPage);
+  const proposal = await authorPage.evaluate(id => JSON.parse(JSON.stringify((window as any).proposalStorage.getProposal(id))), localId);
   const share = authorPage.locator('.share-modal-overlay');
   await share.getByRole('button', { name: 'Upload', exact: true }).click();
   await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);

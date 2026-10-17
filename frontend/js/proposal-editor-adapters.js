@@ -487,17 +487,14 @@
         output.acquisitionMode = fields.acquisitionMode || output.acquisitionMode || null;
         output.boundaryAdjustment = fields.boundaryAdjustment || output.boundaryAdjustment || null;
         const approval = global.ProposalApproval;
-        if (approval?.normalizeConfig) {
-            output.approvalConfig = approval.normalizeConfig(fields.approvalConfig || {
-                schema: approval.CONFIG_SCHEMA || 'proposal-approval/v1',
-                rights: null,
-                policy: { type: 'unanimous' }
-            });
-        } else if (fields.approvalConfig && typeof fields.approvalConfig === 'object') {
-            output.approvalConfig = clone(fields.approvalConfig);
-        } else {
-            delete output.approvalConfig;
-        }
+        const approvalConfig = publishTerms.approvalSetupFor({
+            kind: output.kind ?? null,
+            readjustment: output.goal === 'reparcellization' || !!output.reparcellization,
+            approvalConfig: fields.approvalConfig && typeof fields.approvalConfig === 'object' ? fields.approvalConfig : null,
+            fromDraft: true
+        });
+        if (!approvalConfig) delete output.approvalConfig;
+        else output.approvalConfig = approval?.normalizeConfig ? approval.normalizeConfig(approvalConfig) : clone(approvalConfig);
         if (Array.isArray(fields.lens)) {
             output.lens = clone(fields.lens);
         } else {

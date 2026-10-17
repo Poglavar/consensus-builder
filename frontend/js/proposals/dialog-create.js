@@ -1552,11 +1552,15 @@ function showProposalDialog(overrides = null) {
         descriptionInputEl.value = overridePrefill.description;
     }
     const offerInput = document.getElementById('proposalOffer');
-    if (offerInput && Number.isFinite(overridePrefill.offer)) {
+    // No offer stays an empty field: a prefilled 0 reads as a chosen price.
+    if (offerInput && Number.isFinite(overridePrefill.offer) && overridePrefill.offer > 0) {
         offerInput.value = window.formatProposalOfferValue ? window.formatProposalOfferValue(overridePrefill.offer) : overridePrefill.offer;
     }
-    const kindInput = overridePrefill.kind
-        ? document.querySelector(`.create-proposal-modal input[name="proposalKind"][value="${CSS.escape(overridePrefill.kind)}"]`) : null;
+    // A land readjustment is a deal its owners accept (land in, land and cash out): it opens on
+    // owner deal unless its source chose otherwise.
+    const prefillKind = overridePrefill.kind || (window.pendingReparcellizationPlan ? window.ProposalKind.OWNER_DEAL : null);
+    const kindInput = prefillKind
+        ? document.querySelector(`.create-proposal-modal input[name="proposalKind"][value="${CSS.escape(prefillKind)}"]`) : null;
     if (kindInput) {
         kindInput.checked = true;
         applyProposalKindToDialog();

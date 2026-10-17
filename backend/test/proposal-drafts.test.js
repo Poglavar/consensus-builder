@@ -64,6 +64,14 @@ describe('ProposalDraftStore', () => {
         });
     });
 
+    it('carries who decides from the source, and leaves it unchosen for a local drawing', () => {
+        const { store } = harness();
+        const vote = store.createDraftFromProposal({ proposalId: 'p-vote', city: 'zagreb', goal: 'park', kind: 'owner-vote', voteExpiryDays: 30, cadastreParcelIds: ['a'] });
+        expect(vote.fields).toMatchObject({ kind: 'owner-vote', voteExpiryDays: 30 });
+        const drawing = store.createDraftFromProposal({ proposalId: 'p-drawing', city: 'zagreb', goal: 'park', offer: 0, cadastreParcelIds: ['a'] });
+        expect(drawing.fields).toMatchObject({ kind: null, voteExpiryDays: null });
+    });
+
     it('persists multiple drafts across reload and filters them by city', () => {
         const first = harness();
         first.store.createDraft({ cityId: 'zagreb', goal: 'park', fields: { name: 'Z1' } });

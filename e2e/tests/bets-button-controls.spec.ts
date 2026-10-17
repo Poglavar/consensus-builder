@@ -1,6 +1,6 @@
 // Exercise the Bets sheet and dialog actions through their real navigation and wallet boundaries.
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, openCity, showProposal } from '../helpers/runtime';
+import { createSpace, openCity, showProposal, chooseTermsForShare } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
@@ -106,10 +106,11 @@ test.describe('Bets shared button variants @features', () => {
     await page.locator('#welcome-submit-btn').click();
     await expect(page.locator('#welcome-modal')).toBeHidden();
 
-    const localId = await createSpace(page, 'park');
-    const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, localId);
-    await showProposal(page, localId);
+    const drawingId = await createSpace(page, 'park');
+    await showProposal(page, drawingId);
     await page.locator('#proposal-details-panel .btn-share-proposal').click();
+    const localId = await chooseTermsForShare(page);
+    const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, localId);
     const share = page.locator('.share-modal-overlay');
     await expect(share).toBeVisible();
     await share.getByRole('button', { name: 'Upload', exact: true }).click();

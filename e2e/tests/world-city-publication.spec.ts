@@ -6,7 +6,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
-import { openCity, createSpace, showProposal } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, chooseTermsForShare } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedProposalServer, createSharedProposalServer, SharedProposalServer } from '../helpers/mocks/shared-server';
 
@@ -29,6 +29,7 @@ async function publishPark(page: Page, server: SharedProposalServer): Promise<Re
   const proposalId = await createSpace(page, 'park');
   await showProposal(page, proposalId);
   await page.locator('.btn-share-proposal').click();
+  await chooseTermsForShare(page);
   await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
   await expect(page.locator('.share-modal-overlay .share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
   expect(server.records.size).toBe(1);

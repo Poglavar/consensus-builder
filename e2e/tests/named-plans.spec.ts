@@ -4,7 +4,7 @@
 // with its panel, where Apply plan applies it, and a plan link opens the same view instead of
 // applying at once.
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, openCity, showProposal, clickMapPoint, publishOn, PARCEL_ID } from '../helpers/runtime';
+import { createSpace, openCity, showProposal, clickMapPoint, publishOn, chooseTermsForShare, PARCEL_ID } from '../helpers/runtime';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
 const SLUG = 'e2e-harbor-plan';
@@ -20,10 +20,11 @@ async function publishPark(page: any): Promise<{ localId: string; serverId: stri
   await page.locator('#username-input').fill('Plan tester');
   await page.locator('#welcome-submit-btn').click();
   await expect(page.locator('#welcome-modal')).toBeHidden();
-  const localId = await createSpace(page, 'park');
-  const title = await page.evaluate((id: string) => (window as any).proposalStorage.getProposal(id)?.title, localId);
-  await showProposal(page, localId);
+  const drawingId = await createSpace(page, 'park');
+  await showProposal(page, drawingId);
   await page.locator('#proposal-details-panel .btn-share-proposal').click();
+  const localId = await chooseTermsForShare(page);
+  const title = await page.evaluate((id: string) => (window as any).proposalStorage.getProposal(id)?.title, localId);
   const share = page.locator('.share-modal-overlay');
   await share.getByRole('button', { name: 'Upload', exact: true }).click();
   await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);

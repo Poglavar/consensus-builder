@@ -55,15 +55,18 @@ function cloneProposalCreateValue(value) {
 }
 
 // A published editor draft is a new proposal snapshot, but its chosen rights, approval policy,
-// and exact lens selection (including an empty selection) are part of the authored terms.
+// and exact lens selection (including an empty selection) are part of the authored terms. Which
+// records carry an approval setup at all: ProposalPublishTerms.approvalSetupFor.
 function applyPublishingDraftApproval(proposal, draftFields = {}) {
     const hasDraftLens = Object.prototype.hasOwnProperty.call(draftFields, 'lens') && Array.isArray(draftFields.lens);
-    if (Object.prototype.hasOwnProperty.call(draftFields, 'approvalConfig')) {
+    const config = publishingApprovalSetup(proposal.kind ?? null, isReadjustmentRecord(proposal), draftFields);
+    if (config) {
         const approval = typeof window !== 'undefined' ? window.ProposalApproval : null;
-        const config = draftFields.approvalConfig || { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } };
         proposal.approvalConfig = approval?.normalizeConfig
             ? approval.normalizeConfig(config)
             : cloneProposalCreateValue(config);
+    } else {
+        delete proposal.approvalConfig;
     }
     if (hasDraftLens) proposal.lens = cloneProposalCreateValue(draftFields.lens);
 
@@ -76,6 +79,18 @@ function applyPublishingDraftApproval(proposal, draftFields = {}) {
         delete proposal.ownerAcceptanceHistory;
     }
     return hasDraftLens;
+}
+
+function isReadjustmentRecord(proposal) {
+    return proposal?.goal === 'reparcellization' || !!proposal?.reparcellization;
+}
+
+function publishingApprovalSetup(kind, readjustment, draftFields = {}) {
+    return window.ProposalPublishTerms.approvalSetupFor({
+        kind, readjustment,
+        approvalConfig: draftFields.approvalConfig || null,
+        fromDraft: Object.prototype.hasOwnProperty.call(draftFields, 'approvalConfig')
+    });
 }
 
 function shouldSkipUnsupportedApprovalMint({ selectedTool, proposalMainType, approvalConfig }, adapter) {
@@ -750,9 +765,8 @@ async function createProposal() {
             : isSolanaWalletConnected ? window.SolanaProposalChainBridge : window.ProposalChainBridge;
         if (shouldMintOnchain && shouldSkipUnsupportedApprovalMint({
             selectedTool, proposalMainType,
-            approvalConfig: Object.prototype.hasOwnProperty.call(publishingDraftFields, 'approvalConfig')
-                ? publishingDraftFields.approvalConfig || { schema: 'proposal-approval/v1', rights: null }
-                : null
+            approvalConfig: publishingApprovalSetup(kindTerms.kind,
+                selectedTool === 'reparcellization' || proposalMainType === 'Reparcellization', publishingDraftFields)
         }, approvalMintAdapter)) {
             shouldMintOnchain = false;
             const unsupportedMessage = t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.');

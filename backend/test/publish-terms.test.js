@@ -57,6 +57,30 @@ describe('publishFields', () => {
         expect(needsTerms({ serverProposalId: '9' }, { isPublished: r => !!r.serverProposalId })).toBe(false);
     });
 
+    it('starts a fork from the kind its source was chosen under', () => {
+        const { chosenKind } = require('../../frontend/js/proposals/publish-terms.js');
+        const isPublished = r => !!r.serverProposalId;
+        expect(chosenKind({ kind: 'owner-vote' })).toBe('owner-vote');
+        // A published record from before kinds reads as an owner deal; a local drawing chose nothing.
+        expect(chosenKind({ serverProposalId: '9', offer: 100 }, { isPublished })).toBe('owner-deal');
+        expect(chosenKind({ termsConfirmed: true })).toBe('owner-deal');
+        expect(chosenKind({ goal: 'park', offer: 0 }, { isPublished })).toBe(null);
+        expect(chosenKind(null)).toBe(null);
+    });
+
+    it('gives a record an approval setup only where owners decide by one', () => {
+        const { approvalSetupFor } = require('../../frontend/js/proposals/publish-terms.js');
+        const set = { schema: 'proposal-approval/v1', rights: { parcels: [] }, policy: { type: 'unanimous' } };
+        const unset = { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } };
+        expect(approvalSetupFor({ kind: 'owner-deal', fromDraft: true })).toBe(null);
+        expect(approvalSetupFor({ kind: 'owner-deal', approvalConfig: set, fromDraft: true })).toBe(set);
+        expect(approvalSetupFor({ kind: 'owner-vote', approvalConfig: set })).toBe(set);
+        expect(approvalSetupFor({ kind: 'community-vote', approvalConfig: set, fromDraft: true })).toBe(null);
+        expect(approvalSetupFor({ kind: 'community-vote', readjustment: true, fromDraft: true })).toEqual(unset);
+        expect(approvalSetupFor({ kind: 'owner-deal', readjustment: true, approvalConfig: set })).toBe(set);
+        expect(approvalSetupFor({ kind: 'owner-deal', readjustment: true })).toBe(null);
+    });
+
     it('refuses a vote for an owner\'s sale offer, and an unknown kind', () => {
         expect(() => publishFields({ kind: 'community-vote' }, { saleOffer: true })).toThrow(/owner deal/);
         expect(publishFields({ kind: 'owner-deal', offer: 10 }, { saleOffer: true }).kind).toBe('owner-deal');

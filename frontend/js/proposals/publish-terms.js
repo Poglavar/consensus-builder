@@ -70,6 +70,30 @@
     }
 
     /**
+     * The kind a record's terms were chosen under, for a fork or edit to start from: its own kind,
+     * an owner deal for a published record without one (ProposalKind.kindOf), and null for a local
+     * drawing whose terms were never chosen (the dialog then opens on its default).
+     */
+    function chosenKind(record, { isPublished = () => false } = {}) {
+        if (!record) return null;
+        if (record.kind) return record.kind;
+        return needsTerms(record, { isPublished }) ? null : kinds().kindOf(record);
+    }
+
+    /**
+     * The owner-approval setup a published record carries (land-readjustmend.md §16), or null
+     * for none. A land readjustment keeps its setup whatever the kind, since its rights snapshot
+     * also says who owns which plot, and one published from a draft gets the default (unanimous,
+     * rights unresolved) when none was set. Anything else carries only the setup its author set,
+     * and a community vote none at all: owners do not decide it.
+     */
+    function approvalSetupFor({ kind = null, readjustment = false, approvalConfig = null, fromDraft = false } = {}) {
+        if (readjustment) return approvalConfig || (fromDraft ? { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } } : null);
+        if (kind === kinds().COMMUNITY_VOTE) return null;
+        return approvalConfig || null;
+    }
+
+    /**
      * A local record's terms confirmed under one kind, as Share entire plan does for every proposal
      * it carries: the record's own money terms stay for an owner deal, a vote drops them.
      */
@@ -78,5 +102,5 @@
         return { ...publishFields({ ...record, kind: saleOffer ? 'owner-deal' : kind }, { now, saleOffer }), termsConfirmed: true };
     }
 
-    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, confirmedRecordFields });
+    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, chosenKind, approvalSetupFor, confirmedRecordFields });
 });

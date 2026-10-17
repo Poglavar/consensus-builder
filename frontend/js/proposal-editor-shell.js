@@ -1731,6 +1731,8 @@
             description: fields.description || '',
             offer: Number(fields.offer) || 0,
             offerCurrency: fields.offerCurrency || 'USDT',
+            ...(fields.kind ? { kind: fields.kind } : {}),
+            ...(fields.voteExpiryDays > 0 ? { voteExpiryDays: fields.voteExpiryDays } : {}),
             isConditional: fields.isConditional === true,
             expiryTime: formatDuration(expiryMs),
             decayEnabled: fields.decayEnabled === true,
