@@ -92,3 +92,39 @@ describe('dates', () => {
         expect(CbFormat.formatDateTime('not a date', { lang: 'en' })).toBe('');
     });
 });
+
+describe('CbFormat.parseDecimal (typed amounts)', () => {
+    it('reads a fraction whichever separator the person typed', () => {
+        expect(CbFormat.parseDecimal('0.5', { lang: 'hr' })).toBe(0.5);
+        expect(CbFormat.parseDecimal('0,5', { lang: 'en' })).toBe(0.5);
+        expect(CbFormat.parseDecimal('1,5', { lang: 'hr' })).toBe(1.5);
+        expect(CbFormat.parseDecimal('0.5', { lang: 'en' })).toBe(0.5);
+    });
+
+    it('reads grouping in the UI language', () => {
+        expect(CbFormat.parseDecimal('1.000', { lang: 'hr' })).toBe(1000);
+        expect(CbFormat.parseDecimal('1,000', { lang: 'en' })).toBe(1000);
+        expect(CbFormat.parseDecimal('1.234,5', { lang: 'hr' })).toBe(1234.5);
+        expect(CbFormat.parseDecimal('1,234.5', { lang: 'en' })).toBe(1234.5);
+        expect(CbFormat.parseDecimal('1 234,5', { lang: 'hr' })).toBe(1234.5);
+        expect(CbFormat.parseDecimal('1.000.000', { lang: 'hr' })).toBe(1000000);
+    });
+
+    it('gives null for nothing and NaN for what is not a number, never 0', () => {
+        expect(CbFormat.parseDecimal('', { lang: 'en' })).toBe(null);
+        expect(CbFormat.parseDecimal(null, { lang: 'en' })).toBe(null);
+        expect(CbFormat.parseDecimal('abc', { lang: 'en' })).toBeNaN();
+        expect(CbFormat.parseDecimal('1.2.3', { lang: 'en' })).toBeNaN();
+        expect(CbFormat.parseDecimal('.', { lang: 'en' })).toBeNaN();
+    });
+
+    it('keeps a fractional offer through the offer field helpers (proposals/lifecycle.js)', () => {
+        const { parseProposalOfferValue, formatProposalOfferValue } = require('../../frontend/js/proposals/lifecycle.js');
+        expect(parseProposalOfferValue('0.5')).toBe(0.5);
+        expect(parseProposalOfferValue('')).toBe(0);
+        expect(parseProposalOfferValue('x')).toBeNaN();
+        expect(formatProposalOfferValue(0.5)).toBe('0.5');
+        expect(formatProposalOfferValue('1234.5')).toBe('1,234.5');
+        expect(parseProposalOfferValue(formatProposalOfferValue(0.125))).toBe(0.125);
+    });
+});

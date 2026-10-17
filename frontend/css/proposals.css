@@ -2768,6 +2768,13 @@ body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
     display: none;
 }
 
+/* Terms for a record that already exists (create.js openPublishTermsDialog): its design, site and
+   parcel summary are done, so only the kind, details and terms show. */
+.create-proposal-modal[data-publish-in-place] :is(.proposal-design-fields, .proposal-mint-target,
+    .proposal-site-summary, #proposalToleranceRow, #proposalSummarySection) {
+    display: none;
+}
+
 .proposal-kind-explain {
     margin: var(--cb-space-1) 0 0;
     color: var(--cb-text-muted);

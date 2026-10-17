@@ -1,6 +1,7 @@
 // Share goes through the one publish step (proposal-kinds.md M2b): the real shareSingleProposal
-// sends a local proposal whose terms were never chosen to the create dialog first and shares the
-// record that dialog saves; a record with terms, or a published one, opens the share dialog at once.
+// sends a local proposal whose terms were never chosen to the terms dialog first, which appends
+// them to that same record, then shares it; a record with terms, or a published one, opens the
+// share dialog at once.
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
@@ -14,13 +15,13 @@ const ProposalPublishTerms = require('../../frontend/js/proposals/publish-terms.
 
 function load(records) {
     const shown = [];
-    const proposeExistingProposal = vi.fn();
+    const openPublishTermsDialog = vi.fn();
     const store = new Map(records.map(record => [record.proposalId, record]));
     const window = {
         ProposalKind,
         ProposalPublishTerms,
         isPublishedProposalRecord: record => !!record.serverProposalId,
-        proposeExistingProposal
+        openPublishTermsDialog
     };
     const context = createContext({
         window,
@@ -35,30 +36,30 @@ function load(records) {
         showEphemeralMessage: () => {}
     });
     runInContext(source, context, { filename: 'frontend/js/proposals/sharing-routes.js' });
-    return { context, shown, proposeExistingProposal, store };
+    return { context, shown, openPublishTermsDialog, store };
 }
 
 describe('Share and the publish step', () => {
-    it('sends a quick drawing to the create dialog, then shares what it saved', () => {
-        const { context, shown, proposeExistingProposal, store } = load([{ proposalId: 'p-draft', goal: 'park' }]);
+    it('sends a quick drawing to the terms dialog, then shares that same record', () => {
+        const { context, shown, openPublishTermsDialog, store } = load([{ proposalId: 'p-draft', goal: 'park' }]);
         context.shareSingleProposal('p-draft');
         expect(shown).toEqual([]);
-        expect(proposeExistingProposal).toHaveBeenCalledOnce();
-        const [sourceId, options] = proposeExistingProposal.mock.calls[0];
-        expect(sourceId).toBe('p-draft');
-        store.set('p-saved', { proposalId: 'p-saved', kind: 'community-vote', termsConfirmed: true });
-        options.afterCreate('p-saved');
-        expect(shown).toEqual(['p-saved']);
+        expect(openPublishTermsDialog).toHaveBeenCalledOnce();
+        const [recordId, options] = openPublishTermsDialog.mock.calls[0];
+        expect(recordId).toBe('p-draft');
+        Object.assign(store.get('p-draft'), { kind: 'community-vote', termsConfirmed: true });
+        options.afterSave('p-draft');
+        expect(shown).toEqual(['p-draft']);
     });
 
     it('shares a record with chosen terms, or a published one, straight away', () => {
-        const { context, shown, proposeExistingProposal } = load([
+        const { context, shown, openPublishTermsDialog } = load([
             { proposalId: 'p-terms', kind: 'owner-deal', termsConfirmed: true },
             { proposalId: 'p-server', serverProposalId: '812' }
         ]);
         context.shareSingleProposal('p-terms');
         context.shareSingleProposal('p-server');
         expect(shown).toEqual(['p-terms', 'p-server']);
-        expect(proposeExistingProposal).not.toHaveBeenCalled();
+        expect(openPublishTermsDialog).not.toHaveBeenCalled();
     });
 });

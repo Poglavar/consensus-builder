@@ -100,15 +100,18 @@ export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range'
 }
 
 /**
- * Share on a local proposal whose terms were never chosen opens the create dialog first
- * (proposal-kinds.md): pick who decides, save, and the share dialog opens for the saved record,
- * whose id this returns.
+ * Share on a local proposal whose terms were never chosen opens the create dialog in its terms
+ * mode first (proposal-kinds.md): pick who decides, save, and the share dialog opens for that same
+ * record, whose id this returns.
  */
 export async function chooseTermsForShare(page: Page, kind: 'owner-deal'|'owner-vote'|'community-vote' = 'community-vote'): Promise<string> {
   const form = page.locator('.create-proposal-modal:visible');
   await expect(form).toBeVisible();
   await expect(form.locator('input[name="proposalKind"][value="community-vote"]')).toBeChecked();
+  await expect(form).toHaveAttribute('data-publish-in-place', '');
+  await expect(form.locator('#proposalGoalGroup')).toBeHidden();
   await form.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
+  await expect(form.locator('#createProposalSubmitButton')).toHaveText('Save terms');
   await form.locator('#createProposalSubmitButton').click();
   await expect(form).toBeHidden({ timeout: 30_000 });
   await expect(page.locator('.share-modal-overlay')).toBeVisible({ timeout: 30_000 });

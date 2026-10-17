@@ -85,11 +85,23 @@
 
     // ---- browser layer ----
 
-    function activeChain() {
-        if (root.CantonMode?.isActive?.() && root.CantonProposalChainBridge) return 'canton';
+    /**
+     * The chain a mint goes to now, or null with no wallet: { chain: 'canton'|'solana'|'evm', chainId }.
+     * Canton needs no wallet; Solana wins over EVM when both are connected.
+     */
+    function connectedChain() {
+        if (root.CantonMode?.isActive?.() && root.CantonProposalChainBridge) return { chain: 'canton', chainId: 'canton' };
         const solana = root.solanaWalletManager?.getState?.();
-        if (solana?.status === 'connected' && solana.accounts?.length && root.SolanaProposalChainBridge?.isSupported?.()) return 'solana';
-        return 'evm';
+        if (solana?.status === 'connected' && solana.accounts?.length && root.SolanaProposalChainBridge?.isSupported?.()) {
+            return { chain: 'solana', chainId: `solana-${root.solanaWalletManager.getCluster?.() || 'devnet'}` };
+        }
+        const evm = root.walletManager?.getState?.();
+        if (evm?.status === 'connected' && evm.accounts?.length) return { chain: 'evm', chainId: evm.chainId || null };
+        return null;
+    }
+
+    function activeChain() {
+        return connectedChain()?.chain || 'evm';
     }
 
     function chainIdForUpload(chain) {
@@ -207,5 +219,5 @@
         return result;
     }
 
-    return Object.freeze({ nativeAmountOf, mintPlan, mintMetadata, mint, mirror });
+    return Object.freeze({ nativeAmountOf, mintPlan, mintMetadata, connectedChain, mint, mirror });
 });

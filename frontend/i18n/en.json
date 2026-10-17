@@ -3214,6 +3214,8 @@
             "summaryCoverage": "Approximate coverage of view: {{percent}}%"
         },
         "createProposal": {
+            "publishTitle": "Before publishing",
+            "publishSubmit": "Save terms",
             "kind": {
                 "heading": "Who decides?",
                 "ownerDeal": "Owner deal",

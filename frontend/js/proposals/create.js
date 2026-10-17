@@ -21,15 +21,19 @@ function updateCreateProposalSubmitState() {
     const needsGeometry = goalRequiresGeometry(goalKey);
     const hasGeometry = proposalGeometrySubmitted || !needsGeometry;
 
+    const publishesInPlace = typeof proposalDialogOverrides !== 'undefined' && !!proposalDialogOverrides?.publishInPlace;
     if (btn) {
-        btn.disabled = !hasGeometry;
+        // A record published in place already has its design.
+        btn.disabled = !publishesInPlace && !hasGeometry;
         // Relabel the submit action for either vote kind, so the proposer sees the outcome
         // ("Submit for voting" → status "Open for voting").
         const isVote = window.ProposalKind.isNonBinding({ kind: getSelectedProposalKind() });
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
         const createsReplacement = !!(typeof window !== 'undefined'
             && window.pendingProposalReplacementSource?.proposalId);
-        btn.textContent = createsReplacement
+        btn.textContent = publishesInPlace
+            ? (t ? t('modal.createProposal.publishSubmit', 'Save terms') : 'Save terms')
+            : createsReplacement
             ? (window.ProposalLineage?.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId)
                 || (t ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : 'Create replacement proposal'))
             : (isVote
@@ -37,7 +41,7 @@ function updateCreateProposalSubmitState() {
                 : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal'));
     }
     if (hint) {
-        hint.textContent = (!hasGeometry) ? 'Please add a geometry first.' : '';
+        hint.textContent = (!publishesInPlace && !hasGeometry) ? 'Please add a geometry first.' : '';
     }
     // The kind's terms follow the relabel.
     applyProposalKindToDialog();
@@ -222,6 +226,82 @@ function readProposalTermsFromDialog(offer, offerCurrency) {
         depositPercent: parseInt(field('proposalDepositPercent')?.value, 10),
         voteExpiryDays: field('proposalVoteExpiryDays')?.value
     };
+}
+
+// ---- Publishing in place (proposal-kinds.md) ----
+// A local record whose terms were never chosen gets them in the create dialog, its design sections
+// hidden (data-publish-in-place): saving appends the kind, terms and details to that same record.
+// Nothing about the design is re-created; the share dialog then uploads or mints the record.
+function openPublishTermsDialog(proposalId, { afterSave = null } = {}) {
+    const record = proposalStorage.getProposal(proposalId);
+    if (!record) return false;
+    showProposalDialog({
+        prefill: buildCopyPrefill(record),
+        publishInPlace: { proposalId: record.proposalId, afterSave }
+    });
+    return true;
+}
+
+function publishTermsInPlace(proposalId, afterSave) {
+    const record = proposalStorage.getProposal(proposalId);
+    if (!record) {
+        showProposalAlertMessage('cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.');
+        return;
+    }
+    const author = getProposalAuthorValue();
+    if (!author) {
+        showProposalAlertMessage('please_enter_an_author_name', 'Please enter an author name.');
+        return;
+    }
+    const description = (document.getElementById('proposalDescription')?.value || '').trim();
+    if (!description) {
+        showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
+        return;
+    }
+    const kindTerms = readProposalKindTerms();
+    // A readjustment's cash is its owner ledger, already on the record.
+    const readjustment = isReadjustmentRecord(record);
+    const offer = kindTerms.nonBinding ? 0
+        : (readjustment ? Number(record.offer) || 0 : window.parseProposalOfferValue(document.getElementById('proposalOffer')?.value));
+    if (!kindTerms.nonBinding && !readjustment && !(Number.isFinite(offer) && offer > 0)) {
+        showProposalAlertMessage('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
+        return;
+    }
+    if (kindTerms.kind === window.ProposalKind.OWNER_VOTE
+        && typeof window.isSolanaLensPath === 'function' && window.isSolanaLensPath()) {
+        showProposalAlertMessage('owner_vote_not_on_solana', 'Owner votes cannot be minted on Solana yet. Choose another kind, or keep the proposal off-chain.');
+        return;
+    }
+    const name = (document.getElementById('proposalName')?.value || '').trim() || record.title || record.name || '';
+    let fields;
+    try {
+        fields = window.ProposalPublishTerms.termsInPlace(record,
+            readProposalTermsFromDialog(offer, document.getElementById('proposalCurrency')?.value || 'USDT'), {
+                name, description, author,
+                epochYear: window.__proposalEpoch ? window.__proposalEpoch.readCreateDialogEpoch() : (record.epochYear ?? null)
+            });
+    } catch (error) {
+        showProposalAlertMessage('invalid_proposal_terms', error.message);
+        return;
+    }
+    const { approvalConfig, ...terms } = fields;
+    Object.assign(record, terms);
+    // The lens is part of what is published, as at create: the current one when the drawing has none.
+    if (!window.ProposalKind.isOwnerSaleOffer(record) && !(Array.isArray(record.lens) && record.lens.length)) {
+        const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
+        if (lensSnapshot.length) record.lens = lensSnapshot;
+    }
+    if (approvalConfig) {
+        record.approvalConfig = window.ProposalApproval?.normalizeConfig
+            ? window.ProposalApproval.normalizeConfig(approvalConfig) : cloneProposalCreateValue(approvalConfig);
+    } else {
+        delete record.approvalConfig;
+    }
+    proposalStorage._indexProposal?.(record);
+    proposalStorage.save();
+    closeProposalDialog();
+    if (typeof updateProposalList === 'function') updateProposalList();
+    if (afterSave) afterSave(record.proposalId);
 }
 
 // ---- Owner offer ("Offer my land") ----
@@ -552,9 +632,9 @@ function updateProposalNameAndDescription(proposalType, forceUpdate = false) {
 async function createProposal() {
     console.debug('[createProposal] START - Create proposal button clicked');
     const startTime = performance.now();
-    // Read before the dialog closes: what the caller wants done with the saved record.
-    const afterCreate = (typeof proposalDialogOverrides !== 'undefined' && typeof proposalDialogOverrides?.afterCreate === 'function')
-        ? proposalDialogOverrides.afterCreate : null;
+    // Terms for a record that already exists: appended in place, nothing below re-creates it.
+    const publishInPlace = (typeof proposalDialogOverrides !== 'undefined') ? proposalDialogOverrides?.publishInPlace : null;
+    if (publishInPlace) return publishTermsInPlace(publishInPlace.proposalId, publishInPlace.afterSave);
     const t = getProposalI18nHelper();
     const publishingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
         ? String(window.pendingProposalDraftId)
@@ -1975,7 +2055,6 @@ async function createProposal() {
             setTimeout(() => {
                 hideWaitingPopupSafe();
             }, 500);
-            if (afterCreate) afterCreate(proposalId);
         };
 
         console.debug('[createProposal] All proposal creation steps complete, opening details. Total elapsed:', (performance.now() - startTime).toFixed(2), 'ms');

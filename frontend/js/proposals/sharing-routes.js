@@ -240,13 +240,12 @@ function shareSingleProposal(proposalIdOrProposal) {
         }
 
         // Sharing publishes, and publishing has one step (proposal-kinds.md): a local proposal
-        // whose terms were never chosen opens the create dialog (kind, terms, mint) first, and the
-        // record it saves is what gets shared.
+        // whose terms were never chosen gets them first, appended to that same record in the create
+        // dialog, and is then shared; the share dialog uploads or mints it.
         const terms = window.ProposalPublishTerms;
-        if (terms.needsTerms(proposal, { isPublished: record => window.isPublishedProposalRecord?.(record) === true })
-            && typeof window.proposeExistingProposal === 'function') {
-            window.proposeExistingProposal(getProposalKey(proposal) || proposal.proposalId, {
-                afterCreate: savedId => shareSingleProposal(savedId)
+        if (terms.needsTerms(proposal, { isPublished: record => window.isPublishedProposalRecord?.(record) === true })) {
+            window.openPublishTermsDialog(proposal.proposalId, {
+                afterSave: savedId => shareSingleProposal(savedId)
             });
             return;
         }

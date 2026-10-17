@@ -656,7 +656,12 @@ function showProposalDialog(overrides = null) {
     // Editing a proposal already on the map (opened via its "Details" button) reuses this same
     // full-property dialog, only reframed: the source id is staged in pendingProposalReplacementSource.
     const isEditingExisting = !!(typeof window !== 'undefined' && window.pendingProposalReplacementSource && window.pendingProposalReplacementSource.proposalId);
-    const modalTitle = isEditingExisting
+    // Terms for a record that already exists (create.js openPublishTermsDialog): its design is
+    // done, so the design sections hide and no parcel selection is needed.
+    const publishInPlace = proposalDialogOverrides?.publishInPlace || null;
+    const modalTitle = publishInPlace
+        ? t('modal.createProposal.publishTitle', 'Before publishing')
+        : isEditingExisting
         ? t('modal.createProposal.editTitle', 'Proposal')
         : t('modal.createProposal.title', 'Create Proposal');
     const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
@@ -770,7 +775,9 @@ function showProposalDialog(overrides = null) {
         explain: t('modal.createProposal.ownerOffer.explain', 'You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.'),
         recheck: t('modal.createProposal.ownerOffer.recheck', 'Check again')
     };
-    const submitLabel = isEditingExisting
+    const submitLabel = publishInPlace
+        ? t('modal.createProposal.publishSubmit', 'Save terms')
+        : isEditingExisting
         ? (window.ProposalLineage?.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId)
             || t('proposalDrafts.actions.createReplacement', 'Create replacement proposal'))
         : t('modal.createProposal.submit', 'Create Proposal');
@@ -829,7 +836,7 @@ function showProposalDialog(overrides = null) {
     const siteContext = (!ownershipOnly && proposalDialogOverrides && proposalDialogOverrides.siteContext
         && proposalDialogOverrides.siteContext.site) ? proposalDialogOverrides.siteContext : null;
     window.pendingProposalSiteContext = siteContext;
-    if (!siteContext && !agreementBatch && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
+    if (!publishInPlace && !siteContext && !agreementBatch && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
         updateStatus(noParcelsMessage);
         return;
     }
@@ -898,89 +905,91 @@ function showProposalDialog(overrides = null) {
                     <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
                 </div>
                 ${proposalKindRowHtml(t)}
-                <div class="proposal-choices" id="proposalMainTypeGroup" hidden>
-                    <div class="cb-kicker" id="proposalMainTypeHeading">${proposalTypeLabel}</div>
-                    <div class="cb-segmented" role="group" aria-labelledby="proposalMainTypeHeading">
-                        <button type="button" class="cb-segmented__option" aria-pressed="true" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
-                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Urban Rule" onclick="handleUrbanRuleMainTypeClick()">${proposalTypeLabels['Urban Rule']}</button>
-                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
-                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
-                    </div>
-                </div>
-                <input type="hidden" id="proposalMainType" value="Purchase">
-                <div class="proposal-choices" id="proposalGoalGroup">
-                    <div class="proposal-goal-section" data-goal-section="land-use">
-                        <div class="cb-kicker" id="proposalLandUseHeading">${goalSectionLabels.landUse}</div>
-                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalLandUseHeading" id="proposalLandUseGroup">
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="as-is" checked onchange="onProposalLandUseChange()"><span>${asIsLandUseLabel}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="square" onchange="onProposalLandUseChange()"><i class="fa-solid fa-chess-board" aria-hidden="true"></i><span>${goalLabels.square}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="park" onchange="onProposalLandUseChange()"><i class="fa-solid fa-tree" aria-hidden="true"></i><span>${goalLabels.park}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="lake" onchange="onProposalLandUseChange()"><i class="fa-solid fa-water" aria-hidden="true"></i><span>${goalLabels.lake}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="single" onchange="onProposalLandUseChange()"><i class="fa-solid fa-building" aria-hidden="true"></i><span>${goalLabels.single}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="road-track" onchange="onProposalLandUseChange()"><i class="fa-solid fa-road" aria-hidden="true"></i><span>${goalLabels.roadTrack}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="urban-rule" onchange="onProposalLandUseChange()"><i class="fa-solid fa-scroll" aria-hidden="true"></i><span>${goalLabels.urbanRule}</span></label>
+                <div class="proposal-design-fields">
+                    <div class="proposal-choices" id="proposalMainTypeGroup" hidden>
+                        <div class="cb-kicker" id="proposalMainTypeHeading">${proposalTypeLabel}</div>
+                        <div class="cb-segmented" role="group" aria-labelledby="proposalMainTypeHeading">
+                            <button type="button" class="cb-segmented__option" aria-pressed="true" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
+                            <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Urban Rule" onclick="handleUrbanRuleMainTypeClick()">${proposalTypeLabels['Urban Rule']}</button>
+                            <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
+                            <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
                         </div>
                     </div>
-                    <div class="proposal-goal-section" data-goal-section="parcels">
-                        <div class="cb-kicker" id="proposalParcelsHeading">${goalSectionLabels.parcels}</div>
-                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalParcelsHeading" id="proposalParcelsGroup">
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><i class="fa-solid fa-vector-square" aria-hidden="true"></i><span>${parcelsOptions.readjust}</span></label>
-                        </div>
-                        <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>
-                    </div>
-                    <div class="proposal-goal-section" data-goal-section="ownership">
-                        <div class="cb-kicker" id="proposalOwnershipHeading">${goalSectionLabels.ownership}</div>
-                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalOwnershipHeading" id="proposalOwnershipGroup">
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="no-change" checked onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.noChange}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-me" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toMe}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-city" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toCity}</span></label>
-                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
-                            <label class="cb-segmented__option proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
-                        </div>
-                        <div class="proposal-facet-static" id="proposalOwnershipStatic" style="display:none;"></div>
-                        <div class="proposal-inset" id="proposalRecipientOptions" style="display:none;">
-                            <div class="cb-segmented" role="radiogroup" aria-label="${ownershipRecipients.thirdParty}">
-                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalRecipientScope" value="any" checked onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.any}</span></label>
-                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalRecipientScope" value="specific" onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.specific}</span></label>
+                    <input type="hidden" id="proposalMainType" value="Purchase">
+                    <div class="proposal-choices" id="proposalGoalGroup">
+                        <div class="proposal-goal-section" data-goal-section="land-use">
+                            <div class="cb-kicker" id="proposalLandUseHeading">${goalSectionLabels.landUse}</div>
+                            <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalLandUseHeading" id="proposalLandUseGroup">
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="as-is" checked onchange="onProposalLandUseChange()"><span>${asIsLandUseLabel}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="square" onchange="onProposalLandUseChange()"><i class="fa-solid fa-chess-board" aria-hidden="true"></i><span>${goalLabels.square}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="park" onchange="onProposalLandUseChange()"><i class="fa-solid fa-tree" aria-hidden="true"></i><span>${goalLabels.park}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="lake" onchange="onProposalLandUseChange()"><i class="fa-solid fa-water" aria-hidden="true"></i><span>${goalLabels.lake}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="single" onchange="onProposalLandUseChange()"><i class="fa-solid fa-building" aria-hidden="true"></i><span>${goalLabels.single}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="road-track" onchange="onProposalLandUseChange()"><i class="fa-solid fa-road" aria-hidden="true"></i><span>${goalLabels.roadTrack}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalLandUse" value="urban-rule" onchange="onProposalLandUseChange()"><i class="fa-solid fa-scroll" aria-hidden="true"></i><span>${goalLabels.urbanRule}</span></label>
                             </div>
-                            <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
+                        </div>
+                        <div class="proposal-goal-section" data-goal-section="parcels">
+                            <div class="cb-kicker" id="proposalParcelsHeading">${goalSectionLabels.parcels}</div>
+                            <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalParcelsHeading" id="proposalParcelsGroup">
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><i class="fa-solid fa-vector-square" aria-hidden="true"></i><span>${parcelsOptions.readjust}</span></label>
+                            </div>
+                            <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>
+                        </div>
+                        <div class="proposal-goal-section" data-goal-section="ownership">
+                            <div class="cb-kicker" id="proposalOwnershipHeading">${goalSectionLabels.ownership}</div>
+                            <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalOwnershipHeading" id="proposalOwnershipGroup">
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="no-change" checked onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.noChange}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-me" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toMe}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-city" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toCity}</span></label>
+                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
+                                <label class="cb-segmented__option proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
+                            </div>
+                            <div class="proposal-facet-static" id="proposalOwnershipStatic" style="display:none;"></div>
+                            <div class="proposal-inset" id="proposalRecipientOptions" style="display:none;">
+                                <div class="cb-segmented" role="radiogroup" aria-label="${ownershipRecipients.thirdParty}">
+                                    <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalRecipientScope" value="any" checked onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.any}</span></label>
+                                    <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalRecipientScope" value="specific" onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.specific}</span></label>
+                                </div>
+                                <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group proposal-owner-offer" id="proposalOwnerOfferGroup" hidden>
-                    <div class="proposal-owner-offer-row">
-                        <label class="proposal-owner-offer-toggle"><input type="checkbox" id="proposalOwnerOfferCheckbox" disabled onchange="onProposalOwnerOfferChange()"><span>${ownerOfferLabels.label}</span></label>
-                        <button type="button" class="btn btn-sm" onclick="refreshOwnerOfferMode()">${ownerOfferLabels.recheck}</button>
+                    <div class="form-group proposal-owner-offer" id="proposalOwnerOfferGroup" hidden>
+                        <div class="proposal-owner-offer-row">
+                            <label class="proposal-owner-offer-toggle"><input type="checkbox" id="proposalOwnerOfferCheckbox" disabled onchange="onProposalOwnerOfferChange()"><span>${ownerOfferLabels.label}</span></label>
+                            <button type="button" class="btn btn-sm" onclick="refreshOwnerOfferMode()">${ownerOfferLabels.recheck}</button>
+                        </div>
+                        <p class="proposal-owner-offer-status" id="proposalOwnerOfferStatus" aria-live="polite"></p>
+                        <p class="proposal-owner-offer-explain" id="proposalOwnerOfferExplain" hidden>${ownerOfferLabels.explain}</p>
                     </div>
-                    <p class="proposal-owner-offer-status" id="proposalOwnerOfferStatus" aria-live="polite"></p>
-                    <p class="proposal-owner-offer-explain" id="proposalOwnerOfferExplain" hidden>${ownerOfferLabels.explain}</p>
-                </div>
-                <div class="proposal-choices" id="proposalOwnershipTransferGroup" style="display:none;">
-                    <div class="cb-kicker" id="proposalTransferHeading">${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction')}</div>
-                    <div class="cb-segmented" role="group" aria-labelledby="proposalTransferHeading">
-                        <button type="button" class="cb-segmented__option proposal-ownership-transfer-button" aria-pressed="true" data-transfer-direction="to-me" onclick="setOwnershipTransferDirection('to-me')">${ownershipTransferLabels.toMe}</button>
-                        <button type="button" class="cb-segmented__option proposal-ownership-transfer-button" aria-pressed="false" data-transfer-direction="from-me" onclick="setOwnershipTransferDirection('from-me')">${ownershipTransferLabels.fromMe}</button>
+                    <div class="proposal-choices" id="proposalOwnershipTransferGroup" style="display:none;">
+                        <div class="cb-kicker" id="proposalTransferHeading">${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction')}</div>
+                        <div class="cb-segmented" role="group" aria-labelledby="proposalTransferHeading">
+                            <button type="button" class="cb-segmented__option proposal-ownership-transfer-button" aria-pressed="true" data-transfer-direction="to-me" onclick="setOwnershipTransferDirection('to-me')">${ownershipTransferLabels.toMe}</button>
+                            <button type="button" class="cb-segmented__option proposal-ownership-transfer-button" aria-pressed="false" data-transfer-direction="from-me" onclick="setOwnershipTransferDirection('from-me')">${ownershipTransferLabels.fromMe}</button>
+                        </div>
                     </div>
-                </div>
-                <div class="proposal-choices" id="proposalAcquisitionGroup">
-                    <div class="cb-kicker" id="proposalAcquisitionHeading">${acquisitionLabel}</div>
-                    <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalAcquisitionHeading">
-                        <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalAcquisition" value="full" checked onchange="setProposalAcquisitionMode('full')"><span>${acquisitionOptions.full}</span></label>
-                        <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalAcquisition" value="partial" onchange="setProposalAcquisitionMode('partial')"><span class="proposal-acquisition-partial-label">${acquisitionOptions.partial}</span></label>
+                    <div class="proposal-choices" id="proposalAcquisitionGroup">
+                        <div class="cb-kicker" id="proposalAcquisitionHeading">${acquisitionLabel}</div>
+                        <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalAcquisitionHeading">
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalAcquisition" value="full" checked onchange="setProposalAcquisitionMode('full')"><span>${acquisitionOptions.full}</span></label>
+                            <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalAcquisition" value="partial" onchange="setProposalAcquisitionMode('partial')"><span class="proposal-acquisition-partial-label">${acquisitionOptions.partial}</span></label>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group proposal-inset" id="proposalTypologyGroup" style="display:none;">
-                    <div class="cb-kicker" id="proposalTypologyHeading">${proposalTypologyLabel}</div>
-                    <div class="cb-tiles" role="group" aria-labelledby="proposalTypologyHeading">
-                        <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-city" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.block}</span></button>
-                        <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="row" onclick="handleUrbanRuleTypologyClick('row', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-grip" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.row}</span></button>
-                        <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-house" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.parcelBased}</span></button>
+                    <div class="form-group proposal-inset" id="proposalTypologyGroup" style="display:none;">
+                        <div class="cb-kicker" id="proposalTypologyHeading">${proposalTypologyLabel}</div>
+                        <div class="cb-tiles" role="group" aria-labelledby="proposalTypologyHeading">
+                            <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-city" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.block}</span></button>
+                            <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="row" onclick="handleUrbanRuleTypologyClick('row', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-grip" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.row}</span></button>
+                            <button type="button" class="cb-tile proposal-typology-button" aria-pressed="false" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased', { skipLaunch: true })"><i class="cb-tile__icon fa-solid fa-house" aria-hidden="true"></i><span class="cb-tile__label">${typologyOptions.parcelBased}</span></button>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group proposal-inset" id="proposalGeometryGroup" style="display:none;">
-                    <div id="proposalGeometryStatus" class="proposal-geometry-status">${t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry')}</div>
-                    <div class="proposal-geometry-buttons" id="proposalGeometryButtons"></div>
+                    <div class="form-group proposal-inset" id="proposalGeometryGroup" style="display:none;">
+                        <div id="proposalGeometryStatus" class="proposal-geometry-status">${t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry')}</div>
+                        <div class="proposal-geometry-buttons" id="proposalGeometryButtons"></div>
+                    </div>
                 </div>
                 <input type="hidden" id="proposalType" value="">
                 <input type="hidden" id="proposalAcquisitionMode" value="full">
@@ -1027,7 +1036,7 @@ function showProposalDialog(overrides = null) {
                         <div class="form-group proposal-deal-term">
                             <label for="proposalOffer">${offerLabel}</label>
                             <div class="proposal-offer-row">
-                                <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" oninput="handleProposalOfferInput(this)">
+                                <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="decimal" oninput="handleProposalOfferInput(this)" onchange="formatProposalOfferInput(this)">
                                 <select id="proposalCurrency">
                                     <option value="EUR">EUR</option>
                                     <option value="USD">USD</option>
@@ -1159,6 +1168,7 @@ function showProposalDialog(overrides = null) {
     if (!dialogApi) return;
     const modal = dialogApi.overlay;
     modal.__proposalDialog = dialogApi;
+    if (publishInPlace) modal.dataset.publishInPlace = '';
     decorateProposalDialogChrome(dialogApi, {
         submitId: 'createProposalSubmitButton',
         lensTooltip,

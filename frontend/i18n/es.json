@@ -3265,6 +3265,8 @@
             "summaryCoverage": "Cobertura aproximada de la vista: {{percent}}%"
         },
         "createProposal": {
+            "publishTitle": "Antes de publicar",
+            "publishSubmit": "Guardar condiciones",
             "kind": {
                 "heading": "¿Quién decide?",
                 "ownerDeal": "Acuerdo con propietarios",

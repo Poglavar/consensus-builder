@@ -995,8 +995,6 @@
     // "Create proposal" on an existing map object: skip the editor entirely and go straight to
     // the create dialog, prefilled from the object. On submit the object is absorbed into the
     // proposal that replaces it (see createProposal), so one thing remains on the map.
-    // `options.afterCreate(proposalId)` runs once the dialog has saved: Share uses it to share the
-    // record the publish step produced (proposal-kinds.md).
     async function proposeExistingProposal(proposalIdOrHash, options = {}) {
         // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
         const proposal = proposalById(proposalIdOrHash);
@@ -1753,7 +1751,6 @@
             acquisitionMode: fields.acquisitionMode || null,
             siteContext,
             prefill,
-            afterCreate: typeof options.afterCreate === 'function' ? options.afterCreate : null,
             copySource: draft.sourceProposalId ? { proposalId: draft.sourceProposalId, name: global.pendingProposalReplacementSource.name } : null,
             geometryPreset: seeded ? {
                 statusText: tDraft('proposalDrafts.publish.geometryReady', 'Geometry attached from the draft'),

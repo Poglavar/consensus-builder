@@ -74,9 +74,11 @@ test.describe('Proposal sharing @core', () => {
 
     await showProposal(sender, proposalId);
     await sender.locator('.btn-share-proposal').click();
-    // A quick drawing has no terms yet: Share opens the create dialog and shares what it saves.
+    // A quick drawing has no terms yet: Share asks for them, appends them to the drawing itself
+    // and shares it; nothing is re-created.
     const savedId = await chooseTermsForShare(sender, 'community-vote');
-    expect(savedId).not.toBe(proposalId);
+    expect(savedId).toBe(proposalId);
+    expect(await sender.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);
     const downloadPromise = sender.waitForEvent('download');
     await sender.locator('.share-modal-overlay').getByRole('button', { name: 'Download', exact: true }).click();
     const download = await downloadPromise;

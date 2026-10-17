@@ -215,5 +215,6 @@ if (typeof window !== 'undefined') {
 
     window.formatProposalOfferValue = formatProposalOfferValue;
     window.handleProposalOfferInput = handleProposalOfferInput;
+    window.formatProposalOfferInput = formatProposalOfferInput;
     window.parseProposalOfferValue = parseProposalOfferValue;
 }

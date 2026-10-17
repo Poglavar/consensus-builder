@@ -603,12 +603,8 @@ function showUploadProposalModal(proposal) {
     let shareUrl = null;
     let mintedExplorerUrl = null;
 
-    const isWalletConnected = () => {
-        if (!window.walletManager || typeof window.walletManager.getState !== 'function') return false;
-        const walletState = window.walletManager.getState();
-        return walletState && walletState.status === 'connected'
-            && Array.isArray(walletState.accounts) && walletState.accounts.length > 0;
-    };
+    // Any chain a mint can go to: an EVM or Solana wallet, or Canton (publish-mint.js connectedChain).
+    const isWalletConnected = () => !!window.ProposalPublishMint.connectedChain();
 
     const computeShareUrlFromProposal = () => {
         try {
@@ -696,6 +692,10 @@ function showUploadProposalModal(proposal) {
     };
     if (window.walletManager && typeof window.walletManager.on === 'function') {
         detachWalletStateListener = window.walletManager.on('stateChanged', () => handleWalletStateChange());
+    }
+    // A Phantom-only author mints on Solana from here too.
+    if (window.solanaWalletManager && typeof window.solanaWalletManager.on === 'function') {
+        window.solanaWalletManager.on('stateChanged', () => handleWalletStateChange());
     }
 
 
@@ -845,7 +845,6 @@ function showUploadProposalModal(proposal) {
                 }
             };
 
-            const walletManager = window.walletManager;
 
             // Check wallet connection
             const walletConnected = isWalletConnected();
@@ -930,13 +929,12 @@ function showUploadProposalModal(proposal) {
                 if (feature) parcelFeatureById.set(idStr, feature);
             }
 
-            // Check prerequisite parcel NFTs before minting (mirrors Create Proposal flow)
-            if (typeof window.ProposalChainBridge !== 'undefined' && window.ProposalChainBridge.isSupported()) {
-                let chainId = null;
-                if (walletManager && typeof walletManager.getState === 'function') {
-                    const walletState = walletManager.getState();
-                    chainId = walletState?.chainId || null;
-                }
+            // Check prerequisite parcels on the chain the mint goes to (mirrors Create Proposal):
+            // parcel NFTs on EVM, parcel anchors on Solana; Canton has none.
+            const mintChain = window.ProposalPublishMint.connectedChain();
+            const solanaMint = mintChain?.chain === 'solana';
+            if (mintChain?.chain !== 'canton' && typeof window.ProposalChainBridge !== 'undefined' && window.ProposalChainBridge.isSupported()) {
+                let chainId = mintChain?.chainId || null;
 
                 if (!chainId) {
                     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -950,11 +948,13 @@ function showUploadProposalModal(proposal) {
 
                 try {
                     setMintStatus(tShare('checkingPrereqParcels', 'Checking prerequisite parcels on-chain...'));
-                    const parcelCheckResult = await checkParcelsHaveNFTs(parcelIds, chainId);
+                    const parcelCheckResult = solanaMint
+                        ? await checkParcelsHaveNFTsSolana(parcelIds, chainId)
+                        : await checkParcelsHaveNFTs(parcelIds, chainId);
 
                     if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
                         const chainDisplay = parcelCheckResult.chainName || parcelCheckResult.chainId || 'the blockchain';
-                        const action = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay);
+                        const action = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay, { anchors: solanaMint });
 
                         if (action === 'mint') {
                             const mintableParcels = parcelCheckResult.missingParcels.map((parcelId) => {

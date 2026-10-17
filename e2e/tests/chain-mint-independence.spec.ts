@@ -152,7 +152,7 @@ test.describe('chain mint independence @features', () => {
     expect(evidence.mintCalls[0]).toMatchObject({ isVote: true, expiryDays: 30, ethAmount: 0 });
   });
 
-  test('Share on a quick drawing mints through the create dialog on Solana, then shares the minted record', async ({ mockApi: page }) => {
+  test('Share on a quick drawing appends its terms in place and the share dialog mints it on Solana', async ({ mockApi: page }) => {
     test.setTimeout(90_000);
     const requests = await interceptMirrorRequests(page);
     await openCity(page);
@@ -185,12 +185,11 @@ test.describe('chain mint independence @features', () => {
     await expect(form).toBeVisible();
     await expect(form.locator('input[name="proposalKind"][value="community-vote"]')).toBeChecked();
     await form.locator('#createProposalSubmitButton').click();
-    // The create path shows its mint receipt; closing it opens the share dialog for the saved record.
+    // The terms are appended to the drawing itself; the share dialog then mints that record.
     const shareDialog = page.locator('.share-modal-overlay');
-    const receipt = page.locator('#proposal-mint-success-modal');
-    await expect(receipt).toContainText('Success!', { timeout: 45_000 });
-    await receipt.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(shareDialog).toBeVisible({ timeout: 30_000 });
+    await shareDialog.getByRole('button', { name: 'Mint', exact: true }).click();
+    await expect(shareDialog).toContainText(/Success!|Minted/i, { timeout: 45_000 });
 
     const evidence = await page.evaluate(() => (window as any).__chainMintE2e);
     expect(evidence.mintCalls).toHaveLength(1);
@@ -201,12 +200,12 @@ test.describe('chain mint independence @features', () => {
     expect(metadata.properties.proposal).toMatchObject({ kind: 'community-vote', offer: null, voteExpiryDays: 365 });
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .find((p: any) => p.kind === 'community-vote' && p.termsConfirmed));
-    expect(saved.proposalId).not.toBe(drawingId);
+    expect(saved.proposalId).toBe(drawingId);
     expect(saved.onchain).toMatchObject({ proposalId: 'ProposalPda111', chainId: 'solana-devnet', metadataUri: METADATA_URI });
     expect(requests.filter(call => call.path.endsWith('/proposals/mirror'))).toHaveLength(1);
   });
 
-  test('Share on a quick drawing mints an owner deal on EVM through the create dialog, with its offer escrowed', async ({ mockApi: page }) => {
+  test('Share on a quick drawing mints an owner deal of half an ETH on EVM, with its offer escrowed', async ({ mockApi: page }) => {
     // A drawing whose author set no approval carries no approval setup, so EVM mints it.
     test.setTimeout(90_000);
     const requests = await interceptMirrorRequests(page);
@@ -222,20 +221,21 @@ test.describe('chain mint independence @features', () => {
     if (!(await form.locator('#proposalOffer').isVisible())) {
       await form.locator('#proposalOptionsSection > .collapsible-header').click();
     }
-    await form.locator('#proposalOffer').fill('2');
+    // A fraction of a coin is a valid offer.
+    await form.locator('#proposalOffer').fill('0.5');
     await selectNativeOption(form.locator('#proposalCurrency'), 'ETH');
     await form.locator('#createProposalSubmitButton').click();
-    const receipt = page.locator('#proposal-mint-success-modal');
-    await expect(receipt).toContainText('Success!', { timeout: 45_000 });
-    await receipt.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect(page.locator('.share-modal-overlay')).toBeVisible({ timeout: 30_000 });
+    const shareDialog = page.locator('.share-modal-overlay');
+    await expect(shareDialog).toBeVisible({ timeout: 30_000 });
+    await shareDialog.getByRole('button', { name: 'Mint', exact: true }).click();
+    await expect(shareDialog).toContainText(/Success!|Minted/i, { timeout: 45_000 });
 
     const evidence = await page.evaluate(() => (window as any).__chainMintE2e);
     expect(evidence.mintCalls).toHaveLength(1);
-    expect(evidence.mintCalls[0]).toMatchObject({ ethAmount: 2, isVote: false, approvalSetup: false, imageURI: METADATA_URI });
+    expect(evidence.mintCalls[0]).toMatchObject({ ethAmount: 0.5, isVote: false, approvalSetup: false, imageURI: METADATA_URI });
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .find((p: any) => p.kind === 'owner-deal' && p.termsConfirmed));
-    expect(saved).toMatchObject({ offer: 2, offerCurrency: 'ETH', onchain: { proposalId: '77', contractAddress: CONTRACT } });
+    expect(saved).toMatchObject({ proposalId: drawingId, offer: 0.5, offerCurrency: 'ETH', onchain: { proposalId: '77', contractAddress: CONTRACT } });
     expect(saved).not.toHaveProperty('approvalConfig');
     expect(requests.filter(call => call.path.endsWith('/proposals/mirror'))).toHaveLength(1);
   });

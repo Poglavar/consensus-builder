@@ -3235,6 +3235,8 @@
             "summaryCoverage": "Približna pokrivenost pogleda: {{percent}}%"
         },
         "createProposal": {
+            "publishTitle": "Prije objave",
+            "publishSubmit": "Spremi uvjete",
             "kind": {
                 "heading": "Tko odlučuje?",
                 "ownerDeal": "Dogovor s vlasnicima",

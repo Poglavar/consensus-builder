@@ -94,6 +94,22 @@
     }
 
     /**
+     * What publishing a local record in place writes onto it: the chosen terms, its details and the
+     * approval setup its kind allows (approvalSetupFor; null means none). Its design is untouched:
+     * publishing appends terms to what was drawn, it never re-creates it.
+     */
+    function termsInPlace(record, terms, { name = '', description = '', author = '', epochYear = null, now = Date.now() } = {}) {
+        const saleOffer = kinds().isOwnerSaleOffer(record);
+        const fields = publishFields(saleOffer ? { ...terms, kind: kinds().OWNER_DEAL } : terms, { now, saleOffer });
+        const approvalConfig = approvalSetupFor({
+            kind: fields.kind ?? null,
+            readjustment: record.goal === 'reparcellization' || !!record.reparcellization,
+            approvalConfig: record.approvalConfig || null
+        });
+        return { ...fields, title: name, name, proposalName: name, description, author, epochYear, approvalConfig, termsConfirmed: true };
+    }
+
+    /**
      * A local record's terms confirmed under one kind, as Share entire plan does for every proposal
      * it carries: the record's own money terms stay for an owner deal, a vote drops them.
      */
@@ -102,5 +118,5 @@
         return { ...publishFields({ ...record, kind: saleOffer ? 'owner-deal' : kind }, { now, saleOffer }), termsConfirmed: true };
     }
 
-    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, chosenKind, approvalSetupFor, confirmedRecordFields });
+    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, chosenKind, approvalSetupFor, termsInPlace, confirmedRecordFields });
 });

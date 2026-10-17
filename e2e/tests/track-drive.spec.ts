@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, drawCorridor, showProposal } from '../helpers/runtime';
+import { openCity, drawCorridor, showProposal, chooseTermsForShare } from '../helpers/runtime';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
 test('published track opens the configured cab simulator with the actual uploaded track ID', async ({ mockApi: page }) => {
@@ -12,6 +12,7 @@ test('published track opens the configured cab simulator with the actual uploade
   const id = await drawCorridor(page, 'track');
   await showProposal(page, id);
   await page.locator('.btn-share-proposal').click();
+  await chooseTermsForShare(page);
   await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
   await expect(page.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+/);
   const uploaded = [...server.records.keys()][0];

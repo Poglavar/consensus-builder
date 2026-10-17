@@ -157,11 +157,48 @@
         return dateFormatter(localeFor(options.lang), fmt).format(date);
     }
 
+    function groupSeparator(lang) {
+        const part = numberFormatter(localeFor(lang), {}).formatToParts(11111).find(p => p.type === 'group');
+        return part ? part.value : ',';
+    }
+
+    // The number a person typed, read in the UI language: "1.234,5" (hr) and "1,234.5" (en) are
+    // both 1234.5. A lone "." or "," counts as grouping only where it is the language's group
+    // separator followed by exactly three digits; otherwise it is the decimal point, so "0.5" is
+    // a half in Croatian too and "0,5" in English. Spaces group digits. Empty text is null, text
+    // that is not a number NaN, never 0.
+    function parseDecimal(text, options = {}) {
+        if (isFiniteNumber(text)) return text;
+        const raw = String(text === null || text === undefined ? '' : text).replace(/[\s\u00a0\u202f']/g, '');
+        if (!raw) return null;
+        if (/[^\d.,]/.test(raw)) return NaN;
+        const dots = raw.split('.').length - 1;
+        const commas = raw.split(',').length - 1;
+        let normalized = raw;
+        if (dots && commas) {
+            const decimal = raw.lastIndexOf('.') > raw.lastIndexOf(',') ? '.' : ',';
+            if (raw.indexOf(decimal) !== raw.lastIndexOf(decimal)) return NaN;
+            const [whole, fraction] = raw.split(decimal);
+            const groups = whole.split(decimal === '.' ? ',' : '.');
+            if (groups.slice(1).some(g => g.length !== 3)) return NaN;
+            normalized = groups.join('') + '.' + fraction;
+        } else if (dots || commas) {
+            const parts = raw.split(dots ? '.' : ',');
+            const grouped = parts.length > 2
+                || ((dots ? '.' : ',') === groupSeparator(options.lang) && parts[1].length === 3 && /^[1-9]/.test(parts[0]));
+            if (grouped && parts.slice(1).some(g => g.length !== 3)) return NaN;
+            normalized = grouped ? parts.join('') : parts.join('.');
+        }
+        const value = Number(normalized);
+        return /\d/.test(normalized) && Number.isFinite(value) ? value : NaN;
+    }
+
     return Object.freeze({
         LOCALES,
         localeFor,
         currentLanguage,
         formatNumber,
+        parseDecimal,
         formatInteger,
         formatArea,
         formatLength,

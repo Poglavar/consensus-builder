@@ -115,6 +115,8 @@ test.describe('shared dialog button controls @features', () => {
   });
 
   test('partial shared plan result supports Copy and Close', async ({ browser, baseURL, mockApi: authorPage }) => {
+    // Two devices, and the drawing gets its terms before it is shared.
+    test.setTimeout(90_000);
     const server = createSharedProposalServer();
     await attachSharedProposalServer(authorPage, server);
     await openCity(authorPage);

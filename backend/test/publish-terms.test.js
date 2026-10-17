@@ -81,6 +81,18 @@ describe('publishFields', () => {
         expect(approvalSetupFor({ kind: 'owner-deal', readjustment: true })).toBe(null);
     });
 
+    it('appends terms to an existing record without touching its design', () => {
+        const { termsInPlace } = require('../../frontend/js/proposals/publish-terms.js');
+        const drawing = { proposalId: 'p1', goal: 'park', structureProposal: { kind: 'park' }, approvalConfig: { rights: null } };
+        const vote = termsInPlace(drawing, { kind: 'community-vote', offer: 900, voteExpiryDays: 30 }, { name: 'Pocket park', description: 'd', author: 'A', now: NOW });
+        expect(vote).toMatchObject({ kind: 'community-vote', offer: null, voteExpiryDays: 30, title: 'Pocket park', author: 'A', termsConfirmed: true, approvalConfig: null });
+        expect(vote).not.toHaveProperty('structureProposal');
+        const deal = termsInPlace(drawing, { kind: 'owner-deal', offer: 0.5, offerCurrency: 'ETH' }, { name: 'n', now: NOW });
+        expect(deal).toMatchObject({ kind: 'owner-deal', offer: 0.5, offerCurrency: 'ETH', approvalConfig: { rights: null } });
+        // An owner's sale offer stays a deal whatever the dialog said.
+        expect(termsInPlace({ goal: 'ownership-transfer-from-me' }, { kind: 'community-vote', offer: 10 }, { now: NOW }).kind).toBe('owner-deal');
+    });
+
     it('refuses a vote for an owner\'s sale offer, and an unknown kind', () => {
         expect(() => publishFields({ kind: 'community-vote' }, { saleOffer: true })).toThrow(/owner deal/);
         expect(publishFields({ kind: 'owner-deal', offer: 10 }, { saleOffer: true }).kind).toBe('owner-deal');

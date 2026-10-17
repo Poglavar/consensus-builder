@@ -334,29 +334,34 @@ function getProposalLifecycleClass(key) {
     }
 }
 
-// Offer formatting helpers
+// Offer formatting helpers. An offer may be a fraction (0.5 ETH); it is read and shown in the UI
+// language (CbFormat.parseDecimal / formatNumber), and regrouped only once the field is left, so
+// typing a decimal point is never undone mid-number.
+const offerFormat = () => (typeof CbFormat !== 'undefined' ? CbFormat : require('../format.js'));
+const OFFER_MAX_FRACTION_DIGITS = 8;
+
 function formatProposalOfferValue(value) {
     if (value === undefined || value === null || value === '') return '';
-    const cleanValue = value.toString().replace(/\D/g, '');
-    if (!cleanValue) return '';
-    const number = parseInt(cleanValue, 10);
-    // Grouped in the UI language; parseProposalOfferValue strips every non-digit back out.
-    return CbFormat.formatNumber(number, { maxFractionDigits: 0 });
+    const number = offerFormat().parseDecimal(value);
+    if (!Number.isFinite(number)) return String(value);
+    return offerFormat().formatNumber(number, { maxFractionDigits: OFFER_MAX_FRACTION_DIGITS });
 }
 
+// While typing: digits, separators and spaces only.
 function handleProposalOfferInput(input) {
-    const originalValue = input.value;
-    const formatted = formatProposalOfferValue(originalValue);
-
-    if (input.value !== formatted) {
-        input.value = formatted;
-    }
+    const cleaned = input.value.replace(/[^\d.,\s\u00a0\u202f]/g, '');
+    if (input.value !== cleaned) input.value = cleaned;
 }
 
+// On leaving the field: grouped in the UI language.
+function formatProposalOfferInput(input) {
+    input.value = formatProposalOfferValue(input.value);
+}
+
+// Empty is 0; text that is not a number is NaN, which the create dialog refuses.
 function parseProposalOfferValue(value) {
-    if (!value) return 0;
-    const cleanValue = value.toString().replace(/\D/g, '');
-    return parseInt(cleanValue, 10) || 0;
+    const number = offerFormat().parseDecimal(value);
+    return number === null ? 0 : number;
 }
 
 // Export the pure classification helper for headless unit tests (browser leaves `module` undefined,
@@ -367,6 +372,8 @@ if (typeof module !== 'undefined' && module.exports) {
         isNonBindingProposal,
         isProposalExpired,
         checkAndUpdateProposalExpiry,
-        parseExpiryTime
+        parseExpiryTime,
+        formatProposalOfferValue,
+        parseProposalOfferValue
     };
 }
