@@ -3917,6 +3917,8 @@
                 "redone": "Promena je ponovljena.",
                 "edgeErased": "Međa je obrisana — dve parcele su sada jedna.",
                 "nodeKept": "Taj čvor se ne može ukloniti — parcela bi prestala da bude poligon.",
+                "editFolds": "Nije promenjeno: to bi presavilo parcelu preko nje same ili preko susedne.",
+                "editBreaksTiling": "Nije promenjeno: to bi ostavilo zemljište bez parcele ili u dve parcele.",
                 "undone": "Poslednja promena je poništena.",
                 "nodeOnPool": "Taj čvor je na obodu obuhvata — pripada susedima, ne ovom planu.",
                 "assignHint": "Kliknite parcelu da izaberete njene vlasnike. Uređivanje je pauzirano dok dodeljujete.",

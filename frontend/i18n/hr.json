@@ -3917,6 +3917,8 @@
                 "redone": "Promjena je ponovljena.",
                 "edgeErased": "Međa je obrisana — dvije čestice sada su jedna.",
                 "nodeKept": "Taj se čvor ne može ukloniti — čestica bi prestala biti poligon.",
+                "editFolds": "Nije promijenjeno: to bi presavilo česticu preko nje same ili preko susjedne.",
+                "editBreaksTiling": "Nije promijenjeno: to bi ostavilo zemljište bez čestice ili u dvije čestice.",
                 "undone": "Zadnja promjena je poništena.",
                 "nodeOnPool": "Taj je čvor na obodu obuhvata — pripada susjedima, ne ovom planu.",
                 "assignHint": "Kliknite česticu da odaberete njezine vlasnike. Uređivanje je pauzirano dok dodjeljujete.",

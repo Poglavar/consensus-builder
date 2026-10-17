@@ -3898,6 +3898,8 @@
                 "redone": "Redid the change.",
                 "edgeErased": "Boundary erased — the two plots are now one.",
                 "nodeKept": "That node cannot be removed — a plot would stop being a polygon.",
+                "editFolds": "Not changed: that would fold a plot over itself or over a neighbour.",
+                "editBreaksTiling": "Not changed: that would leave land with no plot, or in two plots.",
                 "undone": "Undid the last change.",
                 "nodeOnPool": "That node sits on the pooled outline — it belongs to the neighbours, not to this plan.",
                 "assignHint": "Click a plot to choose its owners. Editing is paused while you assign.",

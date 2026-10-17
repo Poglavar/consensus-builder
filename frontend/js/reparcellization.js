@@ -967,13 +967,16 @@
         toggleEraseMode(false);
         pushHistory();
         // Clip the building's courtyard to this selection; a building may span a larger block.
-        if (!carvePlotIntoPlan(courtyard, computeProRataJointOwners(), 'form', { jointPool: true, derivation })) {
+        const carved = carvePlotIntoPlan(courtyard, computeProRataJointOwners(), 'form', { jointPool: true, derivation });
+        if (carved !== 'carved') {
             discardLastHistory();
-            setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
+            if (carved === 'outside') {
+                setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
+            }
             return;
         }
+        // Carving subtracts the courtyard from its neighbours; give them the corners it introduced.
         conformLayout();
-        settleSlices();
         updateLegend(state.ownerShares);
         drawPreview();
         updateCommitState();
@@ -1718,46 +1721,45 @@
             });
     }
 
-    // Carve a polygon into the current plan: clip to the pool, subtract it from
-    // every overlapping plot, then add it as a new plot. Returns true on success.
+    // Carve a polygon into the current plan: clip to the pool, subtract it from every overlapping
+    // plot, then add it as a new plot. Returns 'carved', 'outside' (it does not reach the pooled
+    // land) or 'refused' (the result would not tile the pool; the status says why). The layout is
+    // only replaced on 'carved'.
     function carvePlotIntoPlan(polygonFeature, ownersForNew, source, flags = {}) {
-        if (typeof turf === 'undefined' || !state.superParcel) return false;
-        try {
-            const next = window.ReparcellizationPlanUtils.carveLayout({
-                pool: state.superParcel, slices: state.slices, polygon: polygonFeature,
-                owners: ownersForNew, source, jointPool: flags.jointPool === true, derivation: flags.derivation
-            }, turf);
-            if (!next) return false;
-            state.slices = next.map(slice => makePlotFromOwners(slice.geometry, slice.owners, slice.source, slice));
-            return true;
-        } catch (error) {
-            console.error('[reparcellization] Carve failed; layout retained', error);
-            setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
-            return false;
+        if (typeof turf === 'undefined' || !state.superParcel) return 'refused';
+        const next = window.ReparcellizationPlanUtils.carveLayout({
+            pool: state.superParcel, slices: state.slices, polygon: polygonFeature,
+            owners: ownersForNew, source, jointPool: flags.jointPool === true, derivation: flags.derivation
+        }, turf);
+        if (!next) return 'outside';
+        const problem = tilingProblem(null, next.map(slice => slice.geometry), { pool: state.superParcel });
+        if (problem) {
+            setStatus(refusalText(problem), 'error');
+            return 'refused';
         }
+        state.slices = next.map(slice => makePlotFromOwners(slice.geometry, slice.owners, slice.source, slice));
+        return 'carved';
     }
 
-    // Settle the current plot list back onto the pool and drop whatever no longer has land.
-    //
-    // This is what lets the cutting tools stop deleting slivers. They used to discard any piece
-    // under 1 m², which quietly took that land OUT of the plan — and the apply gate wants the
-    // outputs to cover the inputs to within 5 m², so a few cuts near a corner could fail a plan for
-    // a reason invisible in the editor. Healing hands the scrap to the plot it borders most
-    // instead, so nothing is ever dropped on the floor.
-    function settleSlices(previous) {
-        const settled = healLayout(state.slices.map(slice => slice.geometry), previous);
-        if (!Array.isArray(settled)) { recomputeSliceAreas(); return; }
-        const kept = [];
-        state.slices.forEach((slice, index) => {
-            const geometry = settled[index];
-            if (geometry === undefined) { kept.push(slice); return; }
-            if (!geometry) return; // all of its land went to its neighbours
-            slice.geometry = geometry;
-            kept.push(slice);
+    // Every edit owns its result: it leaves the plots tiling the land they held, or it is not made.
+    // Nothing repairs a layout after an edit; plot-edit.js says whether an edit broke it. Returns
+    // null when the edit is sound, else the check, which the caller turns into a refusal.
+    function tilingProblem(previous, next, options) {
+        const edit = window.__plotEdit;
+        if (!edit || typeof turf === 'undefined') throw new Error('plot-edit.js and turf are required to check a plot edit');
+        const check = edit.checkTiling(previous, next, { turf }, options);
+        if (check.ok) return null;
+        console.error('[reparcellization] edit refused: the plots would not tile their land', {
+            folded: check.folded, overlaps: check.overlaps, gapM2: Math.round(check.gap),
+            outsideM2: Math.round(check.outside), overlapM2: Math.round(check.overlap)
         });
-        if (kept.length !== state.slices.length) state.selectedSliceIndex = null;
-        state.slices = kept;
-        recomputeSliceAreas();
+        return check;
+    }
+
+    function refusalText(check) {
+        return check.folded.length
+            ? t('reparcellization.modal.status.editFolds', 'Not changed: that would fold a plot over itself or over a neighbour.')
+            : t('reparcellization.modal.status.editBreaksTiling', 'Not changed: that would leave land with no plot, or in two plots.');
     }
 
     // Give every plot the vertices its neighbours already have on the same lines. The reasoning
@@ -1813,32 +1815,35 @@
             if (!groups.has(entry.sourceIndex)) groups.set(entry.sourceIndex, []);
             groups.get(entry.sourceIndex).push(entry.geometry);
         });
-        // Captured before anything is reassigned. `previous` lines up with the NEW plot list so the
-        // settle afterwards can be scoped: without it the whole plan is settled, and drawing one
-        // line across one plot clipped thirty unrelated ones. An edit should touch what it names.
-        const wasGeometry = state.slices.map(slice => slice.geometry);
+        // `previous` lines up with the NEW plot list, so the check covers only the plots the cut
+        // reached: the first piece of a split inherits its parent, the rest held nothing before,
+        // and the parent is counted once against pieces that must add back up to it.
         const next = [];
         const previous = [];
         state.slices.forEach((slice, index) => {
             const pieces = groups.get(index);
-            if (!pieces || !pieces.length) { next.push(slice); previous.push(wasGeometry[index]); return; }
+            if (!pieces || !pieces.length) { next.push({ slice, geometry: slice.geometry }); previous.push(slice.geometry); return; }
             if (pieces.length === 1) {
-                slice.geometry = pieces[0];
-                next.push(slice);
-                previous.push(wasGeometry[index]);
+                next.push({ slice, geometry: pieces[0] });
+                previous.push(slice.geometry);
                 return;
             }
             pieces.forEach((geometry, position) => {
-                next.push(makePlotFromOwners(geometry, cloneOwners(slice.owners), slice.source || 'manual', slice));
-                // The first piece inherits the parent it was cut from; the rest are new, which the
-                // scoped settle reads as "changed, and holding nothing before". The arithmetic
-                // balances — the parent is counted once and the pieces add back up to it.
-                previous.push(position === 0 ? wasGeometry[index] : null);
+                next.push({ parent: slice, geometry });
+                previous.push(position === 0 ? slice.geometry : null);
             });
         });
-        state.slices = next;
+        const problem = tilingProblem(previous, next.map(entry => entry.geometry));
+        if (problem) {
+            setStatus(refusalText(problem), 'error');
+            return false;
+        }
+        state.slices = next.map(entry => {
+            if (entry.slice) { entry.slice.geometry = entry.geometry; return entry.slice; }
+            return makePlotFromOwners(entry.geometry, cloneOwners(entry.parent.owners), entry.parent.source || 'manual', entry.parent);
+        });
         state.selectedSliceIndex = null;
-        settleSlices(previous);
+        recomputeSliceAreas();
         updateLegend(state.ownerShares);
         try {
             drawPreview();
@@ -1846,6 +1851,7 @@
         } finally {
             renderNodeHandles();
         }
+        return true;
     }
 
 
@@ -2210,7 +2216,10 @@
                 return;
             }
             adoptLayoutForEditing();
-            applyCutResult(result);
+            if (!applyCutResult(result)) {
+                discardLastHistory();
+                return;
+            }
             console.debug('[reparcellization] cut', {
                 ends: (result.ends || []).map(end => end.kind),
                 crossings: (result.crossings || []).length,
@@ -2239,20 +2248,20 @@
             return;
         }
         const joint = state.drawing.joint;
-        const ok = carvePlotIntoPlan(polygon, joint ? computeProRataJointOwners() : [], 'manual', { jointPool: joint });
+        const carved = carvePlotIntoPlan(polygon, joint ? computeProRataJointOwners() : [], 'manual', { jointPool: joint });
         cancelDraw();
-        if (!ok) {
-            setStatus(t('reparcellization.modal.status.drawNoOverlap', 'The drawn plot is outside the pooled land.'), 'error');
+        if (carved !== 'carved') {
+            if (carved === 'outside') {
+                setStatus(t('reparcellization.modal.status.drawNoOverlap', 'The drawn plot is outside the pooled land.'), 'error');
+            }
             discardLastHistory();
             return;
         }
         adoptLayoutForEditing();
         // Carving subtracts the new plot from whatever it overlapped, which leaves the neighbours
         // without the corners it just introduced — the same non-conforming borders the line tool
-        // is careful not to make. Node them, then settle: carving drops the sub-1 m² scraps it
-        // makes, and healing puts that land back into a neighbour instead of letting it leave.
+        // is careful not to make. Node them; no land moves.
         conformLayout();
-        settleSlices();
         setStatus(joint
             ? t('reparcellization.modal.status.courtyardCarved', 'Courtyard carved and assigned jointly.')
             : t('reparcellization.modal.status.drawSuccess', 'Plot added. Click it to assign owners.'), 'info');
@@ -3023,52 +3032,13 @@
         });
     }
 
-    // Settle a candidate layout back onto the pool: clip anything outside it, resolve overlaps, and
-    // hand every unclaimed scrap to the plot it borders most. This is what lets an edit be allowed
-    // unconditionally — the land always ends up belonging to something.
-    // `previous` is the layout as it was before the edit, when the caller has it. With it, only the
-    // plots the edit could have disturbed are settled — the global pass is quadratic in the plot
-    // count and ran in full on every drag release. Without it (a cut, which rebuilds the list and
-    // has no index-for-index predecessor), the global pass is still the right answer.
-    function healLayout(geometries, previous) {
-        const heal = window.__plotHeal;
-        if (!heal || typeof heal.healTiling !== 'function' || !state.superParcel || typeof turf === 'undefined') {
-            return geometries;
-        }
-        try {
-            if (Array.isArray(previous) && typeof heal.healLocally === 'function') {
-                const local = heal.healLocally(previous, geometries, state.superParcel, { turf });
-                if (local && !local.fellBack) {
-                    if (local.changed) {
-                        console.debug('[reparcellization] layout healed (scoped)', {
-                            plots: local.scope, of: geometries.length, clipped: local.clipped,
-                            overlaps: local.overlaps, gapsFilled: local.gapsFilled, gapArea: Math.round(local.gapArea)
-                        });
-                    }
-                    return local.geometries;
-                }
-            }
-            const result = heal.healTiling(geometries, state.superParcel, { turf });
-            if (result.changed) {
-                console.debug('[reparcellization] layout healed', {
-                    clipped: result.clipped, overlaps: result.overlaps,
-                    gapsFilled: result.gapsFilled, gapArea: Math.round(result.gapArea)
-                });
-            }
-            return result.geometries;
-        } catch (error) {
-            console.warn('[reparcellization] could not heal the layout; keeping the edit as drawn', error);
-            return geometries;
-        }
-    }
-
     // What removing this node would do, in the plan's own terms. Runs the removal on a COPY and
     // measures it, so the popup cannot describe one thing while the button does another: both go
     // through classifyNodeRemoval, and the numbers come from the edit itself rather than an
     // estimate of it.
     function describeNodeRemoval(node, topology) {
         const topo = window.__plotTopology;
-        const heal = window.__plotHeal;
+        const edit = window.__plotEdit;
         if (!topo || !node) return null;
         const verdict = topo.classifyNodeRemoval(node, topology);
         const before = state.slices.map(slice => slice.geometry);
@@ -3089,12 +3059,10 @@
         if (verdict.kind === 'outline') return { kind: 'outline', moved: 0 };
         const result = topo.removeNode(state.slices, topology, node.id, { dissolveDegenerate: true });
         if (!result.removed) return { kind: 'straighten', moved: 0, refused: true };
-        // Measured on the removal itself, NOT on a healed copy. Healing an 82-plot layout takes
-        // 1.1 s, which is a frozen popup rather than a description — and it would not change the
-        // headline anyway: dropping a vertex hands one plot's triangle to the other, and the heal
-        // only redistributes the slivers that frees.
-        const shift = (heal && typeof heal.areaShift === 'function')
-            ? heal.areaShift(before, result.geometries, { turf }) : { moved: 0, perPlot: [] };
+        // Measured on the removal itself, which is exactly what the button commits: dropping a
+        // vertex hands one plot's triangle to the other.
+        const shift = (edit && typeof edit.areaShift === 'function')
+            ? edit.areaShift(before, result.geometries, { turf }) : { moved: 0, perPlot: [] };
         return { kind: 'straighten', moved: shift.moved, perPlot: shift.perPlot };
     }
 
@@ -3173,7 +3141,7 @@
     }
 
     // Straighten a boundary: drop the vertex from every plot that uses it, so both sides lose the
-    // same bend and stay in step. Healing settles anything that frees.
+    // same bend and stay in step, and the plots still tile the pool.
     function removeNodePerRing(node, topology) {
         const topo = window.__plotTopology;
         const result = topo.removeNode(state.slices, topology, node.id, { dissolveDegenerate: true });
@@ -3198,7 +3166,7 @@
         cuts.forEach(edge => (edge.plots || []).forEach(index => members.add(index)));
         if (members.size < 2) {
             // The boundary has only one plot on it — nothing to merge into. Removing the vertex is
-            // still the right gesture; healing settles whatever it frees.
+            // still the right gesture; the land stays with the plots on either side of the line.
             return removeNodePerRing(node, topology);
         }
 
@@ -3268,16 +3236,24 @@
             return JSON.stringify(slice.geometry || null) !== JSON.stringify(geometry || null);
         });
         if (!changed) return false;
-        // Repair, do not refuse. Any edit can leave the layout momentarily untidy — a removed node
-        // drops a boundary, a drag pushes one plot over another — and the fix is to settle the
-        // land, not to forbid the gesture. Whatever is left unclaimed joins the plot it borders
-        // most; whatever is claimed twice goes to one of them.
-        const settled = healLayout(geometries, state.slices.map(slice => slice.geometry));
+        // The edit owns its result. Moving, inserting or removing a shared node keeps the plots
+        // tiling by itself; a drag across a neighbour's boundary folds a plot, and that is refused
+        // here — the handles go back where they were — rather than repaired.
+        const problem = tilingProblem(state.slices.map(slice => slice.geometry), geometries);
+        if (problem) {
+            setStatus(refusalText(problem), 'warning');
+            try {
+                drawPreview();
+            } finally {
+                renderNodeHandles();
+            }
+            return false;
+        }
         pushHistory();   // the pre-edit layout, captured before the assignment below
         adoptLayoutForEditing();
         const dissolved = [];
         state.slices.forEach((slice, idx) => {
-            const geometry = settled[idx];
+            const geometry = geometries[idx];
             if (geometry === undefined) return;
             if (!geometry) { dissolved.push(idx); return; }
             slice.geometry = geometry;

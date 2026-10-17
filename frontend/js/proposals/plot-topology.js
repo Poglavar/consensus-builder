@@ -182,14 +182,13 @@
     // Removing a node is always allowed. It is not an error even when several plots share it, and
     // not even when it leaves a plot with too few corners to be a polygon: the boundary it defined
     // stops existing, and the land belongs to whatever remains around it. A plot reduced past a
-    // triangle is DISSOLVED (its geometry becomes null) rather than the removal being refused —
-    // plot-heal.js then hands its land to the neighbours, so nothing is ever orphaned. Take the
-    // idea to its end and removing every internal node leaves one plot covering the whole pool,
-    // which is exactly right.
+    // triangle is DISSOLVED (its geometry becomes null) rather than the removal being refused: the
+    // neighbours that shared the node drop it too, and their straightened boundary takes in the
+    // dissolved plot's land exactly, so nothing is orphaned (plot-edit.js checks that it is).
     //
     // Opt in with `options.dissolveDegenerate`. It is opt-in because it only makes sense where
-    // something ABSORBS the freed land: a parcellation heals afterwards, but a road centreline has
-    // no neighbour to give its points to, so there the old refusal is still the right answer.
+    // neighbours ABSORB the freed land: a parcellation's plots do, but a road centreline has no
+    // neighbour to give its points to, so there the old refusal is still the right answer.
     function removeNode(plots, topology, nodeId, options) {
         const opts = options || {};
         const geometries = clonePlotGeometries(plots);

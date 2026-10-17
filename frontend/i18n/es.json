@@ -3916,6 +3916,8 @@
                 "redone": "Se rehízo el cambio.",
                 "edgeErased": "Lindero borrado: las dos parcelas son ahora una.",
                 "nodeKept": "Ese nodo no se puede quitar: una parcela dejaría de ser un polígono.",
+                "editFolds": "Sin cambios: eso doblaría una parcela sobre sí misma o sobre una vecina.",
+                "editBreaksTiling": "Sin cambios: eso dejaría terreno sin parcela, o en dos parcelas.",
                 "undone": "Se deshizo el último cambio.",
                 "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este plan.",
                 "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas.",
