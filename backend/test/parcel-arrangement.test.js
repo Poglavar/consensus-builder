@@ -614,6 +614,22 @@ describe('a cut that cannot be computed is never silently swallowed', () => {
         });
     });
 
+    it('throws when the union of two takes comes back empty instead of dropping one of them', () => {
+        withTurf({ union: () => null }, () => {
+            expect(() => arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST, NORTH_SOUTH]))
+                .toThrow(/union with take road-b came back empty/);
+        });
+    });
+
+    it('throws on a piece with area but no canonical outline instead of skipping it', () => {
+        // A two-vertex "ring" has no canonical outline; the area stub makes it pass the size floor.
+        const sliver = turf.feature({ type: 'Polygon', coordinates: [[[16.0001, 46.0001], [16.0002, 46.0002], [16.0001, 46.0001]]] });
+        withTurf({ difference: () => sliver, area: () => 100 }, () => {
+            expect(() => arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]))
+                .toThrow(/has no canonical outline/);
+        });
+    });
+
     it('subtracts the takes one at a time, which is what avoids the blow-up', () => {
         // P \ (A ∪ B) === (P \ A) \ B, and only the second form survives a MultiPolygon union.
         let sawMultiPolygon = false;

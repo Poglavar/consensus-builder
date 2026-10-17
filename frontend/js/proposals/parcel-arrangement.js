@@ -373,7 +373,12 @@
         hits.forEach(entry => {
             takersUsed.push(String(entry.take.id || ''));
             takenParts.push(entry.hit);
-            taken = taken ? (clip('union', taken, entry.hit) || taken) : entry.hit;
+            if (!taken) { taken = entry.hit; return; }
+            // Two non-empty shapes always have a union. A null here means the clipper lost one of
+            // them, and keeping the old union would silently drop this take's ground from the road.
+            const union = clip('union', taken, entry.hit);
+            if (!union) throw new Error(`parcel ${id}: union with take ${entry.take.id || '?'} came back empty`);
+            taken = union;
         });
 
         // Subtract the takes ONE AT A TIME rather than subtracting their union in a single call.
@@ -397,7 +402,9 @@
             const areaM2 = t.area(feature);
             if (!(areaM2 > MIN_PIECE_M2)) return;
             const pid = pieceId(id, kind, feature.geometry);
-            if (!pid) return;
+            // A piece larger than MIN_PIECE_M2 always has a canonical outline; skipping one would
+            // delete that ground from the map without a word.
+            if (!pid) throw new Error(`parcel ${id}: a ${kind} piece of ${areaM2.toFixed(2)} m² has no canonical outline`);
             const takers = kind === 'road'
                 ? hits
                     .filter(entry => {
