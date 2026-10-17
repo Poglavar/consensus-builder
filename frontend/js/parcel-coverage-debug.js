@@ -18,6 +18,9 @@
     let coverageLayerGroup = null;
 
     let listenersAttached = false;
+    let primaryMapChangeTimer = null;
+    // A zoom fires zoomend and moveend, and a pan can end several times in a row: redraw once after both.
+    const PRIMARY_MAP_CHANGE_DEBOUNCE_MS = 150;
 
     const CELL_STYLE = {
         color: '#d97706',
@@ -362,6 +365,10 @@
             map.off('moveend', handlePrimaryMapChange);
             map.off('zoomend', handlePrimaryMapChange);
         }
+        if (primaryMapChangeTimer) {
+            clearTimeout(primaryMapChangeTimer);
+            primaryMapChangeTimer = null;
+        }
         window.removeEventListener('parcelCoverageUpdated', handleCoverageEvent);
     }
 
@@ -369,7 +376,11 @@
         if (!isModalOpen()) {
             return;
         }
-        refreshVisualization({ fitToContent: false });
+        if (primaryMapChangeTimer) clearTimeout(primaryMapChangeTimer);
+        primaryMapChangeTimer = setTimeout(() => {
+            primaryMapChangeTimer = null;
+            refreshVisualization({ fitToContent: false });
+        }, PRIMARY_MAP_CHANGE_DEBOUNCE_MS);
     }
 
     function handleCoverageEvent() {
