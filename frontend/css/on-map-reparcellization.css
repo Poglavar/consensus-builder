@@ -9,7 +9,9 @@
     flex-wrap: nowrap;
     align-items: stretch;
     gap: 8px;
-    width: min(720px, calc(100vw - 520px));
+    /* As wide as its widest row of buttons, never wider: a fixed width left a band of empty glass over the map. */
+    width: fit-content;
+    max-width: min(720px, calc(100vw - 520px));
     max-height: calc(100dvh - 100px);
     overflow: auto;
     overscroll-behavior: contain;
@@ -452,6 +454,7 @@
         top: 68px;
         left: 12px;
         width: calc(100vw - 24px);
+        max-width: none;
         max-height: min(32dvh, 300px);
         padding: 8px;
     }

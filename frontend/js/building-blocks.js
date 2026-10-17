@@ -1618,7 +1618,6 @@ function showBlockifyModal() {
             content,
             footer,
             modes: ['2d', 'model'],
-            wide: true,
             placement: {
                 site: blockifyPlacementSite || blockifyDesignBoundary(),
                 onLockChange: () => {

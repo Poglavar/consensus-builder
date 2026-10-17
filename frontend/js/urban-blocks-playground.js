@@ -616,7 +616,7 @@
         close();
         const { content, footer } = buildPanel();
         const session = win.OnMapEditor?.open({
-            owner: 'urban-block-playground', id: 'urban-block-playground', wide: true, modes: ['2d'],
+            owner: 'urban-block-playground', id: 'urban-block-playground', modes: ['2d'],
             title: t('title', 'Block subdivision playground'), content, footer, onCancel: close
         });
         // Another map tool holds the map; it says so itself.

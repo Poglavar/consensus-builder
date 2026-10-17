@@ -139,6 +139,22 @@ test.describe('reparcellization button controls @core', () => {
     expect(await page.evaluate(() => JSON.stringify((window as any).pendingReparcellizationPlan ?? null))).toBe(initialPlan);
   });
 
+  test('the map tools panel is as wide as its rows of buttons, not a fixed band over the map', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const modal = await openReadjustment(page);
+    const gaps = await modal.evaluate(() => {
+      const panel = document.querySelector('.reparcel-tools-map')!.getBoundingClientRect();
+      // The method choices and tool buttons; the header's Before / after button sits at whatever the right edge is.
+      const controls = [...document.querySelectorAll('.reparcel-tools-map .reparcel-alg-option, .reparcel-tools-map .reparcel-draw-toolbar .btn')]
+        .filter(control => control.getClientRects().length);
+      const widest = Math.max(...controls.map(control => control.getBoundingClientRect().right));
+      return { slack: Math.round(panel.right - widest), width: Math.round(panel.width) };
+    });
+    // Padding and border only: the old fixed width left over 300 px of empty glass at this size.
+    expect(gaps.slack).toBeLessThanOrEqual(16);
+    expect(gaps.width).toBeLessThan(560);
+  });
+
   test('Draw plot creates draft points, Undo point removes the latest point, and Cancel removes the draft', async ({ mockApi: page }) => {
     await openReadjustment(page);
     const modal = await manualLayout(page);
