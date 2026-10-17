@@ -5,15 +5,17 @@
 // osm_road stores the native OSM geometry in `geom` (EPSG:4326) and a GENERATED, indexed `geom_3765`
 // for Croatian-TM spatial ops. Both dev and prod carry this schema (dev was realigned to prod on
 // 2026-07-15). The bbox arrives in WGS84 and names its CRS (projections.md §4: a client's own
-// projection never labels a bbox); it is densified and transformed here, and filtered against the
-// indexed geom_3765. Output is geom (already 4326, ready for GeoJSON) — the heavy buffered columns
-// are never returned.
+// projection never labels a bbox), and is filtered against the indexed `geom` in that same CRS:
+// projecting it into Croatian TM fails outright for a box far from Croatia ("Point outside of
+// projection domain" for Bogotá, 2026-10-17), which turned every such request into a 500 instead
+// of the Overpass answer below. Output is geom (already 4326, ready for GeoJSON) — the heavy
+// buffered columns are never returned.
 //
 // Outside the ingested table (any city without osm_road rows) a scene-sized bbox is answered from
 // OpenStreetMap live, through the shared Overpass chain (roads/osm-road-overpass.js), in the same
 // feature shape with `source: 'overpass'`. The 3D life layer and the 2D existing-roads layer thus
 // see OSM streets everywhere without the browser ever holding an Overpass credential.
-import { parseWgs84Bbox, wgs84BboxFilterSql, POSTGIS_SRID } from '../utils/helpers.js';
+import { parseWgs84Bbox, wgs84BboxFilterSql } from '../utils/helpers.js';
 import { fetchOverpassRoads as defaultFetchOverpassRoads, roadsBboxTooLarge } from '../roads/osm-road-overpass.js';
 
 const MAX_FEATURES = 8000;
@@ -43,13 +45,13 @@ export function setupOsmRoadRoute(app, pool, options = {}) {
                         'source', 'osm_road'
                     ) AS properties
                 FROM osm_road r
-                WHERE r.current AND r.geom_3765 IS NOT NULL AND r.highway_type IS NOT NULL
+                WHERE r.current AND r.geom IS NOT NULL AND r.highway_type IS NOT NULL
             `;
 
             const params = [];
             if (hasBbox) {
-                // Index-backed test in the geom's Croatian-TM SRID, against the transformed WGS84 box.
-                const filter = wgs84BboxFilterSql('r.geom_3765', boxes, POSTGIS_SRID);
+                // Index-backed test on geom (osm_road_geom_gix) in the box's own CRS; no projection.
+                const filter = wgs84BboxFilterSql('r.geom', boxes, 4326);
                 sql += ` AND ${filter.sql}`;
                 params.push(...filter.params);
             }
