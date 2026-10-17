@@ -841,7 +841,8 @@
             shortLabel = place || label;
         }
         state.chip.classList.toggle('is-explore', exploring);
-        state.chipIcon.className = exploring ? 'fas fa-compass' : 'fas fa-city';
+        // The globe icon says where the chip goes (the world view), as on the World view button.
+        state.chipIcon.className = exploring ? 'fas fa-compass' : 'fas fa-earth-europe';
         state.chipLabel.textContent = label;
         state.chipShortLabel.textContent = shortLabel;
         const title = t('mapSearch.cityChip', 'Current city: {{city}}. Open the globe to choose another place', { city: label });
@@ -873,7 +874,7 @@
         const back = el('button', 'map-search__back', { type: 'button' });
         back.appendChild(icon('fas fa-arrow-left'));
         const chip = el('button', 'map-search__chip', { type: 'button' });
-        const chipIcon = icon('fas fa-city');
+        const chipIcon = icon('fas fa-earth-europe');
         chip.appendChild(chipIcon);
         // The full label, and the short one phones show while exploring (the place, no prefix).
         const chipLabel = el('span', 'map-search__chip-label');

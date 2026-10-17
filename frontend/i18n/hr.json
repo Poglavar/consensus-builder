@@ -5600,7 +5600,9 @@
             "label": "Pretraga mjesta",
             "country": "Država",
             "territory": "Područje",
-            "noResults": "Nema takvog mjesta"
+            "noResults": "Nema takvog mjesta",
+            "locate": "Prikaži moju lokaciju",
+            "locateFailed": "Nije moguće dohvatiti vašu lokaciju."
         },
         "legend": {
             "toggle": "Legenda karte",

@@ -5548,7 +5548,9 @@
             "label": "Search places",
             "country": "Country",
             "territory": "Territory",
-            "noResults": "No matching place"
+            "noResults": "No matching place",
+            "locate": "Show my location",
+            "locateFailed": "Could not get your location."
         },
         "legend": {
             "toggle": "Map legend",

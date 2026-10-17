@@ -307,13 +307,14 @@ body.app-loading .map-search {
         max-width: var(--map-search-compact-width);
     }
 
-    .map-search__chip {
-        max-width: 76px;
-        padding: 0 10px;
+    /* Room for the chip's globe icon beside the city name. */
+    :root {
+        --map-search-compact-width: 140px;
     }
 
-    .map-search__chip .fas {
-        display: none;
+    .map-search__chip {
+        max-width: 96px;
+        padding: 0 10px;
     }
 
     /* Exploring: compass + the place name ("Explore · Tokyo" truncated to "Explor…" before). */
@@ -324,10 +325,6 @@ body.app-loading .map-search {
     .map-search__chip.is-explore {
         max-width: 106px;
         padding: 0 8px;
-    }
-
-    .map-search__chip.is-explore .fas {
-        display: inline-block;
     }
 
     .map-search__chip.is-explore .map-search__chip-label {
@@ -388,8 +385,12 @@ body.app-loading .map-search {
     }
 }
 
-/* Explore's compass label shares the narrow top row with the account button. */
+/* Explore's compass label shares the narrow top row with the account button; a city chip drops
+   its globe icon to keep the name readable. */
 @media (max-width: 359.98px) {
+    :root { --map-search-compact-width: 120px; }
     body.explore-city { --map-search-compact-width: 120px; }
+    .map-search__chip,
     .map-search__chip.is-explore { max-width: 76px; }
+    .map-search__chip:not(.is-explore) .fas { display: none; }
 }

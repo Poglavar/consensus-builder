@@ -5599,7 +5599,9 @@
             "label": "Buscar lugares",
             "country": "País",
             "territory": "Territorio",
-            "noResults": "Ningún lugar coincide"
+            "noResults": "Ningún lugar coincide",
+            "locate": "Mostrar mi ubicación",
+            "locateFailed": "No se pudo obtener tu ubicación."
         },
         "legend": {
             "toggle": "Leyenda del mapa",

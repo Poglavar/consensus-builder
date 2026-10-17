@@ -413,7 +413,12 @@
         });
         const results = el('ul', 'world-search__results', { id: 'world-search-results', role: 'listbox' });
         results.hidden = true;
-        searchWrap.append(searchInput, results);
+        // "Show my location": the browser's position, flown to and opened like a search hit.
+        const locateBtn = el('button', 'map-search__icon-button world-search__locate', { type: 'button' });
+        locateBtn.appendChild(el('i', 'fas fa-crosshairs', { 'aria-hidden': 'true' }));
+        const searchField = el('div', 'world-search__field');
+        searchField.append(searchInput, locateBtn);
+        searchWrap.append(searchField, results);
         top.append(searchWrap);
         const reach = el('div', 'world-reach', { role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' });
         const reachHeadline = el('p', 'world-reach__headline');
@@ -497,6 +502,8 @@
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
             searchInput.placeholder = t('world.search.placeholder', 'Search a city or country');
             searchInput.setAttribute('aria-label', t('world.search.label', 'Search places'));
+            locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));
+            locateBtn.title = t('world.search.locate', 'Show my location');
             reachHeadline.textContent = t('world.reach.headline', '{{cities}} cities · {{countries}} countries', {
                 cities: global.CbFormat.formatInteger(coverage.liveSummary.cityCount),
                 countries: global.CbFormat.formatInteger(coverage.liveSummary.countryCount)
@@ -1106,6 +1113,34 @@
             fly({ lat: place.lat, lon: place.lon, altitudeKm }, { hop: 0.6 }).then(() => select(popupPlace));
         }
 
+        // Asks the browser for its position (the browser's own permission prompt is the consent) and
+        // treats it as a search hit: fly there and open what is available at that point.
+        function locateMe() {
+            if (global.BusyControl.isBusy(locateBtn)) return;
+            const position = new Promise((resolve, reject) => {
+                if (!navigator.geolocation) { reject(new Error('navigator.geolocation is not available')); return; }
+                navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, maximumAge: 60_000, timeout: 15_000 });
+            });
+            global.BusyControl.track(locateBtn, position).then(({ coords }) => {
+                if (closed) return;
+                searchInput.value = '';
+                searchHits = []; activeIndex = -1;
+                results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
+                deselect();
+                const lat = coords.latitude; const lon = coords.longitude;
+                log('located at ' + formatLatLon(lat, lon) + ' ±' + Math.round(coords.accuracy) + ' m');
+                fly({ lat, lon, altitudeKm: 8500 }, { hop: 0.6 }).then(() => select(coverage.tierAt(lat, lon)));
+            }, error => {
+                console.warn('[' + new Date().toISOString() + '] [world] location unavailable:', error && (error.message || error.code));
+                if (closed) return;
+                results.textContent = '';
+                results.appendChild(el('li', 'world-search__empty', { role: 'status', text: t('world.search.locateFailed', 'Could not get your location.') }));
+                results.hidden = false;
+                // The note stays until the next press anywhere in the view.
+                root.addEventListener('pointerdown', () => { results.hidden = true; }, { once: true, capture: true });
+            });
+        }
+
         // ---- flights ----
         function fly(target, options) {
             vel.lat = vel.lon = 0;
@@ -1213,6 +1248,7 @@
         searchInput.addEventListener('keydown', onSearchKey);
         searchInput.addEventListener('blur', () => { results.hidden = true; searchInput.setAttribute('aria-expanded', 'false'); });
         searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) onSearchInput(); });
+        locateBtn.addEventListener('click', locateMe);
         closeBtn.addEventListener('click', () => { global.WorldView.close(); if (typeof opts.onClose === 'function') opts.onClose(); });
         document.addEventListener('visibilitychange', onVisibility);
         const onLanguage = () => {
