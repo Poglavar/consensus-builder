@@ -822,7 +822,7 @@ function showProposalDialog(overrides = null) {
     const mintsOnLabel = t('modal.createProposal.mintTarget.mintsOn', 'Mints on');
     const noWalletTooltip = t('modal.createProposal.mintTarget.noWalletTooltip', 'No wallet connected; the proposal stays in this browser.');
     const mintChainHtml = `
-        <div class="proposal-mint-target ${mintTarget.onchain ? 'proposal-mint-target--onchain' : 'proposal-mint-target--offchain'}"
+        <div class="proposal-mint-target proposal-design-only ${mintTarget.onchain ? 'proposal-mint-target--onchain' : 'proposal-mint-target--offchain'}"
              title="${mintTarget.identity ? String(mintTarget.identity) : noWalletTooltip}">
             <i class="fas ${mintTarget.onchain ? 'fa-link' : 'fa-link-slash'}" aria-hidden="true"></i>
             <span>${mintTarget.onchain ? mintsOnLabel : ''} <b>${mintTarget.label}</b></span>
@@ -854,7 +854,7 @@ function showProposalDialog(overrides = null) {
         mode: 'multiple'
     } : computeOwnershipStatsFromSelection(selection);
     const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
-    const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary">${siteParcelIds.length
+    const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary proposal-design-only">${siteParcelIds.length
         ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
         : t('modal.createProposal.site.unbound', 'Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority\'s verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
     const toleranceLabel = t('modal.createProposal.tolerance.label', 'Parcel intrusion tolerance (m)');
@@ -905,7 +905,7 @@ function showProposalDialog(overrides = null) {
                     <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
                 </div>
                 ${proposalKindRowHtml(t)}
-                <div class="proposal-design-fields">
+                <div class="proposal-design-fields proposal-design-only">
                     <div class="proposal-choices" id="proposalMainTypeGroup" hidden>
                         <div class="cb-kicker" id="proposalMainTypeHeading">${proposalTypeLabel}</div>
                         <div class="cb-segmented" role="group" aria-labelledby="proposalMainTypeHeading">
@@ -1093,7 +1093,7 @@ function showProposalDialog(overrides = null) {
                                     <span class="proposal-option-suffix">${depositHelperText}</span>
                                 </div>
                             </div>
-                            <div class="proposal-tolerance-row" id="proposalToleranceRow">
+                            <div class="proposal-tolerance-row proposal-design-only" id="proposalToleranceRow">
                                 <label for="proposalToleranceM">${toleranceLabel}</label>
                                 <input type="number" id="proposalToleranceM" min="0" max="1" step="0.01" value="${toleranceValue}" inputmode="decimal">
                                 <p class="proposal-tolerance-help">${toleranceHelp}</p>
@@ -1105,7 +1105,7 @@ function showProposalDialog(overrides = null) {
                                 </div>
                             </div>
                         </div>
-                        <div class="proposal-summary collapsible collapsed" id="proposalSummarySection">
+                        <div class="proposal-summary proposal-design-only collapsible collapsed" id="proposalSummarySection">
                             <div class="collapsible-header proposal-collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalSummaryContent" onclick="(function(e){
                                 var section = document.getElementById('proposalSummarySection');
                                 var content = document.getElementById('proposalSummaryContent');
