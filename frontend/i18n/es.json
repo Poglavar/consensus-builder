@@ -1493,6 +1493,7 @@
             "owner": {
                 "none": "Sin propietario",
                 "single": "Propietario único",
+                "noData": "Sin datos de propietarios",
                 "loading": "Cargando datos reales de propiedad…",
                 "simulated": "Propietario simulado",
                 "error": "No se pudieron cargar los datos reales de propiedad.",

@@ -1477,6 +1477,7 @@
             "owner": {
                 "none": "Nema vlasnika",
                 "single": "Jedan vlasnik",
+                "noData": "Nema podataka o vlasnicima",
                 "loading": "Učitavanje stvarnih podataka o vlasniku…",
                 "simulated": "Simulirani vlasnik",
                 "error": "Nije moguće učitati stvarne podatke o vlasniku.",

@@ -1446,6 +1446,7 @@
             "owner": {
                 "none": "No owner",
                 "single": "Single owner",
+                "noData": "No owner data",
                 "loading": "Loading real ownership data…",
                 "simulated": "Simulated owner",
                 "error": "Unable to load real owner data.",

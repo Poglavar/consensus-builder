@@ -66,6 +66,36 @@ describe('geometry-only parcel ownership UI', () => {
             .toContain('50%');
     });
 
+    it('says "No owner data" when a source with ownership answers with no owners, instead of inventing a single owner', async () => {
+        const { ui, target, count, scope } = loadOwnershipUi({ ownership: true });
+        scope.tParcel = (key, _params, fallback) => ({ 'common.unknown': 'Unknown' }[key] || fallback || key);
+        scope.getBackendBase = () => 'http://backend.test';
+        scope.__parcelOwnershipRequest = {
+            parcelSourceIdFor: () => 'parcel-bg',
+            ownershipRequestPath: (sourceId, parcelId) => `/parcel-ownership/${sourceId}/${parcelId}`,
+            ownersFromOwnershipRecord: record => record.owners
+        };
+        scope.fetch.mockResolvedValue({ ok: true, json: async () => ({ owners: [] }) });
+
+        expect(await ui.getRealParcelOwners('SR-703648-1119/1')).toEqual([]);
+        ui.fetchAndDisplayRealOwners('SR-703648-1119/2');
+        await vi.waitFor(() => expect(target.innerHTML).toContain('No owner data'));
+        expect(target.innerHTML).not.toMatch(/Single owner|100%/);
+        expect(count.textContent).toBe('Unknown');
+        expect(scope.fetch).toHaveBeenCalledWith('http://backend.test/parcel-ownership/parcel-bg/SR-703648-1119/1', expect.anything());
+    });
+
+    it('translates its strings through the page i18n when no tParcel helper exists (the app defines none)', async () => {
+        const { ui, target, count, scope } = loadOwnershipUi({ ownership: false });
+        delete scope.tParcel;
+        scope.i18n = { t: key => ({ 'common.unknownOwner': 'Nepoznat vlasnik', 'common.unknown': 'Nepoznato' }[key] || key) };
+
+        ui.fetchAndDisplayRealOwners('GEOM-1');
+
+        expect(target.innerHTML).toContain('Nepoznat vlasnik');
+        expect(count.textContent).toBe('Nepoznato');
+    });
+
     it('keeps simulated owner slots available in game mode when the city source has no ownership data', async () => {
         const { ui, scope } = loadOwnershipUi({ ownership: false, gameRunning: true });
 

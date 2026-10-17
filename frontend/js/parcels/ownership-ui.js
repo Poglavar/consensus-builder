@@ -9,6 +9,22 @@
     let parcelOwnerRequestSequence = 0;
     let suppressOwnerAcceptanceRefresh = false;
 
+    // Strings go through the page's i18n (global.tParcel when a host defines one, else i18n.t);
+    // the English text is only the fallback when a key is missing.
+    const tParcel = (key, params = {}, fallback = '') => {
+        if (typeof global.tParcel === 'function') {
+            return global.tParcel(key, params, fallback);
+        }
+        const api = global?.i18n;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(key, params);
+            if (translated && translated !== key) {
+                return translated;
+            }
+        }
+        return fallback || key || '';
+    };
+
     function ownershipMetadata(parcelId, createIfMissing = false) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
         if (!normalizedId) return null;
@@ -333,9 +349,7 @@
         const seen = new Set();
 
         if (!list.length) {
-            const fallback = global.tParcel
-                ? global.tParcel('panel.parcel.owner.single', {}, 'Single owner')
-                : 'Single owner';
+            const fallback = tParcel('panel.parcel.owner.single', {}, 'Single owner');
             return [{
                 key: `parcel:${normalizedId}:owner`,
                 displayName: fallback,
@@ -415,14 +429,10 @@
 
     function buildRealOwnerRowsHtml(owners) {
         if (!supportsParcelOwnership()) {
-            const unknownOwner = global.tParcel
-                ? global.tParcel('common.unknownOwner', {}, 'Unknown owner')
-                : 'Unknown owner';
+            const unknownOwner = tParcel('common.unknownOwner', {}, 'Unknown owner');
             return `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
         }
-        const fallbackLabel = global.tParcel
-            ? global.tParcel('panel.parcel.owner.single', {}, 'Single owner')
-            : 'Single owner';
+        const fallbackLabel = tParcel('panel.parcel.owner.single', {}, 'Single owner');
         const normalizedOwners = Array.isArray(owners) && owners.length > 0
             ? owners
             : [{ name: fallbackLabel, actualShareText: '100%', shareDetail: '', placeholder: true }];
@@ -466,7 +476,7 @@
                 : '';
             return `
             <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
-                <span>${safeName || (global.tParcel ? global.tParcel('common.unknownOwner', {}, 'Unknown owner') : 'Unknown owner')}</span>
+                <span>${safeName || (tParcel('common.unknownOwner', {}, 'Unknown owner'))}</span>
                 ${shareHtml}
             </div>
         `;
@@ -712,15 +722,8 @@
                     address: existing.address || ''
                 }];
             } else {
-                ownersList = [{
-                    name: singleOwnerLabel,
-                    ownership: '1/1',
-                    condoShare: '',
-                    actualShareText: '100%',
-                    shareDetail: '',
-                    condoShareNumber: '',
-                    address: chainAddress || ''
-                }];
+                // The source answered with no owners: that is missing data, not a single owner.
+                ownersList = [];
             }
         }
 
@@ -803,17 +806,13 @@
         }
 
         if (!supportsParcelOwnership()) {
-            const unknownOwner = global.tParcel
-                ? global.tParcel('common.unknownOwner', {}, 'Unknown owner')
-                : 'Unknown owner';
+            const unknownOwner = tParcel('common.unknownOwner', {}, 'Unknown owner');
             target.innerHTML = `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
             const countElement = document.getElementById('parcel-owners-count');
             if (countElement) {
                 countElement.removeAttribute('role');
                 countElement.removeAttribute('aria-label');
-                countElement.textContent = global.tParcel
-                    ? global.tParcel('common.unknown', {}, 'Unknown')
-                    : 'Unknown';
+                countElement.textContent = tParcel('common.unknown', {}, 'Unknown');
             }
             const typeLabel = document.querySelector('.parcel-ownership-type-label');
             if (typeLabel) typeLabel.style.display = 'none';
@@ -844,8 +843,7 @@
             }
             const types = owners.map(owner => getOwnershipType(owner)).filter(Boolean);
             const uniqueTypes = Array.from(new Set(types));
-            const tParcel = global.tParcel || (() => '');
-            let typeLabel = '';
+                        let typeLabel = '';
             let typeForClass = '';
 
             if (uniqueTypes.length === 1) {
@@ -892,8 +890,16 @@
                     updateOwnersCount(0);
                     return;
                 }
-                target.innerHTML = buildRealOwnerRowsHtml(owners);
-                updateOwnersCount(ownerCount);
+                if (ownerCount === 0) {
+                    // A source with ownership found none for this parcel: say so instead of
+                    // presenting an invented single owner with 100%.
+                    const noData = tParcel('panel.parcel.owner.noData', {}, 'No owner data');
+                    target.innerHTML = `<span data-i18n-key="panel.parcel.owner.noData">${noData}</span>`;
+                    updateOwnersCount(tParcel('common.unknown', {}, 'Unknown'));
+                } else {
+                    target.innerHTML = buildRealOwnerRowsHtml(owners);
+                    updateOwnersCount(ownerCount);
+                }
                 updateOwnershipTypeLabel(owners);
                 if (!suppressOwnerAcceptanceRefresh && typeof global.refreshParcelOwnerAcceptanceUI === 'function') {
                     global.refreshParcelOwnerAcceptanceUI(parcelId);
@@ -918,10 +924,10 @@
                 }
                 const fallbackSection = fallbackHtml
                     ? (hasSimulatedOwner
-                        ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">${global.tParcel ? global.tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner') : 'Simulated owner'}</div>${fallbackHtml}`
+                        ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">${tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner')}</div>${fallbackHtml}`
                         : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
                     : buildRealOwnerRowsHtml([]);
-                target.innerHTML = `<span class="owner-error" style="color: #c0392b;">${global.tParcel ? global.tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.') : 'Unable to load real owner data.'}</span>${fallbackSection}`;
+                target.innerHTML = `<span class="owner-error" style="color: #c0392b;">${tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.')}</span>${fallbackSection}`;
                 const fallbackCount = fallbackHtml ? 1 : 0;
                 updateOwnersCount(fallbackCount);
                 updateOwnershipTypeLabel([]);
