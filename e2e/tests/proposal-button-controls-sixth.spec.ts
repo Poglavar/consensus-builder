@@ -316,7 +316,7 @@ test.describe('proposal button controls sixth pass @features', () => {
       const ownerOrder = owners.map((slot: any) => slot.key);
       return w.proposalStorage.addProposal({
         title: 'Vote and rescind controls', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], geometry,
-        facets: { ownership: 'no-change', parcels: 'as-is' },
+        facets: { ownership: 'no-change', parcels: 'as-is' }, kind: 'owner-vote', termsConfirmed: true,
         ownerAcceptances: { [parcelId]: { owners: Object.fromEntries(owners.map((slot: any) => [slot.key, slot])), ownerOrder, acceptedOwnerKeys: [], acceptedBy: {} } },
       });
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
