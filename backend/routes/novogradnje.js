@@ -15,6 +15,7 @@ const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
 const kindLabel = kind => ({ new_build: 'Novogradnja', existing: 'Starogradnja', unknown: 'Vrsta nije utvrđena' })[kind] || 'Vrsta nije utvrđena';
+const OG_IMAGE = `${PUBLIC_ORIGIN}${BASE_PATH}og.png`;
 const yearLabel = p => p.constructionYear ? `Izgradnja ${p.constructionYear}` : p.completionYear ? `Planirani završetak ${p.completionYear}` : 'Godina nije navedena';
 function apartmentFacts(a) { return [typeof a.areaM2 === 'number' ? `${a.areaM2} m²` : null, typeof a.rooms === 'number' ? `${a.rooms} soba` : null,
     Number.isInteger(a.floor) ? `${a.floor}. kat` : null].filter(Boolean).join(' · '); }
@@ -28,26 +29,28 @@ function detailMarkup(project, apartment) {
     return `<article class="detail-card"><h2>${escape(apartment?.label || project.name)}</h2><p>${escape(project.address)} · ${kindLabel(project.kind)} · ${yearLabel(project)}</p><div class="apartment-list">${chosen.map(a => `<a class="apartment-row" href="${escape(a.url)}"><strong>${escape(a.label)}</strong><span>${escape(apartmentFacts(a)) || 'Podaci nisu navedeni'}</span><span>${a.hasGeometry ? 'Tlocrt i 3D prikaz' : 'Izvorni tlocrt'}</span></a>`).join('')}</div><p>Lokacija i geometrija prema dostupnim izvorima. Rekonstrukcije su označene prema stupnju provjere; dostupnost stana provjerite kod izvora.</p><ul>${project.sources.map(s => `<li><a href="${escape(s.url)}" rel="noopener noreferrer">${escape(s.label)}</a></li>`).join('')}</ul></article>`;
 }
 
-export function structuredData(catalogue, project = null, apartment = null) {
-    const website = { '@type': 'WebSite', '@id': `${PUBLIC_ORIGIN}${BASE_PATH}#website`, name: 'Novogradnje u Zagrebu', url: `${PUBLIC_ORIGIN}${BASE_PATH}`, inLanguage: 'hr' };
+export function structuredData(catalogue, project = null, apartment = null, page = {}) {
     const selected = apartment || project;
-    if (!selected) return { '@context': 'https://schema.org', '@graph': [website, { '@type': 'ItemList', name: 'Stambeni projekti Zagreba',
+    const url = `${PUBLIC_ORIGIN}${selected?.url || BASE_PATH}`;
+    const crumbs = [['zagreb.lol', `${PUBLIC_ORIGIN}/`], ['Novogradnje', `${PUBLIC_ORIGIN}${BASE_PATH}`],
+        ...(project ? [[project.name, `${PUBLIC_ORIGIN}${project.url}`]] : []), ...(apartment ? [[apartment.label, `${PUBLIC_ORIGIN}${apartment.url}`]] : [])];
+    const webpage = { '@type': 'WebPage', '@id': `${url}#webpage`, name: page.name, url, description: page.description, inLanguage: 'hr', image: OG_IMAGE,
+        isPartOf: { '@type': 'WebSite', name: 'zagreb.lol', url: `${PUBLIC_ORIGIN}/` },
+        breadcrumb: { '@type': 'BreadcrumbList', itemListElement: crumbs.map(([name, item], i) => ({ '@type': 'ListItem', position: i + 1, name, item })) } };
+    if (!selected) return { '@context': 'https://schema.org', '@graph': [webpage, { '@type': 'ItemList', name: 'Stambeni projekti Zagreba',
         itemListElement: catalogue.projects.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `${PUBLIC_ORIGIN}${p.url}`, name: p.name })) }] };
-    return { '@context': 'https://schema.org', '@graph': [website, { '@type': apartment ? 'Apartment' : 'ApartmentComplex',
+    return { '@context': 'https://schema.org', '@graph': [webpage, { '@type': apartment ? 'Apartment' : 'ApartmentComplex',
         '@id': `${PUBLIC_ORIGIN}${selected.url}`, name: apartment ? `${apartment.label} · ${project.name}` : project.name,
         url: `${PUBLIC_ORIGIN}${selected.url}`, address: { '@type': 'PostalAddress', streetAddress: project.address, addressLocality: 'Zagreb', addressCountry: 'HR' },
         ...(project.location ? { geo: { '@type': 'GeoCoordinates', latitude: project.location.lat, longitude: project.location.lng } } : {}),
         ...(apartment?.areaM2 ? { floorSize: { '@type': 'QuantitativeValue', value: apartment.areaM2, unitCode: 'MTK' } } : {}),
-        ...(apartment?.rooms ? { numberOfRooms: apartment.rooms } : {}) },
-        { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Novogradnje', item: `${PUBLIC_ORIGIN}${BASE_PATH}` },
-            { '@type': 'ListItem', position: 2, name: project.name, item: `${PUBLIC_ORIGIN}${project.url}` },
-            ...(apartment ? [{ '@type': 'ListItem', position: 3, name: apartment.label, item: `${PUBLIC_ORIGIN}${apartment.url}` }] : [])] }] };
+        ...(apartment?.rooms ? { numberOfRooms: apartment.rooms } : {}) }] };
 }
 
 export async function renderPublicPage({ catalogue, project = null, apartment = null, search = '' }) {
     const $ = cheerio.load(await readFile(`${directory}/index.html`, 'utf8'));
     const selected = apartment || project;
-    const title = selected ? `${apartment ? `${apartment.label} · ` : ''}${project.name} · Novogradnje · zagreb.lol` : 'Novogradnje u Zagrebu — stanovi, tlocrti i 3D · zagreb.lol';
+    const title = selected ? `${apartment ? `${apartment.label} · ` : ''}${project.name} · Novogradnje | zagreb.lol` : 'Novogradnje u Zagrebu — stanovi, tlocrti i 3D | zagreb.lol';
     const description = project ? `${project.address}. ${kindLabel(project.kind)}. ${yearLabel(project)}. ${apartment ? apartmentFacts(apartment) : `${project.apartments.length} stanova u katalogu`}. Izvorni tlocrti i 3D prikazi kada su dostupni.`
         : 'Pronađite novogradnje u Zagrebu na karti. Pretražite stanove po površini, sobama i orijentaciji; pogledajte dostupne tlocrte i 3D rekonstrukcije.';
     const canonical = `${PUBLIC_ORIGIN}${selected?.url || BASE_PATH}`;
@@ -55,7 +58,7 @@ export async function renderPublicPage({ catalogue, project = null, apartment = 
     for (const name of ['og:title', 'twitter:title']) $(`meta[property="${name}"],meta[name="${name}"]`).attr('content', title);
     for (const name of ['og:description', 'twitter:description']) $(`meta[property="${name}"],meta[name="${name}"]`).attr('content', description);
     $('meta[property="og:url"]').attr('content', canonical); $('link[rel="canonical"]').attr('href', canonical);
-    $('head').append(`<meta name="robots" content="${search ? 'noindex,follow' : 'index,follow'}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><script type="application/ld+json">${json(structuredData(catalogue, project, apartment))}</script>`);
+    $('head').append(`<meta name="robots" content="${search ? 'noindex,follow' : 'index, follow, max-image-preview:large'}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><script type="application/ld+json">${json(structuredData(catalogue, project, apartment, { name: apartment ? `${apartment.label} · ${project.name}` : project?.name || 'Novogradnje u Zagrebu', description }))}</script>`);
     const visible = filterProjects(catalogue.projects, decodeFilters(search));
     $('#results').html(visible.map(projectMarkup).join(''));
     if (project) {
