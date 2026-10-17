@@ -37,6 +37,16 @@ Owner deal has two directions:
 5. A shareable proposal page comes before any notification system; "Follow this proposal" with an
    email digest comes later, once proposals are getting support.
 6. The owner's sale offer must keep working under the new kinds.
+7. Every record that leaves the device carries a kind, whether shared (uploaded) or minted. The
+   publish step preselects **Community vote** as the least-committal kind, and its result reporter
+   is optional, so sharing just a design ("here is an idea") is publishing with the default.
+8. Solana first, then EVM. Changing the contracts/programs on either chain is allowed when needed.
+9. The proposer has a wallet, signs, mints and pays. On devnet/testnet the platform sponsors the
+   cost for demos, on both chains.
+10. The platform stays agnostic about how an NGO runs its vote and shows as little of the result as
+    makes sense: no counts, methods or periods in our schema, so we are never part of a dispute
+    about procedure. The NGO's own page carries the detail.
+11. Backfilling `kind` onto existing server rows: yes, but last, after everything else is settled.
 
 ## What changes in the model
 
@@ -55,7 +65,10 @@ car park's parcel can never be a vote; it is forced into the binding path and ge
   proposal (fork), like any other edit of a published record.
 - Validation per kind: owner and community votes carry no offer, deposit, budget or escrow; owner
   deal needs terms; owner's sale offer needs the proposer to be the owner of every parcel.
-- Local drafts have no kind. A draft is published through the kind step; nothing is defaulted.
+- Local drafts have no kind. A draft is published through the kind step, which preselects
+  Community vote (decision 7).
+- A community vote without a result reporter is valid: it is a shared design that asks for
+  nothing binding and shows no result.
 
 ## The publish step (UI)
 
@@ -67,14 +80,14 @@ slow and hides validation errors on screens already left.
 ```
 ┌ Publish proposal ───────────────────────────────────────┐
 │ Who decides?                                            │
-│ [ Owner deal ]  [ Owner vote ]  [ Community vote ]      │
+│ [ Owner deal ]  [ Owner vote ]  [●Community vote ]      │
 │   └ Offer to owners · Owner's sale offer                │
 │ Title, description            (all kinds)               │
 │ Parcels / site                (all kinds, read-only)    │
 │ Terms: offer, deposit, expiry (owner deal only)         │
 │ Voting deadline (days)        (both votes)              │
-│ Result reported by: did:web   (community vote)          │
-│ Where people take part: URL   (community vote)          │
+│ Result reported by: did:web   (community vote, optional)│
+│ Where people take part: URL   (community vote, optional)│
 │                                                         │
 │ "You are asking residents of this area for non-binding  │
 │  support. Nothing is paid and no one's land changes."   │
@@ -138,16 +151,21 @@ Verify the exact verification-method type names and the CAIP-2 Solana cluster id
 
 ### The result itself
 
-A JSON document `community-result/v1` pinned to IPFS:
+A JSON document `community-result/v1` pinned to IPFS. Deliberately minimal (decision 10): we carry
+the NGO's own one-line statement and a link to its page, and never parse, tally or judge counts,
+methods or eligibility.
 
 ```json
 { "schema": "community-result/v1", "proposal": "<chain>:<proposal account or id>",
   "attester": "did:web:greenzagreb.org:urbangametheory",
-  "support": 312, "oppose": 41, "abstain": 0,
-  "method": "door-to-door petition", "periodStart": "2026-11-01", "periodEnd": "2026-11-15",
-  "evidence": "https://greenzagreb.org/petition-results", "didDocumentSha256": "<hash of did.json when posted>",
+  "statement": "Residents back the park: 312 for, 41 against.",
+  "url": "https://greenzagreb.org/park-vote",
+  "didDocumentSha256": "<hash of did.json when posted>",
   "postedAt": "2026-11-16T10:00:00Z" }
 ```
+
+`statement` is plain text with a length cap (around 280 characters), shown as the NGO's words,
+attributed: *"greenzagreb.org ✓ says: …"*. `url` is optional.
 
 - **Solana**: anchored the way owner decisions already are (`frontend/js/proposals/approval-anchor.js`):
   a Memo v1 transaction from the NGO's wallet recording
@@ -169,7 +187,17 @@ The link an NGO sends through its own channels (newsletter, WhatsApp, Facebook):
   proposal's image, title and summary. `OG-IMAGE-PLAN.md` holds the image-hosting analysis.
 - The page shows: plain-language summary (what changes, who asks, kind, deadline), before/after
   pictures (the existing dividers work, `dividers.md`), the kind badge, and for a community vote
-  the latest reported result and one button, "Take part", linking to the NGO's own URL.
+  the latest reported statement and one button, "Take part", linking to the NGO's own URL.
+
+## Paying for publishing
+
+The proposer's wallet signs and pays, as every Solana write does today (`feePayer: wallet` across
+`frontend/js/solana/*`). There is no sponsorship yet. For devnet/testnet demos, the simplest
+sponsorship that keeps the proposer as the signer on the record is a rate-limited drip: a server
+demo wallet sends devnet SOL (and testnet ETH for EVM) to a proposer's wallet that is short of the
+mint cost, then the proposer mints as usual. A co-signing fee payer (Solana) or paymaster (EVM)
+would hide the cost entirely but is more machinery; only if the drip proves too clumsy. Never on
+mainnet.
 
 ## Milestones
 
@@ -179,23 +207,21 @@ The link an NGO sends through its own channels (newsletter, WhatsApp, Facebook):
 | M1 | `kind` in the model: validation, hash commitment, `isVoteProposal` reads `kind`, facet inference removed, badges | `lifecycle.js`, `create.js`, consent/effect hash, list/details UI | unit: each kind × design (a park over a taken parcel can be either vote kind); owner's sale offer stays an open sale offer, never a vote; changing kind changes the hash |
 | M2 | Publish step: kind cards in the create dialog, per-kind sections, no random offer, days not ms, summary line; all publish entry points go through it | `dialog-create.js`, `create.js`, `dialog-upload.js`, `sharing-routes.js` | unit for the summary text and per-kind validation; targeted headless Playwright spec for the kind step |
 | M3 | Owner vote on Solana (today the Solana bridge has no `castVote`, so owner votes exist only on EVM) | `solana/proposal-bridge.js`; reuse `proposal-approval/v1` + memo anchors marked non-binding, if it fits | unit on the reader/tally |
-| M4 | Community vote: `did:web` resolver (pure parse module + thin fetch), attester field, result document, Solana memo anchor, EAS on EVM, badge | new `frontend/js/proposals/did-web.js`, `community-result.js` | unit: DID→URL mapping, CAIP-10 matching, signer not listed → rejected, wallet removed → grey, tampered document → hash fails |
+| M4 | Community vote: `did:web` resolver (pure parse module + thin fetch), optional attester field, result document, Solana memo anchor first, EAS on EVM second, badge | new `frontend/js/proposals/did-web.js`, `community-result.js` | unit: DID→URL mapping, CAIP-10 matching, signer not listed → rejected, wallet removed → grey, tampered document → hash fails, over-long statement → refused |
 | M5 | Shareable proposal page with OG head and "Take part" link | new backend route next to `bets-share.js`, nginx | route test like `bets-share-route.test.js` |
+| M6 | Devnet/testnet drip so demo proposers can mint | backend route + demo wallet, rate limit per wallet/IP | unit on the limiter; refuses on a mainnet cluster |
+| M7 | Backfill `kind` on existing server rows (low priority, last): dry run, backup table, `--apply`, idempotent | `scripts/` | dry-run counts per kind read back; rerun is a no-op |
 
 Later, not in this plan: "Follow this proposal / this area" with an email digest; keeping the map
 preview's parcels as provisional when the server has no cadastre (audit O2, second half); labelling
 mock road costs and TEAD (audit O3).
 
+## Backfill mapping (M7)
+
+Stamp `kind` on existing server rows once, as was done for legacy parcel declarations and effect
+hashes: `isVote`/vote facets → owner vote, `ownership-transfer-from-me` → owner's sale offer,
+everything else → offer to owners. On-chain records keep what they committed.
+
 ## Open questions
 
-1. Does a plain share upload (no mint) also need a kind, or only a mint? Recommendation: any record
-   that leaves the device carries one, because the share page has to say what is being asked.
-2. Existing published records: stamp `kind` on the server rows once with a backfill script (dry run,
-   backup, `--apply`), as was done for legacy parcel declarations and effect hashes:
-   `isVote`/vote facets → owner vote, `ownership-transfer-from-me` → owner's sale offer, everything
-   else → offer to owners. On-chain records keep what they committed.
-3. Chain order: Solana first (the live chain), EVM second?
-4. Who pays mint rent for an NGO on mainnet? Free on devnet today; an NGO without a funded wallet
-   cannot publish.
-5. Result fields: are support/oppose/abstain enough, or do NGOs need an "eligible population"
-   figure to show turnout?
+None yet; the five from the first draft were answered 2026-10-17 (decisions 7–11).
