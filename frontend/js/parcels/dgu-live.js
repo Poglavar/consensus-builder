@@ -20,6 +20,9 @@
     const ID_BATCH = 20;
     // The backend's measured-noise floor for "this footprint takes part of this parcel" (/parcels/under).
     const TAKEN_FLOOR_M2 = 0.25;
+    // The most parcels one read takes, as on our server (MAX_PARCELS_UNDER in routes/parcels.js):
+    // past it the browser would page and intersect tens of thousands of parcels.
+    const MAX_PARCELS = 5000;
 
     function baseParams() {
         return { token: PUBLIC_TOKEN, service: 'WFS', version: '2.0.0', request: 'GetFeature',
@@ -75,11 +78,15 @@
         };
     }
 
-    // Whether a failed request to our server should be answered from DGU instead: any failure
-    // except the caller cancelling it.
+    // Whether a failed request to our server should be answered from DGU instead: only when our
+    // server is unreachable or failing (no answer, a timeout, a 5xx). A 4xx is our server answering
+    // about the request itself — "this area covers too many parcels" (413), "this shape is too big
+    // or invalid" (400) — and stands: DGU would only be asked the same oversized question.
     function shouldFallBack(error, signal) {
         if (signal && signal.aborted) return false;
-        return !(error && error.name === 'AbortError' && !error.status);
+        if (error && error.name === 'AbortError' && !error.status) return false;
+        const status = Number(error && error.status);
+        return !Number.isFinite(status) || status === 0 || status >= 500;
     }
 
     // requestJson(url) → parsed JSON or throws; toWgs84(fc) → the collection in WGS84;
@@ -93,6 +100,10 @@
                 const page = Array.isArray(payload && payload.features) ? payload.features : [];
                 features.push(...page);
                 const matched = Number(payload && (payload.numberMatched ?? payload.totalFeatures));
+                if (Number.isFinite(matched) && matched > MAX_PARCELS) {
+                    throw Object.assign(new Error(`The area covers ${matched} parcels, over the ${MAX_PARCELS} limit.`),
+                        { status: 413, code: 'parcel-area-too-large', count: matched });
+                }
                 startIndex += page.length;
                 const more = Number.isFinite(matched) ? startIndex < matched : page.length === PAGE_SIZE;
                 if (!page.length || !more) return features;
@@ -150,5 +161,5 @@
         return { fetchBbox, fetchIds, fetchUnder };
     }
 
-    return Object.freeze({ WFS_URL, HOST, bboxUrl, idsUrl, idClause, toParcelFeature, shouldFallBack, createDguLive });
+    return Object.freeze({ WFS_URL, HOST, MAX_PARCELS, bboxUrl, idsUrl, idClause, toParcelFeature, shouldFallBack, createDguLive });
 });

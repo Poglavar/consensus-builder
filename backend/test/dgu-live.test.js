@@ -1,7 +1,7 @@
 // The browser's direct DGU cadastre reader (frontend/js/parcels/dgu-live.js), used when our server
 // cannot serve Croatian parcels: id filters, our server's property shape, paging, and the
 // footprint take/coverage the /parcels/under endpoint would have answered.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
@@ -37,8 +37,13 @@ describe('DGU features in our server\'s shape', () => {
         expect(dgu.toParcelFeature({ type: 'Feature', geometry: square(0, 0, 1), properties: {} })).toBeNull();
     });
 
-    it('falls back on a server failure but never on a cancelled request', () => {
+    it('falls back when our server is down or failing, never on its refusals or a cancelled request', () => {
         expect(dgu.shouldFallBack(Object.assign(new Error('down'), { status: 502, code: 'parcel-source-unavailable' }))).toBe(true);
+        expect(dgu.shouldFallBack(Object.assign(new Error('timed out'), { status: 504 }))).toBe(true);
+        expect(dgu.shouldFallBack(new TypeError('Failed to fetch'))).toBe(true);
+        // Our server answered about the request itself: too many parcels, too big or invalid a shape.
+        expect(dgu.shouldFallBack(Object.assign(new Error('The geometry covers 59311 parcels, over the 5000 limit.'), { status: 413 }))).toBe(false);
+        expect(dgu.shouldFallBack(Object.assign(new Error('extent too large'), { status: 400 }))).toBe(false);
         const aborted = new AbortController();
         aborted.abort();
         expect(dgu.shouldFallBack(new Error('x'), aborted.signal)).toBe(false);
@@ -58,6 +63,13 @@ describe('createDguLive', () => {
         const features = await reader.fetchBbox('0,0,3,1');
         expect(features.map(f => f.properties.parcelId)).toEqual(['HR-1-1', 'HR-1-2', 'HR-1-3']);
         expect(asked).toEqual(['0', '2']);
+    });
+
+    it('refuses an area over the parcel limit after its first page instead of reading it all', async () => {
+        const requestJson = vi.fn(async () => ({ features: [raw(1, '1', square(0, 0, 1), 1)], totalFeatures: dgu.MAX_PARCELS + 1 }));
+        const reader = dgu.createDguLive({ requestJson, toWgs84: identity, toDatasetBox: box, turf });
+        await expect(reader.fetchBbox('0,0,9,9')).rejects.toMatchObject({ status: 413, code: 'parcel-area-too-large' });
+        expect(requestJson).toHaveBeenCalledTimes(1);
     });
 
     it('answers a footprint with the parcels it takes area from and how much of it they cover', async () => {

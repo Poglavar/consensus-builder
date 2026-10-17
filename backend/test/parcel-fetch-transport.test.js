@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import * as turf from '@turf/turf';
 
 const source = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import.meta.url), 'utf8');
 const progressSource = readFileSync(new URL('../../frontend/js/parcels/source-progress.js', import.meta.url), 'utf8');
@@ -66,6 +67,25 @@ describe('cadastral parcel fetch transport', () => {
         expect(asked).toEqual(['api.urbangametheory.xyz', 'oss.uredjenazemlja.hr', 'api.urbangametheory.xyz', 'oss.uredjenazemlja.hr']);
         expect(updateStatus).toHaveBeenCalledTimes(1);
         expect(updateStatus.mock.calls[0][0]).toMatch(/directly from the state cadastre \(DGU\)/);
+    });
+
+    it("keeps our server's refusal of an oversized footprint instead of asking DGU the same question", async () => {
+        const fetch = vi.fn(async url => (String(url).includes('oss.uredjenazemlja.hr')
+            ? { ok: true, status: 200, json: async () => ({ features: [], totalFeatures: 0 }) }
+            : { ok: false, status: 413, clone() { return this; }, headers: { get: () => null },
+                json: async () => ({ error: 'The geometry covers 59311 parcels, over the 5000 limit.', count: 59311 }) }));
+        // Everything the DGU reader needs is present, so only the fallback rule keeps it from being asked.
+        const transport = bootTransport('zagreb', fetch, { source: 'oss-wfs' }, {}, {
+            turf, proj4: (_from, _to, point) => point, convertGeoJSON: collection => collection,
+            fetchWithRetry: async (url, options) => {
+                const response = await fetch(url, options);
+                if (response.ok) return response;
+                throw Object.assign(new Error((await response.json()).error), { status: response.status });
+            }
+        });
+        const footprint = { type: 'Polygon', coordinates: [[[15.8, 45.7], [16.1, 45.7], [16.1, 45.9], [15.8, 45.9], [15.8, 45.7]]] };
+        await expect(transport.fetchUnderGeometry(footprint, { city: 'zagreb' })).rejects.toMatchObject({ status: 413 });
+        expect(fetch.mock.calls.map(([url]) => new URL(url).host)).toEqual(['api.urbangametheory.xyz']);
     });
 
     it('never asks DGU while our server answers, nor for a city outside Croatia', async () => {
