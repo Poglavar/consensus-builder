@@ -273,5 +273,17 @@
         paint();
     }
 
-    return { collect, withPublished, listHtml, view, bindRows, render, renderPublishedOnly };
+    // How many proposals these parcels' Proposals tab lists — this browser's plus the published ones
+    // it holds no copy of — as { count, loading, error }. While the server is still being asked,
+    // onUpdate later gets the settled answer (an error leaves the count at what is held here).
+    function count(parcelIds, onUpdate) {
+        const settle = () => {
+            const { entries, published } = lookup(parcelIds);
+            onUpdate({ count: entries.length, loading: false, error: published.error });
+        };
+        const { entries, published } = lookup(parcelIds, { onPublished: typeof onUpdate === 'function' ? settle : undefined });
+        return { count: entries.length, loading: published.loading, error: published.error };
+    }
+
+    return { collect, withPublished, listHtml, view, bindRows, render, renderPublishedOnly, count };
 });

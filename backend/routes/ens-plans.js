@@ -5,6 +5,7 @@
 // changed instead of silently altering a plan people bet on. Design of record: plans.md.
 import { createPlanStore } from '../plans/plan-store.js';
 import { changedMembers, memberHash, nextVersionSlug, planHash } from '../plans/plan-hash.js';
+import { proposalAccountOf } from '../markets/contests.js';
 
 const ENS_NAMESPACE = 'proposals.urbangametheory.eth';
 // A named plan resolves to `<publicBaseUrl>/proposals/<id,id,id…>` (see ens.js), and that string is
@@ -20,6 +21,18 @@ const BASE_URL_ALLOWANCE = 150;
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/; // 3–63 chars, no edge hyphen
 const NUMERIC_LABEL_RE = /^[0-9]+(-[0-9]+)*$/;          // reserved for proposal ids
 const PROPOSAL_ID_RE = /^[0-9]+$/;
+// Parcel ids differ by provider (HR-335533-2895/2, a BBL, a geometry hash); they only reach a bound parameter.
+const PARCEL_ID_RE = /^.{1,200}$/;
+const MAX_FILTER_IDS = 500;
+
+// A comma-separated query filter: null when absent, false when malformed or too long.
+function idList(raw, pattern) {
+    if (raw === undefined || raw === null || raw === '') return null;
+    const ids = [...new Set(String(raw).split(',').map(id => id.trim()).filter(Boolean))];
+    if (!ids.length) return null;
+    if (ids.length > MAX_FILTER_IDS || !ids.every(id => pattern.test(id))) return false;
+    return ids;
+}
 
 function validateSlug(raw) {
     const slug = (raw || '').toString().trim().toLowerCase();
@@ -65,16 +78,28 @@ const planView = (row) => ({
     planHash: row.plan_hash || null,
     supersedes: row.supersedes || null,
     onchain: row.onchain_data || null,
+    // The plan's own Solana proposal account once minted: its betting pool (markets/contests.js).
+    proposalAccount: proposalAccountOf(row.onchain_data),
     mintable: row.has_site === true,
     createdAt: row.created_at || null,
+    // Listing only: how many proposals the plan names, and whether a later version replaces it.
+    ...(row.member_count === undefined ? {} : { memberCount: Number(row.member_count) }),
+    ...(row.superseded === undefined ? {} : { superseded: row.superseded === true }),
     url: `/proposals/${(Array.isArray(row.proposal_ids) ? row.proposal_ids : []).join(',')}`,
 });
 
 export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } = {}) {
-    // Plans of a city, newest first (the Bets sheet groups them into contests).
+    // Plans of a city, newest first (the Bets sheet groups them into contests). ?proposal_ids=1,2
+    // narrows to the plans naming any of those proposal rows (which plans a proposal is part of);
+    // ?parcel_ids=a,b to the plans with a member on any of those cadastral parcels.
     app.get('/plans', async (req, res) => {
         const city = text(req.query.city, 32);
-        const rows = await store.list(city);
+        const proposalIds = idList(req.query.proposal_ids, PROPOSAL_ID_RE);
+        const parcelIds = idList(req.query.parcel_ids, PARCEL_ID_RE);
+        if (proposalIds === false || parcelIds === false) {
+            return res.status(400).json({ error: `proposal_ids are numeric ids and parcel_ids cadastral ids, at most ${MAX_FILTER_IDS} of each.` });
+        }
+        const rows = await store.list(city, { proposalIds, parcelIds });
         res.json({ plans: rows.map(planView) });
     });
 

@@ -173,12 +173,61 @@
         global.ProposalParcelHistoryCard.renderSection(host, { parcelIds: historyIds });
     }
 
-    // The Proposals tab's count badge: the proposals listed there, hidden at zero.
+    // The Proposals tab's count badge: the proposals listed there, hidden at zero. The tab's own
+    // Proposals | Plans switch shows the same number.
     function setProposalsTabCount(count) {
         const badge = global.document.querySelector('#parcel-info-panel [data-parcel-tab-id="proposals-tab"] .parcel-tab-count');
         if (!badge) return;
         badge.textContent = count > 0 ? String(count) : '';
         badge.hidden = !(count > 0);
+        setProposalsSwitchCount('proposals', count);
+    }
+
+    function setProposalsSwitchCount(view, count) {
+        const el = global.document.querySelector(`#parcel-info-panel [data-parcel-proposals-count="${view}"]`);
+        if (el) el.textContent = count === null ? '' : `(${count})`;
+    }
+
+    // The Proposals tab shows either the parcel's proposals or the named plans touching it.
+    function showProposalsView(view) {
+        const doc = global.document;
+        doc.querySelectorAll('#parcel-info-panel [data-parcel-proposals-view]').forEach(button => {
+            button.setAttribute('aria-pressed', String(button.getAttribute('data-parcel-proposals-view') === view));
+        });
+        doc.getElementById('proposals-content').hidden = view !== 'proposals';
+        doc.getElementById('parcel-plans-content').hidden = view !== 'plans';
+    }
+
+    function bindProposalsSwitch() {
+        const group = global.document.querySelector('#parcel-info-panel .parcel-proposals-switch');
+        if (!group || group.dataset.parcelPanelBound === 'true') return;
+        group.dataset.parcelPanelBound = 'true';
+        group.addEventListener('click', event => {
+            const button = event.target.closest('[data-parcel-proposals-view]');
+            if (button) showProposalsView(button.getAttribute('data-parcel-proposals-view'));
+        });
+        global.ProposalPlans.bindPlanRows(global.document.getElementById('parcel-plans-content'));
+    }
+
+    // The named plans with a member on this parcel's cadastral ground (GET /plans?parcel_ids=).
+    function renderParcelPlans(parcelKey, cadastreIds) {
+        const container = global.document.getElementById('parcel-plans-content');
+        const plansApi = global.ProposalPlans;
+        const token = String((Number(container.dataset.parcelPlansRender) || 0) + 1);
+        container.dataset.parcelPlansRender = token;
+        setProposalsSwitchCount('plans', null);
+        container.innerHTML = `<p class="plan-list-empty">${global.escapeHtml(tParcel('plans.parcel.loading', {}, 'Looking for plans…'))}</p>`;
+        plansApi.parcelPlans(cadastreIds).then(({ plans, error }) => {
+            if (container.dataset.parcelPlansRender !== token) return;
+            const current = plansApi.current(plans);
+            setProposalsSwitchCount('plans', error ? null : current.length);
+            container.innerHTML = error
+                ? `<p class="plan-list-empty">${global.escapeHtml(tParcel('plans.unavailable', { reason: error }, 'Plans could not be loaded'))}</p>`
+                : plansApi.planRowsHtml(current, {
+                    t: (key, fallback, params) => tParcel(key, params || {}, fallback),
+                    emptyText: tParcel('plans.parcel.empty', {}, 'No plan includes a proposal on this parcel yet.')
+                });
+        });
     }
 
     function showParcelInfoPanel(feature) {
@@ -975,11 +1024,21 @@
         // The tab count updates ONLY after the list content is in the DOM — updating it earlier
         // let a mid-render exception show "Proposals (1)" over a stale/empty list.
         setProposalsTabCount(parcelProposals.length);
+        const proposalsList = global.document.getElementById('proposals-content');
         global.ParcelSetProposals.renderPublishedOnly(
             global.document.querySelector('#proposals-content .parcel-published-proposals'), parcelKey, {
                 emptyNote: global.document.querySelector('#proposals-content .parcel-proposals-empty'),
-                onCount: published => setProposalsTabCount(parcelProposals.length + published)
+                onCount: published => {
+                    setProposalsTabCount(parcelProposals.length + published);
+                    // Published-only rows arrive later; they get their plan line too.
+                    global.ProposalPlans.decorateParcelRows(proposalsList);
+                }
             });
+        // Which plans each listed proposal is part of, and the plans touching this parcel.
+        bindProposalsSwitch();
+        showProposalsView('proposals');
+        global.ProposalPlans.decorateParcelRows(proposalsList);
+        renderParcelPlans(parcelKey, parcelCadastreIds);
         const renderParcelProposalActions = uiProposals.renderParcelProposalActions || global.renderParcelProposalActions;
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions(parcelId);

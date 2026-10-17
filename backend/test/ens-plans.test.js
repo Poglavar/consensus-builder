@@ -19,7 +19,13 @@ function makeStore({ absent = [] } = {}) {
         async plan(slug) { return plans.get(slug) || null; },
         async supersededBy(slug) { return [...plans.values()].filter(plan => plan.supersedes === slug).map(plan => plan.slug); },
         async versionsOf(base) { return new Set([...plans.keys()].filter(slug => slug === base || slug.startsWith(`${base}-v`))); },
-        async list(city) { return [...plans.values()].filter(plan => !city || plan.city === city); },
+        listCalls: [],
+        async list(city, filters = {}) {
+            this.listCalls.push({ city, ...filters });
+            return [...plans.values()].filter(plan => !city || plan.city === city)
+                .filter(plan => !filters.proposalIds || plan.proposal_ids.some(id => filters.proposalIds.includes(id)))
+                .map(plan => ({ ...plan, member_count: plan.proposal_ids.length, superseded: [...plans.values()].some(other => other.supersedes === plan.slug) }));
+        },
         async insert(plan) {
             if (plans.has(plan.slug)) { const e = new Error('dup'); e.code = '23505'; throw e; }
             const row = { slug: plan.slug, proposal_ids: plan.proposalIds, title: plan.title, description: plan.description,
@@ -118,6 +124,24 @@ describe('named plans CRUD', () => {
         await request(app).post('/plans').send({ slug: 'sf-plan', proposalIds: ['2'], city: 'san_francisco' });
         const res = await request(app).get('/plans?city=zagreb');
         expect(res.body.plans.map(plan => [plan.slug, plan.place])).toEqual([['zg-plan', 'Borovje']]);
+    });
+
+    it('lists the plans a proposal is part of, with member counts and superseded versions marked', async () => {
+        await request(app).post('/plans').send({ slug: 'harbor', proposalIds: ['1', '2'], city: 'zagreb' });
+        await request(app).post('/plans').send({ slug: 'harbor-v2', proposalIds: ['2', '3', '4'], city: 'zagreb', supersedes: 'harbor' });
+        await request(app).post('/plans').send({ slug: 'elsewhere', proposalIds: ['9'], city: 'zagreb' });
+        const res = await request(app).get('/plans?city=zagreb&proposal_ids=2,7');
+        expect(res.status).toBe(200);
+        expect(res.body.plans.map(plan => [plan.slug, plan.memberCount, plan.superseded])).toEqual([['harbor', 2, true], ['harbor-v2', 3, false]]);
+        expect(store.listCalls.at(-1)).toEqual({ city: 'zagreb', proposalIds: ['2', '7'], parcelIds: null });
+    });
+
+    it('passes a parcel filter to the store and refuses malformed or oversized filters', async () => {
+        await request(app).get('/plans?city=zagreb&parcel_ids=HR-335533-2895/2,HR-335533-2896');
+        expect(store.listCalls.at(-1)).toEqual({ city: 'zagreb', proposalIds: null, parcelIds: ['HR-335533-2895/2', 'HR-335533-2896'] });
+        expect((await request(app).get('/plans?proposal_ids=1,abc')).status).toBe(400);
+        const tooMany = Array.from({ length: 501 }, (_, i) => String(i + 1)).join(',');
+        expect((await request(app).get(`/plans?proposal_ids=${tooMany}`)).status).toBe(400);
     });
 });
 

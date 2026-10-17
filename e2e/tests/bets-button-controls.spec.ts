@@ -90,7 +90,7 @@ test.describe('Bets shared button variants @features', () => {
     await expect(page.locator('#proposal-details-panel')).toContainText(title);
   });
 
-  test('Open the plan resolves its named-plan route and applies the published member', async ({ mockApi: page }) => {
+  test('Open the plan resolves its named-plan route and opens the plan on the map', async ({ mockApi: page }) => {
     const server = createSharedProposalServer();
     const slug = 'bets-open-plan-test';
     await attachSharedProposalServer(page, server);
@@ -136,6 +136,9 @@ test.describe('Bets shared button variants @features', () => {
     await expect(page.locator('#bets-sheet')).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).__currentNamedPlan?.slug), { timeout: 30_000 }).toBe(slug);
     await expect.poll(() => page.evaluate(() => new URL(location.href).pathname)).toBe(`/proposals/${slug}`);
+    // The plan is previewed, not applied: its panel offers Apply plan.
+    await expect(page.locator('#plan-view-panel')).toBeVisible();
+    await expect(page.locator('#plan-view-panel [data-plan-action="apply"]')).toBeVisible();
   });
 
   test('the dialog Yes button opens a Yes stake form, and quick stakes set the entered amount', async ({ mockApi: page }) => {

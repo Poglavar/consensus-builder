@@ -6376,5 +6376,56 @@
     "ens": {
         "viewName": "Ver nombre ENS",
         "copyName": "Copiar nombre ENS"
+    },
+    "plans": {
+        "title": "Planes",
+        "unavailable": "No se pudieron cargar los planes: {{reason}}",
+        "line": {
+            "single": "Parte del plan {{name}}",
+            "many": {
+                "one": "En {{count}} plan",
+                "other": "En {{count}} planes"
+            }
+        },
+        "list": {
+            "empty": "Todavía no hay planes aquí.",
+            "pool": "Fondo de apuestas",
+            "loading": "Cargando planes…",
+            "emptyCity": "Todavía no hay planes en esta ciudad. Aplica propuestas y compártelas como plan para crear uno."
+        },
+        "parcel": {
+            "loading": "Buscando planes…",
+            "empty": "Ningún plan incluye todavía una propuesta en esta parcela."
+        },
+        "view": {
+            "title": "Plan",
+            "notFound": "No existe ningún plan llamado {{name}}.",
+            "loading": "Cargando el plan…",
+            "error": "No se pudo cargar el plan: {{reason}}",
+            "hint": "Rayado en el mapa: lo que construiría este plan. Nada cambia hasta que lo apliques.",
+            "newer": "Existe una versión más reciente de este plan:",
+            "membersHeading": "Propuestas de este plan",
+            "changed": {
+                "one": "{{count}} propuesta cambió después de nombrar el plan.",
+                "other": "{{count}} propuestas cambiaron después de nombrar el plan."
+            },
+            "missing": {
+                "one": "{{count}} propuesta ya no está en el servidor.",
+                "other": "{{count}} propuestas ya no están en el servidor."
+            },
+            "linkCopied": "Enlace del plan copiado.",
+            "linkInAddressBar": "Copia el enlace del plan desde la barra de direcciones.",
+            "onMap": "En el mapa",
+            "totals": {
+                "proposalsApplied": "{{count}}, {{applied}} en este mapa",
+                "kinds": "Qué construye"
+            },
+            "member": {
+                "missing": "Falta"
+            },
+            "actions": {
+                "apply": "Aplicar plan"
+            }
+        }
     }
 }

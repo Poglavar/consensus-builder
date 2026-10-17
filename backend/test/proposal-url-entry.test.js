@@ -9,7 +9,8 @@ function boot(pathname, connected = false) {
     const window = {
         location: { pathname, search: '?city=nairobi', hash: '#details' },
         walletManager: { getState: () => ({ status: connected ? 'connected' : 'disconnected', accounts: connected ? ['wallet'] : [] }) },
-        openMintedProposalsModal: vi.fn()
+        openMintedProposalsModal: vi.fn(),
+        PlanView: { open: vi.fn(async () => {}) }
     };
     const context = vm.createContext({
         window, showAllProposalsModal: vi.fn(), handleSharedPlanRoute: vi.fn(async () => {}),
@@ -43,11 +44,13 @@ describe('proposal URL entry', () => {
         expect(app.window.location.pathname).toBe(pathname);
     });
 
-    it.each(['/proposals/garden-plan', '/proposals/garden-plan/'])('resolves the named plan at %s', async pathname => {
+    // A named plan opens hatched on the map with its panel (PlanView); Apply plan there applies it.
+    it.each(['/proposals/garden-plan', '/proposals/garden-plan/'])('opens the named plan at %s without applying it', async pathname => {
         const app = boot(pathname);
         await app.handleProposalRouteFromUrl();
         expect(app.fetch).toHaveBeenCalledWith(expect.stringContaining('/plans/garden-plan'));
-        expect(app.handleSharedPlanRoute).toHaveBeenCalledWith(['12', '13']);
+        expect(app.window.PlanView.open).toHaveBeenCalledWith('garden-plan', { plan: expect.objectContaining({ proposalIds: [12, 13] }) });
+        expect(app.handleSharedPlanRoute).not.toHaveBeenCalled();
         expect(app.window.location.pathname).toBe(pathname);
     });
 

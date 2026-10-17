@@ -186,7 +186,28 @@
             button.appendChild(icon);
             button.appendChild(label);
             actions.appendChild(button);
+            if (entry.id === 'parcel.proposals') showProposalCount(button, facts);
         });
+    }
+
+    // "Proposals (N)": N is what the parcel panel's Proposals tab lists (ParcelSetProposals: this
+    // browser's proposals plus the published ones it does not hold; minted ones arrive through the
+    // chain sync as held records). The icon spins until the server has answered.
+    function showProposalCount(button, facts) {
+        const countEl = doc.createElement('span');
+        countEl.className = 'parcel-menu__count';
+        // Inside the label, so "(3)" reads as part of it rather than as a separate column.
+        button.lastElementChild.appendChild(countEl);
+        const token = state.countToken = (state.countToken || 0) + 1;
+        const paint = ({ count, loading, error }) => {
+            if (state.countToken !== token || !button.isConnected) return;
+            button.classList.toggle('cb-busy', loading === true);
+            if (loading) button.setAttribute('aria-busy', 'true'); else button.removeAttribute('aria-busy');
+            countEl.textContent = loading ? '' : ` (${count})`;
+            if (error) button.title = t('panel.parcel.setProposals.unavailable', 'Published proposals could not be loaded: {{reason}}', { reason: error });
+            else button.removeAttribute('title');
+        };
+        paint(win.ParcelSetProposals.count([facts.parcelId], paint));
     }
 
     function position() {
@@ -379,6 +400,7 @@
     const ACTION_RUNNERS = {
         propose: facts => showPanelTab(facts, 'propose-tab'),
         details: facts => showPanelTab(facts, 'info-tab'),
+        proposals: facts => showPanelTab(facts, 'proposals-tab'),
         tools: facts => showPanelTab(facts, 'tools-tab'),
         history: showHistory,
         compare: facts => win.ParcelCompare.open(facts.parcelId),

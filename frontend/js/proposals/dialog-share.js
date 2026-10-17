@@ -193,6 +193,19 @@ function renderProposalListModal() {
         ? `<p class="proposal-list-note canton-empty">${escapeHtml('On Canton, proposals are private, so they are not listed here.')}</p>`
         : '';
 
+    // Plans source: the city's named plans (proposals/plans.js). The answer is cached there; when it
+    // lands after this render, the list renders again with it.
+    const plansApi = window.ProposalPlans;
+    const plansPromise = plansApi.cityPlans(normalizedCity);
+    plansPromise.then(result => {
+        if (proposalListState.plansResult === result) return;
+        proposalListState.plansResult = result;
+        if (modal.isConnected) renderProposalListModal();
+    });
+    const plansResult = proposalListState.plansResult || null;
+    const currentPlans = plansResult ? plansApi.current(plansResult.plans) : [];
+    const plansCountLabel = plansResult ? currentPlans.length : '…';
+
     const chosen = source === 'server' ? serverDatasets
         : source === 'blockchain' ? blockchainDatasets
         : localDatasets;
@@ -285,7 +298,7 @@ function renderProposalListModal() {
     // ~30-60px. There the filters fold behind a toggle (collapsed by default, showing how many are
     // active); the CSS honours the collapse at the phone breakpoint and on short desktop windows,
     // where the capped 340px sheet otherwise left the list no height; tall desktops show them.
-    const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
+    const resultCountText = `${source === 'plans' ? currentPlans.length : chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
 
     const activeFilterCount = countActiveProposalListFilters(proposalListState);
     const filtersOpen = proposalListState.filtersOpen === true;
@@ -351,6 +364,9 @@ function renderProposalListModal() {
             <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'blockchain' ? 'true' : 'false'}" data-source="blockchain">
                 ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
             </button>
+            <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'plans' ? 'true' : 'false'}" data-source="plans">
+                ${escapeHtml(t('plans.title', 'Plans'))} (${plansCountLabel})
+            </button>
         </div>
     `;
 
@@ -361,6 +377,11 @@ function renderProposalListModal() {
     const errorHtml = `<div class="proposal-list-error">${escapeHtml(modalStrings.serverError)} <button class="proposal-server-retry">${escapeHtml(modalStrings.retry)}</button></div>`;
 
     const buildTabContent = (sortedList) => {
+        if (source === 'plans') {
+            if (!plansResult) return `<div class="proposal-list-loading">${escapeHtml(t('plans.list.loading', 'Loading plans…'))}</div>`;
+            if (plansResult.error) return `<div class="proposal-list-error">${escapeHtml(t('plans.unavailable', 'Plans could not be loaded: {{reason}}', { reason: plansResult.error }))}</div>`;
+            return plansApi.planRowsHtml(currentPlans, { t, emptyText: t('plans.list.emptyCity', 'No plans in this city yet. Apply proposals and share them as a plan to make one.') });
+        }
         if (showServerError) return errorHtml;
         if (showServerLoading) return loadingHtml;
         return buildProposalListItemsHtml(sortedList, {
@@ -385,8 +406,8 @@ function renderProposalListModal() {
         <div class="proposal-list-modal-content">
             ${sourceToggleHtml}
             ${blockchainCantonNote}
-            ${filtersToggleHtml}
-            ${controlsHtml}
+            ${source === 'plans' ? '' : filtersToggleHtml}
+            ${source === 'plans' ? '' : controlsHtml}
             <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
             <div class="proposal-list-modal-body">
                 <div id="proposals-list" class="proposal-tab-content">
@@ -580,6 +601,21 @@ function renderProposalListModal() {
         button.addEventListener('click', handleProposalDownloadClick);
     });
 
+    // Plan rows open their plan; proposal rows say which plan they are part of.
+    plansApi.bindPlanRows(modal);
+    if (source !== 'plans') {
+        const serverIds = new Map(chosen.sorted.map(entry => [String(getProposalKey(entry.proposal)),
+            source === 'server' ? String(entry.proposal.serverProposalId || entry.proposal.id || '') : plansApi.serverIdOfRecord(entry.proposal)]));
+        plansApi.decorateRows(modal, {
+            rowSelector: '.proposal-list-item[data-proposal-id]',
+            serverIdOf: row => serverIds.get(row.getAttribute('data-proposal-id')) || null,
+            place: (row, html) => {
+                const badges = row.querySelector('.proposal-card-badges');
+                if (badges) badges.insertAdjacentHTML('beforebegin', html); else row.insertAdjacentHTML('beforeend', html);
+            }
+        });
+    }
+
     const bodyEl = modal.querySelector('.proposal-list-modal-body');
     if (bodyEl) {
         bodyEl.scrollTop = scrollPositions.body;
@@ -588,7 +624,7 @@ function renderProposalListModal() {
     // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji.
     // Epoha pojedinog prijedloga se postavlja izbornikom na njegovoj kartici.
     try {
-        if (window.__proposalEpoch) window.__proposalEpoch.injectTimeline(modal);
+        if (window.__proposalEpoch && source !== 'plans') window.__proposalEpoch.injectTimeline(modal);
     } catch (_) { }
 
     const navigationHint = modal.querySelector('.proposal-list-navigation-hint');
@@ -1311,6 +1347,8 @@ function showSharePlanPanel(options) {
                     planNameStatus.textContent = data.error || tShare('plan.nameError', 'Could not save the name.');
                     return;
                 }
+                // The new plan shows on its proposals and in the Plans lists at once.
+                window.ProposalPlans.forget();
                 planNameStatus.style.color = '#0a7d28';
                 planNameStatus.textContent = (data.name || `${slug}.proposals.urbangametheory.eth`)
                     + ' — ' + tShare('plan.nameSaved', 'saved (resolves to this plan).');

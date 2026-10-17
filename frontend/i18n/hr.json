@@ -6383,5 +6383,59 @@
     "ens": {
         "viewName": "Prikaži ENS naziv",
         "copyName": "Kopiraj ENS naziv"
+    },
+    "plans": {
+        "title": "Planovi",
+        "unavailable": "Planove nije bilo moguće učitati: {{reason}}",
+        "line": {
+            "single": "Dio plana {{name}}",
+            "many": {
+                "one": "U {{count}} planu",
+                "few": "U {{count}} plana",
+                "other": "U {{count}} planova"
+            }
+        },
+        "list": {
+            "empty": "Ovdje još nema planova.",
+            "pool": "Fond oklada",
+            "loading": "Učitavanje planova…",
+            "emptyCity": "U ovom gradu još nema planova. Primijenite prijedloge i podijelite ih kao plan da biste ga napravili."
+        },
+        "parcel": {
+            "loading": "Traženje planova…",
+            "empty": "Još nijedan plan ne uključuje prijedlog na ovoj čestici."
+        },
+        "view": {
+            "title": "Plan",
+            "notFound": "Ne postoji plan s imenom {{name}}.",
+            "loading": "Učitavanje plana…",
+            "error": "Plan nije bilo moguće učitati: {{reason}}",
+            "hint": "Šrafirano na karti: što bi ovaj plan izgradio. Ništa se ne mijenja dok ga ne primijenite.",
+            "newer": "Postoji novija verzija ovog plana:",
+            "membersHeading": "Prijedlozi u ovom planu",
+            "changed": {
+                "one": "{{count}} prijedlog promijenjen je nakon imenovanja plana.",
+                "few": "{{count}} prijedloga promijenjena su nakon imenovanja plana.",
+                "other": "{{count}} prijedloga promijenjeno je nakon imenovanja plana."
+            },
+            "missing": {
+                "one": "{{count}} prijedlog više nije na poslužitelju.",
+                "few": "{{count}} prijedloga više nisu na poslužitelju.",
+                "other": "{{count}} prijedloga više nije na poslužitelju."
+            },
+            "linkCopied": "Poveznica na plan kopirana.",
+            "linkInAddressBar": "Kopirajte poveznicu na plan iz adresne trake.",
+            "onMap": "Na karti",
+            "totals": {
+                "proposalsApplied": "{{count}}, od toga {{applied}} na ovoj karti",
+                "kinds": "Što gradi"
+            },
+            "member": {
+                "missing": "Nedostaje"
+            },
+            "actions": {
+                "apply": "Primijeni plan"
+            }
+        }
     }
 }

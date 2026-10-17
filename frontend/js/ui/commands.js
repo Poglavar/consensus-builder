@@ -425,6 +425,7 @@
         parcelCommand('propose', { modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
         parcelCommand('selectMore', { labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
         parcelCommand('details', { labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
+        parcelCommand('proposals', { labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Proposals', icon: 'fas fa-layer-group' }),
         parcelCommand('history', { labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare proposals here', icon: 'fas fa-code-compare' }),
         parcelCommand('tools', { labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),

@@ -10,7 +10,7 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`parcel.<id>`).
-    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'detectBlock', 'useAsSite']);
+    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'offer', 'detectBlock', 'useAsSite']);
     // What stays available on a piece of open ground (no cadastral parcel under it).
     const GROUND_ACTIONS = new Set(['details', 'useAsSite']);
 
@@ -49,6 +49,8 @@
             case 'propose':
             case 'details':
             case 'tools':
+            // The parcel panel's Proposals tab, with the count the menu fetches (none yet is "0").
+            case 'proposals':
                 return true;
             case 'selectMore':
                 return f.multiSelectActive !== true;

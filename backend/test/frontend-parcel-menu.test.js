@@ -26,7 +26,7 @@ const baseFacts = (overrides = {}) => ({
 describe('parcel menu actions', () => {
     it('offers every action, in menu order, for an ordinary parcel', () => {
         expect(Model.availableActions(baseFacts()))
-            .toEqual(['propose', 'selectMore', 'details', 'history', 'tools', 'offer', 'detectBlock']);
+            .toEqual(['propose', 'selectMore', 'details', 'proposals', 'history', 'tools', 'offer', 'detectBlock']);
     });
 
     it('offers nothing without a parcel', () => {
@@ -50,7 +50,7 @@ describe('parcel menu actions', () => {
 
     it('offers Compare proposals here only with two or more proposals on the parcel', () => {
         expect(Model.availableActions(baseFacts({ compareCount: 2 })))
-            .toEqual(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'detectBlock']);
+            .toEqual(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'offer', 'detectBlock']);
         expect(Model.availableActions(baseFacts({ compareCount: 1 }))).not.toContain('compare');
         expect(Model.availableActions(baseFacts({ compareCount: null }))).not.toContain('compare');
         // Open ground is no cadastral parcel: nothing to compare "on my parcel".
@@ -197,7 +197,7 @@ describe('parcel menu and selection tray commands', () => {
 
     it('lists the parcel menu in menu order, following the model', () => {
         expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel: baseFacts({ isRoad: true, can3d: false }) })).map(c => c.id))
-            .toEqual(['parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.history', 'parcel.tools', 'parcel.offer']);
+            .toEqual(['parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools', 'parcel.offer']);
         // The same commands appear in the palette once a parcel is in hand.
         expect(UiCommands.commandsFor('palette', ctx({ parcel: baseFacts() })).map(c => c.id)).not.toContain('parcel.view3d');
     });

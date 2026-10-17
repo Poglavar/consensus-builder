@@ -6325,5 +6325,56 @@
     "ens": {
         "viewName": "View ENS name",
         "copyName": "Copy ENS name"
+    },
+    "plans": {
+        "title": "Plans",
+        "unavailable": "Plans could not be loaded: {{reason}}",
+        "line": {
+            "single": "Part of plan {{name}}",
+            "many": {
+                "one": "In {{count}} plan",
+                "other": "In {{count}} plans"
+            }
+        },
+        "list": {
+            "empty": "No plans here yet.",
+            "pool": "Betting pool",
+            "loading": "Loading plans…",
+            "emptyCity": "No plans in this city yet. Apply proposals and share them as a plan to make one."
+        },
+        "parcel": {
+            "loading": "Looking for plans…",
+            "empty": "No plan includes a proposal on this parcel yet."
+        },
+        "view": {
+            "title": "Plan",
+            "notFound": "There is no plan named {{name}}.",
+            "loading": "Loading the plan…",
+            "error": "The plan could not be loaded: {{reason}}",
+            "hint": "Hatched on the map: what this plan would build. Nothing changes until you apply it.",
+            "newer": "A newer version of this plan exists:",
+            "membersHeading": "Proposals in this plan",
+            "changed": {
+                "one": "{{count}} proposal changed after the plan was named.",
+                "other": "{{count}} proposals changed after the plan was named."
+            },
+            "missing": {
+                "one": "{{count}} proposal is no longer on the server.",
+                "other": "{{count}} proposals are no longer on the server."
+            },
+            "linkCopied": "Plan link copied.",
+            "linkInAddressBar": "Copy the plan link from the address bar.",
+            "onMap": "On the map",
+            "totals": {
+                "proposalsApplied": "{{count}}, {{applied}} on this map",
+                "kinds": "What it builds"
+            },
+            "member": {
+                "missing": "Missing"
+            },
+            "actions": {
+                "apply": "Apply plan"
+            }
+        }
     }
 }

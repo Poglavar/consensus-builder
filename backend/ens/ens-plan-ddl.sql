@@ -29,3 +29,5 @@ ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS site          geometry(MultiPolygo
 ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS onchain_data  JSONB;         -- set once by scripts/mint-plan.mjs
 CREATE INDEX IF NOT EXISTS ens_plan_supersedes_idx ON ens_plan (supersedes);
 CREATE INDEX IF NOT EXISTS ens_plan_city_idx ON ens_plan (city);
+-- "Which plans is this proposal part of?" (GET /plans?proposal_ids=): proposal_ids ?| ids.
+CREATE INDEX IF NOT EXISTS ens_plan_proposal_ids_idx ON ens_plan USING GIN (proposal_ids);

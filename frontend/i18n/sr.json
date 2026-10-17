@@ -6383,5 +6383,59 @@
     "ens": {
         "viewName": "Prikaži ENS naziv",
         "copyName": "Kopiraj ENS naziv"
+    },
+    "plans": {
+        "title": "Planovi",
+        "unavailable": "Planove nije bilo moguće učitati: {{reason}}",
+        "line": {
+            "single": "Deo plana {{name}}",
+            "many": {
+                "one": "U {{count}} planu",
+                "few": "U {{count}} plana",
+                "other": "U {{count}} planova"
+            }
+        },
+        "list": {
+            "empty": "Ovde još nema planova.",
+            "pool": "Fond opklada",
+            "loading": "Učitavanje planova…",
+            "emptyCity": "U ovom gradu još nema planova. Primenite predloge i podelite ih kao plan da biste ga napravili."
+        },
+        "parcel": {
+            "loading": "Traženje planova…",
+            "empty": "Još nijedan plan ne uključuje predlog na ovoj parceli."
+        },
+        "view": {
+            "title": "Plan",
+            "notFound": "Ne postoji plan sa imenom {{name}}.",
+            "loading": "Učitavanje plana…",
+            "error": "Plan nije bilo moguće učitati: {{reason}}",
+            "hint": "Šrafirano na mapi: šta bi ovaj plan izgradio. Ništa se ne menja dok ga ne primenite.",
+            "newer": "Postoji novija verzija ovog plana:",
+            "membersHeading": "Predlozi u ovom planu",
+            "changed": {
+                "one": "{{count}} predlog je promenjen nakon imenovanja plana.",
+                "few": "{{count}} predloga su promenjena nakon imenovanja plana.",
+                "other": "{{count}} predloga je promenjeno nakon imenovanja plana."
+            },
+            "missing": {
+                "one": "{{count}} predlog više nije na serveru.",
+                "few": "{{count}} predloga više nisu na serveru.",
+                "other": "{{count}} predloga više nije na serveru."
+            },
+            "linkCopied": "Link ka planu je kopiran.",
+            "linkInAddressBar": "Kopirajte link ka planu iz adresne trake.",
+            "onMap": "Na mapi",
+            "totals": {
+                "proposalsApplied": "{{count}}, od toga {{applied}} na ovoj mapi",
+                "kinds": "Šta gradi"
+            },
+            "member": {
+                "missing": "Nedostaje"
+            },
+            "actions": {
+                "apply": "Primeni plan"
+            }
+        }
     }
 }

@@ -145,7 +145,8 @@
                 'css/urban-blocks-playground.css',
                 'css/schelling-plan.css',
                 'css/proposal-details.css',
-                'css/proposal-approval.css'
+                'css/proposal-approval.css',
+                'css/plans.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -1428,7 +1429,16 @@
 
                 <!-- Proposals Tab -->
                 <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" hidden>
+                    <!-- The parcel's proposals, or the named plans with a proposal on it (js/proposals/plans.js);
+                         js/parcels/ui/parcel-panel.js fills both and keeps the counts. -->
+                    <div class="cb-segmented cb-segmented--fill parcel-proposals-switch" role="group">
+                        <button type="button" class="cb-segmented__option" aria-pressed="true" data-parcel-proposals-view="proposals"><span
+                                data-i18n-key="panel.parcel.tabProposals">Proposals</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="proposals"></span></button>
+                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-parcel-proposals-view="plans"><span
+                                data-i18n-key="plans.title">Plans</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="plans"></span></button>
+                    </div>
                     <div id="proposals-content"></div>
+                    <div id="parcel-plans-content" hidden></div>
                 </div>
 
                 <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
@@ -2037,6 +2047,7 @@
             'js/proposals/server-sync.js',
             'js/proposals/urban-rules.js',
             'js/proposals/display-text.js',
+            'js/proposals/plans.js',
             'js/proposals/panel-presentation.js',
             'js/proposals/list-ui.js',
             'js/proposals/map-action.js',
@@ -2079,6 +2090,7 @@
             'js/default-floor-plan-context.js',
             'js/suggested-layouts-2d.js',
             'js/proposals/sharing-routes.js',
+            'js/proposals/plan-view.js',
             'js/proposals/chain-ref.js',
             'js/proposals/grain-score-rules.js',
             'js/proposals/chain-proposal-loader.js',

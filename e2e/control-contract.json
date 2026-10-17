@@ -796,6 +796,48 @@
       "controlType": "button"
     },
     {
+      "id": "control-971b98034ee734-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-panel-collapse\" class=\"btn btn-sm on-map-editor__toggle\" aria-controls=\"schelling-panel-body\" aria-expanded=\"true\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c150b42e794053-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-panel-close\" class=\"close-circle-btn\" data-i18n-key=\"schellingPlan.closePanel\" data-i18n-attr=\"title,aria-label\" title=\"Close and hide the plan\" aria-label=\"Close and hide the plan\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-654b92f0c0686e-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-block\" min=\"60\" max=\"240\" step=\"10\" value=\"120\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-11c539c7a437d7-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-street\" min=\"8\" max=\"20\" step=\"1\" value=\"12\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-22f9cf4741fb75-1",
+      "source": "index.html",
+      "markup": "<select id=\"schelling-plan-plots\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-2f8a5e89f235f1-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-plan-propose\" class=\"btn btn-primary\" data-i18n-key=\"schellingPlan.proposeFrom\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-63429b75a16e55-1",
       "source": "index.html",
       "markup": "<div id=\"username-display\" class=\"username-display\" role=\"button\" tabindex=\"0\">",
@@ -999,55 +1041,6 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-55e900d0385e1e-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showSchellingPlan\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-654b92f0c0686e-1",
-      "source": "index.html",
-      "markup": "<input type=\"range\" id=\"schelling-plan-block\" min=\"60\" max=\"240\" step=\"10\" value=\"120\">",
-      "interaction": "change",
-      "controlType": "range"
-    },
-    {
-      "id": "control-11c539c7a437d7-1",
-      "source": "index.html",
-      "markup": "<input type=\"range\" id=\"schelling-plan-street\" min=\"8\" max=\"20\" step=\"1\" value=\"12\">",
-      "interaction": "change",
-      "controlType": "range"
-    },
-    {
-      "id": "control-22f9cf4741fb75-1",
-      "source": "index.html",
-      "markup": "<select id=\"schelling-plan-plots\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-971b98034ee734-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"schelling-panel-collapse\" class=\"btn btn-sm on-map-editor__toggle\" aria-controls=\"schelling-panel-body\" aria-expanded=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c150b42e794053-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"schelling-panel-close\" class=\"close-circle-btn\" data-i18n-key=\"schellingPlan.closePanel\" data-i18n-attr=\"title,aria-label\" title=\"Close and hide the plan\" aria-label=\"Close and hide the plan\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-2f8a5e89f235f1-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"schelling-plan-propose\" class=\"btn btn-primary\" data-i18n-key=\"schellingPlan.proposeFrom\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-931e5a545d4b02-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"urban-blocks-refresh\" class=\"btn\" disabled>",
@@ -1060,6 +1053,13 @@
       "markup": "<button type=\"button\" id=\"urban-blocks-browse\" class=\"btn\" data-i18n-key=\"urbanBlocks.browse\" disabled>",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-55e900d0385e1e-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showSchellingPlan\">",
+      "interaction": "change",
+      "controlType": "checkbox"
     },
     {
       "id": "control-65ee6d5005126f-1",
@@ -1710,6 +1710,16 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-237dc06e1f0b41-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"true\" data-parcel-proposals-view=\"proposals\">"
+    },
+    {
+      "id": "control-60e67a557b3103-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-parcel-proposals-view=\"plans\">"
     },
     {
       "id": "control-3c526decb3664e-1",
@@ -7027,6 +7037,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-9924466b50d199-1",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option proposal-source-btn\" aria-pressed=\"${source === 'plans' ? 'true' : 'false'}\" data-source=\"plans\">"
+    },
+    {
       "id": "control-996552fb4b2490-1",
       "source": "js/proposals/dialog-share.js",
       "markup": "<button class=\"proposal-server-retry\">",
@@ -7463,6 +7478,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-05c04129edbc15-1",
+      "source": "js/proposals/ground-rebase.js",
+      "markup": "<button type=\"button\" class=\"btn btn-ground-rebase\" data-ground-rebase=\"${escape(proposalId)}\" title=\"${escape(hint)}\">"
+    },
+    {
       "id": "control-4d02348337a586-1",
       "source": "js/proposals/lens-card.js",
       "markup": "<select data-lens-parcel-member aria-label=\"${escapeText(t('panel.proposal.lens.memberSelect', 'Lens member'))}\">",
@@ -7653,6 +7673,56 @@
       "exhaustiveVariants": true,
       "interaction": "auto",
       "controlType": "dynamic"
+    },
+    {
+      "id": "control-7ea194939ea42e-1",
+      "source": "js/proposals/plan-view.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-plan-action=\"close\">"
+    },
+    {
+      "id": "control-b2d593266294ae-1",
+      "source": "js/proposals/plan-view.js",
+      "markup": "<button type=\"button\" class=\"plan-view-member\" data-plan-member=\"${escapeText(id)}\"${state.layers.has(id) ? '' : ' disabled'}>"
+    },
+    {
+      "id": "control-f2213b963dbc79-1",
+      "source": "js/proposals/plan-view.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-plan-action=\"bet\">"
+    },
+    {
+      "id": "control-afcf46347ac510-1",
+      "source": "js/proposals/plan-view.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-plan-action=\"apply\"${ready ? '' : ' disabled'}>"
+    },
+    {
+      "id": "control-ca4ebc68ccd62f-1",
+      "source": "js/proposals/plan-view.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-plan-action=\"share\">"
+    },
+    {
+      "id": "control-aaf4f34e8fe792-1",
+      "source": "js/proposals/plan-view.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-plan-open=\"${escapeText(slug)}\">"
+    },
+    {
+      "id": "control-5f27dd2d3df5ba-1",
+      "source": "js/proposals/plans.js",
+      "markup": "<button type=\"button\" class=\"cb-link proposal-plan-link\" data-plan-slug=\"${escapeText(list[0].slug)}\">"
+    },
+    {
+      "id": "control-962f62a5e9bcb8-1",
+      "source": "js/proposals/plans.js",
+      "markup": "<button type=\"button\" class=\"cb-link proposal-plan-link\" data-plan-slug=\"${escapeText(plan.slug)}\">"
+    },
+    {
+      "id": "control-b399fedac7ac7d-1",
+      "source": "js/proposals/plans.js",
+      "markup": "<button type=\"button\" class=\"cb-link proposal-plan-toggle\" aria-expanded=\"false\">"
+    },
+    {
+      "id": "control-35393521d65046-1",
+      "source": "js/proposals/plans.js",
+      "markup": "<div class=\"proposal-item plan-item\" data-plan-slug=\"${escapeText(plan.slug)}\" role=\"button\" tabindex=\"0\">"
     },
     {
       "id": "control-6754f50fd79224-1",
@@ -8094,6 +8164,34 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary\" id=\"btn-rowhouse-done\" data-i18n-key=\"rowHouses.modal.done\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-4c6e98c3dacf57-1",
+      "source": "js/schelling/schelling-propose.js",
+      "markup": "doc.createElement(tag)",
+      "variants": [
+        {
+          "name": "Select the superblock at the map centre",
+          "attrs": {
+            "data-action": "superblock"
+          }
+        },
+        {
+          "name": "Clear the painted blocks",
+          "attrs": {
+            "data-action": "clear"
+          }
+        },
+        {
+          "name": "Propose the Schelling roads",
+          "attrs": {
+            "data-action": "propose"
+          }
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "auto",
+      "controlType": "dynamic"
     },
     {
       "id": "control-908265484b4b92-1",
@@ -9035,34 +9133,6 @@
           "classes": [
             "urban-block-playground__piece-row"
           ]
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "auto",
-      "controlType": "dynamic"
-    },
-    {
-      "id": "control-4c6e98c3dacf57-1",
-      "source": "js/schelling/schelling-propose.js",
-      "markup": "doc.createElement(tag)",
-      "variants": [
-        {
-          "name": "Select the superblock at the map centre",
-          "attrs": {
-            "data-action": "superblock"
-          }
-        },
-        {
-          "name": "Clear the painted blocks",
-          "attrs": {
-            "data-action": "clear"
-          }
-        },
-        {
-          "name": "Propose the Schelling roads",
-          "attrs": {
-            "data-action": "propose"
-          }
         }
       ],
       "exhaustiveVariants": true,

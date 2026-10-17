@@ -1141,7 +1141,10 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                             releaseDeepLinkParcelFetch();
                             return;
                         }
-                        await handleSharedPlanRoute(ids);
+                        // A plan link opens the plan hatched on the map with its panel; Apply plan
+                        // there applies it (handleSharedPlanRoute), the same as opening it in the app.
+                        releaseDeepLinkParcelFetch();
+                        await window.PlanView.open(slug, { plan });
                         return;
                     }
                 }

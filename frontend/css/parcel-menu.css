@@ -130,6 +130,12 @@
     box-shadow: inset 0 0 0 2px var(--cb-primary);
 }
 
+/* Proposals (N): the count the menu fetches, quieter than the label. */
+.parcel-menu__count {
+    color: var(--cb-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
 /* The first action (Propose here) is the main one. */
 .parcel-menu__action[data-command="parcel.propose"] {
     color: var(--cb-primary-hover);

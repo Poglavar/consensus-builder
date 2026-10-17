@@ -39,9 +39,22 @@ export function createPlanStore(pool) {
             return new Set(rows.map(row => row.slug));
         },
 
-        async list(city) {
-            const { rows } = await pool.query(`SELECT ${PLAN_COLUMNS} FROM ens_plan
-                WHERE ($1::text IS NULL OR city = $1) ORDER BY created_at DESC LIMIT 500`, [city || null]);
+        // Plans of a city, newest first. proposalIds keeps the plans naming any of those proposal
+        // rows; parcelIds the plans with a member declaring any of those cadastral parcels. Each row
+        // carries its member count and whether a later version supersedes it.
+        async list(city, { proposalIds = null, parcelIds = null } = {}) {
+            const { rows } = await pool.query(`SELECT ${PLAN_COLUMNS},
+                    jsonb_array_length(e.proposal_ids) AS member_count,
+                    EXISTS (SELECT 1 FROM ens_plan n WHERE n.supersedes = e.slug) AS superseded
+                FROM ens_plan e
+                WHERE ($1::text IS NULL OR e.city = $1)
+                  AND ($2::text[] IS NULL OR e.proposal_ids ?| $2::text[])
+                  AND ($3::text[] IS NULL OR EXISTS (
+                      SELECT 1 FROM proposal p
+                      WHERE p.id IN (SELECT jsonb_array_elements_text(e.proposal_ids)::int)
+                        AND p.cadastre_parcel_ids ?| $3::text[]))
+                ORDER BY e.created_at DESC LIMIT 500`,
+            [city || null, proposalIds && proposalIds.length ? proposalIds : null, parcelIds && parcelIds.length ? parcelIds : null]);
             return rows;
         },
 
