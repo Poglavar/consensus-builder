@@ -52,8 +52,13 @@ services:
     environment:
       POSTGRES_DB: consensus
       POSTGRES_USER: consensus
-      # Only read when the volume is first initialised; the live password is ALTER ROLE-managed.
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in the root .env}
+      # The image reads this only when it initialises an EMPTY volume (creating the superuser); an
+      # existing volume ignores it and the live password is ALTER ROLE-managed. So it is not required
+      # here: day-to-day runs need only COMPOSE_DATABASE_URL, and a fresh volume refuses to start
+      # ("superuser password is not specified") until it is passed once, e.g.
+      #   POSTGRES_PASSWORD=… docker compose up db
+      # The superuser's login lives in the root .env as SUPERUSER_DATABASE_URL, a URL like every other.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
