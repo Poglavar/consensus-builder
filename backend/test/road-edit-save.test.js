@@ -3,17 +3,19 @@
 // id), a published or minted road as a counterproposal, and a refused save is rolled back and its
 // reason shown in the still-open editor. There is no hand-off to the drawing tool any more (the
 // cross-section editor used to reopen the road "as a drawing" when the direct edit failed).
-// The real functions are lifted from the classic scripts and run against stubs of their collaborators.
-import { describe, expect, it, vi } from 'vitest';
+// runLocalCorridorGeometryUpdate is the real one of the loaded road-drawing.js
+// (helpers/road-drawing-env.js) with the real proposals/lineage.js; corridorEditorSave is lifted
+// from the classic corridor-editor.js and run against stubs of its collaborators.
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { parse } from '@babel/parser';
+import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
 const require = createRequire(import.meta.url);
 const lineage = require('../../frontend/js/proposals/lineage.js');
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
-const drawingSource = read('../../frontend/js/road-drawing.js');
 const editorSource = read('../../frontend/js/corridor-editor.js');
 const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -24,108 +26,73 @@ function extracted(source, name) {
     return source.slice(declaration.start, declaration.end);
 }
 
-function loadFunction(source, name, globals) {
-    const context = vm.createContext({ ...globals, JSON, Object, Array, Set, Map, String, Error, Promise, console });
-    vm.runInContext(`${extracted(source, name)}\nthis.__fn = ${name};`, context);
-    return context.__fn;
-}
+let env = null;
+afterEach(() => {
+    env?.dispose();
+    env = null;
+});
 
 describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterproposal for a published one', () => {
     const road = (id, extra = {}) => ({
         proposalId: id,
         title: 'Main street',
         applied: true,
-        roadProposal: { definition: { segments: [[{ lat: 0, lng: 0 }, { lat: 0, lng: 10 }]], segmentIds: ['s1'], polygon: { type: 'Polygon' } } },
+        createdAt: '2026-01-01T00:00:00.000Z',
+        roadProposal: { definition: { points: [[at(0, 0), at(100, 0)]], segmentIds: ['s1'], width: 7.5 } },
         ...extra
     });
-    // The edit: the road now runs to lng 12.
-    const extend = definition => { definition.segments = [[{ lat: 0, lng: 0 }, { lat: 0, lng: 12 }]]; };
+    // The edit: the road now runs on to 150 m east.
+    const extend = definition => { definition.points[0][1] = at(150, 0); };
+    const endOf = record => record.roadProposal.definition.points[0][1];
 
+    // The loaded tool over a store holding `source`, and the parcel mutation it runs inside.
     function harness(source) {
-        const records = new Map([[source.proposalId, source]]);
+        env = loadRoadDrawing({ proposals: [source], globals: { ProposalLineage: lineage } });
+        source.roadProposal.definition.profile = globalThis.corridorProfileFromLegacy(7.5, 1, false);
         const afterCommit = [];
-        const store = {
-            getProposal: id => records.get(String(id)) || null,
-            findProposalByIdOrHash: id => records.get(String(id)) || null,
-            addProposal: vi.fn(),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const mutation = { proposals: store, afterCommit: fn => afterCommit.push(fn) };
-        const ProposalManager = {
-            createCorridorProposalAtomically: vi.fn(async () => ({ ok: true, proposalId: 'fork-1' })),
-            rematerializeCorridorScope: vi.fn(async () => ({ ok: true })),
-            _refreshUIAfterProposalChange: vi.fn()
-        };
-        const writeRoadDefinition = vi.fn((record, definition) => { record.roadProposal.definition = clone(definition); });
-        const run = loadFunction(drawingSource, 'runLocalCorridorGeometryUpdate', {
-            window: { ProposalLineage: lineage, ProposalSelection: { is: () => true }, __formationEdit: null },
-            ProposalManager,
-            proposalStorage: store,
-            cloneRoadValue: clone,
-            getProposalKey: record => record.proposalId,
-            isProposalApplied: record => record.applied === true,
-            setProposalApplied: (record, applied) => { record.applied = applied; },
-            corridorCenterlineOf: definition => definition.segments || [],
-            rekeyMovedTunnelRecords: (_before, _after, tunnels) => tunnels || [],
-            retainLiveCorridorTunnelRecords: (_segments, tunnels) => tunnels,
-            retainLiveGradeSeparations: (_segments, separations) => separations,
-            normalizeCorridorGraph: () => {},
-            corridorProtectedEdgeKeySet: () => new Set(),
-            rebuildRoadDefinitionFootprint: definition => { definition.polygon = { type: 'Polygon' }; return definition.polygon; },
-            makeFreshRoadSnapshot: (record, definition, options) => {
-                const fork = clone(record);
-                ['proposalId', 'serverProposalId', 'lifecycleStatus'].forEach(key => delete fork[key]);
-                fork.sourceProposalId = options.sourceProposalId;
-                fork.roadProposal = { definition: clone(definition) };
-                fork.applied = false;
-                return fork;
-            },
-            writeRoadDefinition,
-            declareParcelsUnderRoadLand: vi.fn(),
-            translateRoadText: (_key, fallback) => fallback,
-            updateStatus: vi.fn(),
-            selectAndHighlightProposal: vi.fn(),
-            clearProposalHighlights: vi.fn()
-        });
-        return { run, mutation, records, store, ProposalManager, writeRoadDefinition, afterCommit };
+        const mutation = { proposals: env.store, afterCommit: fn => afterCommit.push(fn) };
+        const run = (id, mutate) => env.api.runLocalCorridorGeometryUpdate(id, mutate, { _parcelMutation: mutation });
+        return { run, mutation, store: env.store, ProposalManager: globalThis.ProposalManager, afterCommit };
     }
 
     it('edits one\'s own local road in place: same id, no counterproposal', async () => {
         const source = road('own-road');
         const h = harness(source);
 
-        const result = await h.run('own-road', extend, { _parcelMutation: h.mutation });
+        const result = await h.run('own-road', extend);
 
         expect(result).toBe('own-road');
-        expect(h.ProposalManager.createCorridorProposalAtomically).not.toHaveBeenCalled();
-        expect(source.roadProposal.definition.segments[0][1].lng).toBe(12);
-        expect([...h.records.keys()]).toEqual(['own-road']);
+        expect(h.ProposalManager.createCorridorProposalAtomically.calls).toHaveLength(0);
+        expect(endOf(source).lng).toBeCloseTo(at(150, 0).lng, 12);
+        expect(source.roadProposal.definition.polygon.type).toMatch(/Polygon/);
+        expect([...h.store.proposals.keys()]).toEqual(['own-road']);
     });
 
     it('saves an edit of a published road as a counterproposal and leaves the published road as it was', async () => {
         const source = road('published-road', { serverProposalId: '741' });
-        const before = clone(source);
         const h = harness(source);
+        globalThis.ProposalSelection.is = key => key === 'published-road';
+        const before = clone(source);
 
-        const result = await h.run('published-road', extend, { _parcelMutation: h.mutation });
+        const result = await h.run('published-road', extend);
 
         expect(result).toBe('fork-1');
-        expect(h.writeRoadDefinition).not.toHaveBeenCalled();
         expect(source).toEqual(before);
-        expect(h.ProposalManager.createCorridorProposalAtomically).toHaveBeenCalledOnce();
-        const [fork, options] = h.ProposalManager.createCorridorProposalAtomically.mock.calls[0];
+        expect(h.ProposalManager.createCorridorProposalAtomically.calls).toHaveLength(1);
+        const [fork, options] = h.ProposalManager.createCorridorProposalAtomically.calls[0];
         expect(fork.sourceProposalId).toBe('published-road');
         expect(fork.serverProposalId).toBeUndefined();
-        expect(fork.roadProposal.definition.segments[0][1].lng).toBe(12);
+        expect(endOf(fork).lng).toBeCloseTo(at(150, 0).lng, 12);
         expect(options).toEqual({ _parcelMutation: h.mutation });
         // The counterproposal is selected, so the next edit lands on it.
         h.afterCommit.forEach(fn => fn());
+        expect(globalThis.selectAndHighlightProposal.calls.map(call => call[0])).toEqual(['fork-1']);
+        expect([...h.store.proposals.keys()]).toEqual(['published-road']);
     });
 
     it('refuses a road this city does not hold with a reason the editor can show', async () => {
         const h = harness(road('own-road'));
-        await expect(h.run('elsewhere', extend, { _parcelMutation: h.mutation }))
+        await expect(h.run('elsewhere', extend))
             .rejects.toMatchObject({ userMessage: expect.stringContaining('Switch to the city it was created in') });
     });
 });
