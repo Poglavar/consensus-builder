@@ -104,10 +104,125 @@
 
     // Every clip that has run, and every one that needed a coarser grid than the standard one.
     // A count, not a log line per event: the point is whether the failure class still exists.
-    const clipTrouble = { clips: 0, rescued: 0, failed: 0, lastMessage: null };
+    // `bySite` counts every clip failure anywhere in the app by the call site that met it, and
+    // `recent` keeps the last few with their context, so a failure is attributable after the fact.
+    const RECENT_FAILURES_KEPT = 50;
+    const clipTrouble = { clips: 0, rescued: 0, failed: 0, degraded: 0, lastMessage: null, bySite: {}, recent: [] };
+
+    // A clip the clipper could not do, as a typed error. turf 6.5 clips with polygon-clipping
+    // 0.15, whose segment-state recursion throws "Maximum call stack size exceeded" on long chains
+    // and whose sweep line gives up on near-duplicate vertices. A catch that substitutes some
+    // other result for either (the operand unchanged, null, zero) is a wrong answer nobody sees, so
+    // a failed clip is either thrown as this — naming the operation, the call site, the parcel /
+    // take / proposal it was for and the operands' vertex counts — or, where only a display
+    // degrades, reported through reportClipFailure.
+    class ClipFailure extends Error {
+        constructor(operation, error, context, operands) {
+            const ctx = context || {};
+            const original = String(error && error.message || error || 'unknown error');
+            const about = [
+                ctx.proposalId ? `proposal ${ctx.proposalId}` : null,
+                ctx.parcelId ? `parcel ${ctx.parcelId}` : null,
+                ctx.takeId ? `take ${ctx.takeId}` : null
+            ].filter(Boolean).join(', ');
+            super(`Polygon ${operation} failed at ${ctx.site || 'unknown site'}${about ? ` (${about})` : ''}: ${original}`);
+            this.name = 'ClipFailure';
+            this.code = 'clip-failed';
+            this.operation = String(operation || '');
+            this.site = String(ctx.site || 'unknown site');
+            this.proposalId = ctx.proposalId != null ? String(ctx.proposalId) : null;
+            this.parcelId = ctx.parcelId != null ? String(ctx.parcelId) : null;
+            this.takeId = ctx.takeId != null ? String(ctx.takeId) : null;
+            this.vertexCounts = (Array.isArray(operands) ? operands : []).map(countVertices);
+            this.originalMessage = original;
+            this.cause = error;
+        }
+    }
+
+    function countVertices(value) {
+        if (!value) return 0;
+        if (value.type === 'FeatureCollection') {
+            return (value.features || []).reduce((sum, feature) => sum + countVertices(feature), 0);
+        }
+        const coordinates = value.type === 'Feature'
+            ? value.geometry && value.geometry.coordinates
+            : value.coordinates;
+        const walk = node => {
+            if (!Array.isArray(node)) return 0;
+            if (typeof node[0] === 'number') return 1;
+            return node.reduce((sum, entry) => sum + walk(entry), 0);
+        };
+        return walk(coordinates);
+    }
+
+    /**
+     * The typed failure for a clip that threw, recorded in clipHealth(). An error that already is a
+     * ClipFailure is returned as it is (recorded once), so a failure rethrown up a stack keeps the
+     * site where it actually happened.
+     */
+    function clipFailure(operation, error, context, operands) {
+        const failure = error instanceof ClipFailure ? error : new ClipFailure(operation, error, context, operands);
+        if (!failure.recorded) {
+            failure.recorded = true;
+            clipTrouble.failed += 1;
+            clipTrouble.bySite[failure.site] = (clipTrouble.bySite[failure.site] || 0) + 1;
+            clipTrouble.lastMessage = failure.message;
+            const entry = {
+                at: new Date().toISOString(),
+                site: failure.site,
+                operation: failure.operation,
+                proposalId: failure.proposalId,
+                parcelId: failure.parcelId,
+                takeId: failure.takeId,
+                vertexCounts: failure.vertexCounts,
+                message: failure.originalMessage,
+                degraded: false
+            };
+            failure.recentEntry = entry;
+            clipTrouble.recent.push(entry);
+            if (clipTrouble.recent.length > RECENT_FAILURES_KEPT) clipTrouble.recent.shift();
+        }
+        return failure;
+    }
+
+    // One console line per failure, up to this many per site; after that the site is only counted,
+    // so a display that retries every frame cannot flood the console.
+    const LOGGED_PER_SITE = 20;
+    const loggedBySite = {};
+
+    /**
+     * For code whose only output is a DISPLAY (3D decoration, previews, debug views): the clip
+     * failed and the caller degrades. It is recorded, marked degraded and logged with its context;
+     * the caller then does its fallback. Never for anything that is applied, stored or validated —
+     * those throw clipFailure(...) instead.
+     */
+    function reportClipFailure(operation, error, context, operands) {
+        const failure = clipFailure(operation, error, context, operands);
+        if (!failure.degraded) {
+            failure.degraded = true;
+            clipTrouble.degraded += 1;
+            if (failure.recentEntry) failure.recentEntry.degraded = true;
+            const logged = loggedBySite[failure.site] = (loggedBySite[failure.site] || 0) + 1;
+            if (logged <= LOGGED_PER_SITE) {
+                console.error(`[${new Date().toISOString()}] [clip] ${failure.message} — degraded`, {
+                    site: failure.site,
+                    operation: failure.operation,
+                    proposalId: failure.proposalId,
+                    parcelId: failure.parcelId,
+                    takeId: failure.takeId,
+                    vertexCounts: failure.vertexCounts
+                });
+                if (logged === LOGGED_PER_SITE) {
+                    console.error(`[${new Date().toISOString()}] [clip] ${failure.site}: further failures are counted in clipHealth() only`);
+                }
+            }
+        }
+        return failure;
+    }
 
     // Run a two-operand turf clip on the shared grid, coarsening it if the clipper still gives up.
-    function clip(operation, a, b) {
+    // `context` ({ site, parcelId, takeId, proposalId }) names what the clip was for when it fails.
+    function clip(operation, a, b, context) {
         const t = T();
         clipTrouble.clips += 1;
         try {
@@ -122,14 +237,25 @@
                     return result;
                 } catch (_) { /* try a coarser grid */ }
             }
-            clipTrouble.failed += 1;
-            clipTrouble.lastMessage = `${operation} FAILED: ${error && error.message}`;
-            throw error;
+            throw clipFailure(operation, error, { site: 'parcel-arrangement.clip', ...(context || {}) }, [a, b]);
         }
     }
 
-    /** How the clipper has been coping. Read it from the console after a pan. */
-    function clipHealth() { return { ...clipTrouble }; }
+    /** How the clipper has been coping, everywhere in the app. Read it from the console after a pan. */
+    function clipHealth() {
+        return {
+            ...clipTrouble,
+            bySite: { ...clipTrouble.bySite },
+            recent: clipTrouble.recent.map(entry => ({ ...entry }))
+        };
+    }
+
+    // A parcel's id as the cadastre and the fabric carry it, for naming a failure.
+    function parcelIdOf(feature) {
+        const props = feature && feature.properties || {};
+        const id = props.parcelId || props.PARCEL_ID || props.id || (feature && feature.id);
+        return id != null ? String(id) : null;
+    }
 
     function featureOf(geometry) {
         if (!geometry) return null;
@@ -237,7 +363,14 @@
             try { grown = t.buffer(featureOf({ type: 'Polygon', coordinates: rings }), metres * 1.5, { units: 'meters' }); }
             catch (_) { return null; }
             let piece = null;
-            try { piece = clip('intersect', feature, grown); } catch (_) { return null; }
+            try {
+                piece = clip('intersect', feature, grown, { site: 'parcel-arrangement.splitAtArtifactNeck', parcelId: parcelIdOf(feature) });
+            } catch (error) {
+                // The polygon is kept whole, slit and all: its ground is still exactly right, only
+                // one piece where there should be two. Reported so the failure is visible.
+                reportClipFailure('intersect', error, { site: 'parcel-arrangement.splitAtArtifactNeck' }, [feature, grown]);
+                return null;
+            }
             if (piece && piece.geometry) pieces.push(featureOf(piece.geometry));
         }
         // All or nothing: a partial split would drop ground, which is the one outcome worse than the
@@ -350,6 +483,9 @@
         if (!id) throw new Error('parcel-arrangement: a cadastral parcel id is required');
 
         const hits = Array.isArray(precomputedHits) ? precomputedHits : takeHitsOn(parcelFeature, takes);
+        // A take whose overlap with this parcel could not be computed: the arrangement is unknown.
+        const unknown = hits.find(entry => entry && entry.failure);
+        if (unknown) throw unknown.failure;
 
         if (!hits.length) {
             return {
@@ -376,7 +512,7 @@
             if (!taken) { taken = entry.hit; return; }
             // Two non-empty shapes always have a union. A null here means the clipper lost one of
             // them, and keeping the old union would silently drop this take's ground from the road.
-            const union = clip('union', taken, entry.hit);
+            const union = clip('union', taken, entry.hit, { site: 'parcel-arrangement.takenUnion', parcelId: id, takeId: entry.take.id });
             if (!union) throw new Error(`parcel ${id}: union with take ${entry.take.id || '?'} came back empty`);
             taken = union;
         });
@@ -392,9 +528,13 @@
         // not be computed; swallowing it returned road pieces with no remainders, i.e. it silently
         // deleted 1,282 m² of someone's land from the map while every test stayed green.
         let leftover = parcelFeature;
-        for (const hit of takenParts) {
+        for (let index = 0; index < takenParts.length; index += 1) {
             if (!leftover) break;
-            leftover = clip('difference', leftover, hit);
+            leftover = clip('difference', leftover, takenParts[index], {
+                site: 'parcel-arrangement.remainder',
+                parcelId: id,
+                takeId: hits[index] && hits[index].take && hits[index].take.id
+            });
         }
 
         const pieces = [];
@@ -414,9 +554,16 @@
                             // the take's whole footprint — against a handful of vertices instead
                             // of a kilometres-long ribbon. A take whose hit was below MIN can
                             // never claim a piece: the piece's overlap is a subset of the hit.
-                            const overlap = clip('intersect', feature, entry.hit);
+                            const overlap = clip('intersect', feature, entry.hit, {
+                                site: 'parcel-arrangement.roadPieceTakers',
+                                parcelId: id,
+                                takeId: entry.take.id
+                            });
                             return !!overlap && t.area(overlap) > MIN_PIECE_M2;
-                        } catch (_) { return false; }
+                        } catch (error) {
+                            // "Not a taker" would hand the road piece to the wrong corridor.
+                            throw clipFailure('intersect', error, { site: 'parcel-arrangement.roadPieceTakers' }, [feature, entry.hit]);
+                        }
                     })
                     .map(entry => String(entry.take.id || ''))
                     .sort()
@@ -466,7 +613,9 @@
      * to a recomputed one — reuse cannot change a piece id.
      *
      * @returns {Array<{take: object, hit: object}>} the caller's take objects, with the clipped
-     *          intersection feature of each; only takes whose overlap clears MIN_PIECE_M2 appear.
+     *          intersection feature of each; only takes whose overlap clears MIN_PIECE_M2 appear —
+     *          except a take whose intersection THREW, which appears as `{ take, hit: null, failure }`
+     *          (a ClipFailure) so that arranging the parcel refuses instead of ignoring the take.
      */
     function takeHitsOn(parcel, takes) {
         const t = T();
@@ -486,15 +635,27 @@
             const feature = featureOf(take.geometry);
             if (!parcelBox && boxesDisjoint(t, parcelFeature, feature)) return;
             try {
-                const hit = clip('intersect', parcelFeature, feature);
+                const hit = clip('intersect', parcelFeature, feature, {
+                    site: 'parcel-arrangement.takeHitsOn',
+                    parcelId: parcelIdOf(parcelFeature),
+                    takeId: take.id
+                });
                 if (hit && t.area(hit) > MIN_PIECE_M2) hits.push({ take, hit });
-            } catch (_) { /* an unclippable take cannot reach this parcel */ }
+            } catch (error) {
+                // Not "this take misses the parcel": nobody knows what it takes. Dropping it left
+                // the parcel cut by every OTHER corridor and silently whole under this one. The
+                // entry carries the failure, and arranging the parcel refuses on it.
+                hits.push({ take, hit: null, failure: clipFailure('intersect', error, { site: 'parcel-arrangement.takeHitsOn' }, [parcelFeature, feature]) });
+            }
         });
         return hits;
     }
 
     function takesOverlapping(parcel, takes) {
-        return takeHitsOn(parcel, takes).map(entry => entry.take);
+        const hits = takeHitsOn(parcel, takes);
+        const unknown = hits.find(entry => entry.failure);
+        if (unknown) throw unknown.failure;
+        return hits.map(entry => entry.take);
     }
 
     /**
@@ -506,7 +667,8 @@
      * @param {Array<{id: string, geometry: object}>} takes   every applied corridor.
      * @param {Map<string, Array>} [hitsById]  takeHitsOn output per parcel id, for callers that
      *        already filtered these parcels through it. A parcel with no entry computes its own.
-     * @returns {{pieces: Array, failed: Array<{parcelId: string, error: string}>}}
+     * @returns {{pieces: Array, failed: Array<{parcelId: string, error: string, code: string,
+     *          site: (string|null), takeId: (string|null)}>}}
      */
     function fabricOver(parcels, takes, hitsById) {
         const pieces = [];
@@ -520,7 +682,15 @@
                 pieces.push(...arrangementOf(entry.feature, entry.id, takes, precomputed).pieces);
             } catch (error) {
                 // One unusable parcel is recorded and skipped; it must not void the rest of the map.
-                failed.push({ parcelId: String(entry.id), error: String(error && error.message || error) });
+                // A ClipFailure says which clip and which take; anything else is an arrangement
+                // invariant that threw.
+                failed.push({
+                    parcelId: String(entry.id),
+                    error: String(error && error.message || error),
+                    code: error instanceof ClipFailure ? error.code : 'arrangement-failed',
+                    site: error instanceof ClipFailure ? error.site : null,
+                    takeId: error instanceof ClipFailure ? error.takeId : null
+                });
             }
         });
         return { pieces, failed };
@@ -569,7 +739,10 @@
                         next.push(fragment);
                         return;
                     }
-                    const leftover = clip('difference', fragment, blocker);
+                    const leftover = clip('difference', fragment, blocker, {
+                        site: 'parcel-arrangement.remaindersOutsideOccupiedGround',
+                        parcelId: piece.parcelId
+                    });
                     if (leftover) next.push(...explode(leftover));
                 });
                 fragments = next;
@@ -694,7 +867,11 @@
         // The clipper's own surface, exported so its grid and its failure handling can be tested
         // directly rather than inferred from whatever the arrangement happened to produce.
         clip,
-        clipHealth
+        clipHealth,
+        // One failure type and one report for every polygon clip in the app (see ClipFailure).
+        ClipFailure,
+        clipFailure,
+        reportClipFailure
     };
 
     // Namespaced only — a bare global here could shadow one of the top-level functions in the
