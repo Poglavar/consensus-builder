@@ -428,6 +428,12 @@
         const isVote = Boolean(options.isVote);
         let tx;
         if (isVote) {
+            // A ProposalNFT deployed before votes has no mintVote: its fallback reverts with no
+            // reason ("require(false)"), so say what is missing before simulating.
+            const voteSelector = contract.interface.getFunction('mintVote').selector.slice(2).toLowerCase();
+            if (!deployedCode.toLowerCase().includes(voteSelector)) {
+                throw new Error('Votes cannot be minted on this network yet: its ProposalNFT contract predates votes. Choose an owner deal, or keep the vote off-chain.');
+            }
             const expiryTimestampArg = resolveVoteExpiry(options);
             const voteArgs = [recipient, uniqueParcelIds, imageURI, expiryTimestampArg, lensAddresses];
             try {
