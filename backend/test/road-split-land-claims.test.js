@@ -5,40 +5,38 @@
 // but ownerAcceptances / acceptedParcelIds / ownershipFlow were cloned whole from the source — so the
 // load boundary rejected it ("ownerAcceptances.HR-335550-1791/69 contains live parcel id …") and the
 // whole edit reverted: sections of an applied road could not be removed at all.
+//
+// Runs the real makeFreshRoadSnapshot of the loaded road-drawing.js (helpers/road-drawing-env.js)
+// over a live fabric holding both parcels and the real authored-record.js.
 
-import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { describe, it, expect, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
+import { loadRoadDrawing, boxRing } from './helpers/road-drawing-env.js';
 
 const require = createRequire(import.meta.url);
 const authored = require('../../frontend/js/proposals/authored-record.js');
-const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
-const roadSource = read('../../frontend/js/road-drawing.js');
-
-function lift(name) {
-    const start = roadSource.indexOf(`function ${name}(`);
-    expect(start, `${name} not found`).toBeGreaterThan(-1);
-    return roadSource.slice(start, roadSource.indexOf('\n}', start) + 2);
-}
 
 const KEPT = 'HR-335550-1813/8';
 const DROPPED = 'HR-335550-1791/69';
 
-// makeFreshRoadSnapshot with its fabric lookups stubbed: the stretch's footprint reaches KEPT only.
+let env = null;
+afterEach(() => {
+    env?.dispose();
+    env = null;
+});
+
+// The fabric holds both parcels; the stretch's footprint (STRETCH_LAND) reaches KEPT only.
 function loadSnapshot() {
-    // eslint-disable-next-line no-new-func
-    return new Function(
-        'window', 'collectParcelsIntersectingFootprint', 'baseRoadParentHints', 'setProposalApplied',
-        `${lift('cloneRoadValue')}; ${lift('writeRoadDefinition')}; ${lift('stripRoadDerivedFields')};
-         ${lift('makeFreshRoadSnapshot')}; return makeFreshRoadSnapshot;`
-    )(
-        { ProposalAuthoredRecord: authored },
-        () => [KEPT],
-        ids => ids.slice(),
-        (record, applied) => { record.applied = applied; }
-    );
+    env = loadRoadDrawing({
+        parcels: [
+            { id: KEPT, ring: boxRing(0, -20, 50, 20) },
+            { id: DROPPED, ring: boxRing(200, -20, 250, 20) }
+        ],
+        globals: { ProposalAuthoredRecord: authored }
+    });
+    return env.api.makeFreshRoadSnapshot;
 }
+const STRETCH_LAND = { type: 'Polygon', coordinates: [boxRing(10, -5, 40, 5)] };
 
 const source = () => ({
     proposalId: 'upu-borovje-ulice',
@@ -56,20 +54,22 @@ const source = () => ({
 
 describe('split-off road stretch land claims', () => {
     it('keeps only claims on the land the stretch still reaches, so the record loads', () => {
-        const stretch = loadSnapshot()(source(), { width: 19, points: [[]], polygon: { type: 'Polygon' } },
+        const stretch = loadSnapshot()(source(), { width: 19, points: [[]], polygon: STRETCH_LAND },
             { sourceProposalId: 'upu-borovje-ulice' });
 
         expect(stretch.cadastreParcelIds).toEqual([KEPT]);
         expect(stretch.acceptedParcelIds).toEqual([KEPT]);
         expect(Object.keys(stretch.ownerAcceptances)).toEqual([KEPT]);
         expect(stretch.ownershipFlow.map(entry => entry.parcelId)).toEqual([KEPT]);
+        expect(stretch.sourceProposalId).toBe('upu-borovje-ulice');
+        expect(stretch.applied).toBe(false);
         // The exact check that rejected the split before.
         expect(authored.findNonCadastralReference(stretch)).toBeNull();
     });
 
     it('leaves the source record untouched', () => {
         const original = source();
-        loadSnapshot()(original, { width: 19, points: [[]], polygon: { type: 'Polygon' } }, {});
+        loadSnapshot()(original, { width: 19, points: [[]], polygon: STRETCH_LAND }, {});
         expect(Object.keys(original.ownerAcceptances)).toEqual([KEPT, DROPPED]);
     });
 });
