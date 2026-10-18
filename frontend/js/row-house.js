@@ -74,6 +74,8 @@
 
     // Cached superparcel data for boundary checking
     let cachedSuperparcel = null;
+    // Ground a Row must keep under it to count as standing on its site when it cannot fit (rowHouseFitsSite).
+    const ROW_SITE_OVERLAP_MIN_M2 = 1;
     let cachedSuperparcelMeters = null;
     let cachedCentroid = null;
     let cachedMetersPerDegLng = null;
@@ -179,11 +181,29 @@
     // stays inside them. Leaving them is a choice made on the drop (onDragEnd).
     function rowHouseSiteBoundary() { return rowHouseBlock?.site || cachedSuperparcel; }
 
-    function rowHouseFitsSite(feature) {
-        const boundary = rowHouseSiteBoundary();
+    // Whether a bar of the current dimensions fits the cached site anywhere the placement rule looks
+    // (placeRowHouseBar: centred at the current rotation, or centred unrotated).
+    function rowHouseSiteHasFit() {
+        return [currentRotation, 0].some(rotation => checkBuildingFitsInSuperparcel(
+            currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation));
+    }
+
+    function rowHouseOverlapsSite(feature, boundary) {
+        const outside = turf.difference(feature, boundary);
+        const outsideArea = outside ? Number(turf.area(outside)) : 0;
+        return Number(turf.area(feature)) - outsideArea > ROW_SITE_OVERLAP_MIN_M2;
+    }
+
+    // The one rule for whether a Row stands on its site, used by generation, the re-run where it was
+    // dropped, drags, rotation and manual edits alike: inside the site; or, where no bar of its
+    // dimensions fits the site at all (an L too narrow for it), still standing on part of it. A bar
+    // the editor had to draw overhanging can therefore be moved and shaped like any other, and it
+    // leaves its parcels only when it no longer stands on them.
+    function rowHouseFitsSite(feature, boundary = rowHouseSiteBoundary()) {
         if (!boundary?.geometry) return true;
         try {
-            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true;
+            if (window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true) return true;
+            return !rowHouseSiteHasFit() && rowHouseOverlapsSite(feature, boundary);
         } catch (_) { return false; }
     }
 
@@ -684,19 +704,48 @@
     // One placement rule for a Row bar on its parcels, used both when the editor generates it and
     // when the rule is re-run on the parcels it was dropped on: the bar goes at the asked offset and
     // rotation, else centred, else centred unrotated, whichever first fits inside the site with a
-    // margin; when none fits it goes where asked and may overhang (rebuildRowUnits then keeps it as
-    // one massing instead of cutting houses). Returns { feature, offsetX, offsetY, rotation } and
-    // leaves the site cache (cachedSuperparcel and its frame) on this block.
+    // margin; when none fits it goes at the first of them that still stands on the site
+    // (rowHouseFitsSite) and may overhang (rebuildRowUnits then keeps it as one massing instead of
+    // cutting houses). Returns { feature, offsetX, offsetY, rotation }, or null when no bar stands on
+    // the site, and leaves the site cache (cachedSuperparcel and its frame) on this block.
     function placeRowHouseBar(block, { offsetX = 0, offsetY = 0, rotation = 0 } = {}) {
         // Generating once caches this block's site and frame, which the fit check reads.
         if (!generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation)) return null;
-        const asked = { offsetX, offsetY, rotation };
-        const fits = candidate => checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer,
+        const site = cachedSuperparcel;
+        const candidates = [{ offsetX, offsetY, rotation }, { offsetX: 0, offsetY: 0, rotation }, { offsetX: 0, offsetY: 0, rotation: 0 }];
+        const bar = candidate => generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer,
             candidate.offsetX, candidate.offsetY, candidate.rotation);
-        const chosen = [asked, { offsetX: 0, offsetY: 0, rotation }, { offsetX: 0, offsetY: 0, rotation: 0 }].find(fits) || asked;
-        const feature = generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer,
-            chosen.offsetX, chosen.offsetY, chosen.rotation);
-        return feature ? { feature, ...chosen } : null;
+        const fitting = candidates.find(candidate => checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth,
+            currentChamfer, candidate.offsetX, candidate.offsetY, candidate.rotation));
+        if (fitting) {
+            const feature = bar(fitting);
+            return feature ? { feature, ...fitting } : null;
+        }
+        for (const candidate of candidates) {
+            const feature = bar(candidate);
+            if (feature && rowHouseFitsSite(feature, site)) return { feature, ...candidate };
+        }
+        return null;
+    }
+
+    // A Length or Width change goes through the placement rule: kept with the offset and rotation it
+    // places the bar at, refused (dimensions unchanged) when no bar of that size stands on the site.
+    function tryRowHouseDimensions(length, width) {
+        const block = getActiveRowHouseBlock();
+        if (!block || !Number.isFinite(length) || !Number.isFinite(width)) return false;
+        const previous = { length: currentBuildingLength, width: currentBuildingWidth };
+        currentBuildingLength = length;
+        currentBuildingWidth = width;
+        let placed = null;
+        try { placed = placeRowHouseBar(block, { offsetX: currentOffsetX, offsetY: currentOffsetY, rotation: currentRotation }); }
+        catch (_) { placed = null; }
+        if (!placed) {
+            currentBuildingLength = previous.length;
+            currentBuildingWidth = previous.width;
+            return false;
+        }
+        ({ offsetX: currentOffsetX, offsetY: currentOffsetY, rotation: currentRotation } = placed);
+        return true;
     }
 
     function rowHouseSiteCache() {
@@ -1789,25 +1838,8 @@
             document.getElementById('rowhouse-length-slider').addEventListener('input', function (e) {
                 if (rowHouseManualMode) return;
                 rowHouseHistory?.record?.();
-                const proposedLength = parseFloat(e.target.value);
-                // Check if proposed length fits (try to adjust position first)
-                if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
-                    currentBuildingLength = proposedLength;
-                } else if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation)) {
-                    // Reset position to center
-                    currentBuildingLength = proposedLength;
-                    currentOffsetX = 0;
-                    currentOffsetY = 0;
-                } else if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, 0, 0, 0)) {
-                    // Reset position and rotation
-                    currentBuildingLength = proposedLength;
-                    currentOffsetX = 0;
-                    currentOffsetY = 0;
-                    currentRotation = 0;
-                } else {
-                    // Revert slider to current valid value
-                    e.target.value = currentBuildingLength;
-                }
+                // The placement rule decides (placeRowHouseBar); a length no bar can stand with reverts.
+                if (!tryRowHouseDimensions(parseFloat(e.target.value), currentBuildingWidth)) e.target.value = currentBuildingLength;
                 document.getElementById('rowhouse-length-value').textContent = CbFormat.formatNumber(currentBuildingLength, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateRowHouseInModal();
             });
@@ -1823,25 +1855,8 @@
             document.getElementById('rowhouse-width-slider').addEventListener('input', function (e) {
                 if (rowHouseManualMode) return;
                 rowHouseHistory?.record?.();
-                const proposedWidth = parseFloat(e.target.value);
-                // Check if proposed width fits (try to adjust position first)
-                if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
-                    currentBuildingWidth = proposedWidth;
-                } else if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, 0, 0, currentRotation)) {
-                    // Reset position to center
-                    currentBuildingWidth = proposedWidth;
-                    currentOffsetX = 0;
-                    currentOffsetY = 0;
-                } else if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, 0, 0, 0)) {
-                    // Reset position and rotation
-                    currentBuildingWidth = proposedWidth;
-                    currentOffsetX = 0;
-                    currentOffsetY = 0;
-                    currentRotation = 0;
-                } else {
-                    // Revert slider to current valid value
-                    e.target.value = currentBuildingWidth;
-                }
+                // The placement rule decides (placeRowHouseBar); a width no bar can stand with reverts.
+                if (!tryRowHouseDimensions(currentBuildingLength, parseFloat(e.target.value))) e.target.value = currentBuildingWidth;
                 document.getElementById('rowhouse-width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateRowHouseInModal();
             });

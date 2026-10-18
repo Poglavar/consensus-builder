@@ -128,6 +128,14 @@ function rowHarness() {
         const rowHouseFeatureValid=${functions.get('rowHouseFeatureValid')};
         const rowHousePointerEvent=${functions.get('rowHousePointerEvent')};
         const rowHouseSiteBoundary=${functions.get('rowHouseSiteBoundary')};
+        let cachedSuperparcelMeters=null;
+        const ROW_SITE_OVERLAP_MIN_M2=1;
+        const pointInPolygon=${functions.get('pointInPolygon')};
+        const pointToSegmentDistance=${functions.get('pointToSegmentDistance')};
+        const distanceToPolygonBoundary=${functions.get('distanceToPolygonBoundary')};
+        const checkBuildingFitsInSuperparcel=${functions.get('checkBuildingFitsInSuperparcel')};
+        const rowHouseSiteHasFit=${functions.get('rowHouseSiteHasFit')};
+        const rowHouseOverlapsSite=${functions.get('rowHouseOverlapsSite')};
         const rowHouseFitsSite=${functions.get('rowHouseFitsSite')};
         const resolveRowHouseDrop=${functions.get('resolveRowHouseDrop')};
         const closeRowHouseModal=(...args)=>this.closed.push(args);
