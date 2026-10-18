@@ -448,6 +448,8 @@ function blockifyRuleAtOutline(outline) {
     blockifyAuthoredSite = null;
     blockifyGenerationSite = robustUnion(features);
     blockifyBlockNameOverride = describeParcelSelection(ids);
+    // The design's land moves with the rule (proposal-editor-shell.js moveActiveDesignToParcels).
+    window.moveActiveDesignToParcels?.(ids);
     if (blockifyMode === 'manual') exitToParametricMode();
     displayBlockOnMap(blockifyBlock);
     generateBuildingInModal();

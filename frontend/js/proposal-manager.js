@@ -2495,6 +2495,10 @@ const ProposalManager = {
             }
             dependents.push(_getProposalRecord(dependent.proposalId, options) || dependent);
         }
+        // The edited record is applied where it now stands, by the same rule as any apply: the
+        // applied records on that ground come off the map (applyProposal). A converted or moved
+        // design takes no other path.
+        const rivals = this._standDownAppliedRivals(live, options, dependents.map(record => record.proposalId));
 
         const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
             ? applyRoute.normalizeGoalKey(live.goal)
@@ -2502,7 +2506,7 @@ const ProposalManager = {
         const materialize = goalKey === 'road-track'
             ? this.rematerializeCorridorScope
             : this.rematerializeFlatScope;
-        const summary = await materialize.call(this, [before, live, ...dependents], {
+        const summary = await materialize.call(this, [before, live, ...dependents, ...rivals], {
             _parcelMutation: options._parcelMutation,
             silent: options.silent === true,
             purpose: 'apply',
@@ -2516,12 +2520,13 @@ const ProposalManager = {
             return false;
         }
         store.save?.();
+        options._parcelMutation.afterCommit?.(() => this._reportStoodDownRivals(rivals));
         return {
             ...summary,
             applied: true,
             proposalId: key,
             goalKey,
-            unappliedIds: dependents.map(record => String(record.proposalId))
+            unappliedIds: [...dependents, ...rivals].map(record => String(record.proposalId))
         };
     },
 
@@ -3098,15 +3103,7 @@ const ProposalManager = {
 
         // Standing rivals down is what an explicit Apply click means: "this design, not that one".
         // Shared-plan application validates with validateSharedProposalGround instead.
-        const switchedAlternatives = this._collectAppliedAlternativesForExplicitApply(
-            proposal,
-            null,
-            applyOptions
-        );
-        switchedAlternatives.forEach(alternative => {
-            setProposalApplied(alternative, false, { stamp: false });
-            store._indexProposal?.(alternative);
-        });
+        const switchedAlternatives = this._standDownAppliedRivals(proposal, applyOptions);
         setProposalApplied(proposal, true);
         store._indexProposal?.(proposal);
         const derived = await this.deriveForNewProposal(proposal, {
@@ -3117,20 +3114,41 @@ const ProposalManager = {
         store.save?.();
 
         applyOptions._parcelMutation.afterCommit(() => {
-            if (switchedAlternatives.length) {
-                const names = switchedAlternatives
-                    .map(alternative => alternative.title || alternative.name || String(alternative.proposalId))
-                    .join('; ');
-                const message = `${switchedAlternatives.length} proposal(s) taken off the map — they stand on the same ground: ${names}`;
-                try {
-                    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 10000, 'warning');
-                    else if (typeof updateStatus === 'function') updateStatus(message);
-                } catch (_) { }
-            }
+            this._reportStoodDownRivals(switchedAlternatives);
             const refreshed = _getProposalRecord(proposalId) || proposal;
             this._refreshUIAfterProposalChange(refreshed);
         });
         return true;
+    },
+
+    // The applied records in the way of `proposal` (proposals/claims.js appliedRivals) are taken
+    // off the map, inside the caller's mutation: the one apply-conflict step of an explicit Apply
+    // and of a saved edit (updateProposalInPlace), whatever editor made it. `exceptIds` are
+    // records the caller already handles. Returns the records taken off, which the caller passes
+    // to the derivation as released seeds.
+    _standDownAppliedRivals(proposal, options = {}, exceptIds = []) {
+        const store = _proposalStore(options);
+        const except = new Set([String(proposal?.proposalId || ''), ...exceptIds.map(String)]);
+        const rivals = this._collectAppliedAlternativesForExplicitApply(proposal, null, options)
+            .filter(rival => rival && !except.has(String(rival.proposalId || '')));
+        rivals.forEach(rival => {
+            setProposalApplied(rival, false, { stamp: false });
+            store?._indexProposal?.(rival);
+        });
+        return rivals;
+    },
+
+    // Says which records came off the map because the applied one stands on their ground.
+    _reportStoodDownRivals(rivals) {
+        if (!Array.isArray(rivals) || !rivals.length) return;
+        const names = rivals
+            .map(alternative => alternative.title || alternative.name || String(alternative.proposalId))
+            .join('; ');
+        const message = `${rivals.length} proposal(s) taken off the map — they stand on the same ground: ${names}`;
+        try {
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 10000, 'warning');
+            else if (typeof updateStatus === 'function') updateStatus(message);
+        } catch (_) { }
     },
 
     async _applyProposalTransactionBody(proposalId, options = {}) {

@@ -1114,6 +1114,8 @@
         }
         rowHouseBlock = nextBlock;
         rowHouseBlockNameOverride = describeRowHouseParcelSelection(ids);
+        // The design's land moves with the rule (proposal-editor-shell.js moveActiveDesignToParcels).
+        window.moveActiveDesignToParcels?.(ids);
         currentOffsetX = 0;
         currentOffsetY = 0;
         rowHouseManualMode = false;
@@ -1766,6 +1768,7 @@
 
 
             // Add event listeners
+            rowHouseDesignChanges().start(document);
             const doneButton = document.getElementById('btn-rowhouse-done');
             if (doneButton) {
                 doneButton.addEventListener('click', saveRowHouseDesignForProposal);
@@ -2057,9 +2060,22 @@
     // The X / Esc path. Closing NEVER saves — only "Done" (saveRowHouseDesignForProposal) does.
     // When the editor is running a commit-on-confirm session (a geometry edit, or a Build-palette
     // creation) the design would be lost, so ask first; declining keeps the editor open.
+    // Did the user change the design since the editor opened? As in the Block editor
+    // (building-blocks.js blockifyDesignChanges): the generated first design is not a change, and
+    // a drop put back where it was leaves the design as it was, so closing then asks nothing.
+    let rowHouseDesignChangeTracker = null;
+    function rowHouseDesignChanges() {
+        if (!rowHouseDesignChangeTracker) {
+            rowHouseDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
+                signature: () => window.DesignChangeTracker.featuresSignature(generatedRowHouseFeature)
+            });
+        }
+        return rowHouseDesignChangeTracker;
+    }
+
     async function requestCloseRowHouseModal() {
         if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
-            const proceed = await window.confirmDiscardProposalDesignSession({ hasDesign: !!generatedRowHouseFeature });
+            const proceed = await window.confirmDiscardProposalDesignSession({ hasDesign: !!generatedRowHouseFeature && rowHouseDesignChanges().changed() });
             if (!proceed) return;
         }
         closeRowHouseModal();
@@ -2092,6 +2108,7 @@
         rowUnitLayers = [];
         rowExcludedLayers = [];
         rowHouseMap = null;
+        if (rowHouseDesignChangeTracker) rowHouseDesignChangeTracker.stop();
         const editorSession = rowHouseModal;
         rowHouseModal = null;
         editorSession?.close();

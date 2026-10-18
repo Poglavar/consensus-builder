@@ -1348,6 +1348,24 @@
         siblings.forEach(id => { try { global.proposalDraftStore?.deleteDraft?.(id); } catch (_) { } });
     }
 
+    // "Apply the same rule to the parcels here" moves the design's land: the rule now builds on
+    // `parcelIds`, so the active draft declares those parcels and their site, for the edit of a
+    // saved record too (syncActiveProposalDraftFromEditor keeps a saved record's parcels, since an
+    // ordinary geometry edit does not change them). Without it Done saved the new buildings
+    // against the old parcels and the save was refused as extending beyond them.
+    function moveActiveDesignToParcels(parcelIds) {
+        const store = global.proposalDraftStore;
+        const draft = getActiveProposalDesignDraft();
+        const ids = [...new Set((parcelIds || []).map(String).filter(Boolean))];
+        if (!store || !draft || !ids.length) return null;
+        const site = siteOfLiveSelection(ids);
+        if (!site) return null;
+        return store.updateDraft(draft.id, current => ({
+            ...current,
+            fields: { ...(current.fields || {}), selectedParcelIds: ids, cadastreParcelIds: [], site, binding: null }
+        }), { coalesceKey: 'editor:building' });
+    }
+
     // The choice a rule editor offers when its design is dropped off its parcels. Resolves 'convert',
     // 'rule' or 'cancel'. `tryConvert()` and `tryRule()` carry the choice out and resolve
     // { ok, reason }; a refusal is said in the same dialog, which stays open. Without `tryConvert`
@@ -2306,7 +2324,11 @@
                 // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
                 // re-derived — the parcels under a corridor, the parcels a readjustment takes. Anything
                 // that merely stands on the fabric changes no parcel at all, so only it is applied.
-                const derived = await global.ProposalManager?.deriveForNewProposal?.(stored);
+                // It is applied by the one apply every proposal gets (ProposalManager.applyProposal):
+                // the applied records on its ground come off the map, as for an explicit Apply. A
+                // design session's new object, a conversion's or a counterproposal, takes no
+                // shortcut around that (it used to derive directly and stood on top of them).
+                const derived = await global.ProposalManager?.applyProposal?.(proposalId);
                 profile.mark('derive');
                 if (!derived) {
                     // The derivation refused. The record stays unapplied rather than being forced onto
@@ -2552,6 +2574,7 @@
     global.convertActiveDesignToFreeform = convertActiveDesignToFreeform;
     global.convertActiveDesignToFreeformBuildings = convertActiveDesignToFreeformBuildings;
     global.chooseRuleDrop = chooseRuleDrop;
+    global.moveActiveDesignToParcels = moveActiveDesignToParcels;
     global.ruleDropLabel = ruleLabel;
     global.canEditProposalGeometry = canEditProposalGeometry;
     global.startInstantProposalDesign = startInstantProposalDesign;

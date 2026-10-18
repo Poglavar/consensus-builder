@@ -336,6 +336,28 @@ describe('ProposalManager mutation boundary', () => {
             expect(seedIds).toEqual(['target', 'target', 'conflict']);
         });
 
+        // User decision 2026-10-18: a converted or moved design overlapping an applied proposal
+        // goes through the same conflict step as any apply (claims.js appliedRivals).
+        it('takes the applied records on the ground it now stands on off the map, as an apply does', async () => {
+            let seedIds = null;
+            ProposalManager.rematerializeFlatScope = async records => {
+                seedIds = records.map(record => record.proposalId);
+                return { ok: true, failed: [] };
+            };
+            ProposalManager._collectAppliedAlternativesForExplicitApply = (proposal, _records, options) => {
+                expect(proposal.value).toBe('after');
+                return [options._parcelMutation.proposals.getProposal('conflict')];
+            };
+
+            await expect(ProposalManager.updateProposalInPlace('target', edited()))
+                .resolves.toMatchObject({ applied: true, unappliedIds: ['conflict'] });
+
+            expect(store.getProposal('target').applied).toBe(true);
+            expect(store.getProposal('conflict').applied).toBe(false);
+            // The rival's ground is re-derived with the edit, as for an explicit apply.
+            expect(seedIds).toEqual(['target', 'target', 'conflict']);
+        });
+
         it('leaves the record and its dependents as they were when the ground refuses the edit', async () => {
             ProposalManager.rematerializeFlatScope = async () => ({ ok: false, failed: [{ proposalId: 'target', message: 'ground missing' }] });
 

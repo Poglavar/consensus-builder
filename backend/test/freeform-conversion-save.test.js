@@ -86,7 +86,7 @@ function loadShell(source) {
     const ProposalManager = {
         findEditDependents: vi.fn(() => []),
         updateProposalInPlace: vi.fn(async () => ({ applied: true })),
-        deriveForNewProposal: vi.fn(async () => ({ applied: true })),
+        applyProposal: vi.fn(async () => true),
         _refreshUIAfterProposalChange: vi.fn(),
         getLastApplyFailure: vi.fn(() => null),
         getLastApplyFailureInfo: vi.fn(() => null)
@@ -151,6 +151,9 @@ describe('convertProposalToFreeform', () => {
 
         expect(globalThis.proposalStorage.addProposal).toHaveBeenCalledOnce();
         expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
+        // The counterproposal is applied like any proposal (ProposalManager.applyProposal), so the
+        // applied records on its ground come off the map instead of staying under it.
+        expect(ProposalManager.applyProposal).toHaveBeenCalledExactlyOnceWith('fork-1');
         expect(source).toEqual(before);
         expect(globalThis.CbDialog.confirm.mock.calls[0][0]).toContain('counterproposal');
     });
@@ -234,6 +237,8 @@ describe('convertActiveDesignToFreeformBuildings: a dropped Detached becomes one
         expect(ProposalManager.updateProposalInPlace.mock.calls[0][0]).toBe('own-detached');
         expect(globalThis.proposalStorage.addProposal).toHaveBeenCalledOnce();
         expect(globalThis.proposalStorage.addProposal.mock.calls[0][0].site).toEqual(droppedHouses(source)[1].site);
+        // The further house is applied like any proposal, rivals and all (ProposalManager.applyProposal).
+        expect(ProposalManager.applyProposal).toHaveBeenCalledExactlyOnceWith('fork-1');
         // The first is saved before the second is built.
         expect(ProposalManager.updateProposalInPlace.mock.invocationCallOrder[0])
             .toBeLessThan(globalThis.proposalStorage.addProposal.mock.invocationCallOrder[0]);

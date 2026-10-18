@@ -41,7 +41,7 @@ async function saveRowHouses({ boundParcels }) {
         return { title: d.fields.name, description: d.fields.description, offer: d.fields.offer, offerCurrency: 'EUR', site };
     };
     c.proposalStorage = { addProposal: p => { saved = { ...p, proposalId: 'row-saved' }; return 'row-saved'; }, getProposal: () => saved };
-    c.ProposalManager = { deriveForNewProposal: async () => { saved.applied = true; return true; } };
+    c.ProposalManager = { applyProposal: async () => { saved.applied = true; return true; } };
     c.isProposalApplied = p => p.applied;
     const id = await c.instantCreateProposalFromDraft('row-draft');
     return { id, saved };

@@ -274,6 +274,8 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
             }),
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
+            _standDownAppliedRivals: ProposalManager._standDownAppliedRivals,
+            _reportStoodDownRivals: ProposalManager._reportStoodDownRivals,
             applyProposal: ProposalManager.applyProposal
         };
 
@@ -306,6 +308,8 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
             }),
             _refreshUIAfterProposalChange() {},
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
+            _standDownAppliedRivals: ProposalManager._standDownAppliedRivals,
+            _reportStoodDownRivals: ProposalManager._reportStoodDownRivals,
             applyProposal: ProposalManager.applyProposal
         };
 
@@ -332,6 +336,8 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
             deriveForNewProposal: vi.fn(async () => null),
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
+            _standDownAppliedRivals: ProposalManager._standDownAppliedRivals,
+            _reportStoodDownRivals: ProposalManager._reportStoodDownRivals,
             applyProposal: ProposalManager.applyProposal
         };
 

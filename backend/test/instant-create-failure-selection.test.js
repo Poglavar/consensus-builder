@@ -65,7 +65,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
             editOf.applied = lands;
             return lands ? { applied: true, proposalId: editOf.proposalId } : null;
         }),
-        deriveForNewProposal: vi.fn(async () => {
+        applyProposal: vi.fn(async () => {
             if (throws) throw new Error(reason || 'derive exploded');
             proposal.applied = lands;
             return lands ? { applied: true } : null;
@@ -209,7 +209,7 @@ describe('one-click structure creation focus', () => {
         let validationCalls = 0;
         const proposal = { goal: 'buildings', applied: true, buildingProposal: { buildings: [] } };
         const addProposal = vi.fn(() => 'new-building');
-        const deriveForNewProposal = vi.fn(async () => ({ applied: true }));
+        const applyProposal = vi.fn(async () => true);
         const openProposalDraftDesign = vi.fn(async draftId => {
             globalThis.beginProposalDraftDesignSession(draftId);
             return true;
@@ -235,7 +235,7 @@ describe('one-click structure creation focus', () => {
             getProposal: vi.fn(() => ({ ...proposal, proposalId: 'new-building', applied: true }))
         });
         install('ProposalManager', {
-            deriveForNewProposal,
+            applyProposal,
             _refreshUIAfterProposalChange: vi.fn()
         });
         install('isProposalApplied', value => value.applied === true);
@@ -265,7 +265,7 @@ describe('one-click structure creation focus', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         expect(addProposal).toHaveBeenCalledOnce();
-        expect(deriveForNewProposal).toHaveBeenCalledOnce();
+        expect(applyProposal).toHaveBeenCalledExactlyOnceWith('new-building');
         expect(draft).toBeNull();
         expect(globalThis.isProposalDesignCommitSession()).toBe(false);
     });
@@ -456,9 +456,8 @@ describe('one-click structure creation focus', () => {
 
         await globalThis.instantCreateProposalFromDraft('draft-park');
 
-        expect(ProposalManager.deriveForNewProposal).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ proposalId: proposal.proposalId })
-        );
+        // The fork is applied by the one apply every proposal gets (ProposalManager.applyProposal).
+        expect(ProposalManager.applyProposal).toHaveBeenCalledExactlyOnceWith(proposal.proposalId);
         expect(source.applied).toBe(true);
         expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
     });
@@ -491,7 +490,7 @@ describe('saving an edit of an existing record', () => {
 
         expect(result).toBe('own-lake');
         expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
-        expect(ProposalManager.deriveForNewProposal).not.toHaveBeenCalled();
+        expect(ProposalManager.applyProposal).not.toHaveBeenCalled();
         expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledExactlyOnceWith('own-lake', proposal, { unapplyIds: [] });
         expect(globalThis.proposalDraftStore.consumeAfterPublish).toHaveBeenCalledWith('draft-park', 'own-lake');
     });
