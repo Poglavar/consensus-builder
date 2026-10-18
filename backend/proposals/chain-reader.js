@@ -11,7 +11,7 @@ const ADDRESSES = JSON.parse(readFileSync(ADDRESS_FILE, 'utf8'));
 const EVM_RPCS = Object.freeze({
     '31337': 'http://localhost:8545',
     '84532': 'https://sepolia.base.org',
-    '11155111': 'https://rpc.sepolia.org'
+    '11155111': 'https://ethereum-sepolia-rpc.publicnode.com'
 });
 const PROPOSAL_ABI = Object.freeze([
     'function getProposal(uint256 proposalId) view returns (string[] parcelIds, bool isConditional, string imageURI, bool acceptancePossible, uint8 status, uint256 ethBalance, uint256 tokenBalance, uint256 acceptanceCount, uint256 expiryTimestamp, uint256 expiringPercentage)',

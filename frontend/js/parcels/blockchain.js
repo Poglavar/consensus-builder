@@ -7,7 +7,7 @@
     const PARCEL_CLAIM_RPC_FALLBACKS = {
         '1': null,
         '5': null,
-        '11155111': 'https://rpc.sepolia.org',
+        '11155111': 'https://ethereum-sepolia-rpc.publicnode.com',
         '84532': 'https://sepolia.base.org',
         '8453': 'https://mainnet.base.org',
         // Provide a dev default for local hardhat/anvil

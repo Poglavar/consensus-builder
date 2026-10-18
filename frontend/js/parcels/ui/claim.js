@@ -24,7 +24,7 @@
 
     const PARCEL_CLAIM_RPC_FALLBACKS = Object.freeze({
         '31337': 'http://127.0.0.1:8545',
-        '11155111': 'https://rpc.sepolia.org',
+        '11155111': 'https://ethereum-sepolia-rpc.publicnode.com',
         '84532': 'https://sepolia.base.org'
     });
 
