@@ -1,142 +1,156 @@
 // The drawing tool's pen (road-editor.md decision 5): Escape lifts it and keeps what was placed,
 // Escape with the pen up asks (build / discard / keep) and never builds silently, an empty tool just
 // closes, a double-click builds, and anything that must not interleave with a click still being
-// placed waits for it. Runs the real functions lifted from road-drawing.js with their collaborators
-// injected; the array surgery is the real road-stroke-state.js reducer.
-import { describe, it, expect, vi } from 'vitest';
+// placed waits for it. Drives the real road-drawing.js in the fake browser world
+// (helpers/road-drawing-env.js); the array surgery is the real road-stroke-state.js reducer.
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
+import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
-const require = createRequire(import.meta.url);
-const RoadStrokeState = require('../../frontend/js/road-stroke-state.js');
-const roadSource = readFileSync(new URL('../../frontend/js/road-drawing.js', import.meta.url), 'utf8');
+let env = null;
+afterEach(() => {
+    env?.dispose();
+    env = null;
+});
 
-function lift(name) {
-    let start = roadSource.indexOf(`function ${name}(`);
-    expect(start, `${name} not found`).toBeGreaterThan(-1);
-    if (roadSource.slice(start - 6, start) === 'async ') start -= 6;
-    return roadSource.slice(start, roadSource.indexOf('\n}', start) + 2);
+const PEN_LIFTED = 'Pen lifted — click a node to continue from it, or anywhere to start a new stretch. Enter builds the road.';
+const START_HINT = 'Click on the map to start drawing a road';
+
+async function openTool(options) {
+    env = loadRoadDrawing(options);
+    await env.api.requestCorridorDrawingTool('road');
+    expect(env.session.roadDrawingMode).toBe(true);
+    return env;
 }
 
-const P = (lat, lng) => ({ lat, lng });
-const a = P(45.8, 15.97), b = P(45.8, 15.971), c = P(45.801, 15.971), d = P(45.802, 15.972);
+async function clickAll(points) {
+    for (const point of points) await env.click(point);
+}
 
-function loadPen(segments, activeIndex) {
-    const calls = [];
-    const state = { segments, ids: segments.map((_, index) => `s${index + 1}`), activeIndex };
-    // eslint-disable-next-line no-new-func
-    const api = new Function('state', 'calls', 'RoadStrokeState', `
-        let roadSegments = state.segments;
-        let roadSegmentIds = state.ids;
-        let roadPoints = state.activeIndex >= 0 ? roadSegments[state.activeIndex] : [];
-        let roadHasStarted = state.activeIndex >= 0;
-        let roadStrokeBaseCount = 0;
-        const window = { RoadStrokeState };
-        const clearRoadRubberBand = () => calls.push('rubber-band');
-        const clearPendingRoadSegment = () => calls.push('pending');
-        const pruneRoadEdgeConflicts = () => calls.push('prune');
-        const rebuildRoadGeometryFromSegments = () => calls.push('rebuild');
-        const redrawRoadVertexMarkers = () => calls.push('markers');
-        const updateRoadInfoPanel = () => {};
-        const updateUndoButtonState = () => {};
-        const updateStatus = message => calls.push('status: ' + message);
-        const corridorDrawingIsTrack = () => false;
-        const translateRoadText = (key, fallback) => fallback;
-        ${lift('getAllRoadSegments')}
-        ${lift('hasDrawableCorridor')}
-        ${lift('roadPenUpStatusText')}
-        ${lift('liftRoadPen')}
-        return {
-            liftRoadPen,
-            state: () => ({ roadSegments, roadSegmentIds, roadHasStarted, roadPoints })
-        };
-    `)(state, calls, RoadStrokeState);
-    return { ...api, calls };
+// Holds the tool's own finalization gate, as a build under way does, until release() is called.
+function holdFinalizationGate() {
+    let release;
+    const run = env.session.roadFinalizationGate.run(() => new Promise(resolve => { release = resolve; }));
+    return async () => {
+        while (!release) await Promise.resolve();
+        release();
+        await run;
+    };
 }
 
 describe('Escape lifts the pen', () => {
-    it('keeps the three placed points and takes the rubber band away', () => {
-        const pen = loadPen([[a, b, c]], 0);
-        expect(pen.liftRoadPen()).toBe(true);
-        const after = pen.state();
-        expect(after.roadSegments).toEqual([[a, b, c]]);
-        expect(after.roadSegmentIds).toEqual(['s1']);
-        expect(after.roadHasStarted).toBe(false);
-        expect(pen.calls).toContain('rubber-band');
-        expect(pen.calls).toContain('pending');
-        expect(pen.calls).not.toContain('rebuild');   // nothing was removed, nothing to rebuild
-        expect(pen.calls.at(-1)).toBe('status: Pen lifted — click a node to continue from it, or anywhere to start a new stretch. Enter builds the road.');
+    it('keeps the three placed points and takes the rubber band away', async () => {
+        await openTool();
+        await clickAll([at(0, 0), at(100, 0), at(100, 100)]);
+        await env.move(at(150, 150));
+        expect(env.session.roadPreviewLine).not.toBeNull();
+        const land = env.session.cachedCommittedPolygon;
+
+        expect(env.api.liftRoadPen()).toBe(true);
+        expect(env.session.roadSegments).toHaveLength(1);
+        expect(env.session.roadSegments[0]).toHaveLength(3);
+        expect(env.session.roadSegmentIds).toEqual(['s1']);
+        expect(env.session.roadHasStarted).toBe(false);
+        expect(env.session.roadPreviewLine).toBeNull();
+        expect(env.session.roadPreviewPolygonLayer).toBeNull();
+        expect(env.session.roadPendingSegmentLayer).toBeNull();
+        // Nothing was removed, nothing to rebuild: the land is the very one the clicks built.
+        expect(env.session.cachedCommittedPolygon).toBe(land);
+        expect(env.lastStatus()).toBe(PEN_LIFTED);
     });
 
-    it('drops a lone click — no line — with its id, and redraws without it', () => {
-        const pen = loadPen([[a, b], [d]], 1);
-        pen.liftRoadPen();
-        expect(pen.state().roadSegments).toEqual([[a, b]]);
-        expect(pen.state().roadSegmentIds).toEqual(['s1']);
-        expect(pen.calls).toEqual(expect.arrayContaining(['prune', 'rebuild', 'markers']));
+    it('drops a lone click — no line — with its id, and redraws without it', async () => {
+        await openTool();
+        await clickAll([at(0, 0), at(100, 0)]);
+        env.api.liftRoadPen();
+        await env.click(at(0, 300));
+        expect(env.session.roadSegmentIds).toEqual(['s1', 's2']);
+        expect(env.layersOfKind('circleMarker')).toHaveLength(3);
+
+        env.api.liftRoadPen();
+        expect(env.session.roadSegments).toHaveLength(1);
+        expect(env.session.roadSegments[0]).toHaveLength(2);
+        expect(env.session.roadSegmentIds).toEqual(['s1']);
+        // Its vertex marker and its piece of centre line went with it.
+        expect(env.layersOfKind('circleMarker')).toHaveLength(2);
+        expect(env.session.roadCenterline.latlngs).toHaveLength(1);
     });
 
-    it('says how to start when nothing drawable is left', () => {
-        const pen = loadPen([[d]], 0);
-        pen.liftRoadPen();
-        expect(pen.state().roadSegments).toEqual([]);
-        expect(pen.calls.at(-1)).toBe('status: Click on the map to start drawing a road');
+    it('says how to start when nothing drawable is left', async () => {
+        await openTool();
+        await env.click(at(0, 0));
+        env.api.liftRoadPen();
+        expect(env.session.roadSegments).toEqual([]);
+        expect(env.lastStatus()).toBe(START_HINT);
     });
 
-    it('does nothing with the pen already up', () => {
-        const pen = loadPen([[a, b]], -1);
-        expect(pen.liftRoadPen()).toBe(false);
-        expect(pen.calls).toEqual([]);
+    it('does nothing with the pen already up', async () => {
+        await openTool();
+        await clickAll([at(0, 0), at(100, 0)]);
+        env.api.liftRoadPen();
+        const statusCount = env.statuses.length;
+        expect(env.api.liftRoadPen()).toBe(false);
+        expect(env.statuses).toHaveLength(statusCount);
+        expect(env.session.roadSegments[0]).toHaveLength(2);
     });
 });
 
 describe('what Escape does is decided when it runs', () => {
-    function escape({ hasStarted, drawable, running = false, drawing = true }) {
-        const calls = [];
-        // eslint-disable-next-line no-new-func
-        new Function(
-            'roadDrawingMode', 'roadFinalizationGate', 'roadHasStarted', 'hasDrawableCorridor',
-            'liftRoadPen', 'promptCloseDrawnCorridor', 'exitRoadDrawingMode', 'finishRoadDrawing',
-            `${lift('handleRoadEscape')}; return handleRoadEscape;`
-        )(
-            drawing, { isRunning: () => running }, hasStarted, () => drawable,
-            () => calls.push('lift'), () => calls.push('ask'), () => calls.push('close'), () => calls.push('build')
-        )();
-        return calls;
-    }
-
-    it('lifts a pen that is down', () => {
-        expect(escape({ hasStarted: true, drawable: true })).toEqual(['lift']);
+    it('lifts a pen that is down', async () => {
+        await openTool();
+        await clickAll([at(0, 0), at(100, 0)]);
+        env.api.handleRoadEscape();
+        expect(env.session.roadHasStarted).toBe(false);
+        expect(env.session.roadSegments[0]).toHaveLength(2);
+        expect(globalThis.showStyledChoice.calls).toHaveLength(0);
     });
 
-    it('asks about a drawing with the pen up — never a silent build', () => {
-        expect(escape({ hasStarted: false, drawable: true })).toEqual(['ask']);
+    it('asks about a drawing with the pen up — never a silent build', async () => {
+        await openTool();
+        await clickAll([at(0, 0), at(100, 0)]);
+        env.api.liftRoadPen();
+        env.api.handleRoadEscape();
+        await env.idle();
+        expect(globalThis.showStyledChoice.calls).toHaveLength(1);
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(0);
+        expect(env.session.roadDrawingMode).toBe(true);
     });
 
-    it('closes an empty tool', () => {
-        expect(escape({ hasStarted: false, drawable: false })).toEqual(['close']);
+    it('closes an empty tool', async () => {
+        await openTool();
+        env.api.handleRoadEscape();
+        expect(env.session.roadDrawingMode).toBe(false);
+        expect(globalThis.showStyledChoice.calls).toHaveLength(0);
     });
 
-    it('does nothing while the road is being built or after the tool closed', () => {
-        expect(escape({ hasStarted: true, drawable: true, running: true })).toEqual([]);
-        expect(escape({ hasStarted: true, drawable: true, drawing: false })).toEqual([]);
+    it('does nothing while the road is being built or after the tool closed', async () => {
+        await openTool();
+        await clickAll([at(0, 0), at(100, 0)]);
+        const release = holdFinalizationGate();
+        env.api.handleRoadEscape();
+        expect(env.session.roadHasStarted).toBe(true);
+        await release();
+
+        env.session.roadDrawingMode = false;
+        env.api.handleRoadEscape();
+        expect(env.session.roadHasStarted).toBe(true);
+        expect(env.session.roadSegments[0]).toHaveLength(2);
     });
 });
 
 describe('waiting for a click still being placed', () => {
-    const load = placement => new Function(
-        'roadSegmentPlacement', `${lift('afterRoadPlacement')}; return afterRoadPlacement;`
-    )(placement);
-
     it('runs at once when nothing is being placed', () => {
-        expect(load(null)(() => 'done')).toBe('done');
+        env = loadRoadDrawing();
+        expect(env.session.roadSegmentPlacement).toBeNull();
+        expect(env.api.afterRoadPlacement(() => 'done')).toBe('done');
     });
 
     it('waits for the placement to settle', async () => {
+        env = loadRoadDrawing();
         let settle;
-        const placement = new Promise(resolve => { settle = resolve; });
+        env.session.roadSegmentPlacement = new Promise(resolve => { settle = resolve; });
         const action = vi.fn(() => 'done');
-        const result = load(placement)(action);
+        const result = env.api.afterRoadPlacement(action);
         await Promise.resolve();
         expect(action).not.toHaveBeenCalled();
         settle();
@@ -146,76 +160,74 @@ describe('waiting for a click still being placed', () => {
 });
 
 describe('a double-click builds the road', () => {
-    function doubleClick({ drawable, running = false, placement = null }) {
-        const calls = [];
-        const handler = new Function(
-            'L', 'roadSegmentPlacement', 'roadDrawingMode', 'roadFinalizationGate', 'hasDrawableCorridor', 'finishRoadDrawing',
-            `${lift('afterRoadPlacement')}; ${lift('handleRoadDoubleClick')}; return handleRoadDoubleClick;`
-        )(
-            { DomEvent: { stopPropagation: () => calls.push('stopped') } },
-            placement, true, { isRunning: () => running }, () => drawable,
-            () => { calls.push('build'); return Promise.resolve(true); }
-        );
-        return { result: handler({ type: 'dblclick' }), calls };
-    }
-
     it('finishes a drawable road, after the click still being placed', async () => {
-        let settle;
-        const placement = new Promise(resolve => { settle = resolve; });
-        const { result, calls } = doubleClick({ drawable: true, placement });
-        await Promise.resolve();
-        expect(calls).toEqual(['stopped']);
-        settle();
-        await result;
-        expect(calls).toEqual(['stopped', 'build']);
+        const loads = [];
+        await openTool({
+            globals: { ensureBuildingFootprintsForBounds: () => new Promise(resolve => loads.push(resolve)) }
+        });
+        await env.click(at(0, 0));
+        const before = loads.length;
+        const placing = env.click(at(100, 0));
+        while (loads.length <= before) await new Promise(resolve => setTimeout(resolve, 0));
+        const building = env.map.fire('dblclick', { type: 'dblclick' });
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(globalThis.L.DomEvent.stopPropagation.calls.at(-1)[0]).toEqual({ type: 'dblclick' });
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(0);
+
+        loads.forEach(resolve => resolve());
+        await placing;
+        await building;
+        await env.idle();
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(1);
+        // The build waited for the second point: it is part of the road.
+        expect(globalThis.pendingRoadDrawingProposal.centerline[0]).toHaveLength(2);
     });
 
     it('builds nothing from a lone click, or while a build is under way', async () => {
-        expect(doubleClick({ drawable: false }).calls).toEqual(['stopped']);
-        expect(doubleClick({ drawable: true, running: true }).calls).toEqual(['stopped']);
+        await openTool();
+        await env.click(at(0, 0));
+        await env.map.fire('dblclick', { type: 'dblclick' });
+        expect(env.session.roadFinalizationGate.isRunning()).toBe(false);
+        expect(env.session.roadDrawingMode).toBe(true);
+
+        await env.click(at(100, 0));
+        const release = holdFinalizationGate();
+        await env.map.fire('dblclick', { type: 'dblclick' });
+        await release();
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(0);
+        expect(env.session.roadDrawingMode).toBe(true);
     });
 
-    it('holds the map’s double-click zoom while drawing and gives back only what it took', () => {
-        const make = enabled => ({
-            doubleClickZoom: {
-                on: enabled,
-                enabled() { return this.on; },
-                enable() { this.on = true; },
-                disable() { this.on = false; }
-            }
-        });
-        // eslint-disable-next-line no-new-func
-        const load = map => new Function('map', `
-            let roadDrawingHeldDoubleClickZoom = false;
-            ${lift('holdRoadDoubleClickZoom')}
-            ${lift('releaseRoadDoubleClickZoom')}
-            return { hold: holdRoadDoubleClickZoom, release: releaseRoadDoubleClickZoom };
-        `)(map);
-        const on = make(true);
-        const zoom = load(on);
-        zoom.hold();
-        expect(on.doubleClickZoom.on).toBe(false);
-        zoom.release();
-        expect(on.doubleClickZoom.on).toBe(true);
-        const off = make(false);
-        const untouched = load(off);
-        untouched.hold();
-        untouched.release();
-        expect(off.doubleClickZoom.on).toBe(false);
+    it('holds the map’s double-click zoom while drawing and gives back only what it took', async () => {
+        await openTool();
+        expect(env.map.doubleClickZoom.enabled()).toBe(false);
+        await env.api.cancelRoadDrawing();
+        expect(env.map.doubleClickZoom.enabled()).toBe(true);
+
+        // Off before the tool opened: the tool leaves it off.
+        env.map.doubleClickZoom.disable();
+        await env.api.requestCorridorDrawingTool('road');
+        expect(env.session.roadDrawingHeldDoubleClickZoom).toBe(false);
+        await env.api.cancelRoadDrawing();
+        expect(env.map.doubleClickZoom.enabled()).toBe(false);
     });
 
-    it('is wired in and out with the tool, and the second click of the pair adds nothing', () => {
-        const toggle = lift('toggleRoadDrawTool');
-        expect(toggle).toContain("map.on('dblclick', handleRoadDoubleClick);");
-        expect(toggle).toContain('holdRoadDoubleClickZoom();');
-        expect(toggle).toContain("map.off('dblclick', handleRoadDoubleClick);");
-        expect(toggle).toContain('releaseRoadDoubleClickZoom();');
-        const suspend = lift('suspendRoadDrawingInteractivity');
-        expect(suspend).toContain("map.off('dblclick', handleRoadDoubleClick);");
-        expect(suspend).toContain('releaseRoadDoubleClickZoom();');
-        const click = lift('handleRoadClick');
-        expect(click.indexOf('isDoubleClickFollowUp(')).toBeGreaterThan(-1);
-        expect(click.indexOf('isDoubleClickFollowUp(')).toBeLessThan(click.indexOf('roadSegmentPlacementInProgress = true;'));
+    it('is wired in and out with the tool, and the second click of the pair adds nothing', async () => {
+        await openTool();
+        expect(env.map.listens('dblclick')).toBe(true);
+        // Finishing suspends the tool's handlers: the double-click and its zoom hold go with them.
+        env.api.suspendRoadDrawingInteractivity();
+        expect(env.map.listens('dblclick')).toBe(false);
+        expect(env.map.doubleClickZoom.enabled()).toBe(true);
+        await env.api.cancelRoadDrawing();
+
+        await env.api.requestCorridorDrawingTool('road');
+        await env.click(at(0, 0));
+        // The pair's second tap returns before it would take the placement lock.
+        const secondTap = env.api.handleRoadClick({ latlng: at(50, 0), originalEvent: { detail: 2, pointerType: 'mouse' } });
+        expect(env.session.roadSegmentPlacementInProgress).toBe(false);
+        await secondTap;
+        expect(env.session.roadPoints).toHaveLength(1);
     });
 });
 
