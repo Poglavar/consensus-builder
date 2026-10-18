@@ -1,5 +1,10 @@
 # Memory
 
+- 2026-10-18: road-drawing.js state stays in its top-level `let`s; `window.__roadDrawing.session` (module.exports in node) is a live read/write view of every one of them, so tests drive the real tool across calls without a 1,000-reference rename that would collide with concurrent edits.
+- 2026-10-18: road-drawing.js is a classic script with one namespace export: every top-level function stays a browser global and is also listed on `window.__roadDrawing` / `module.exports`; the finalization gate resolves road-finalization-state.js by require when its global is absent.
+- 2026-10-18: reparcellization.js is a factory, `createReparcellizationEditor()` (fresh state per call, returns openReparcellizationModal + state + every function); the page makes one editor at load for `window.openReparcellizationModal`, node require() returns only the factory.
+- 2026-10-18: Editor characterization tests run the real file in a fake browser world (backend/test/helpers/road-drawing-env.js, reparcellization-env.js over helpers/fake-dom.js) with the real pure modules as collaborators; a small HTML-parsing fake DOM was chosen over adding jsdom/happy-dom as a dependency. ROAD_DRAWING_SOURCE / REPARCELLIZATION_SOURCE load a mutant copy for red checks.
+
 - 2026-10-15: For the on-map production cutover, preserve built capabilities without maintaining legacy implementation compatibility. The user accepts switching between 2D and model views instead of simultaneous previews, and intentionally removes the parcel/ground View in 3D shortcut.
 
 - 2026-10-14: Geometry editors use the global view buttons; in desktop 3D their controls dock left so Layers can remain open on the right.
