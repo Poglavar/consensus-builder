@@ -45,6 +45,8 @@ def collect(state_dirs):
    rec=records[code]
    row={'cityCode':int(code),'cityName':rec['cityName'],'countryCode':rec['countryCode'],'point':rec['point'],
     'sourceIds':(rec.get('sourceAnnotations') or {}).get('sourceIds') or [],'outcome':kind,'summary':summary(entry.get('summary')),'finishedAt':entry.get('finishedAt')}
+   if entry.get('initialQualification'):
+    row['initialQualification']=entry['initialQualification']
    key=(row['finishedAt'] or '',order)
    if code not in latest or key>=latest[code][0]:latest[code]=(key,row)
  return sorted((row for _,row in latest.values()),key=lambda r:r['cityCode'])

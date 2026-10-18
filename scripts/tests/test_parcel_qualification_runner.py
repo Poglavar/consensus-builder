@@ -71,7 +71,7 @@ def write_valid_artifacts(root: Path, code="10000"):
         "ballparkAllowed": False, "sourceGeometryChanged": False, "fittedOffsetApplied": False,
     }
     (root / "evidence" / "alignment-report.json").write_text(json.dumps(report), encoding="utf-8")
-    checks = {name: {"passed": True, "evidence": "fixture evidence"} for name in runner.REQUIRED_CHECKS}
+    checks = {name: {"passed": True, "evidence": "fixture evidence"} for name in runner.ALL_CHECKS}
     checks["alignment"]["contractSha256"] = contract_sha
     qualification = {
         "schemaVersion": 2, "sourceId": "fixture",
@@ -314,7 +314,7 @@ class QualificationRunnerTests(unittest.TestCase):
             qpath.write_text(json.dumps(q))
             self.assertFalse(runner.verify_technical_artifacts(root, "10000")[0])
 
-    def test_alignment_is_required_and_artifact_hashes_are_recomputed(self):
+    def test_missing_alignment_and_unverifiable_alignment_become_followups(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             write_valid_artifacts(root)
@@ -322,16 +322,19 @@ class QualificationRunnerTests(unittest.TestCase):
             q = json.loads(qpath.read_text())
             q["checks"].pop("alignment")
             qpath.write_text(json.dumps(q))
-            with patch.object(runner.subprocess, "run", side_effect=AssertionError("must fail before recompute")):
-                self.assertFalse(runner.verify_technical_artifacts(root, "10000")[0])
+            self.assertTrue(runner.verify_technical_artifacts(root, "10000")[0])
+            review = json.loads((root / 'evidence/initial-review.json').read_text())
+            self.assertIn('alignment', [item['check'] for item in review['followUp']])
 
             write_valid_artifacts(root)
             metadata = root / "evidence" / "alignment-metadata.json"
             metadata.write_text('{"nativeCrs":"EPSG:3857"}')
             with patch.object(runner.subprocess, "run", side_effect=mocked_alignment_recompute):
                 ok, reason = runner.verify_technical_artifacts(root, "10000")
-            self.assertFalse(ok)
-            self.assertIn("metadataFile SHA-256 mismatch", reason)
+            self.assertTrue(ok)
+            review = json.loads((root / 'evidence/initial-review.json').read_text())
+            alignment = next(item for item in review['followUp'] if item['check'] == 'alignment')
+            self.assertIn('metadataFile SHA-256 mismatch', alignment['reason'])
 
     def test_parent_recomputed_reports_are_added_after_both_checks_pass(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -351,14 +354,16 @@ class QualificationRunnerTests(unittest.TestCase):
                                  for call in recompute.call_args_list
                                  for suffix in ("parcel-qualification-metric.py", "parcel-alignment-check.py")), 2)
 
-    def test_missing_worker_native_alignment_evidence_still_rejects(self):
+    def test_missing_native_alignment_evidence_is_recorded_in_second_pass(self):
         with tempfile.TemporaryDirectory() as temp:
             job, item, _ = worker_qualification_item(Path(temp), omit_native=True)
+            (item['attemptDir'] / 'evidence/alignment-native.json').unlink()
             with patch.object(runner.subprocess, "run", side_effect=mocked_qualification_recomputes):
-                with self.assertRaisesRegex(ValueError, "complete alignment evidence/report files"):
-                    job._verify_worker_answer(item)
+                result = job._verify_worker_answer(item)
+            self.assertEqual(result['status'], 'technical-qualified')
+            self.assertIn('alignment', [finding['check'] for finding in result['initialQualification']['followUp']])
 
-    def test_failed_parent_alignment_recomputation_still_rejects(self):
+    def test_failed_parent_alignment_recomputation_keeps_qualified_with_followup(self):
         with tempfile.TemporaryDirectory() as temp:
             job, item, _ = worker_qualification_item(Path(temp))
 
@@ -368,10 +373,12 @@ class QualificationRunnerTests(unittest.TestCase):
                 return mocked_qualification_recomputes(command, **kwargs)
 
             with patch.object(runner.subprocess, "run", side_effect=failed_alignment):
-                with self.assertRaisesRegex(ValueError, "independent recomputation of native CRS alignment failed"):
-                    job._verify_worker_answer(item)
+                result = job._verify_worker_answer(item)
+            self.assertEqual(result['status'], 'technical-qualified')
+            finding = next(f for f in result['initialQualification']['followUp'] if f['check'] == 'alignment')
+            self.assertIn('recomputation', finding['reason'])
 
-    def test_missing_metric_blocker_count_fails_closed(self):
+    def test_detailed_metric_findings_remain_second_pass_notes(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             write_valid_artifacts(root)
@@ -384,7 +391,9 @@ class QualificationRunnerTests(unittest.TestCase):
             metric_bytes = cache.read_bytes()
             q["metricCacheSha256"] = hashlib.sha256(metric_bytes).hexdigest()
             qpath.write_text(json.dumps(q))
-            self.assertFalse(runner.verify_technical_artifacts(root, "10000")[0])
+            self.assertTrue(runner.verify_technical_artifacts(root, "10000")[0])
+            review = json.loads((root / 'evidence/initial-review.json').read_text())
+            self.assertIn('metric', [finding['check'] for finding in review['followUp']])
 
     def test_full_safe_cache_changed_after_metric_audit_fails(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -393,6 +402,30 @@ class QualificationRunnerTests(unittest.TestCase):
             cache = root / "evidence" / "full-safe.geojson"
             cache.write_text('{"type":"FeatureCollection","features":[]}')
             self.assertFalse(runner.verify_technical_artifacts(root, "10000")[0])
+
+    def test_working_parcels_with_overlaps_qualify_and_keep_metric_followup(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_valid_artifacts(root)
+            path = root / 'evidence/metric-report.json'
+            metric = json.loads(path.read_text())
+            metric.update(geometryPass=False, overlapPairCount=1)
+            path.write_text(json.dumps(metric))
+            self.assertTrue(runner.verify_technical_artifacts(root, '10000')[0])
+            review = json.loads((root / 'evidence/initial-review.json').read_text())
+            self.assertTrue(review['passed'])
+            self.assertIn('metric', [finding['check'] for finding in review['followUp']])
+
+    def test_initial_policy_still_refuses_nonparcel_or_broken_reads(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            for gate in runner.REQUIRED_CHECKS:
+                write_valid_artifacts(root)
+                path = root / 'evidence/qualification.json'
+                q = json.loads(path.read_text())
+                q['checks'][gate]['passed'] = False
+                path.write_text(json.dumps(q))
+                self.assertFalse(runner.verify_technical_artifacts(root, '10000')[0], gate)
 
     def test_interrupted_running_city_resumes_without_skipping_other_cities(self):
         with tempfile.TemporaryDirectory() as temp:

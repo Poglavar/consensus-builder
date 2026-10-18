@@ -51,6 +51,30 @@ test('prepares exact prefixed native IDs, preserves UN point orientation, and us
     assert.equal(result.candidate.sourceClassification.isParcel, true);
 });
 
+test('prepares real sample IDs when the catalog ID format has no safe absent-ID codec', async t => {
+    const la = parcelSourceCatalog.sources.find(row => row.id === 'us-ca-lacounty-assessor-parcels');
+    const previousPattern = la.idPattern;
+    la.idPattern = '^0000000001$';
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-no-absent-codec-'));
+    try {
+        await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type:'FeatureCollection', features:[
+            { type:'Feature', properties:{ AIN:'0000000001' }, geometry:polygon(-118.2) }
+        ] }));
+        await fs.writeFile(path.join(sourceRoot, 'provider-proof.json'), JSON.stringify({
+            purpose:'Official county parcel boundary data.', sources:[{ id:la.id, name:la.name, scope:la.scope }]
+        }));
+        const result = await prepareCandidate({ cityCode:'no-codec-city', cityName:'Example', point:[34.0,-118.2],
+            providerReuse:{ descriptor:{ id:la.id, adapter:la.adapter, idPrefix:la.idPrefix }, sourceEvidenceFiles:[{ path:'provider-proof.json' }] },
+            sampleFiles:[{ path:'sample.geojson' }] }, { repoRoot, sourceRoot });
+        assert.equal(result.status, 'prepared', result.reason);
+        assert.deepEqual(result.candidate.sampleIds, ['US-CA-LA-0000000001']);
+        assert.equal(Object.hasOwn(result.candidate, 'absentId'), false);
+    } finally {
+        la.idPattern = previousPattern;
+        await fs.rm(sourceRoot, { recursive:true, force:true });
+    }
+});
+
 test('routes conflicting sample geometry for one native ID to LLM review', async t => {
     const { city, sourceRoot } = await fixture([
         { type: 'Feature', properties: { parcelid: 'same' }, geometry: polygon(-3.2) },

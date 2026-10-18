@@ -68,7 +68,7 @@ def write_qualification_artifacts(evidence: Path, task: dict, candidate_sha: str
     (evidence / "alignment-report.json").write_text(json.dumps(report))
     qualification = {"schemaVersion": 2, "cityCode": "17", "sourceId": task["sourceId"],
                      "candidateSha256": candidate_sha, "requestCount": 1, "status": "technical-qualified",
-                     "checks": {name: {"passed": True} for name in runner.REQUIRED_QUALIFICATION_CHECKS},
+                     "checks": {name: {"passed": True} for name in (*runner.REQUIRED_QUALIFICATION_CHECKS, "alignment")},
                      "cacheFile": "full-safe.geojson", "cacheSha256": hashlib.sha256(cache_bytes).hexdigest(),
                      "alignmentReport": "alignment-report.json"}
     qualification["checks"]["alignment"]["contractSha256"] = contract
@@ -150,8 +150,7 @@ class AdapterBuildRunnerTests(unittest.TestCase):
             self.assertIn("--metric-script", prompt)
             self.assertIn("Never edit city configs, source catalog", prompt)
             self.assertIn("backend/parcels/", prompt)
-            for phrase in ("native CRS", "wire axis order", "datum", "required grids", "ballpark",
-                           "OSM/basemap fit", "offset", "alignment", "requiredChecks"):
+            for phrase in ("parcel-availability-v1", "repeatable usable polygon", "second-pass follow-ups", "requiredChecks"):
                 self.assertIn(phrase, prompt)
 
     def test_qualification_manifest_binds_hashes_and_requires_passing_seed_for_built(self):
@@ -207,7 +206,7 @@ class AdapterBuildRunnerTests(unittest.TestCase):
             value = {"taskId": task["taskId"], "status": "built", "qualificationEvidence": ["qualification-manifest.json"]}
             ok, reason, _ = runner.verify_qualification_manifest(value, task, attempt, qual)
             self.assertFalse(ok)
-            self.assertIn("alignment gate", reason)
+            self.assertIn("parcel-availability checks", reason)
 
     def test_default_state_dir_is_repo_relative(self):
         args = runner.parse_args(["--status", "--queue", "q.json", "--repo-root", "repo",

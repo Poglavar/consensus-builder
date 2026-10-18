@@ -1,0 +1,6 @@
+{
+  "purpose": "Initial qualification admits working parcel sources and records detailed quality questions for a later pass.",
+  "id": "parcel-availability-v1",
+  "requiredChecks": ["classification", "exactIds", "stableGeometry"],
+  "followUpChecks": ["explicitAbsence", "sampling", "completeness", "binding", "metric", "alignment"]
+}

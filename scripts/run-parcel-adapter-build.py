@@ -45,8 +45,8 @@ OUTPUT_SCHEMA = {
     "required": ["taskId", "status", "changedFiles", "testEvidence", "qualificationEvidence", "summary"],
 }
 ALLOWED_CHANGE_ROOTS = ("backend/parcels/", "backend/test/")
-REQUIRED_QUALIFICATION_CHECKS = ("classification", "exactIds", "stableGeometry", "explicitAbsence",
-                                "sampling", "completeness", "binding", "metric", "alignment")
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from parcel_qualification_policy import REQUIRED_CHECKS as REQUIRED_QUALIFICATION_CHECKS
 BLOCKED_ADAPTER_RE = re.compile(
     r"\b(?:(?:adapter|protocol|implementation)\s+(?:is\s+)?(?:missing|unsupported|not supported|unimplemented|not implemented)|"
     r"(?:missing|no|unsupported|not supported|unimplemented|not implemented)\s+(?:the\s+)?(?:production\s+)?(?:adapter|implementation))\b", re.I)
@@ -198,13 +198,13 @@ Ownership and safety:
 - Write production changes only under `backend/parcels/`; write tests only under `backend/test/` using node:test so the independent headless runner can execute them. Do not install into or mutate a shared node_modules symlink. Keep personal names and home paths out of committable code.
 - Never edit city configs, source catalog, research packets, app/runtime files, or anything under the qualification worktree.
 - Preserve existing adapter behavior. Use schema/metadata-first inspection and safe native ID plus geometry fields only; never request or save owner, address, tax/account, or other personal fields.
-- Treat native CRS alignment as a required qualification gate. Preserve unchanged native geometry; save first-party metadata, explicit native CRS and wire axis order, a hash-bound native sample, and a verifiable published datum/coordinate operation with required grids available. No OSM/basemap fit, estimated/applied offset or translation, ballpark transform, or guessed/missing grid; hold if evidence is incomplete.
+- Initial qualification uses parcel-availability-v1: confirm parcel purpose, working exact reads and repeatable usable polygon output. Native CRS/axis/operation/grid uncertainty, detailed geometry findings, absence/completeness and binding limitations are recorded second-pass follow-ups. Preserve source geometry and every actual check result. Do not require perfect projection proof or perform a deep review before qualifying an otherwise working source.
 - Bound live queries and downloads. Do not bypass authentication, CAPTCHA, throttles, or access controls. Do not repair, simplify, clip, union, or silently drop source geometry.
 - Add unit tests for protocol parsing, safe identity, paging/limits, errors, and any source-specific edge case. Run focused tests and report exact commands/results.
 - Verify every source seed SHA-256 before and after use. Keep each seed candidate read-only. When the new adapter or verified source profile needs descriptor changes, derive a candidate under `{attempt_dir}/qualification/<cityCode>/candidate-derived.json`, changing only the adapter-specific descriptor fields needed by the new implementation. Preserve all frozen source/city/identity fields. Save a sibling `candidate-provenance.json` with seed path/hash, derived path/hash, sourceId and the exact descriptor changes. Never edit the seed.
 - For every seed candidate, run the repository qualifier below using the newly implemented adapter from this worktree, writing output only below `{attempt_dir}/qualification/<cityCode>/evidence/`. Use the derived candidate when descriptor changes are needed; otherwise use the frozen seed:
   `node {qualifier} --candidate <candidate path> --output {attempt_dir}/qualification/<cityCode>/evidence --metric-script {repo / "scripts/parcel-qualification-metric.py"}`
-- Save the command, exit code, and live result. Create `{attempt_dir}/qualification-manifest.json` with `requiredChecks` exactly `classification`, `exactIds`, `stableGeometry`, `explicitAbsence`, `sampling`, `completeness`, `binding`, `metric`, `alignment`, and one entry per seed: `cityCode`, `seedPath`, `seedSha256`, `candidateUsedPath`, `candidateUsedSha256`, `qualificationPath`, `qualifierExitCode`, `qualificationStatus`. Include that manifest, each qualification JSON, and each available alignment evidence pack, metadata, native sample, and report in `qualificationEvidence`. A `built` result requires schemaVersion 2 and every listed gate, including independently recomputed alignment. If a source is genuinely blocked, retain bounded request/response/error and failed qualification output. Do not label an adapter missing-code error as blocked-source.
+- Save the command, exit code, and live result. Create `{attempt_dir}/qualification-manifest.json` with `requiredChecks` exactly `classification`, `exactIds`, `stableGeometry`, and one entry per seed: `cityCode`, `seedPath`, `seedSha256`, `candidateUsedPath`, `candidateUsedSha256`, `qualificationPath`, `qualifierExitCode`, `qualificationStatus`. Include that manifest, each qualification JSON, and each available alignment evidence pack, metadata, native sample, and report in `qualificationEvidence`. A `built` result requires the three core parcel-availability checks and usable hash-bound polygons. Preserve quality findings and missing alignment as follow-up notes. If a source is genuinely blocked, retain bounded request/response/error and failed qualification output. Do not label an adapter missing-code error as blocked-source.
 - Do not commit, push, deploy, or alter unrelated existing edits. Report every file changed by this task, including any files changed by an earlier retry.
 
 Return exactly JSON matching the provided schema. `built` requires actual adapter implementation, passing tests, and saved live source qualification evidence. `blocked-source` requires source-grounded evidence of a genuine block and must explain why adapter implementation alone cannot resolve it.
@@ -389,8 +389,8 @@ def verify_qualification_manifest(value: dict[str, Any], task: dict[str, Any], a
         rows = manifest.get("seeds") if isinstance(manifest, dict) else None
         if manifest.get("taskId") != task["taskId"] or manifest.get("sourceId") != task["sourceId"]:
             return False, "qualification manifest task/source identity mismatch", []
-        if manifest.get("requiredChecks") != list(REQUIRED_QUALIFICATION_CHECKS):
-            return False, "qualification manifest omits the required alignment gate", []
+        if not set(REQUIRED_QUALIFICATION_CHECKS).issubset(manifest.get("requiredChecks") or []):
+            return False, "qualification manifest omits required parcel-availability checks", []
         if not isinstance(rows, list) or len(rows) != len(task["qualificationSeeds"]):
             return False, "qualification manifest does not cover every frozen seed", []
         qualification_statuses = []
@@ -452,32 +452,17 @@ def verify_qualification_manifest(value: dict[str, Any], task: dict[str, Any], a
             if row.get("qualificationStatus") != qualification.get("status"):
                 return False, f"qualification manifest status mismatch for city {seed['cityCode']}", []
             checks = qualification["checks"]
-            if "alignment" not in checks:
-                return False, f"qualification is missing the required alignment gate for city {seed['cityCode']}", []
             if value["status"] == "built" and any(
                     not isinstance(checks.get(key), dict) or checks[key].get("passed") is not True
                     for key in REQUIRED_QUALIFICATION_CHECKS):
-                return False, f"built result requires every qualification gate including alignment for city {seed['cityCode']}", []
-            if (qualification.get("status") == "technical-qualified"
-                    or checks["alignment"].get("passed") is True
-                    or qualification.get("alignmentReport")):
-                alignment_ok, alignment_reason = verify_saved_alignment(
-                    qualification, used_candidate, used_path, qpath, task, seed)
-                if not alignment_ok:
-                    return False, f"alignment artifacts invalid for city {seed['cityCode']}: {alignment_reason}", []
-                if value["status"] == "built":
-                    listed = {Path(path).as_posix() for path in value["qualificationEvidence"]}
-                    evidence_prefix = Path(qpath_value).parent
-                    required_artifacts = {
-                        Path(qpath_value).as_posix(),
-                        (evidence_prefix / "alignment-evidence.json").as_posix(),
-                        (evidence_prefix / "alignment-metadata.json").as_posix(),
-                        (evidence_prefix / "alignment-native.json").as_posix(),
-                        (evidence_prefix / qualification["alignmentReport"]).as_posix(),
-                        (evidence_prefix / qualification["cacheFile"]).as_posix(),
-                    }
-                    if not required_artifacts.issubset(listed):
-                        return False, f"built result omits alignment pack, metadata, native sample, report, or cache for city {seed['cityCode']}", []
+                return False, f"built result requires working parcel classification and repeatable reads for city {seed['cityCode']}", []
+            if value["status"] == "built":
+                cache_path = safe_under(qpath.parent, qualification.get("cacheFile", ""))
+                if hashlib.sha256(cache_path.read_bytes()).hexdigest() != qualification.get("cacheSha256"):
+                    return False, "qualification cache SHA-256 mismatch", []
+                from parcel_qualification_policy import usable_parcel_cache
+                if not usable_parcel_cache(json.loads(cache_path.read_text())):
+                    return False, "qualification cache has no usable parcel polygons", []
             if row.get("qualifierExitCode") not in {0, 1, 2}:
                 return False, f"qualifier exit code missing for city {seed['cityCode']}", []
             qualification_statuses.append(str(qualification.get("status", "unknown")))

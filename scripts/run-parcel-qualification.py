@@ -29,8 +29,9 @@ OUTPUT_SCHEMA = {
     },
     "required": ["cityCode", "status", "summary", "evidenceFiles"],
 }
-REQUIRED_CHECKS = ("classification", "exactIds", "stableGeometry", "explicitAbsence",
-                   "sampling", "completeness", "binding", "metric", "alignment")
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from parcel_qualification_policy import POLICY, REQUIRED_CHECKS, initial_qualification_review, usable_parcel_cache
+ALL_CHECKS = (*REQUIRED_CHECKS, *POLICY['followUpChecks'])
 BLOCKER_FIELDS = ("invalidCount", "duplicateIdCount", "conflictingSameIdGeometryCount",
                   "exactGeometryDuplicateCount", "overlapPairCount", "operationErrorCount")
 MAX_CITY_BYTES = 250 * 1024 * 1024
@@ -145,38 +146,39 @@ def verify_technical_artifacts(artifact_root: Path, code: str) -> tuple[bool, st
         metric_input_sha = sha256_file(metric_input_path)
         if q.get("cacheSha256") != metric_input_sha:
             return False, "metric input SHA-256 mismatch"
-        metric_cache_path = _metric_file_path(artifact_root / "evidence", q, "geometryReport")
+        metric_cache_path = safe_relative(artifact_root / "evidence", q.get("geometryReport") or "metric-report.json")
         metric_bytes = metric_cache_path.read_bytes()
         metric = json.loads(metric_bytes)
-        if metric.get("inputSha256") != metric_input_sha or metric.get("geometryPass") is not True:
-            return False, "metric cache does not bind to input or geometry audit did not pass"
+        if metric.get("inputSha256") != metric_input_sha:
+            return False, "metric cache does not bind to input"
         if q.get("status") != "technical-qualified" or str(q.get("cityCode")) != code:
             return False, "qualification status or identity mismatch"
-        if q.get("schemaVersion") != 2:
-            return False, "qualification schema version 2 with alignment gate is required"
+        if q.get("schemaVersion") not in {1, 2}:
+            return False, "recognized qualification evidence schema is required"
         source_id = candidate.get("descriptor", {}).get("id")
         if not isinstance(source_id, str) or not source_id or q.get("sourceId") != source_id:
             return False, "qualification source identity mismatch"
         if metric.get("geometryChangedOrRepaired") is not False or metric.get("sourceCrs") != "EPSG:4326":
             return False, "metric audit lacks unmodified WGS84 input proof"
         cache = read_json(metric_input_path)
+        if not usable_parcel_cache(cache, source_id):
+            return False, "source cache has no usable geographic parcel polygons"
         feature_count = metric.get("featureCount")
         if not isinstance(feature_count, int) or feature_count <= 0:
             return False, "metric audit has no verified features"
         if cache.get("type") != "FeatureCollection" or len(cache.get("features", [])) != feature_count or q.get("featureCount") != feature_count:
             return False, "full-safe cache feature count mismatch"
-        valid_count = metric.get("validFeatureCount")
-        if not isinstance(valid_count, int) or valid_count != feature_count:
-            return False, "metric feature counts are missing or inconsistent"
-        blockers = {field: metric.get(field) for field in BLOCKER_FIELDS}
-        if any(not isinstance(value, int) for value in blockers.values()):
-            return False, f"metric audit is missing blocker counts: {blockers}"
-        if any(value != 0 for value in blockers.values()):
-            return False, f"metric audit has blocking counts: {blockers}"
+        reviewed_checks = {key: dict(value) for key, value in checks.items() if isinstance(value, dict)}
+        if metric.get("geometryPass") is not True or metric.get("validFeatureCount") != feature_count or any(metric.get(field) != 0 for field in BLOCKER_FIELDS):
+            reviewed_checks['metric'] = {'passed': False, 'reason': 'Detailed geometry audit has unresolved findings; retained for the second pass.'}
         alignment_ok, alignment_reason = verify_alignment_artifacts(artifact_root, candidate, q, metric_input_path)
         if not alignment_ok:
-            return False, alignment_reason
-        return True, "independent qualification artifacts verified"
+            reviewed_checks['alignment'] = {'passed': False, 'reason': alignment_reason}
+        review = initial_qualification_review(reviewed_checks, q.get('failures'))
+        review.update(candidateSha256=q['candidateSha256'], cacheSha256=metric_input_sha,
+                      qualificationSha256=sha256_file(qualification_path))
+        atomic_json(artifact_root / 'evidence/initial-review.json', review)
+        return True, "working parcel source verified; unresolved quality findings retained for the second pass"
     except (OSError, ValueError, TypeError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
         return False, f"qualification artifacts incomplete or invalid: {exc}"
 
@@ -314,14 +316,14 @@ Read only these source files:
 - `{review}`
 Sample inputs (when present): {json.dumps(samples, ensure_ascii=False)}
 
-Prepare `{attempt_dir / 'candidate.json'}` containing catalog descriptor, `city` as {{"code":"{city['cityCode']}","name":{json.dumps(city['cityName'])},"point":[{point[0]},{point[1]}]}} in longitude/latitude order, safe source-native `sampleIds`, a valid-format absent `absentId`, caller-selected `metricEpsg`, and `sourceClassification` as {{"isParcel":true,"evidence":["first-party source purpose and geographic scope evidence"]}} grounded in the packet. `sampleIds` and `absentId` must use the production descriptor idPrefix and native-ID codec, not raw unprefixed IDs. Descriptor outFields include only native-ID, object-ID and necessary safe filter fields. Use descriptor capabilities accurately. Set cellSizeDegrees to 0.001 unless source contract requires a documented smaller grid. Never repair, clip, simplify, union or drop a bad source polygon. Never treat a zero point hit, login-facing UI, timeout or website text as citywide absence. Inspect official endpoints/schema/downloads. Bound requests and caches; read scripts/qualify-parcel-source.mjs -- or the file -- to understand source-specific unsupported checks. No independent child agents; finish your bounded city in this turn. Do not infer a parcel source from keywords alone: confirm its actual cadastral/registry purpose and city scope from first-party evidence.
+Prepare `{attempt_dir / 'candidate.json'}` containing catalog descriptor, `city` as {{"code":"{city['cityCode']}","name":{json.dumps(city['cityName'])},"point":[{point[0]},{point[1]}]}} in longitude/latitude order, safe native or reproducible geometry-derived `sampleIds`, a valid-format absent `absentId`, caller-selected `metricEpsg`, and `sourceClassification` as {{"isParcel":true,"evidence":["first-party source purpose and geographic scope evidence"]}} grounded in the packet. `sampleIds` and `absentId` must use the production descriptor idPrefix and native-ID codec, not raw unprefixed IDs. Descriptor outFields include only native-ID, object-ID and necessary safe filter fields. Use descriptor capabilities accurately. Set cellSizeDegrees to 0.001 unless source contract requires a documented smaller grid. Never repair, clip, simplify, union or drop a bad source polygon. Never treat a zero point hit, login-facing UI, timeout or website text as citywide absence. Inspect official endpoints/schema/downloads. Bound requests and caches; read scripts/qualify-parcel-source.mjs -- or the file -- to understand source-specific unsupported checks. No independent child agents; finish your bounded city in this turn. Do not infer a parcel source from keywords alone: confirm its actual cadastral/registry purpose and city scope from first-party evidence.
 
-Alignment is a required qualification gate. Preserve unchanged native parcel geometry and retain a safe, hash-bound native sample plus first-party metadata that explicitly declares native CRS and wire axis order. Verify the published coordinate operation, including datum and required grid availability, with no ballpark operation. Missing CRS, axis order, operation, or grid means `held`. Never use OSM/basemap fitting, estimate or apply offsets/translations, or alter geometry to make it align. If the candidate supplies `alignmentEvidence`, it must be a relative file plus SHA-256 bound to the exact metadata/native evidence; include those artifacts in the final evidence list.
+Initial qualification uses parcel-availability-v1: establish parcel purpose, working exact parcel reads and a repeatable independent read that returns usable polygon geometry. Native cadastral IDs or documented deterministic geometry-derived references are both acceptable. Missing projection metadata, native CRS/axis/operation proof, detailed geometry audit findings, area completeness, explicit-absence or binding limitations are follow-up notes, not initial qualification blockers. Keep all failed/unrun checks and concrete uncertainties visible in qualification evidence and initial-review.json for the second pass. Do not spend this initial turn pursuing perfect alignment or deep completeness. Never invent a successful check or alter source geometry to make it fit. The qualifier defaults to the initial pass; --deep-review is reserved for a later investigation. If an alignment pack already exists, preserve its real evidence and result; missing or failed alignment does not require held.
 
 Run the existing repository qualifier with output only in this attempt directory:
 `node {qualifier} --candidate {attempt_dir / 'candidate.json'} --output {attempt_dir / 'evidence'} --metric-script {metric}`
 
-Return exactly the supplied JSON schema: `cityCode`, `status`, `summary`, `evidenceFiles`. `technical-qualified` is only a recommendation for primary review, never an app integration/admission. Claim it only if the qualifier produced schemaVersion 2 evidence/qualification.json with every required check including `alignment`, hashes bind to the exact candidate and full-safe cache, an independent native-CRS recomputation passes, the metric audit passes with zero blockers, and the source-native exact-ID/absence/sampling/completeness/binding tests pass. Include the alignment evidence pack, metadata, unchanged native sample, original alignment report, and independent alignment report in `evidenceFiles`; these paths are relative to `{city_dir}` and must exist. Otherwise return `held` with the concrete missing gate and existing evidence paths. Use `excluded` only for a positively evidenced non-parcel source: write `{attempt_dir / 'evidence/exclusion.json'}` as JSON with `parcelPurpose: false`, the first-party `sourceUrl`, a short exact `excerpt`, and the reason the service is not a parcel source; include this file in `evidenceFiles`. Do not claim success from a status label alone."""
+Return exactly the supplied JSON schema: `cityCode`, `status`, `summary`, `evidenceFiles`. `technical-qualified` is only a recommendation for primary review, never an app integration/admission. Claim it when parcel classification, exactIds and stableGeometry pass and the unchanged hash-bound full-safe cache contains real usable parcel polygons. Include candidate.json, qualification.json, full-safe.geojson, metric-report.json when available, and any existing quality evidence in evidenceFiles. The primary verifier adds its own independently generated review reports. Preserve alignment, geometry, completeness and binding uncertainties as second-pass follow-ups instead of returning held for them. Return held for missing/non-working parcel output or failed core reads. Evidence paths are relative to `{city_dir}` and must exist. Use `excluded` only for a positively evidenced non-parcel source: write `{attempt_dir / 'evidence/exclusion.json'}` as JSON with `parcelPurpose: false`, the first-party `sourceUrl`, a short exact `excerpt`, and the reason the service is not a parcel source; include this file in `evidenceFiles`. Do not claim success from a status label alone."""
 
 
 def output_schema() -> dict[str, Any]:
@@ -352,7 +354,7 @@ def _direct_worker_main(request_path: Path, output_path: Path) -> int:
                                        stdout=log, stderr=log)
             ok, reason = verify_technical_artifacts(attempt, request["cityCode"])
             if qualified.returncode == 0 and ok:
-                status, summary = "technical-qualified", "Direct qualification passed all source and geometry gates; primary review remains required."
+                status, summary = "technical-qualified", "Working parcel source passed initial qualification; detailed quality findings remain in the second-pass review."
             else:
                 status, summary = "needs-llm", f"Direct qualification needs troubleshooting: {reason}"
         else:
@@ -614,9 +616,9 @@ class Runner:
                                   str(cache_path), str(independent), "--source-crs", "EPSG:4326",
                                   "--metric-epsg", str(candidate["metricEpsg"]).removeprefix("EPSG:")],
                                  capture_output=True, text=True, timeout=120)
-            audit = read_json(independent) if run.returncode == 0 and independent.exists() else {}
-            if audit.get("geometryPass") is not True or audit.get("inputSha256") != sha256_file(cache_path):
-                raise ValueError("Independent recomputation of full-source geometry QA failed")
+            audit = read_json(independent) if run.returncode in {0, 2} and independent.exists() else {}
+            if audit.get("inputSha256") != sha256_file(cache_path) or audit.get("geometryChangedOrRepaired") is not False:
+                raise ValueError("Independent geometry report does not bind to the unchanged parcel cache")
             ok, reason = verify_technical_artifacts(item["attemptDir"], code)
             if not ok:
                 raise ValueError(reason)
@@ -634,8 +636,11 @@ class Runner:
             prefix = item["attemptDir"].relative_to(item["cityDir"]).as_posix() + "/"
             trusted_reports = [
                 prefix + "evidence/independent-metric-report.json",
-                prefix + "evidence/independent-alignment-report.json",
+                prefix + "evidence/initial-review.json",
             ]
+            alignment_report = prefix + "evidence/independent-alignment-report.json"
+            if safe_relative(item['cityDir'], alignment_report).is_file():
+                trusted_reports.append(alignment_report)
             for report in trusted_reports:
                 if not safe_relative(item["cityDir"], report).is_file():
                     raise ValueError(f"trusted independent report is missing: {report}")
@@ -643,12 +648,11 @@ class Runner:
                     evidence.append(report)
             required = {prefix + "candidate.json", prefix + "evidence/qualification.json",
                         *(prefix + "evidence/" + name for name in (
-                            "full-safe.geojson", "alignment-evidence.json", "alignment-metadata.json",
-                            "alignment-native.json", "alignment-report.json", "independent-metric-report.json",
-                            "independent-alignment-report.json"))}
+                            "full-safe.geojson", "independent-metric-report.json", "initial-review.json"))}
             if not required.issubset(set(evidence)):
-                raise ValueError("technical-qualified evidence list must include candidate, full-safe cache, and complete alignment evidence/report files")
+                raise ValueError("technical-qualified evidence list must include candidate, full-safe cache, and initial review")
         return {"status": status, "summary": data["summary"], "evidenceFiles": evidence,
+                **({'initialQualification': read_json(item['attemptDir'] / 'evidence/initial-review.json')} if status == 'technical-qualified' else {}),
                 "model": answer.get("model"), "usage": answer.get("usage"),
                 "equivalent_usd": answer.get("equivalent_usd")}
 
@@ -665,6 +669,8 @@ class Runner:
                 direct_only = getattr(self.args, "direct_only", False)
                 entry.update(status=("needs-llm" if direct_only else "pending") if result["status"] == "needs-llm" else result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
                              pid=None, finishedAt=utc_now(), currentAttempt=None)
+                if 'initialQualification' in result:
+                    entry['initialQualification'] = result['initialQualification']
                 if result["status"] == "needs-llm":
                     entry.update(phase="llm", phaseAttempts=0, directAttemptDir=str(item["attemptDir"]))
                 self.log("city-finished", cityCode=code, attempt=item["attempt"], status=result["status"], summary=result["summary"])
@@ -863,6 +869,8 @@ def record_answer(args: argparse.Namespace) -> dict[str, Any]:
         entry.update(status=result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
                      currentDir=str(attempt_dir), finishedAt=utc_now(), phase="llm",
                      externalWorker=raw.get("model") or "external")
+        if 'initialQualification' in result:
+            entry['initialQualification'] = result['initialQualification']
         runner.log("city-finished", cityCode=code, attempt=attempt_dir.name, status=result["status"],
                    summary=result["summary"], worker="external")
         runner.save()

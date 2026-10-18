@@ -2,7 +2,7 @@
 // Admits technically qualified parcel cities to the app. Qualification is the gate: it already
 // proved the source is reachable and the production adapter reads it correctly. For every city whose
 // latest exported outcome is `qualified` and that is not live yet, this checks that its evidence is
-// intact and describes the production descriptor (nine gates, metric and independent metric audit,
+// intact and describes the production descriptor (initial parcel-availability checks, metric input,
 // identity and query contract), then exports the evidence and writes the app city config, catalog
 // scope, registry, demographics, labels and an admission manifest in the schema
 // backend/test/qualified-city-release.test.js verifies. No provider is contacted.
@@ -23,10 +23,12 @@ import zlib from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { alignmentContractHash } from './lib/parcel-alignment.mjs';
+import { initialQualificationReview, qualificationPolicy, REQUIRED_CHECKS, hasUsableGeographicPolygons } from './lib/parcel-qualification-policy.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WUP = 'tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz';
-const GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric', 'alignment'];
+const FOLLOW_UP_CHECKS = qualificationPolicy.followUpChecks;
+const CHECKS = [...REQUIRED_CHECKS, ...FOLLOW_UP_CHECKS];
 const BLOCKERS = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount', 'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
 const CONTRACT = ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat', 'nativeGeometryMode', 'disjointParts', 'overlapResolution', 'zoom', 'layer', 'groupFields', 'extent'];
 const POINT_ADAPTERS = new Set(['pl-uldk-point', 'tkgm-point', 'msda-point']);
@@ -160,7 +162,7 @@ export function sourceActivationDecision(candidateDescriptor, existingDescriptor
     return { eligible: true, descriptor, activation: {
         policy: 'newly_qualified_city_default', candidateDefaultForCity: candidateDescriptor.defaultForCity ?? null,
         defaultForCity: true, scope: 'admitted_city_ids',
-        reason: 'new source descriptor promoted after nine-gate qualification; catalog scope is limited to admitted cities'
+        reason: 'new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities'
     } };
 }
 
@@ -190,6 +192,7 @@ function evidenceIndex(stateDirs) {
             const record = { code, finishedAt: entry.finishedAt || '', candidate: path.join(cityDir, candidate),
                 qualification: path.join(evidenceDir, 'qualification.json'), metric: path.join(evidenceDir, 'metric-report.json'),
                 independent: path.join(evidenceDir, 'independent-metric-report.json'), cache: path.join(evidenceDir, 'full-safe.geojson'), stateDir: dir };
+            record.initialReview = path.join(evidenceDir, 'initial-review.json');
             Object.assign(record, { alignment: path.join(evidenceDir, 'alignment-report.json'),
                 independentAlignment: path.join(evidenceDir, 'independent-alignment-report.json'),
                 alignmentEvidence: path.join(evidenceDir, 'alignment-evidence.json'),
@@ -206,8 +209,7 @@ const sameUrl = (a, b) => { try { return new URL(a).href === new URL(b).href; } 
 
 // Every check the release test makes, applied before anything is written.
 export function verifyAdmissionEvidence(evidence, catalogSource) {
-    for (const key of ['candidate', 'qualification', 'metric', 'independent', 'cache', 'alignment',
-        'independentAlignment', 'alignmentEvidence', 'alignmentMetadata', 'alignmentNative']) {
+    for (const key of ['candidate', 'qualification', 'metric', 'independent', 'cache']) {
         if (!fs.existsSync(evidence[key])) return `missing ${key} evidence`;
     }
     const candidateBytes = fs.readFileSync(evidence.candidate);
@@ -216,39 +218,113 @@ export function verifyAdmissionEvidence(evidence, catalogSource) {
     const metric = readJson(evidence.metric);
     const independent = readJson(evidence.independent);
     if (qualification.status !== 'technical-qualified') return 'qualification status is not technical-qualified';
-    if (!GATES.every(gate => qualification.checks?.[gate]?.passed === true)) return 'not every gate passed';
+    if (!REQUIRED_CHECKS.every(gate => qualification.checks?.[gate]?.passed === true)) return 'initial qualification core check failed';
+    if (candidate.sourceClassification?.isParcel !== true || !Array.isArray(candidate.sourceClassification?.evidence)
+        || !candidate.sourceClassification.evidence.some(value => typeof value === 'string' && value.trim())) {
+        return 'candidate lacks positive parcel classification evidence';
+    }
+    const d = candidate.descriptor;
+    if (!d || typeof d.id !== 'string' || !d.id || typeof d.adapter !== 'string' || !d.adapter
+        || !/^https?:\/\//i.test(d.endpoint || '') || typeof d.idPrefix !== 'string' || !d.idPrefix
+        || !candidate.city || String(candidate.city.code) !== String(qualification.cityCode)
+        || qualification.sourceId !== d.id) return 'candidate and qualification source/city identity do not match';
     if (qualification.candidateSha256 !== sha256(candidateBytes)) return 'candidate hash differs from the qualification record';
     if (metric.inputSha256 !== qualification.cacheSha256) return 'metric input is not the qualification cache';
-    if (sha256(fs.readFileSync(evidence.cache)) !== qualification.cacheSha256) return 'cache bytes differ from the qualification record';
-    if (independent.inputSha256 !== metric.inputSha256 || independent.geometryChangedOrRepaired !== false || independent.geometryPass !== true
-        || BLOCKERS.some(field => independent[field] !== 0)) return 'independent metric audit does not pass';
+    const cacheBytes = fs.readFileSync(evidence.cache);
+    if (sha256(cacheBytes) !== qualification.cacheSha256) return 'cache bytes differ from the qualification record';
+    let cache;
+    try { cache = JSON.parse(cacheBytes); } catch { return 'cache is not valid JSON'; }
+    const features = cache?.features;
+    if (cache?.type !== 'FeatureCollection' || !Array.isArray(features) || !features.length
+        || !hasUsableGeographicPolygons(features)
+        || features.some(feature => !['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type)
+            || !Array.isArray(feature.geometry.coordinates) || !feature.geometry.coordinates.length
+            || !(feature.id || feature.properties?.parcelId || feature.properties?.sourceParcelId)
+            || (feature.properties?.sourceId && feature.properties.sourceId !== d.id))) {
+        return 'cache has no nonempty identified parcel polygon evidence';
+    }
+    if (qualification.featureCount !== features.length) return 'cache feature count differs from the qualification record';
+    if (independent.inputSha256 !== qualification.cacheSha256 || independent.geometryChangedOrRepaired !== false) {
+        return 'independent metric audit does not bind to the unchanged qualification cache';
+    }
+    let producerInitialReview = null;
+    if (evidence.initialReview && fs.existsSync(evidence.initialReview)) {
+        try {
+            const review = readJson(evidence.initialReview);
+            const qualificationHash = sha256(fs.readFileSync(evidence.qualification));
+            const reviewBinds = review.policy === qualificationPolicy.id
+                && review.candidateSha256 === sha256(candidateBytes)
+                && review.qualificationSha256 === qualificationHash
+                && review.cacheSha256 === qualification.cacheSha256;
+            if (reviewBinds) producerInitialReview = review;
+        } catch { /* The locally recomputed review below remains authoritative. */ }
+    }
     if (!catalogSource) return `source ${candidate.descriptor?.id} is not in the catalog`;
-    const d = candidate.descriptor;
-    const alignment = readJson(evidence.alignment), independentAlignment = readJson(evidence.independentAlignment);
-    const alignmentEvidence = readJson(evidence.alignmentEvidence);
     const contractSha256 = alignmentContractHash(d);
     if (alignmentContractHash(catalogSource) !== contractSha256) return 'candidate coordinate contract differs from the production catalog';
-    for (const report of [alignment, independentAlignment]) {
-        if (report.passed !== true || report.sourceId !== d.id || report.cityCode !== String(candidate.city.code)
-            || report.contractSha256 !== contractSha256 || report.cacheSha256 !== qualification.cacheSha256
-            || report.evidenceSha256 !== sha256(fs.readFileSync(evidence.alignmentEvidence))
-            || report.nativeSha256 !== sha256(fs.readFileSync(evidence.alignmentNative))
-            || report.metadataSha256 !== sha256(fs.readFileSync(evidence.alignmentMetadata))
-            || report.sourceGeometryChanged !== false || report.fittedOffsetApplied !== false
-            || report.bestOperationAvailable !== true || report.ballparkAllowed !== false
-            || typeof report.maxVertexDifferenceM !== 'number' || !Number.isFinite(report.maxVertexDifferenceM)
-            || typeof report.maxBoundaryDifferenceM !== 'number' || !Number.isFinite(report.maxBoundaryDifferenceM)
-            || report.maxBoundaryDifferenceM > 0.25 || report.toleranceM !== 0.25
-            || report.nativeCrs !== alignmentEvidence.nativeCrs
-            || report.nativeAxisOrder !== alignmentEvidence.nativeAxisOrder) return 'independent coordinate alignment audit does not pass or bind to actual source evidence';
-    }
     if (!sameUrl(d.endpoint ?? catalogSource.endpoint, catalogSource.endpoint) || d.idPrefix !== catalogSource.idPrefix
         || (d.idField ?? null) !== (catalogSource.idField ?? null) || JSON.stringify(d.idFields ?? null) !== JSON.stringify(catalogSource.idFields ?? null)) {
         return 'candidate identity differs from the production catalog';
     }
     const contract = CONTRACT.find(field => JSON.stringify(d[field] ?? null) !== JSON.stringify(catalogSource[field] ?? null));
     if (contract) return `candidate query contract differs from the catalog (${contract})`;
-    return { candidate, candidateBytes, qualification, metric, independent, alignment, independentAlignment };
+    const checks = Object.fromEntries(CHECKS.map(key => [key, {
+        ...(qualification.checks?.[key] || {}), passed: qualification.checks?.[key]?.passed === true
+    }]));
+    const metricQualityPass = independent.geometryPass === true && BLOCKERS.every(field => independent[field] === 0);
+    if (!metricQualityPass) checks.metric = { ...checks.metric, passed: false,
+        reason: 'Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available.' };
+    const alignmentKeys = ['alignment', 'independentAlignment', 'alignmentEvidence', 'alignmentMetadata', 'alignmentNative'];
+    const alignmentPresent = alignmentKeys.filter(key => evidence[key] && fs.existsSync(evidence[key]));
+    const alignmentComplete = alignmentKeys.every(key => evidence[key] && fs.existsSync(evidence[key]));
+    let alignment = null, independentAlignment = null;
+    let alignmentReason = alignmentComplete ? null : 'Native CRS alignment evidence is missing or incomplete; retain for follow-up.';
+    if (alignmentComplete) {
+        try {
+            alignment = readJson(evidence.alignment);
+            independentAlignment = readJson(evidence.independentAlignment);
+            const alignmentEvidence = readJson(evidence.alignmentEvidence);
+            const boundHashes = {
+                evidenceSha256: sha256(fs.readFileSync(evidence.alignmentEvidence)),
+                nativeSha256: sha256(fs.readFileSync(evidence.alignmentNative)),
+                metadataSha256: sha256(fs.readFileSync(evidence.alignmentMetadata))
+            };
+            const reportsValid = [alignment, independentAlignment].every(report => report.passed === true
+                && report.sourceId === d.id && String(report.cityCode) === String(candidate.city.code)
+                && report.contractSha256 === contractSha256 && report.cacheSha256 === qualification.cacheSha256
+                && report.evidenceSha256 === boundHashes.evidenceSha256 && report.nativeSha256 === boundHashes.nativeSha256
+                && report.metadataSha256 === boundHashes.metadataSha256 && report.sourceGeometryChanged === false
+                && report.fittedOffsetApplied === false && report.bestOperationAvailable === true
+                && report.ballparkAllowed === false && typeof report.maxVertexDifferenceM === 'number'
+                && Number.isFinite(report.maxVertexDifferenceM) && typeof report.maxBoundaryDifferenceM === 'number'
+                && Number.isFinite(report.maxBoundaryDifferenceM) && report.maxBoundaryDifferenceM <= 0.25
+                && report.toleranceM === 0.25 && report.nativeCrs === alignmentEvidence.nativeCrs
+                && report.nativeAxisOrder === alignmentEvidence.nativeAxisOrder);
+            if (reportsValid && qualification.checks?.alignment?.passed === true) {
+                checks.alignment = { ...checks.alignment, passed: true };
+                alignmentReason = null;
+            } else {
+                checks.alignment = { ...checks.alignment, passed: false };
+                alignmentReason = 'Alignment is incomplete, unbound, or did not pass independent review.';
+            }
+        } catch (error) {
+            checks.alignment = { ...checks.alignment, passed: false };
+            alignmentReason = `Alignment evidence could not be verified: ${error.message}`;
+        }
+    } else checks.alignment = { ...checks.alignment, passed: false };
+    const initialReview = initialQualificationReview(checks, qualification.failures || {});
+    for (const item of producerInitialReview?.followUp || []) {
+        if (!FOLLOW_UP_CHECKS.includes(item.check) || initialReview.followUp.some(existing => existing.check === item.check)) continue;
+        initialReview.followUp.push({ check: item.check,
+            reason: typeof item.reason === 'string' && item.reason.trim() ? item.reason : 'Producer review recorded an unresolved finding.' });
+    }
+    if (initialReview.followUp.length) initialReview.status = 'follow-up-required';
+    if (alignmentReason && !initialReview.followUp.some(item => item.check === 'alignment')) {
+        initialReview.followUp.push({ check: 'alignment', reason: alignmentReason });
+        initialReview.status = 'follow-up-required';
+    }
+    return { candidate, candidateBytes, qualification, metric, independent, alignment, independentAlignment,
+        checks, initialQualificationReview: initialReview, warnings: initialReview.followUp, producerInitialReview };
 }
 
 function slug(name) {
@@ -384,7 +460,7 @@ async function main() {
         if (taken.has(appCityId)) appCityId = `${appCityId}_${code}`;
         taken.add(appCityId);
         const point = checked.candidate.city.point; // [longitude, latitude]
-        const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric.metricCrs;
+        const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric?.metricCrs || checked.candidate.metricEpsg;
         // Same-named cities in one country are told apart by their state or region code.
         const takenLabels = new Set([...Object.values(i18n.en.city?.labels || {}), ...plan.map(item => item.label)]);
         const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${selectedSource.stateCode || code})` : '';
@@ -405,11 +481,11 @@ async function main() {
             const catalogSource = catalogDoc.sources.find(s => s.id === candidate.descriptor?.id);
             if (catalogSource && config.sourceId === catalogSource.id) continue;
             if (args.exclude.has(code)) { refused.push({ code, name, reason: args.exclude.get(code) }); continue; }
-            const checked = verify(ev, catalogSource);
+            const checked = verifyAdmissionEvidence(ev, catalogSource);
             if (typeof checked === 'string') { refused.push({ code, name, reason: checked }); continue; }
             if (catalogSource.defaultForCity === false) { refused.push({ code, name, reason: `${catalogSource.id} is an opt-in alternative (defaultForCity false)` }); continue; }
             const countryCode = catalogSource.countryCode || config.countryCode;
-            const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric.metricCrs;
+            const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric?.metricCrs || checked.candidate.metricEpsg;
             const point = checked.candidate.city.point; // [longitude, latitude]
             plan.push({ code, appCityId: config.id, switchedFrom: config.sourceId, outcome: { cityName: name }, evidence: ev, ...checked,
                 catalogSource, countryCode, qualifier: '', name, label: null, center: [config.lat, config.lon], wupPoint: [point[1], point[0]],
@@ -466,12 +542,16 @@ async function main() {
         const q = exportOne('qualification.json', item.evidence.qualification, true);
         const m = exportOne('metric-report.json', item.evidence.metric, true);
         const a = exportOne('independent-metric-audit.json', item.evidence.independent, true);
+        const cache = exportOne('full-safe.geojson', item.evidence.cache, false);
         const alignmentFiles = Object.fromEntries([
             ['alignment', 'alignment-report.json'], ['independentAlignment', 'independent-alignment-report.json'],
             ['alignmentEvidence', 'alignment-evidence.json'], ['alignmentMetadata', 'alignment-metadata.json'],
-            ['alignmentNative', 'alignment-native.json']
-        ].map(([key, name]) => [key, exportOne(name, item.evidence[key], false)]));
+            ['alignmentNative', 'alignment-native.json'], ['initialReview', 'initial-review.json']
+        ].filter(([key]) => fs.existsSync(item.evidence[key])).map(([key, name]) => [key, exportOne(name, item.evidence[key], key === 'initialReview')]));
         const metricSummary = Object.fromEntries(['sourceCrs', 'metricCrs', 'inputSha256', 'featureCount', 'geometryChangedOrRepaired', 'geometryPass', ...BLOCKERS].map(k => [k, item.metric[k]]));
+        const alignmentState = item.checks.alignment.passed ? 'verified' : 'follow-up-required';
+        const evidenceFiles = { candidate: c.rel, qualification: q.rel, metric: m.rel, independentMetricAudit: a.rel, cache: cache.rel,
+            ...Object.fromEntries(Object.entries(alignmentFiles).map(([key, file]) => [key, file.rel])) };
         manifestCities.push({
             cityCode: item.code, appCityId: item.appCityId, cityName: item.name, qualificationCityName: item.candidate.city.name,
             cityId: (registry.cities.find(r => String(r.wupCityCode) === item.code)?.cityId) || `wup2025:${item.code}`,
@@ -480,20 +560,29 @@ async function main() {
             appCenterLatLon: item.center, wupPointLatLon: item.wupPoint || item.center,
             candidate: { qualificationRecordedSha256: item.qualification.candidateSha256, evidenceOriginalSha256: c.original, evidenceExportSha256: c.exported },
             qualification: { status: 'technical-qualified', evidenceOriginalSha256: q.original, evidenceExportSha256: q.exported,
-                gates: Object.fromEntries(GATES.map(g => [g, true])), featureCount: item.qualification.featureCount,
-                sampleIds: item.candidate.sampleIds, cellSizeDegrees: item.qualification.cellSizeDegrees, limitations: item.qualification.limitations },
+                gates: Object.fromEntries(CHECKS.map(g => [g, item.checks[g]?.passed === true])),
+                initialQualificationReview: item.initialQualificationReview, warnings: item.warnings,
+                ...(item.producerInitialReview ? { producerInitialReview: item.producerInitialReview } : {}),
+                featureCount: item.qualification.featureCount, sampleIds: item.candidate.sampleIds,
+                cellSizeDegrees: item.qualification.cellSizeDegrees, limitations: item.qualification.limitations },
             metric: { evidenceOriginalSha256: m.original, evidenceExportSha256: m.exported, ...metricSummary },
-            evidenceFiles: { candidate: c.rel, qualification: q.rel, metric: m.rel, independentMetricAudit: a.rel,
-                ...Object.fromEntries(Object.entries(alignmentFiles).map(([key, file]) => [key, file.rel])) },
-            alignment: { ...item.alignment, evidenceExportSha256: alignmentFiles.alignment.exported },
-            independentMetricAudit: { sha256: a.exported, method: 'Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.',
+            cache: { sha256: item.qualification.cacheSha256, evidenceOriginalSha256: cache.original,
+                evidenceExportSha256: cache.exported, featureCount: item.qualification.featureCount },
+            evidenceFiles,
+            alignment: { status: alignmentState,
+                ...(item.alignment ? { report: item.alignment } : {}),
+                ...(alignmentFiles.alignment ? { evidenceExportSha256: alignmentFiles.alignment.exported } : {}),
+                ...(!item.checks.alignment.passed ? { followUp: item.warnings.find(w => w.check === 'alignment')?.reason } : {}) },
+            independentMetricAudit: { sha256: a.exported, method: 'Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.',
                 ...Object.fromEntries(['inputSha256', 'metricCrs', 'featureCount', 'geometryChangedOrRepaired', 'geometryPass', ...BLOCKERS].map(k => [k, item.independent[k]])) },
-            sourceProfile: { adapter: item.descriptor.adapter, endpoint: item.descriptor.endpoint, idField: item.descriptor.idField ?? null,
-                idFields: item.descriptor.idFields ?? null, idPrefix: item.descriptor.idPrefix, metricSrid: item.metricSrid,
+            sourceProfile: { id: item.descriptor.id, adapter: item.descriptor.adapter, endpoint: item.descriptor.endpoint,
+                idField: item.descriptor.idField ?? null, idFields: item.descriptor.idFields ?? null,
+                idPrefix: item.descriptor.idPrefix, metricSrid: item.metricSrid,
+                queryContract: Object.fromEntries(CONTRACT.map(field => [field, item.descriptor[field] ?? null])),
                 evidence: [item.descriptor.discovery?.jurisdiction?.basis].filter(Boolean),
                 activationDecision: item.activationDecision },
             verifiedAt: args.release.slice(0, 10),
-            primaryReview: { status: 'admitted', method: 'Qualification evidence re-verified offline: nine gates, independent geometry and native CRS alignment audits, production descriptor identity and query contract.' }
+            primaryReview: { status: 'admitted', method: `Initial qualification policy ${item.initialQualificationReview.policy}: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up.` }
         });
     }
 
@@ -511,12 +600,14 @@ async function main() {
             qualificationEvidenceFile: qualificationFile, metricReportFile: metricFile,
             ...(item.population2025 ? { population2025: item.population2025 } : {}), ...(item.population2015 ? { population2015: item.population2015 } : {}),
             appCityId: item.appCityId,
-            note: 'Passed all nine parcel qualification gates, including independently verified native CRS handling, at the recorded sample location for this settlement. Survey and basemap accuracy and wider coverage remain unverified.' });
+            note: 'Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.',
+            initialQualificationReview: manifestCities.find(c => c.cityCode === item.code).qualification.initialQualificationReview,
+            qualificationWarnings: manifestCities.find(c => c.cityCode === item.code).qualification.warnings });
         let source = registry.sources.find(s => s.sourceId === item.descriptor.id);
         if (!source) {
             const d = item.descriptor;
             source = { sourceId: d.id, name: d.name, operator: d.operator || null, countryCode: d.countryCode, scope: d.scope || d.discovery?.jurisdiction?.basis || null,
-                endpoint: d.endpoint || null, method: 'Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding',
+                endpoint: d.endpoint || null, method: 'Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry',
                 responseFormat: 'Canonical GeoJSON Polygon/MultiPolygon', crs: 'EPSG:4326 output; per-city UTM independent metric audit',
                 reuseStatus: 'Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.',
                 evidenceFile: d.discovery?.jurisdiction?.evidence?.[0] ? `world-parcels/${d.discovery.jurisdiction.evidence[0]}` : qualificationFile,
@@ -528,6 +619,8 @@ async function main() {
         source.liveIntegration.status = 'enabled';
         source.liveIntegration.cityIds = [...new Set([...(source.liveIntegration.cityIds || []), item.appCityId])];
         source.liveIntegration.additionalCityEvidence = { ...(source.liveIntegration.additionalCityEvidence || {}), [item.appCityId]: qualificationFile };
+        source.initialQualificationReviews = { ...(source.initialQualificationReviews || {}), [item.appCityId]: manifestCities.find(c => c.cityCode === item.code).qualification.initialQualificationReview };
+        source.qualificationWarningsByCity = { ...(source.qualificationWarningsByCity || {}), [item.appCityId]: manifestCities.find(c => c.cityCode === item.code).qualification.warnings };
         source.appCityIds = [...new Set([...(source.appCityIds || []), item.appCityId])];
         const previous = item.switchedFrom && registry.sources.find(s => s.sourceId === item.switchedFrom);
         if (previous) {
@@ -550,7 +643,10 @@ async function main() {
         }
         demo.cohorts = [...new Set([...(demo.cohorts || []), 'app'])];
         demo.appCityIds = [...new Set([...(demo.appCityIds || []), item.appCityId])];
-        Object.assign(demo, { parcelSourceId: item.descriptor.id, parcelQualification: 'technical-qualified-bounded', qualificationEvidence: qualificationFile });
+        Object.assign(demo, { parcelSourceId: item.descriptor.id, parcelQualification: 'initial-qualification-bounded',
+            qualificationEvidence: qualificationFile,
+            initialQualificationReview: manifestCities.find(c => c.cityCode === item.code).qualification.initialQualificationReview,
+            qualificationWarnings: manifestCities.find(c => c.cityCode === item.code).qualification.warnings });
         for (const l of LOCALES) {
             i18n[l].city ??= {}; i18n[l].city.labels ??= {};
             i18n[l].city.labels[item.appCityId] = `${item.name}${item.qualifier}, ${countryNames[l][item.countryCode]}`;
