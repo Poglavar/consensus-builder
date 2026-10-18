@@ -225,10 +225,11 @@ export async function connectWalletByConnectorId(page: Page, connectorId: string
   await openWalletModal(page);
   await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="${connectorId}"]`).click();
   await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
+  await walletVendorsLoaded(page);
 }
 
-// ethers loads on demand (index.html ensureWalletVendors); a wallet connect only starts the load,
-// so a stub that patches window.ethers must wait for it rather than race it.
+// ethers and solanaWeb3 load on demand (index.html ensureWalletVendors); a wallet connect only starts
+// the load, so the connect helper and any stub that patches window.ethers wait for it rather than race it.
 async function walletVendorsLoaded(page: Page): Promise<void> {
   await page.waitForFunction(() => typeof (window as any).ensureWalletVendors === 'function');
   const loaded = await page.evaluate(() => (window as any).ensureWalletVendors());
@@ -286,6 +287,7 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
       address: string;
       mintAndFund: ((...args: unknown[]) => Promise<{ hash: string; wait: () => Promise<{ hash: string; logs: Array<{ address: string; topics: string[] }>; blockNumber: number }> }>) & {
         staticCall: (...args: unknown[]) => Promise<boolean>;
+        estimateGas: (...args: unknown[]) => Promise<bigint>;
       };
 
       constructor(address: string) {
@@ -306,6 +308,7 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
           wait,
         });
         mintAndFund.staticCall = async () => true;
+        mintAndFund.estimateGas = async () => 21000n;
         this.mintAndFund = mintAndFund;
       }
     }
