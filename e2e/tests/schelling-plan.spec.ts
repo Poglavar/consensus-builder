@@ -5,6 +5,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
+import { selectNativeOption } from '../helpers/controls';
 
 async function openLayers(page: Page): Promise<void> {
   const sheet = page.locator('#layers-sheet');
@@ -45,7 +46,7 @@ test('the Layers switch opens the plan with its own panel, whose settings redraw
   await expect.poll(() => schellingParam(page)).toBe('60-20-16');
   await expect(page.locator('#schelling-plan-street-value')).toHaveText('20 m');
 
-  await page.locator('#schelling-plan-plots').selectOption('1');
+  await selectNativeOption(page.locator('#schelling-plan-plots'), '1');
   await expect.poll(() => schellingParam(page)).toBe('60-20-1');
   await expect(page.locator('path.schelling-plan__plot')).toHaveCount(0);
   await expect(page.locator('#schelling-plan-plot-size')).toHaveText('Whole blocks, no plots.');

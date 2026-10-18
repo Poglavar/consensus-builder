@@ -1,4 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
 import { openCity, openParcel, createSpace, proposalState, showProposal, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 test.describe('Proposal terms @features', () => {
@@ -94,5 +95,28 @@ test.describe('Proposal terms @features', () => {
     await expect(perSlice).toBeChecked();
     await expect(dialog.locator('#proposalOwnershipGroup')).toBeHidden();
     await expect(dialog.locator('#proposalOwnershipStatic')).toContainText(/Per slice/i);
+
+    // Its ownership and approval are set up from the dialog's own row, and the row reports them.
+    const approvalRow = dialog.locator('[data-reparcel-approval-row]');
+    const setUp = approvalRow.locator('[data-reparcel-approval-setup]');
+    await expect(setUp).toHaveText('Set up…');
+    await setUp.click();
+    const setup = page.locator('.approval-setup-dialog');
+    await expect(setup).toBeVisible();
+    const rights = {
+      schema: 'parcel-rights/v1',
+      source: { provider: 'upload', reference: 'e2e-terms-register' },
+      parcels: [{ parcelId: PARCEL_ID, complete: true, owners: [{ ownerId: 'owner-a', share: '1/2' }, { ownerId: 'owner-b', share: '1/2' }] }]
+    };
+    await setup.locator('[data-approval-file]').setInputFiles({ name: 'rights.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(rights)) });
+    await setup.locator('[data-editor-action="approval-import"]').click();
+    await expect(setup.locator('.proposal-editor-approval-status')).toContainText('Ownership data is complete');
+    await selectNativeOption(setup.locator('[data-approval-regime]'), 'es-md-compensation');
+    await setup.locator('[data-action-id="apply"]').click();
+    await expect(setup).toHaveCount(0);
+    const summary = approvalRow.locator('[data-reparcel-approval-summary]');
+    await expect(summary).toContainText('Rights for 1 parcel(s), 2 owner(s)');
+    await expect(summary).toContainText('Madrid — compensation by the owners');
+    await expect(setUp).toHaveText('Change…');
   });
 });

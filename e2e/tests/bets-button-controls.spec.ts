@@ -97,7 +97,7 @@ test.describe('Bets shared button variants @features', () => {
     await page.route(`**/plans/${slug}`, route => route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ slug, title: 'Bets named plan', city: 'zagreb', proposalIds: [...server.records.keys()] }),
+      body: JSON.stringify({ slug, title: 'Bets named plan', city: 'zagreb', proposalIds: [...server.records.keys()], proposalAccount: ACCOUNT }),
     }));
     await openCity(page);
     await page.locator('#username-display').click();
@@ -140,6 +140,11 @@ test.describe('Bets shared button variants @features', () => {
     // The plan is previewed, not applied: its panel offers Apply plan.
     await expect(page.locator('#plan-view-panel')).toBeVisible();
     await expect(page.locator('#plan-view-panel [data-plan-action="apply"]')).toBeVisible();
+    // The plan's panel leads back to the same bet.
+    await page.locator('#plan-view-panel [data-plan-action="bet"]').click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bets named plan');
+    await expect(dialog.getByRole('button', { name: 'Open the plan', exact: true })).toBeVisible();
   });
 
   test('the dialog Yes button opens a Yes stake form, and quick stakes set the entered amount', async ({ mockApi: page }) => {

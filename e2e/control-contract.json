@@ -4763,15 +4763,11 @@
         },
         {
           "name": "Not now",
-          "labelPattern": "^(Not now|Ahora no)$"
+          "labelPattern": "^(Not now|Ahora no|Ne sada)$"
         },
         {
           "name": "Check and use this link",
           "label": "Check and use this link"
-        },
-        {
-          "name": "Draw this plan here",
-          "label": "Draw this plan here"
         },
         {
           "name": "Enter a replacement parcel register URL",
@@ -5530,6 +5526,22 @@
         {
           "name": "Sign the owner acceptance",
           "labelPattern": "^Accept as Owner [A-Z]+$",
+          "classes": [
+            "btn",
+            "btn-success"
+          ]
+        },
+        {
+          "name": "Open the review for the authority",
+          "labelPattern": "^Review and accept as Authority$",
+          "classes": [
+            "btn",
+            "btn-success"
+          ]
+        },
+        {
+          "name": "Sign the authority approval",
+          "labelPattern": "^Approve as Authority$",
           "classes": [
             "btn",
             "btn-success"
@@ -8837,6 +8849,12 @@
           }
         },
         {
+          "name": "proposals",
+          "attrs": {
+            "data-command": "parcel.proposals"
+          }
+        },
+        {
           "name": "compare",
           "attrs": {
             "data-command": "parcel.compare"
@@ -9261,6 +9279,12 @@
           ]
         },
         {
+          "name": "Show my location",
+          "classes": [
+            "world-search__locate"
+          ]
+        },
+        {
           "name": "Search globe places",
           "classes": [
             "world-search__input"
@@ -9269,7 +9293,7 @@
         }
       ],
       "exhaustiveVariants": true,
-      "dispatchEvidence": "The globe element factory creates the return button, legend toggle, pooled live-city labels, popup close button, and one of the live-city, exploration, or data-request actions. Each action is matched by its stable class and, where those are shared, its action label.",
+      "dispatchEvidence": "The globe element factory creates the return button, the search field's Show my location button, legend toggle, pooled live-city labels, popup close button, and one of the live-city, exploration, or data-request actions. Each action is matched by its stable class and, where those are shared, its action label.",
       "interaction": "auto",
       "controlType": "dynamic"
     },

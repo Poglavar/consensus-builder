@@ -51,6 +51,26 @@ test.describe('World navigation and open ground @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
   });
 
+  // Show my location treats the browser's position as a search hit: the globe flies there and
+  // opens what is available at that point; a refused position says so in the results.
+  test('the world globe Show my location opens the place at the browser position, and says when there is none', async ({ mockApi: page }) => {
+    await page.context().grantPermissions(['geolocation']);
+    await page.context().setGeolocation({ latitude: 44.8125, longitude: 20.4612 });
+    await openCity(page);
+    await page.locator('#settings-button').click();
+    await page.locator('#world-view-button').click();
+    const world = page.locator('#world-view');
+    await expect(world.locator('canvas')).toBeVisible();
+    const locate = world.getByRole('button', { name: 'Show my location', exact: true });
+    await locate.click();
+    await expect(world.locator('.world-popup__title')).toHaveText('Belgrade', { timeout: 20_000 });
+    await expect(world.getByRole('button', { name: /Open Belgrade/ })).toBeVisible();
+
+    await page.context().clearPermissions();
+    await locate.click();
+    await expect(world.locator('.world-search__empty')).toHaveText('Could not get your location.');
+  });
+
   test('Back to map closes the world globe and restores the current city map', async ({ mockApi: page }) => {
     await openCity(page);
     const cityBefore = await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId());

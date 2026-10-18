@@ -280,12 +280,32 @@ test.describe('Road editor complete controls @features', () => {
     await expect.poll(async () => (await proposalState(page, id)).roadProposal.definition.profile.strips.some((strip: any) => strip.type === 'median')).toBe(true);
   });
 
-  test('OpenDRIVE import through the road panel creates an applied corridor and leaves drawing mode', async ({ mockApi: page }) => {
+  test('OpenDRIVE import through the road panel\'s format chooser creates an applied corridor and leaves drawing mode', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-transport-btn--road').click();
     await expect(page.locator('#road-info-panel')).toBeVisible();
     await page.locator('#importRoadsButton').click();
+    // The chooser shows every format; an unsupported one says so and keeps the chooser open.
+    const chooser = page.locator('.corridor-import-dialog');
+    await expect(chooser).toBeVisible();
+    // aria-disabled keeps the tile clickable for its explanation; Playwright's actionability check
+    // treats it as disabled, so the press is a real mouse click at the tile.
+    const landXml = chooser.locator('.cb-tile[data-format="landxml"]');
+    await expect(landXml).toHaveAttribute('aria-disabled', 'true');
+    const box = await landXml.boundingBox();
+    if (!box) throw new Error('LandXML tile has no box');
+    // The status line is shared with ground loading, which can overwrite the note at once, so
+    // every text it shows is recorded.
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__statusSeen = [];
+      const status = document.getElementById('status')!;
+      new MutationObserver(() => w.__statusSeen.push(status.textContent)).observe(status, { childList: true, characterData: true, subtree: true });
+    });
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    await expect.poll(() => page.evaluate(() => (window as any).__statusSeen.join('\n'))).toContain('LandXML import is not supported yet.');
+    await expect(chooser).toBeVisible();
 
     const xodr = `<?xml version="1.0"?>
 <OpenDRIVE>
@@ -298,7 +318,13 @@ test.describe('Road editor complete controls @features', () => {
     </laneSection></lanes>
   </road>
 </OpenDRIVE>`;
-    await page.locator('#corridorImportInput').setInputFiles({
+    // OpenDRIVE closes the chooser and opens the file picker for its own extension.
+    const picker = page.waitForEvent('filechooser');
+    await chooser.locator('.cb-tile[data-format="opendrive"]').click();
+    const fileChooser = await picker;
+    await expect(chooser).toBeHidden();
+    expect(await page.locator('#corridorImportInput').getAttribute('accept')).toBe('.xodr');
+    await fileChooser.setFiles({
       name: 'e2e-road.xodr',
       mimeType: 'application/xml',
       buffer: Buffer.from(xodr),

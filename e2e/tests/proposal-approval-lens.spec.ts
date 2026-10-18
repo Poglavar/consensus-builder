@@ -649,6 +649,32 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
   expect((await proposalState(page, proposalId)).ownerApprovals || {}).toEqual({});
 });
 
+// Where the readjustment stands on the map, an owner's deal shows that owner's land on the
+// before/after divider: their parcels before, their plots after.
+test('an owner\'s deal on an applied readjustment shows that owner\'s land on the before/after divider', async ({ mockApi: page }) => {
+  test.setTimeout(60_000);
+  const member = wallet().address;
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members: [
+    { key: member, kind: 'owner-consent', name: 'Test notary' }
+  ] } }));
+  await openCity(page);
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  await establishLocalProfile(page);
+  const proposalId = await seedReadjustment(page, member);
+  await page.evaluate((id: string) => (window as any).ProposalManager.applyProposal(id), proposalId);
+  await expect.poll(() => page.evaluate((id: string) => (window as any).isProposalCurrentlyApplied((window as any).getProposalByIdOrHash(id)), proposalId), { timeout: 30_000 }).toBe(true);
+  await openLand(page, proposalId);
+
+  await card(page).locator('[data-approval-deals] [data-approval-action="inspect"]').filter({ hasText: 'Owner D' }).click();
+  const deal = dialog(page);
+  await expect(deal.locator('.cb-dialog__title')).toHaveText('Owner D’s deal');
+  await deal.locator('[data-approval-show-map="owner-d"]').click();
+  await expect(deal).toHaveCount(0);
+  await expect(page.locator('#map .map-compare__before')).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalBeforeAfter.activeFocus())).toBe('owner:owner-d');
+  expect(await page.evaluate(() => (window as any).ProposalBeforeAfter.activeKey())).toBe(proposalId);
+});
+
 // A second device: its own browser context, the same mocked API, lens member, relay and wallets.
 async function secondBrowser(browser: Browser, baseURL: string | undefined, setup: (page: Page) => Promise<void>) {
   const context = await browser.newContext({ baseURL });

@@ -164,6 +164,18 @@ test('shared proposal editor imports rights, saves approval policy and forks wit
   await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft().fields.approvalConfig.policy.tests[0].denominator)).toBe(4);
   await page.locator('[data-editor-action="approval-test-add"]').click();
   await expect(page.locator('[data-approval-test]')).toHaveCount(2);
+  // A test added by mistake is removed again with its own button; the others stay.
+  await page.locator('[data-editor-action="approval-test-add"]').click();
+  await expect(page.locator('[data-approval-test]')).toHaveCount(3);
+  // Rows are kept in canonical order, so the added leaseholder test is found by what it counts.
+  const added = await page.locator('[data-approval-test]').evaluateAll(rows => rows.findIndex(row =>
+    (row.querySelector('[data-approval-test-of]') as HTMLSelectElement).value === 'leaseholders'));
+  expect(added).toBeGreaterThanOrEqual(0);
+  await page.locator(`[data-approval-test="${added}"] [data-editor-action="approval-test-remove"]`).click();
+  await expect(page.locator('[data-approval-test]')).toHaveCount(2);
+  await expect.poll(() => page.locator('[data-approval-test] [data-approval-test-of]').evaluateAll(selects =>
+    selects.map(select => (select as HTMLSelectElement).value))).toEqual(['owners', 'owners']);
+  await expect(fraction(0)).toHaveValue('3/4');
   await fraction(1).fill('1/2');
   await fraction(1).dispatchEvent('change');
   await selectNativeOption(page.locator('[data-approval-test="1"] [data-approval-test-strict]'), 'true');

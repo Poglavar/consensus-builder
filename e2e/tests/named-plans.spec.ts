@@ -11,10 +11,10 @@ const SLUG = 'e2e-harbor-plan';
 
 // The published park (uploaded through the real Share → Upload) is the plan's one member. The plan
 // answers are routed before the app loads: it asks for the city's plans early and keeps the answer.
-async function publishPark(page: any): Promise<{ localId: string; serverId: string; title: string }> {
+async function publishPark(page: any, routes: (page: any, serverId: string) => Promise<void> = routePlans): Promise<{ localId: string; serverId: string; title: string }> {
   const server = createSharedProposalServer();
   await attachSharedProposalServer(page, server);
-  await routePlans(page, String(server.nextId));
+  await routes(page, String(server.nextId));
   await openCity(page);
   await page.locator('#username-display').click();
   await page.locator('#username-input').fill('Plan tester');
@@ -44,6 +44,25 @@ async function routePlans(page: any, serverId: string): Promise<void> {
   await page.route(`**/plans/${SLUG}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
     ...plan, supersededBy: [], members: [{ id: serverId, proposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }]
   }) }));
+}
+
+// The park in two current plans, and an earlier version of the second that it superseded.
+const SECOND = 'e2e-harbor-plan-two';
+const EARLIER = 'e2e-harbor-plan-earlier';
+async function routeTwoPlans(page: any, serverId: string): Promise<void> {
+  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z' };
+  const plans = [
+    { ...base, slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.', superseded: false },
+    { ...base, slug: SECOND, name: `${SECOND}.proposals.urbangametheory.eth`, title: 'E2E harbor plan two', description: 'The park again.', superseded: false },
+    { ...base, slug: EARLIER, name: `${EARLIER}.proposals.urbangametheory.eth`, title: 'E2E harbor plan, earlier', description: 'Before plan two.', superseded: true },
+  ];
+  const members = [{ id: serverId, proposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }];
+  await page.route(/\/plans(\?.*)?$/, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ plans }) }));
+  for (const plan of plans) {
+    await page.route(`**/plans/${plan.slug}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+      ...plan, supersededBy: plan.slug === EARLIER ? [SECOND] : [], members
+    }) }));
+  }
 }
 
 async function openParcelMenu(page: any): Promise<void> {
@@ -120,6 +139,38 @@ test.describe('Named plans @features', () => {
     await expect(panel).toBeHidden();
     await expect(page.locator('.plan-preview-member')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe('/');
+  });
+
+  test('a proposal in two plans lists both behind In 2 plans, and an earlier plan links to its newer version', async ({ mockApi: page }) => {
+    const { localId } = await publishPark(page, routeTwoPlans);
+    // Off the map, so the parcel it stands on can be clicked again.
+    await page.evaluate((id: string) => (window as any).ProposalManager.unapplyProposal(id), localId);
+    await expect.poll(() => page.evaluate((id: string) => (window as any).isProposalCurrentlyApplied((window as any).getProposalByIdOrHash(id)), localId)).toBe(false);
+    await openParcelMenu(page);
+    await page.locator('#parcel-menu [data-command="parcel.proposals"]').click();
+    // The superseded plan is not counted; the two current ones fold behind one line.
+    const toggle = page.locator('#proposals-content .proposal-plan-toggle');
+    await expect(toggle).toHaveText(/In 2 plans/);
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    const options = page.locator('#proposals-content .proposal-plan-options');
+    await expect(options).toBeHidden();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(options.locator('.proposal-plan-link')).toHaveText(['E2E harbor plan', 'E2E harbor plan two']);
+    await options.locator(`.proposal-plan-link[data-plan-slug="${SECOND}"]`).click();
+    const panel = page.locator('#plan-view-panel');
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('#plan-view-title')).toHaveText('E2E harbor plan two');
+    await expect.poll(() => page.evaluate(() => location.pathname)).toBe(`/proposals/${SECOND}`);
+    await expect(panel.locator('[data-plan-open]')).toHaveCount(0);
+
+    // The earlier version says a newer one exists and opens it.
+    await page.evaluate((slug: string) => (window as any).PlanView.open(slug), EARLIER);
+    await expect(panel.locator('#plan-view-title')).toHaveText('E2E harbor plan, earlier');
+    await expect(panel.locator('.plan-view-note--info')).toContainText('A newer version of this plan exists:');
+    await panel.locator(`[data-plan-open="${SECOND}"]`).click();
+    await expect(panel.locator('#plan-view-title')).toHaveText('E2E harbor plan two');
+    await expect.poll(() => page.evaluate(() => location.pathname)).toBe(`/proposals/${SECOND}`);
   });
 
   test('the proposals list has a Plans source whose rows open their plan', async ({ mockApi: page }) => {
