@@ -1,48 +1,31 @@
 // Covers the road/track 2D-only guard, view-button restoration, cancellation, and nested editor lifecycle.
-import { describe, expect, it, vi } from 'vitest';
+// The road side is the real road-drawing.js loaded into the fake browser world
+// (helpers/road-drawing-env.js); map-mode-loader.js and on-map-editor.js are run as before.
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
 const require = createRequire(import.meta.url);
 const { createRuntime: createOnMapEditorRuntime } = require('../../frontend/js/on-map-editor.js');
 
-const roadSource = readFileSync(fileURLToPath(new URL('../../frontend/js/road-drawing.js', import.meta.url)), 'utf8');
 const modeSource = readFileSync(fileURLToPath(new URL('../../frontend/js/map-mode-loader.js', import.meta.url)), 'utf8');
 
-function lift(source, name) {
-    const functionStart = source.indexOf(`function ${name}(`);
-    const start = functionStart >= 6 && source.slice(functionStart - 6, functionStart) === 'async '
-        ? functionStart - 6 : functionStart;
-    expect(start, `${name} not found`).toBeGreaterThanOrEqual(0);
-    const end = source.indexOf('\n}', functionStart);
-    expect(end, `${name} closing brace not found`).toBeGreaterThan(start);
-    return source.slice(start, end + 2);
-}
+let env = null;
+afterEach(() => {
+    env?.dispose();
+    env = null;
+});
 
-function roadLifecycle() {
-    const buttons = new Map([
-        ['mode-3d-toggle', { disabled: false }],
-        ['mode-realistic-toggle', { disabled: true }],
-        ['mode-ai-toggle', { disabled: false }]
-    ]);
-    const window = {};
-    const document = { getElementById: id => buttons.get(id) || null };
-    const exitRoadDrawingMode = vi.fn();
-    const code = `
-        let roadDrawingMode = false;
-        let corridorDrawKind = 'road';
-        let roadDrawingModeButtonState = null;
-        const window = deps.window;
-        const document = deps.document;
-        function announceCorridorDrawingModeChange() {}
-        ${lift(roadSource, 'setRoadDrawingModeButtonsDisabled')}
-        ${lift(roadSource, 'updateGlobalRoadDrawingMode')}
-        function exitRoadDrawingMode() { deps.exitRoadDrawingMode(); }
-        ${lift(roadSource, 'discardRoadDrawing')}
-        return { updateGlobalRoadDrawingMode, discardRoadDrawing };
-    `;
-    return { api: new Function('deps', code)({ window, document, exitRoadDrawingMode }), buttons, exitRoadDrawingMode, window };
+const VIEW_BUTTONS = ['mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle'];
+
+// The drawing tool with the three view buttons as the page left them: 3D and AI on, photo off.
+function roadLifecycle(options) {
+    env = loadRoadDrawing(options);
+    const buttons = new Map(VIEW_BUTTONS.map(id => [id, env.element(id)]));
+    [false, true, false].forEach((disabled, index) => { env.element(VIEW_BUTTONS[index]).disabled = disabled; });
+    return { api: env.api, buttons, window: globalThis };
 }
 
 function mapModeGuard(root) {
@@ -137,56 +120,15 @@ function sharedEditorForButtons(buttons, extras = {}) {
     return { editor: createOnMapEditorRuntime(env), env, document, listeners, map };
 }
 
-function roadKeydownHarness(editor) {
-    const handleRoadEscape = vi.fn();
-    const code = `
-        let roadDrawingMode = true;
-        let roadHasStarted = false;
-        let roadSegmentPlacementInProgress = false;
-        const roadFinalizationGate = { isRunning: () => false };
-        const document = deps.document;
-        const window = deps.window;
-        function afterRoadPlacement(callback) { callback(); }
-        function undoLastRoadSegment() {}
-        function hasDrawableCorridor() { return false; }
-        function finishRoadDrawing() {}
-        function handleRoadEscape() { deps.handleRoadEscape(); }
-        ${lift(roadSource, 'handleRoadKeydown')}
-        return handleRoadKeydown;
-    `;
-    const handler = new Function('deps', code)({
-        document: { body: { classList: { contains: () => false } } },
-        window: { OnMapEditor: editor }, handleRoadEscape
-    });
-    return { handler, handleRoadEscape };
-}
-
-function seededStartThatChangesModeDuringLoad() {
-    const window = {
-        __mapModeState: { desired: '2d' },
-        proposalDraftStore: { getDraft: vi.fn(() => ({ draftId: 'draft-1' })) },
-        beginProposalDraftDesignSession: vi.fn()
-    };
-    const document = { body: { classList: { contains: () => false } } };
-    const code = `
-        let roadDrawingMode = false;
-        let corridorDrawKind = 'road';
-        const window = deps.window;
-        const document = deps.document;
-        function canStartRoadDrawingInCurrentMode() {
-            const state = window.__mapModeState;
-            return state?.desired === '2d';
-        }
-        async function ensureCorridorBuildingFootprintsLoaded() {
-            window.__mapModeState.desired = 'model';
-        }
-        function exitRoadDrawingMode() {}
-        function toggleRoadDrawTool() { throw new Error('must not enter drawing after mode changes'); }
-        ${lift(roadSource, 'startSeededCorridorDrawing')}
-        return startSeededCorridorDrawing;
-    `;
-    const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
-    return { start: new AsyncFunction('deps', code)({ window, document }), window };
+// The drawing tool open under `editor` (window.OnMapEditor), on a road with the pen still down.
+async function roadUnderEditor(editor) {
+    env = loadRoadDrawing();
+    await env.api.requestCorridorDrawingTool('road');
+    await env.click(at(0, 0));
+    await env.click(at(100, 0));
+    expect(env.session.roadHasStarted).toBe(true);
+    globalThis.OnMapEditor = editor;
+    return env;
 }
 
 describe('road and track drawing mode guard', () => {
@@ -223,13 +165,20 @@ describe('road and track drawing mode guard', () => {
         expect([...h.buttons.values()].map(button => button.disabled)).toEqual([false, true, false]);
     });
 
-    it('restores the same view-button state when the user cancels the drawing', () => {
+    it('restores the same view-button state when the user cancels the drawing', async () => {
         const h = roadLifecycle();
-        h.api.updateGlobalRoadDrawingMode(true);
+        await h.api.requestCorridorDrawingTool('road');
+        await env.click(at(0, 0));
+        await env.click(at(100, 0));
+        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([true, true, true]);
         h.api.discardRoadDrawing();
         expect(h.window.roadDrawingMode).toBe(false);
         expect([...h.buttons.values()].map(button => button.disabled)).toEqual([false, true, false]);
-        expect(h.exitRoadDrawingMode).toHaveBeenCalledOnce();
+        // The tool is gone with the drawing: the panel, the handlers and the road.
+        expect(env.session.roadDrawingMode).toBe(false);
+        expect(env.element('road-info-panel').classList.contains('visible')).toBe(false);
+        expect(env.map.listens('click')).toBe(false);
+        expect(env.session.roadSegments).toEqual([]);
     });
 
     it('keeps mode buttons disabled across the nested cross-section editor, then restores them on road exit', () => {
@@ -257,54 +206,76 @@ describe('road and track drawing mode guard', () => {
         allowed.close();
     });
 
-    it('blocks road drawing while a shared map editor or edit lock is active', () => {
-        const start = lift(roadSource, 'canStartRoadDrawingInCurrentMode');
-        const canStart = new Function('window', 'document', `${start}; return canStartRoadDrawingInCurrentMode;`);
-        const document = { body: { classList: { contains: () => false } } };
-        expect(canStart({ OnMapEditor: { isActive: () => true } }, document)()).toBe(false);
-        expect(canStart({ __mapEditLock: { isHeld: () => true } }, document)()).toBe(false);
-        expect(canStart({}, document)()).toBe(true);
+    it('blocks road drawing while a shared map editor or edit lock is active', async () => {
+        env = loadRoadDrawing({ globals: { OnMapEditor: { isActive: () => true } } });
+        expect(env.api.canStartRoadDrawingInCurrentMode()).toBe(false);
+        await expect(env.api.requestCorridorDrawingTool('road')).resolves.toBe(false);
+        expect(env.session.roadDrawingMode).toBe(false);
+        globalThis.OnMapEditor = undefined;
+        globalThis.__mapEditLock = { isHeld: () => true };
+        expect(env.api.canStartRoadDrawingInCurrentMode()).toBe(false);
+        globalThis.__mapEditLock = undefined;
+        expect(env.api.canStartRoadDrawingInCurrentMode()).toBe(true);
     });
 
-    it('lets the shared editor own Escape when its listener follows the road listener', () => {
+    it('lets the shared editor own Escape when its listener follows the road listener', async () => {
         const { editor, listeners } = sharedEditorForButtons(new Map(), { roadDrawingMode: true });
-        const road = roadKeydownHarness(editor);
+        await roadUnderEditor(editor);
         const cancelled = vi.fn();
         const session = editor.open({ owner: 'corridor-editor', modes: ['2d'], onCancel: cancelled });
-        const event = { key: 'Escape', target: {}, defaultPrevented: false,
-            preventDefault() { this.defaultPrevented = true; }, stopPropagation: vi.fn() };
-        road.handler(event);
+        // The road's keydown listener first (on the tool's document), then the shell's.
+        const event = env.key('Escape', { stopPropagation: vi.fn() });
         listeners.get('keydown')(event);
-        expect(road.handleRoadEscape).not.toHaveBeenCalled();
+        await env.idle();
+        // The road did not lift its pen or close: the Escape was the editor's.
+        expect(env.session.roadHasStarted).toBe(true);
+        expect(env.session.roadDrawingMode).toBe(true);
         expect(cancelled).toHaveBeenCalledOnce();
         session.close();
     });
 
-    it('keeps road Escape behavior when no shared editor is active', () => {
-        const { handler, handleRoadEscape } = roadKeydownHarness({ isActive: () => false });
-        const event = { key: 'Escape', target: {}, defaultPrevented: false,
-            preventDefault() { this.defaultPrevented = true; } };
-        handler(event);
+    it('keeps road Escape behavior when no shared editor is active', async () => {
+        await roadUnderEditor({ isActive: () => false });
+        const event = env.key('Escape');
+        await env.idle();
         expect(event.defaultPrevented).toBe(true);
-        expect(handleRoadEscape).toHaveBeenCalledOnce();
+        expect(env.session.roadHasStarted).toBe(false);   // the pen was lifted
+        expect(env.session.roadSegments[0]).toHaveLength(2);
     });
 
-    it('refuses to start from a requested/current non-2D view', () => {
-        expect(roadSource).toContain('if (!roadDrawingMode && !canStartRoadDrawingInCurrentMode()) return false;');
-        expect(roadSource).toContain('if (!canStartRoadDrawingInCurrentMode()) return false;');
-        const start = lift(roadSource, 'canStartRoadDrawingInCurrentMode');
-        const canStart = new Function('window', 'document', `${start}; return canStartRoadDrawingInCurrentMode;`);
-        const model = canStart({ __mapModeState: { desired: 'model' } }, { body: { classList: { contains: () => false } } });
-        const pendingPhoto = canStart({ __mapModeState: { desired: '2d' }, __pending3DMode: 'photo' }, { body: { classList: { contains: () => false } } });
-        expect(model()).toBe(false);
-        expect(pendingPhoto()).toBe(false);
+    it('refuses to start from a requested/current non-2D view', async () => {
+        // A model view requested, and a photo switch pending: neither opens the tool.
+        env = loadRoadDrawing({ globals: { __mapModeState: { desired: 'model' } } });
+        await expect(env.api.requestCorridorDrawingTool('road')).resolves.toBe(false);
+        expect(await env.api.startSeededCorridorDrawing('road', { centerline: [[at(0, 0), at(100, 0)]] }, null)).toBe(false);
+        env.dispose();
+        env = loadRoadDrawing({ globals: { __mapModeState: { desired: '2d' }, __pending3DMode: 'photo' } });
+        await expect(env.api.requestCorridorDrawingTool('road')).resolves.toBe(false);
+        expect(env.session.roadDrawingMode).toBe(false);
+        expect(env.map.listens('click')).toBe(false);
+        env.dispose();
+        // The view moved to the model while the footprints loaded: asked again, after the wait.
+        env = loadRoadDrawing({
+            globals: {
+                __mapModeState: { desired: '2d' },
+                ensureCorridorBuildingFootprintsLoaded: async () => { globalThis.__mapModeState.desired = 'model'; }
+            }
+        });
+        await expect(env.api.requestCorridorDrawingTool('road')).resolves.toBe(false);
+        expect(env.session.roadDrawingMode).toBe(false);
     });
 
     it('does not activate a copied draft design session if async loading moves to 3D', async () => {
-        const h = seededStartThatChangesModeDuringLoad();
-        h.start = await h.start;
-        await expect(h.start('road', { id: 'seed' }, { draftId: 'draft-1' })).resolves.toBe(false);
-        expect(h.window.beginProposalDraftDesignSession).not.toHaveBeenCalled();
-        expect(h.window.pendingRoadDrawingSeed).toBeUndefined();
+        env = loadRoadDrawing({
+            globals: {
+                __mapModeState: { desired: '2d' },
+                proposalDraftStore: { getDraft: vi.fn(() => ({ draftId: 'draft-1' })) },
+                ensureCorridorBuildingFootprintsLoaded: async () => { globalThis.__mapModeState.desired = 'model'; }
+            }
+        });
+        await expect(env.api.startSeededCorridorDrawing('road', { id: 'seed' }, { draftId: 'draft-1' })).resolves.toBe(false);
+        expect(globalThis.beginProposalDraftDesignSession.calls).toHaveLength(0);
+        expect(globalThis.pendingRoadDrawingSeed).toBeUndefined();
+        expect(env.session.roadDrawingMode).toBe(false);
     });
 });
