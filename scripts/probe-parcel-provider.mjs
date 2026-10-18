@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
+import { GEOMETRY_IDENTITY_KIND, parseGeometryParcelId } from '../backend/parcels/geometry-identity.js';
 const hash = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
 const unsafe = /owner|address|titular|titleholder|person|email|phone|taxpayer|account/i;
 export function safeRequestUrl(input) {
@@ -43,7 +44,7 @@ export function searchLocations(point, ringsM) {
 }
 export function safeDescriptor(source) {
     const d = structuredClone(source);
-    const fields = new Set([d.idField, d.objectIdField, d.idNamespace?.field, ...(d.idFields || []), ...(d.partMatchFields || [])]);
+    const fields = new Set([d.idField, d.objectIdField, d.idNamespace?.field, ...(d.idFields || []), ...(d.partMatchFields || []), ...(d.groupFields || [])]);
     for (const key of ['attributeFilters','attributeExclusions','attributeDateEquals']) for (const field of Object.keys(d[key] || {})) fields.add(field);
     for (const key of ['attributeNotNull','attributeNull']) for (const field of d[key] || []) fields.add(field);
     if (d.adapter === 'bev-tiles') for (const f of ['kg','gnr','rstatus']) fields.add(f);
@@ -91,9 +92,18 @@ function validWgs84Polygon(type, coordinates) {
     }
     return true;
 }
-export function safeSample(feature, sourceId, { returnsWGS84 = false } = {}) {
+export function safeSample(feature, sourceId, { returnsWGS84 = false, descriptor } = {}) {
     const p = feature?.properties;
-    if (!p || p.sourceId !== sourceId || typeof p.sourceParcelId !== 'string' || !p.sourceParcelId
+    let reference = p?.sourceParcelId;
+    if (descriptor?.identityKind === GEOMETRY_IDENTITY_KIND && p?.sourceId === sourceId) {
+        const parsed = parseGeometryParcelId(descriptor, p.parcelId);
+        if (descriptor.id !== sourceId || p.parcelIdentityKind !== GEOMETRY_IDENTITY_KIND
+            || p.sourceParcelId !== null || p.sourceGeometryHash !== parsed.hash || feature.id !== p.parcelId) {
+            throw new Error('Provider returned an invalid geometry-derived parcel reference');
+        }
+        reference = p.parcelId.slice(descriptor.idPrefix.length);
+    }
+    if (!p || p.sourceId !== sourceId || typeof reference !== 'string' || !reference
         || typeof p.parcelId !== 'string' || !p.parcelId || returnsWGS84 !== true
         || !['Polygon','MultiPolygon'].includes(feature?.geometry?.type)) {
         throw new Error('Provider returned an invalid native parcel identity or geometry');
@@ -107,7 +117,7 @@ export function safeSample(feature, sourceId, { returnsWGS84 = false } = {}) {
     // Adapters return normalized WGS84 coordinates. Remove only legacy CRS metadata
     // after that contract and the geographic coordinate bounds have been verified.
     const geometry = { type:sourceGeometry.type, coordinates:sourceGeometry.coordinates };
-    return { type:'Feature', properties:{id:p.sourceParcelId}, geometry };
+    return { type:'Feature', properties:{id:reference}, geometry };
 }
 async function main() {
     const argv = process.argv.slice(2);
@@ -177,7 +187,7 @@ async function main() {
             }
             if (response.features.length) {
                 selected=response.features.slice(0,3);
-                for (const f of selected) safeSample(f,d.id,response);
+                for (const f of selected) safeSample(f,d.id,{...response,descriptor:d});
                 result.verifiedQuery = noArea ? {point:location.point} : {bbox:location.bbox};
                 result.hitRingM = location.ringM;
                 break;
@@ -196,9 +206,18 @@ async function main() {
                 || exact.absentIds?.length !== 0) throw new Error('Native ID reread did not return the complete WGS84 requested set');
             const found = new Map(exact.features.map(f=>[f.properties.parcelId,f]));
             if (found.size !== ids.length || selected.some(f=>!found.has(f.properties.parcelId) || hash(f.geometry)!==hash(found.get(f.properties.parcelId).geometry))) throw new Error('Native identity or full polygon changed during independent reread');
-            const sample={type:'FeatureCollection',features:selected.map(f=>safeSample(f,d.id,exact))};
+            const sample={type:'FeatureCollection',features:selected.map(f=>safeSample(f,d.id,{...exact,descriptor:d}))};
             await fs.writeFile(path.join(output,'samples.geojson'),JSON.stringify(sample)+'\n');
-            result={...result,status:'discovered',sourceId:d.id,sampleFile:'samples.geojson',nativeIds:sample.features.map(f=>f.properties.id),geometryHashes:sample.features.map(f=>hash(f.geometry)),descriptor:d};
+            const derived = d.identityKind === GEOMETRY_IDENTITY_KIND;
+            result={...result,status:'discovered',sourceId:d.id,sampleFile:'samples.geojson',
+                nativeIds:derived ? [] : sample.features.map(f=>f.properties.id),
+                ...(derived ? { referenceIds:sample.features.map(f=>f.properties.id),identityProvenance:{
+                    kind:GEOMETRY_IDENTITY_KIND,native:false,sourceNamespace:d.id,
+                    canonicalization:'geometry-identity.js: SHA-256 of the source ID, identity kind and canonical MultiPolygon coordinates at 1e7 precision.',
+                    collisionPolicy:'Canonical references must be unique and independently reread with identical geometry.',
+                    stabilityLimits:'References identify a reconstructed snapshot outline; changed geometry changes the reference. They are not published cadastral numbers.',
+                    overlapResolution:d.overlapResolution ?? null
+                }} : {}),geometryHashes:sample.features.map(f=>hash(f.geometry)),descriptor:d};
         }
     } catch(error) { result={...result,status:blockedStatus ? 'blocked' : 'held',reason:String(error.message).slice(0,400)}; }
     finally { globalThis.fetch=original; }

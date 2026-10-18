@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-18: Resume parcel research and qualification on Valhalla toward 1,000 supported cities, continuing from the latest saved evidence; this lifts the October 12 worldwide-research pause.
+
 - 2026-10-15: For the on-map production cutover, preserve built capabilities without maintaining legacy implementation compatibility. The user accepts switching between 2D and model views instead of simultaneous previews, and intentionally removes the parcel/ground View in 3D shortcut.
 
 - 2026-10-14: Geometry editors use the global view buttons; in desktop 3D their controls dock left so Layers can remain open on the right.

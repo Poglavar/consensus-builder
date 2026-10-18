@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { safeDescriptor, safeRequestUrl, safeSample, searchLocations } from '../probe-parcel-provider.mjs';
+import { geometryParcelFeature } from '../../backend/parcels/geometry-identity.js';
 
 test('logs the HMLR archive resource without its presigned S3 credentials', () => {
     assert.equal(safeRequestUrl('https://datapub-prd-s3-bucket.s3.amazonaws.com/inspire/oxford.zip?X-Amz-Credential=private&X-Amz-Signature=secret'),
@@ -66,4 +67,29 @@ test('keeps published fields only for a provider whose own profile declares them
     assert.deepEqual(declared.outFields, ['mahalleId','adaNo','parselNo']);
     assert.equal(declared.parcelNumberField, 'parselNo');
     assert.throws(() => safeDescriptor({ ...tkgm, outFields:['mahalleId','ownerName'], discovery:{ keepPublishedFields:true } }), /safe field allowlist/);
+});
+
+test('retains validated geometry references without inventing a native cadastral ID', () => {
+    const descriptor = { id:'tile-snapshot', idPrefix:'TILE-', identityKind:'geometry-sha256-v1' };
+    const derived = geometryParcelFeature(descriptor, feature());
+    const options = { returnsWGS84:true, descriptor };
+    const sample = safeSample(derived, descriptor.id, options);
+    assert.deepEqual(sample.properties, { id:derived.id.slice(descriptor.idPrefix.length) });
+    assert.deepEqual(sample.geometry, derived.geometry);
+    assert.equal(derived.properties.sourceParcelId, null);
+    assert.throws(() => safeSample(derived, descriptor.id, { returnsWGS84:true }), /invalid native parcel identity/);
+    const wrongHash = structuredClone(derived);
+    wrongHash.properties.sourceGeometryHash = '0'.repeat(64);
+    assert.throws(() => safeSample(wrongHash, descriptor.id, options), /invalid geometry-derived parcel reference/);
+    const wrongNamespace = { ...options, descriptor:{ ...descriptor,id:'another-source' } };
+    assert.throws(() => safeSample(derived, descriptor.id, wrongNamespace), /invalid geometry-derived parcel reference/);
+});
+
+test('keeps vector tile grouping keys when narrowing the candidate fields', () => {
+    const descriptor = { adapter:'vector-tiles', groupFields:['survey_key'],
+        outFields:['survey_key','display_name'], parcelNumberField:'display_name' };
+    const safe = safeDescriptor(descriptor);
+    assert.deepEqual(safe.outFields, ['survey_key']);
+    assert.equal(safe.parcelNumberField, undefined);
+    assert.throws(() => safeDescriptor({ ...descriptor,groupFields:['ownerName'] }), /safe field allowlist/);
 });

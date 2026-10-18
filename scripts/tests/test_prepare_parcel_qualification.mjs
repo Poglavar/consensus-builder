@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { prepareCandidate } from '../prepare-parcel-qualification.mjs';
 import { parcelSourceCatalog } from '../../backend/parcels/sources.js';
 import { decodeSnapshotNativeId } from '../../backend/parcels/geojson-snapshot-source.js';
+import { geometryParcelFeature, parseGeometryParcelId } from '../../backend/parcels/geometry-identity.js';
 
 const repoRoot = path.resolve(new URL('../..', import.meta.url).pathname);
 const source = parcelSourceCatalog.sources.find(row => row.id === 'gh-ama-public-property-app');
@@ -59,6 +60,26 @@ test('routes conflicting sample geometry for one native ID to LLM review', async
     const result = await prepareCandidate(city, { repoRoot, sourceRoot });
     assert.equal(result.status, 'needs-llm');
     assert.match(result.reason, /conflicting geometry/);
+});
+
+test('prepares tile snapshot geometry references and a valid absent hash at the same locator', async t => {
+    const tileSource = parcelSourceCatalog.sources.find(row => row.id === 'in-mp-bhulekh-survey-tiles');
+    const derived = geometryParcelFeature(tileSource, { type:'Feature', properties:{},
+        geometry:{ type:'Polygon',coordinates:[[[78.75,23.84],[78.751,23.84],[78.751,23.841],[78.75,23.84]]] } });
+    const sample = { type:'Feature',properties:{ id:derived.id.slice(tileSource.idPrefix.length) },geometry:derived.geometry };
+    const { city, sourceRoot } = await fixture([sample], { cityCode:'9499', cityName:'Sagar', point:[23.84,78.75],
+        providerReuse:{ sourceId:tileSource.id,descriptor:{ id:tileSource.id,adapter:tileSource.adapter,idPrefix:tileSource.idPrefix },
+            sourceEvidenceFiles:[{ path:'provider-proof.json' }] } });
+    t.after(() => fs.rm(sourceRoot,{ recursive:true,force:true }));
+    const result = await prepareCandidate(city,{ repoRoot,sourceRoot });
+    assert.equal(result.status,'prepared',result.reason);
+    assert.deepEqual(result.candidate.sampleIds,[derived.id]);
+    assert.deepEqual(result.candidate.descriptor.outFields,tileSource.groupFields);
+    const original = parseGeometryParcelId(tileSource,derived.id);
+    const absent = parseGeometryParcelId(tileSource,result.candidate.absentId);
+    assert.equal(absent.longitude,original.longitude);
+    assert.equal(absent.latitude,original.latitude);
+    assert.notEqual(absent.hash,original.hash);
 });
 
 test('does not emit unsafe descriptor fields or infer a web source without a provider packet', async t => {

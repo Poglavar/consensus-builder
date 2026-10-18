@@ -172,7 +172,7 @@ def _safe_descriptor(value):
         'attributeNotNull','attributeNull','attributeDateEquals','stateCode','countyCode','countryCode','scope','coverage','queryFormat',
         'boundsQueryMode','idsQueryMode','pointQueryMode','requestProperties','outFields','returnGeometry','returnIdsOnly','capabilities','areaEnumeration',
         'recordCountLimit','maxRecordCount','limit','offset','resultRecordCount','geometryPrecision','spatialReference','inSR','outSR','whereClause',
-        'nativeIdProfile','filters','filterProfile','sortField','sortOrder','useGlobalIds','supportsPagination','pagination','additionalProperties',
+        'nativeIdProfile','identityKind','groupFields','zoom','extent','lookupCellSize','overlapResolution','filters','filterProfile','sortField','sortOrder','useGlobalIds','supportsPagination','pagination','additionalProperties',
         'pageSize','maxFeatures','maxBboxKm2','timeoutMs','version','wfsVersion','requestCrs','outputFormat','geometryCrs','nativeSrid','metricSrid'
     }
     secret=re.compile(r'(token|secret|password|credential|authorization|api.?key|access.?key|subscription.?key|signature|(^|[-_])key($|[-_])|sig)',re.I)
@@ -244,6 +244,11 @@ def _make_packets(queue_city, provider, result, evidence, sample, sample_name, c
     tested_id=(tested_desc.get('sourceId') or tested_desc.get('id')) if isinstance(tested_desc,dict) else None
     if sourceid and tested_id and str(sourceid)!=str(tested_id): raise ValueError('tested provider descriptor source ID differs from queued provider')
     reuse={'descriptor':_safe_descriptor(tested_desc),'sourceId':sourceid or tested_id,'seedCityCodes':provider.get('seedCityCodes',[]),'seedCityIds':provider.get('seedCityIds',[]),'sourceEvidenceFiles':evidence,'queryEvidence':result.get('attempts',[]),'verifiedQuery':attempts,**({'scopeEvidence':provider['scopeEvidence']} if isinstance(provider.get('scopeEvidence'),list) else {}),'geometryHashes':geometry_hashes,'nativeIds':native_ids}
+    if tested_desc.get('identityKind')=='geometry-sha256-v1':
+        provenance=result.get('identityProvenance')
+        if not isinstance(provenance,dict) or provenance.get('kind')!='geometry-sha256-v1' or provenance.get('native') is not False or provenance.get('sourceNamespace')!=sourceid:
+            raise ValueError('geometry-derived sample requires explicit source-bound identity provenance')
+        reuse.update({'nativeIds':[],'referenceIds':native_ids,'identityProvenance':provenance})
     limits={'maxFullPolygonsRetainedInRepository':3}
     base.update({'status':'complete','runtimeEligible':False,'registryFound':True,'geometryVerified':True,'parcelGeometryVerified':True,'verifiedSample':True,'discoveryMethod':'provider-expansion','providerReuse':reuse,'scopeEvidence':result.get('scopeEvidence',{}),'scopeLimits':limits,'cityPacketFile':city_name,'sampleFile':sample_name,'sampleFiles':[sample_name]})
     review={k:base[k] for k in ('cityCode','wupCityCode','rank','queueRank','point','population2025','population2025k','populationUnit','name','cityName','country','iso2','countryCode') if k in base}
