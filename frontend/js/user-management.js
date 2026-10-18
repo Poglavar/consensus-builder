@@ -47,6 +47,14 @@ function generateGuestAlias(existingAgents) {
     return `Guest ${Date.now()}`;
 }
 
+// The browser's own profile is the one user-controlled agent: getCurrentUserAgent() returns the
+// first it finds, so a new own profile that left an older one flagged (a guest made in an earlier
+// visit) kept the app treating its user as that guest.
+function addOwnUserAgent(agent) {
+    agentStorage.addAgent(agent);
+    setUserControlledAgent(agent.id, true);
+}
+
 function ensureGuestUserAgentForDeepLink() {
     if (typeof agentStorage === 'undefined' || typeof createUserAgent !== 'function') {
         return null;
@@ -56,7 +64,7 @@ function ensureGuestUserAgentForDeepLink() {
     const guestName = generateGuestAlias(existingAgents);
     const avatarIndex = pickAvailableAvatarIndex();
     const guestAgent = createUserAgent(guestName, avatarIndex, { isGuest: true });
-    agentStorage.addAgent(guestAgent);
+    addOwnUserAgent(guestAgent);
 
     currentUserAgent = guestAgent;
     currentUsername = guestAgent.name;
@@ -81,7 +89,7 @@ function ensureGuestUserAgent() {
     const guestName = generateGuestAlias(existingAgents);
     const avatarIndex = pickAvailableAvatarIndex();
     const guestAgent = createUserAgent(guestName, avatarIndex, { isGuest: true });
-    agentStorage.addAgent(guestAgent);
+    addOwnUserAgent(guestAgent);
 
     currentUserAgent = guestAgent;
     currentUsername = guestAgent.name;
@@ -850,7 +858,7 @@ function submitUsername(event) {
     // Create new user agent (for non-guest flow, e.g., after logout)
     if (typeof createUserAgent === 'function') {
         const userAgent = createUserAgent(username, selectedAvatarIndex);
-        agentStorage.addAgent(userAgent);
+        addOwnUserAgent(userAgent);
 
         currentUserAgent = userAgent;
         currentUsername = username;
