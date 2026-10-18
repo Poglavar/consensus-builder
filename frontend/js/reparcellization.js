@@ -1,4 +1,19 @@
-(function () {
+// The land readjustment (reparcellization) editor. createReparcellizationEditor() builds one editor
+// with its own state; its collaborators are the page's globals, read when they are used. The page
+// makes one and exposes it as window.openReparcellizationModal; node tests require() the factory and
+// make a fresh editor per test (backend/test/helpers/reparcellization-env.js).
+(function attachReparcellizationEditor(root, createReparcellizationEditor) {
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { createReparcellizationEditor };
+        return;
+    }
+    const editor = createReparcellizationEditor();
+    if (!editor) return;
+    if (typeof root.pendingReparcellizationPlan === 'undefined') {
+        root.pendingReparcellizationPlan = null;
+    }
+    root.openReparcellizationModal = editor.openReparcellizationModal;
+})(typeof window !== 'undefined' ? window : globalThis, function createReparcellizationEditor() {
     const reparcellizationUiState = window.__reparcellizationUiState;
     if (!reparcellizationUiState
         || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
@@ -5067,8 +5082,52 @@
         return true;
     }
 
-    if (typeof window.pendingReparcellizationPlan === 'undefined') {
-        window.pendingReparcellizationPlan = null;
-    }
-    window.openReparcellizationModal = openReparcellizationModal;
-})();
+    // The editor: openReparcellizationModal is what the page calls; `state` and every function above
+    // are listed so a test can drive this editor's own session and see what it did.
+    return {
+        state,
+        liveReparcellizationFeature, ownerDisplayName, liveSelectionFeatures, subdivisionApi,
+        isNoOwnerEntry, getPublicLandOwner, formatTemplate, t, applyTranslations, hashToColorIndex,
+        pickOwnerColor, formatPercent, updateSubtitleWithOwners, getAlgorithmOptions,
+        getAlgorithmOptionByKey, buildAlgorithmRadios, setStatus, updateActiveModeHint, destroyMap,
+        layoutSignature, isDirty, cancelModal, confirmDiscard, closeModal, buildModalStructure, initMap,
+        formatArea, formatMoney, ledgerUsesMoney, formatLedgerMetric, computeOwnerLedger,
+        assignedAreaOf, computeProRataJointOwners, applyJointOwnersToSlice, resyncJointSliceShares,
+        buildAmendSlices, applyCourtyard, openBuiltFormPicker, defaultCashOffer, getCashOffer,
+        storedCash, computeCashTotals, computeTotalCashOffer, updateCashTotalDisplay,
+        evaluatePlanCompleteness, updateCommitState, updateLegend, inputParcelFeatures, reviewInputs,
+        clearOwnerReviewHighlights, drawOwnerReviewHighlights, updateOwnerReview, inputParcelLabel,
+        setPlotsTab, clearInputHighlight, highlightInputParcel, updateOldPlotsList,
+        computeRingCentroidAndAreaXY, getSuperParcelCentroidLngLat, ensureProposalDefaults,
+        sliceToFeature, geometryToPolygonFeatures, cloneOwners, makePlotFromOwners,
+        createUnassignedPlot, hydrateSlicesFromPolygons, carvePlotIntoPlan, tilingProblem, refusalText,
+        conformLayout, cutContext, mapScale, applyCutResult, setAlgorithmKey, adoptLayoutForEditing,
+        updateDrawToolButtons, setDrawButtonsActive, clearDrawTemp, getVertexIcon, updateDrawShape,
+        renderDrawTemp, snapFor, renderDrawGhosts, clearDrawGhosts, renderSnapFeedback, snapStatusText,
+        previewLine, updateDrawCursor, onDrawClick, onDrawDblClick, onDrawMouseMove, undoLastPoint,
+        updateDrawToolbar, dedupeDrawPoints, onDrawFinish, cutFailureText, startDraw, cancelDraw,
+        toggleDrawMode, eraseAvailable, toggleEraseMode, clearEraseLayer, eraseTooltipFor,
+        renderEraseLayer, eraseBoundary, handleGeojsonUpload, applyUploadedGeometry, shuffleOwnership,
+        ensureHistory, pushHistory, discardLastHistory, undoLastEdit, updateUndoAffordance,
+        nodeEditingAvailable, toggleNodeEditing, toggleAssignMode, clearNodeHandles, anchorsACut,
+        poolBoundaryIndex, renderNodeHandles, showNodeMessagePopup, openNodePopup, openEdgePopup,
+        previewGeometries, describeNodeRemoval, plotLabel, removalConsequenceText, removeNodeFromLayout,
+        removeNodePerRing, dissolveBoundariesAt, mergePlots, applyGeometries, recomputeSliceAreas,
+        computeGeometryArea, dismissOwnerPopup, restoreOwnerPopupView, onSliceClick,
+        assignPublicToAllSlices, toggleOwnerOnSlice, parseHexColor, blendOwnerColors,
+        syncSlicePrimaryOwner, getSweepBearing, computeSweepSlices, getSweepIcon, updateSweepDirLine,
+        onSweepDrag, initSweepOrientation, destroySweepOrientation, parcelColorForBefore,
+        buildBeforeFeatureCollection, enterCompare, exitCompare, toggleCompare, sliceIsUnassigned,
+        unassignedFill, sliceFillColor, sliceBaseStyle, plotLabelRadiusM, clearPlotNumbers,
+        drawPlotNumbers, highlightSlice, collectAppliedBuildingFootprints, drawBuildingFootprints,
+        drawInputParcels, drawPreview, currentPlan, renderRegimeCheck, updateApprovalRow,
+        createDialogBehind, approvalCadastreIds, openApprovalSetup, applyApprovalSetup, persistResult,
+        ensureCommitAvailability, computeFeatureArea, getParcelLandValue, ownerIdentityForSlot,
+        savedOutputRecipientIds, appendSavedOutputRecipients, restoreSavedLedgerMetadata,
+        replaceSavedInputOwnersFromRights, declaredOwnerSlots, labelAbstractOwners,
+        cadastralIdentityForLiveParcel, buildSitePoolShares, buildOwnerShares, safeIntersect,
+        safeDifference, sliceWithSweepLine, refreshPreview, validateSelection, buildSuperParcel,
+        buildSuperParcelFromPlan, declaredPlanParcelIds, resolveInputParcelFeatures,
+        openReparcellizationModal, sitePoolOfPendingPlan, buildSitePool, buildReparcellizationModal
+    };
+});
