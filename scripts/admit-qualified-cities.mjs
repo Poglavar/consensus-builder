@@ -314,7 +314,7 @@ export function verifyAdmissionEvidence(evidence, catalogSource) {
     } else checks.alignment = { ...checks.alignment, passed: false };
     const initialReview = initialQualificationReview(checks, qualification.failures || {});
     for (const item of producerInitialReview?.followUp || []) {
-        if (!FOLLOW_UP_CHECKS.includes(item.check) || initialReview.followUp.some(existing => existing.check === item.check)) continue;
+        if (![...FOLLOW_UP_CHECKS, 'sourceCurrentness'].includes(item.check) || initialReview.followUp.some(existing => existing.check === item.check)) continue;
         initialReview.followUp.push({ check: item.check,
             reason: typeof item.reason === 'string' && item.reason.trim() ? item.reason : 'Producer review recorded an unresolved finding.' });
     }
