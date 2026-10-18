@@ -481,6 +481,9 @@
         "noParcels": "This geometry covers no parcels on the ground in view.",
         "rederived": "The cadastre changed under this draft: its parcels now follow its geometry ({{count}})."
     },
+    "proposalApplyStatus": {
+        "waitingForReplay": "Waiting for the applied plan to finish rebuilding…"
+    },
     "proposalApplyFailures": {
         "outsideCadastre": "The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.",
         "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
@@ -3043,8 +3046,8 @@
                     "applyingAllTitle": "Applying the shared plan",
                     "fetchingPlan": "Fetching plan…",
                     "fetchingPlanTitle": "Fetching proposal",
-                    "rebuildingPlanTitle": "Rebuilding applied plan",
-                    "rebuildingPlan": "Replaying its formations from the cadastre…",
+                    "rebuildingStatus": "Rebuilding the applied plan…",
+                    "rebuildingStatusCount": "Rebuilding the applied plan {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} road",
@@ -3073,7 +3076,6 @@
                         "buildingGroundLoad": "Loading buildings in {{regions}} affected areas ({{batches}} batches)…",
                         "buildingGroundProgress": "Loading affected buildings (batch {{done}}/{{total}}, {{covered}} areas covered)…",
                         "buildingGroundReady": "Affected-building data ready: {{covered}} areas loaded; {{fallback}} will be checked individually.",
-                        "rebuildReset": "Clearing derived map output for {{members}} proposals…",
                         "corridorStart": "Preparing {{corridors}}…",
                         "scopeReady": "Affected ground resolved: {{parcels}} cadastral parcels.",
                         "fabricScan": "Finding corridor intersections ({{done}}/{{total}} loaded parcels)…",
@@ -3085,8 +3087,7 @@
                         "corridorReady": "Finished applying {{corridors}}.",
                         "rollback": "Restoring the parcel fabric after an error…",
                         "presentation": "Refreshing the map and proposal list…",
-                        "corridorStrips": "Refreshing road and track surfaces…",
-                        "rebuildReady": "Rebuild finished: {{members}} proposals, {{corridors}} corridors, {{failed}} failures."
+                        "corridorStrips": "Refreshing road and track surfaces…"
                     },
                     "countHeading": {
                         "one": "There is {{count}} proposal in the current plan (that is, applied on the map)",

@@ -223,9 +223,9 @@ describe('the silence before the first proposal', () => {
             'groundCheck', 'groundIdCheck', 'groundIdLoad', 'groundIdLoadProgress',
             'groundIdWait', 'groundFootprintWait', 'groundIdsMissing', 'groundIdsReady', 'groundFootprintLoad',
             'groundFootprintProgress', 'groundReady', 'groundIncomplete', 'buildingGroundLoad',
-            'buildingGroundProgress', 'buildingGroundReady', 'rebuildReset', 'corridorStart', 'scopeReady',
+            'buildingGroundProgress', 'buildingGroundReady', 'corridorStart', 'scopeReady',
             'fabricScan', 'fabricArrange', 'mapUpdate', 'fabricReady', 'networkNoding',
-            'saving', 'corridorReady', 'rollback', 'presentation', 'corridorStrips', 'rebuildReady'
+            'saving', 'corridorReady', 'rollback', 'presentation', 'corridorStrips'
         ].forEach(key => expect(plan.progress[key], `${locale} missing progress.${key}`).toBeTruthy());
         ['one', 'few', 'other'].forEach(form => {
             expect(plan.progress.roadCount[form], `${locale} missing roadCount.${form}`).toBeTruthy();

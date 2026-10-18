@@ -481,6 +481,9 @@
         "noParcels": "Esta geometría no cubre ninguna parcela en el terreno visible.",
         "rederived": "El catastro cambió bajo este borrador: sus parcelas ahora siguen su geometría ({{count}})."
     },
+    "proposalApplyStatus": {
+        "waitingForReplay": "Esperando a que termine de reconstruirse el plan aplicado…"
+    },
     "proposalApplyFailures": {
         "outsideCadastre": "La geometría de la propuesta se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea una propuesta que incluya las parcelas adicionales.",
         "outsideSite": "La geometría de la propuesta se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
@@ -3065,8 +3068,8 @@
                     "applyingAllTitle": "Aplicando el plan compartido",
                     "fetchingPlan": "Obteniendo plan…",
                     "fetchingPlanTitle": "Obteniendo propuesta",
-                    "rebuildingPlanTitle": "Reconstruyendo el plan aplicado",
-                    "rebuildingPlan": "Reaplicando sus formaciones desde el catastro…",
+                    "rebuildingStatus": "Reconstruyendo el plan aplicado…",
+                    "rebuildingStatusCount": "Reconstruyendo el plan aplicado {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} carretera",
@@ -3095,7 +3098,6 @@
                         "buildingGroundLoad": "Cargando edificios en {{regions}} áreas afectadas ({{batches}} lotes)…",
                         "buildingGroundProgress": "Cargando edificios afectados (lote {{done}}/{{total}}, {{covered}} áreas cubiertas)…",
                         "buildingGroundReady": "Datos de edificios afectados listos: {{covered}} áreas cargadas; {{fallback}} se comprobarán individualmente.",
-                        "rebuildReset": "Eliminando del mapa los resultados derivados de {{members}} propuestas…",
                         "corridorStart": "Preparando {{corridors}}…",
                         "scopeReady": "Terreno afectado resuelto: {{parcels}} parcelas catastrales.",
                         "fabricScan": "Buscando intersecciones de corredores ({{done}}/{{total}} parcelas cargadas)…",
@@ -3107,8 +3109,7 @@
                         "corridorReady": "Aplicación terminada: {{corridors}}.",
                         "rollback": "Restaurando el tejido parcelario tras un error…",
                         "presentation": "Actualizando el mapa y la lista de propuestas…",
-                        "corridorStrips": "Actualizando las superficies de carreteras y vías…",
-                        "rebuildReady": "Reconstrucción finalizada: {{members}} propuestas, {{corridors}} corredores, {{failed}} fallos."
+                        "corridorStrips": "Actualizando las superficies de carreteras y vías…"
                     },
                     "countHeading": {
                         "one": "Hay {{count}} propuesta en el plan actual (es decir, aplicada en el mapa)",

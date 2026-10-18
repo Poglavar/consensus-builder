@@ -568,12 +568,6 @@ function sharedPlanProgressView(event, tShare) {
                 status: tShare('plan.progress.buildingGroundReady',
                     'Affected-building data ready: {{covered}} areas loaded; {{fallback}} will be checked individually.', event)
             };
-        case 'rebuild-reset':
-            return {
-                title,
-                status: tShare('plan.progress.rebuildReset',
-                    'Clearing derived map output for {{members}} proposals…', event)
-            };
         case 'corridor-start':
             return {
                 title,
@@ -631,12 +625,6 @@ function sharedPlanProgressView(event, tShare) {
             return { title, status: tShare('plan.progress.presentation', 'Refreshing the map and proposal list…') };
         case 'corridor-strips':
             return { title, status: tShare('plan.progress.corridorStrips', 'Refreshing road and track surfaces…') };
-        case 'rebuild-ready':
-            return {
-                title,
-                status: tShare('plan.progress.rebuildReady',
-                    'Rebuild finished: {{members}} proposals, {{corridors}} corridors, {{failed}} failures.', event)
-            };
         default:
             return null;
     }
@@ -1760,6 +1748,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         const uniqueIncomingIds = Array.from(new Set(idParts.map(normalizeId).filter(Boolean)));
         const totalProposals = uniqueIncomingIds.length;
+        // Set while the link waits for the boot replay with the map usable (replay-status.js): a
+        // user who pans, zooms, clicks or types meanwhile keeps the view, so the link's framing and
+        // panel opening below step aside.
+        let replayTakeover = null;
+        let replayHidModal = false;
+        const userTookOver = () => !!(replayTakeover && replayTakeover.tookOver());
         const firstProposalId = uniqueIncomingIds[0];
 
         // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
@@ -1858,12 +1852,22 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // applied?" here therefore races with the exact interval this barrier exists to protect.
         // `reapplyAppliedProposals` is single-flight and returns its in-flight promise, so always
         // await it. A reload is a reader of the completed fabric, never a concurrent apply pass.
+        // The link's own records are in hand, so a rebuild still running needs no modal: the map
+        // stays usable and the status line counts the rebuild instead.
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            updateProposalLoadOverlay({
-                title: tShare('plan.rebuildingPlanTitle', 'Rebuilding applied plan'),
-                status: tShare('plan.rebuildingPlan', 'Replaying its formations from the cadastre…')
-            });
-            await ProposalManager.reapplyAppliedProposals({ onProgress: reportSharedPlanProgress });
+            if (ProposalManager._initialReapplyDone !== true) {
+                hideProposalLoadOverlay();
+                replayHidModal = true;
+                replayTakeover = window.ReplayStatus.watchUserTakeover(document);
+            }
+            try {
+                await ProposalManager.reapplyAppliedProposals({
+                    onProgress: window.ReplayStatus.statusReporter(tShare,
+                        text => { if (typeof updateStatus === 'function') updateStatus(text, { transient: true }); })
+                });
+            } finally {
+                if (replayTakeover) replayTakeover.stop();
+            }
         }
 
         // Local copies of the linked records follow the lifecycle the server just sent for them
@@ -2022,6 +2026,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // decision the user needs to confirm.
         const frameAppliedProposals = async (proposalIdToFocus) => {
             if (!proposalIdToFocus || typeof map === 'undefined' || !map) return;
+            if (userTookOver()) {
+                console.info(`[${new Date().toISOString()}] [handleSharedPlanRoute] the map was used while the plan rebuilt; not framing ${proposalIdToFocus}`);
+                return;
+            }
             try {
                 const in3D = typeof window.isThreeModeActive === 'function' && window.isThreeModeActive();
                 if (in3D && typeof window.focusThreeModeOnProposals === 'function') {
@@ -2129,6 +2137,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
             await focusOnAppliedProposals(focusId);
             return { applied: [], skipped, failed: [] };
+        }
+
+        // What remains is the link's own import: modal again, as for the fetch.
+        if (replayHidModal) {
+            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+                total: totalProposals,
+                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+            });
+            updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         }
 
         // Fetch every record once, then use the same immutable record order as canonical replay.
@@ -2492,7 +2509,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             && typeof window.focusThreeModeOnProposals === 'function') {
             // The scene is up and the 2D map frozen under it: take the camera there instead.
             window.focusThreeModeOnProposals([lastProposalId]);
-        } else if (lastProposalId && typeof map !== 'undefined' && map) {
+        } else if (lastProposalId && typeof map !== 'undefined' && map && !userTookOver()) {
             try {
                 const beforeCenter = (typeof map.getCenter === 'function') ? map.getCenter() : null;
                 const beforeZoom = (typeof map.getZoom === 'function') ? map.getZoom() : null;
@@ -2511,7 +2528,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // the proposal and centered the map; without this call, window.currentlyHighlightedProposal
         // stays null and no overlays are drawn. For a multi-id share we highlight the last one
         // (same semantics as centering, which uses the last applied id).
-        if (!options.suppressDetails && lastProposalId && typeof focusProposalDetails === 'function') {
+        if (!options.suppressDetails && lastProposalId && typeof focusProposalDetails === 'function' && !userTookOver()) {
             try {
                 await focusProposalDetails(lastProposalId, {
                     centerOnProposal: false, // camera has already been fit to bounds above

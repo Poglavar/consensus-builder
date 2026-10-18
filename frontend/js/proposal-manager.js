@@ -260,11 +260,30 @@ async function _runProposalApplyWithSummary(proposalId, proposalData, runApply, 
     }
 }
 
+// Mutations the app runs by itself. Any other one queued while the boot replay is still running
+// is the user's own (apply, unapply, edit, delete): it waits in the FIFO behind the replay, and
+// the status line says so instead of leaving a spinning button unexplained.
+const _SYSTEM_MUTATION_KINDS = new Set(['rebuild-applied-fabric', 'cadastral-ground-arrived', 'cadastral-ground-release']);
+
+function _announceWaitingForReplay(manager, kind) {
+    if (manager?._reapplyInFlight !== true || _SYSTEM_MUTATION_KINDS.has(String(kind || ''))) return false;
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    const key = 'proposalApplyStatus.waitingForReplay';
+    let message = '';
+    try { message = root.i18n?.t?.(key) || ''; } catch (_) { }
+    if (!message || message === key) message = 'Waiting for the applied plan to finish rebuilding…';
+    if (typeof root.updateStatus === 'function') {
+        try { root.updateStatus(message); } catch (_) { }
+    }
+    return true;
+}
+
 async function _runProposalMutationBoundary(manager, kind, proposalId, options, operation) {
     const supplied = options && options._parcelMutation;
     if (supplied) {
         return operation(supplied, { ...(options || {}), _parcelMutation: supplied });
     }
+    _announceWaitingForReplay(manager, kind);
     const browserRoot = typeof window !== 'undefined' ? window : globalThis;
     const mutatesMap = !options || options._mapMutation !== false;
     const proposalStore = typeof proposalStorage !== 'undefined' ? proposalStorage : null;

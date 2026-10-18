@@ -481,6 +481,9 @@
         "noParcels": "Ova geometrija ne pokriva nijednu parcelu na prikazanoj podlozi.",
         "rederived": "Katastar se promenio ispod ovog nacrta: njegove parcele sada prate njegovu geometriju ({{count}})."
     },
+    "proposalApplyStatus": {
+        "waitingForReplay": "Čeka se da se primenjeni plan ponovo izgradi…"
+    },
     "proposalApplyFailures": {
         "outsideCadastre": "Geometrija predloga prelazi granice izabranih katastarskih parcela. Zadržite je unutar izabranog zemljišta ili napravite predlog koji obuhvata dodatne parcele.",
         "outsideSite": "Geometrija predloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju pre primene.",
@@ -3034,8 +3037,8 @@
                     "applyingAllTitle": "Primena zajedničkog plana",
                     "fetchingPlan": "Preuzimanje plana…",
                     "fetchingPlanTitle": "Preuzimanje predloga",
-                    "rebuildingPlanTitle": "Ponovna izgradnja primenjenog plana",
-                    "rebuildingPlan": "Ponovna primena formacija iz katastra…",
+                    "rebuildingStatus": "Ponovna izgradnja primenjenog plana…",
+                    "rebuildingStatusCount": "Ponovna izgradnja primenjenog plana {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} put",
@@ -3064,7 +3067,6 @@
                         "buildingGroundLoad": "Učitavam zgrade na {{regions}} zahvaćenih područja u {{batches}} grupa…",
                         "buildingGroundProgress": "Učitavam zahvaćene zgrade (grupa {{done}}/{{total}}, pokriveno {{covered}} područja)…",
                         "buildingGroundReady": "Podaci o zahvaćenim zgradama spremni: učitano {{covered}} područja; {{fallback}} će se proveriti pojedinačno.",
-                        "rebuildReset": "Uklanjam izvedeni prikaz za {{members}} predloga…",
                         "corridorStart": "Pripremam {{corridors}}…",
                         "scopeReady": "Određeno zahvaćeno zemljište: {{parcels}} katastarskih parcela.",
                         "fabricScan": "Tražim preseke koridora ({{done}}/{{total}} učitanih parcela)…",
@@ -3076,8 +3078,7 @@
                         "corridorReady": "Primena završena: {{corridors}}.",
                         "rollback": "Vraćam parcelnu strukturu nakon greške…",
                         "presentation": "Osvežavam mapu i spisak predloga…",
-                        "corridorStrips": "Osvežavam prikaz puteva i pruga…",
-                        "rebuildReady": "Ponovna izgradnja završena: {{members}} predloga, {{corridors}} koridora, {{failed}} neuspešnih."
+                        "corridorStrips": "Osvežavam prikaz puteva i pruga…"
                     },
                     "countHeading": {
                         "one": "U trenutnom planu je {{count}} predlog (to jest, primenjen na mapi)",
