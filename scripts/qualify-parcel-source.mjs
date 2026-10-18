@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { checkParcelAlignment, collectArcgisAlignment, createArcgisAlignmentObserver, importAlignmentEvidence } from './lib/parcel-alignment.mjs';
+import { initialQualificationReview, hasUsableGeographicPolygons } from './lib/parcel-qualification-policy.mjs';
 
 const MAX_REQUESTS = 300;
 const MAX_FEATURES = 10_000;
@@ -162,12 +163,22 @@ export function assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId, samp
         completePasses: completeSampleQueries ? 2 : 0, cellCount: firstReads.length };
 }
 
+export { hasUsableGeographicPolygons } from './lib/parcel-qualification-policy.mjs';
+
+export function assessInitialQualification(checks, features, failures = {}) {
+    const review = initialQualificationReview(checks, failures);
+    const usableGeographicPolygons = hasUsableGeographicPolygons(features);
+    return { ...review, passed: review.passed && usableGeographicPolygons, usableGeographicPolygons };
+}
+
 function parseArgs(argv) {
     const args = {};
+    let deepReview = false;
     for (let i = 0; i < argv.length; i++) {
         const key = argv[i];
+        if (key === '--deep-review') { if (deepReview) throw new Error('Duplicate argument --deep-review.'); deepReview = true; continue; }
         if (!['--candidate', '--output', '--metric-script'].includes(key) || !argv[i + 1] || argv[i + 1].startsWith('--')) {
-            throw new Error('Usage: qualify-parcel-source.mjs --candidate <JSON> --output <dir> --metric-script <path>');
+            throw new Error('Usage: qualify-parcel-source.mjs --candidate <JSON> --output <dir> --metric-script <path> [--deep-review]');
         }
         if (args[key]) throw new Error(`Duplicate argument ${key}.`);
         args[key] = argv[++i];
@@ -175,10 +186,10 @@ function parseArgs(argv) {
     if (!args['--candidate'] || !args['--output'] || !args['--metric-script']) {
         throw new Error('Usage: qualify-parcel-source.mjs --candidate <JSON> --output <dir> --metric-script <path>');
     }
-    return { candidatePath: path.resolve(args['--candidate']), outputDir: path.resolve(args['--output']), metricScript: path.resolve(args['--metric-script']) };
+    return { candidatePath: path.resolve(args['--candidate']), outputDir: path.resolve(args['--output']), metricScript: path.resolve(args['--metric-script']), deepReview };
 }
 
-function validateCandidate(candidate) {
+export function validateCandidate(candidate, { deepReview = false } = {}) {
     const d = candidate?.descriptor, city = candidate?.city;
     if (!city || typeof city.code !== 'string' || !city.code || typeof city.name !== 'string' || !city.name
         || !Array.isArray(city.point) || city.point.length !== 2
@@ -192,8 +203,14 @@ function validateCandidate(candidate) {
         || candidate.sampleIds.some(id => typeof id !== 'string' || !id) || new Set(candidate.sampleIds).size !== candidate.sampleIds.length) {
         throw new Error(`candidate.sampleIds must contain 1-${MAX_SAMPLE_IDS} unique canonical IDs.`);
     }
-    if (typeof candidate.absentId !== 'string' || !candidate.absentId || candidate.sampleIds.includes(candidate.absentId)) {
-        throw new Error('candidate.absentId must be a known-format, unobserved canonical parcel ID.');
+    const hasAbsentId = typeof candidate.absentId === 'string' && candidate.absentId.length > 0;
+    if (candidate.absentId != null && (!hasAbsentId || candidate.sampleIds.includes(candidate.absentId)
+        || (typeof d.idPrefix === 'string' && !candidate.absentId.startsWith(d.idPrefix)))) {
+        throw new Error('candidate.absentId must be a distinct canonical parcel ID when provided.');
+    }
+    if (deepReview && (!hasAbsentId || candidate.sampleIds.includes(candidate.absentId)
+        || typeof d.idPrefix !== 'string' || !candidate.absentId.startsWith(d.idPrefix))) {
+        throw new Error('Deep review requires a known-format, unobserved candidate.absentId.');
     }
     if (candidate.sourceClassification?.isParcel !== true || !Array.isArray(candidate.sourceClassification.evidence)
         || !candidate.sourceClassification.evidence.length || candidate.sourceClassification.evidence.some(x => typeof x !== 'string' || !x.trim())) {
@@ -325,7 +342,7 @@ async function main() {
     const args = parseArgs(process.argv.slice(2));
     const candidateBytes = await fs.readFile(args.candidatePath);
     const candidate = JSON.parse(candidateBytes.toString('utf8'));
-    const validated = validateCandidate(candidate);
+    const validated = validateCandidate(candidate, { deepReview: args.deepReview });
     const areaEnumeration = validated.areaEnumeration;
     let step = validated.step;
     const repoRoot = findRepoRoot(fileURLToPath(import.meta.url));
@@ -334,6 +351,7 @@ async function main() {
     const require = createRequire(path.join(repoRoot, 'backend/package.json'));
     const turf = require('@turf/turf');
     const outputDir = args.outputDir;
+    const deferredReason = 'Deferred to second-pass review.';
     await fs.mkdir(outputDir, { recursive: true });
     const cachePath = path.join(outputDir, 'full-safe.geojson');
     const metricReportPath = path.join(outputDir, 'metric-report.json');
@@ -342,8 +360,9 @@ async function main() {
     const checks = {
         classification: checkRecord(candidate.sourceClassification?.isParcel === true && candidate.sourceClassification.evidence?.length > 0,
             { evidenceCount: candidate.sourceClassification?.evidence?.length || 0 }),
-        exactIds: checkRecord(false), stableGeometry: checkRecord(false), explicitAbsence: checkRecord(false),
-        sampling: checkRecord(false), completeness: checkRecord(false), binding: checkRecord(false), metric: checkRecord(false), alignment: checkRecord(false)
+        exactIds: checkRecord(false), stableGeometry: checkRecord(false), explicitAbsence: checkRecord(false, { reason: deferredReason }),
+        sampling: checkRecord(false, { reason: deferredReason }), completeness: checkRecord(false, { reason: deferredReason }),
+        binding: checkRecord(false, { reason: deferredReason }), metric: checkRecord(false), alignment: checkRecord(false, { reason: deferredReason })
     };
     const sampledCells = [];
     const samplingPoints = [];
@@ -425,7 +444,7 @@ async function main() {
             checks.stableGeometry = checkRecord(Boolean(stable), { independentRead: true, comparedCount: secondExact.size });
             if (!stable) throw new Error('Repeated exact-ID geometry hashes changed.');
         } catch (error) { recordFailure('stableGeometry', error); checks.stableGeometry = checkRecord(false); }
-        try {
+        if (args.deepReview) try {
             const result = await runSource('explicit-absence', async adapter => adapter.queryIds([candidate.absentId]));
             absenceResult = result;
             const clean = Array.isArray(result?.features) ? result.features : null;
@@ -435,7 +454,7 @@ async function main() {
             if (!checks.explicitAbsence.passed) throw new Error('Known-format absent ID did not produce explicit complete absence.');
         } catch (error) { recordFailure('explicitAbsence', error); checks.explicitAbsence = checkRecord(false); }
 
-        if (areaEnumeration && firstExact) {
+        if (args.deepReview && areaEnumeration && firstExact) {
             const perIdCost = exactReadCost(state.requests.filter(request => request.stage === 'exact-id-first-read').length, candidate.sampleIds.length);
             try {
                 while (perIdCost > 0) {
@@ -448,7 +467,7 @@ async function main() {
                 }
             } catch (error) { recordFailure('densityProbe', error); }
         }
-        if (areaEnumeration) {
+        if (args.deepReview && areaEnumeration) {
             const cells = cellsForPoint(candidate.city.point, step);
             const pass1 = [];
             let complete1 = true, rowCount = 0;
@@ -566,7 +585,7 @@ async function main() {
                 checks.sampling = checkRecord(false, { capability: 'bbox-13-cell', cellCount: sampledCells.length, attemptedCellCount: cells.length });
                 checks.completeness = checkRecord(false, { capability: 'bbox-13-cell' });
             }
-        } else {
+        } else if (args.deepReview) {
             checks.completeness = checkRecord(true, { capability: 'areaEnumeration:false', reason: 'Adapter contract is point/exact-ID only; no area coverage claim.' });
             try {
                 const centers = cellsForPoint(candidate.city.point, step).slice(0, 12).map(cell =>
@@ -587,7 +606,7 @@ async function main() {
             } catch (error) { recordFailure('sampling', error); checks.sampling = checkRecord(false, { capability: '13-point-sample' }); }
         }
 
-        try {
+        if (args.deepReview) try {
             const sampleFeature = (firstExact || secondExact)?.get(candidate.sampleIds[0]);
             if (!sampleFeature) throw new Error('No known sample geometry is available for binding.');
             const act = await runSource('parcel-act-binding', adapter => computeSourceParcelActBinding(adapter, candidate.sampleIds, { sourceId }));
@@ -606,7 +625,7 @@ async function main() {
         } catch (error) { recordFailure('binding', error); checks.binding = checkRecord(false); }
 
         // Binding queries can add features, so reread all collected IDs only after binding.
-        try {
+        if (args.deepReview) try {
             const collectedIds = [...all.keys()].sort();
             if (!collectedIds.length) throw new Error('No collected IDs are available for independent reread.');
             const reread = new Map();
@@ -646,11 +665,11 @@ async function main() {
         checks.metric = checkRecord(true, metric);
     } catch (error) { recordFailure('metric', error); checks.metric = checkRecord(false, safeFailure(error)); }
 
-    try {
+    if (args.deepReview || candidate.alignmentEvidence) try {
         let evidencePath;
         if (candidate.alignmentEvidence) evidencePath = await importAlignmentEvidence({ reference: candidate.alignmentEvidence,
             candidateDir: path.dirname(args.candidatePath), outputDir });
-        else if (candidate.descriptor.adapter === 'arcgis' && firstExact?.size) {
+        else if (args.deepReview && candidate.descriptor.adapter === 'arcgis' && firstExact?.size) {
             evidencePath = await collectArcgisAlignment({ descriptor: candidate.descriptor, cityCode: candidate.city.code,
                 exactFeatures: firstExact, reads: alignmentReads, outputDir,
                 fetchImpl: makeSafeFetch({ state, stage: 'native-crs-alignment' }) });
@@ -663,8 +682,12 @@ async function main() {
             sourceGeoreferencing: 'unverified', fittedOffsetApplied: false });
     }
 
-    const passed = Object.values(checks).every(check => check.passed);
+    const initialQualification = assessInitialQualification(checks, features, failures);
+    const usableGeography = initialQualification.usableGeographicPolygons;
+    const passed = initialQualification.passed;
     const status = passed ? 'technical-qualified' : candidate.sourceClassification?.isParcel === false ? 'excluded' : 'held';
+    let geometryReportExists = false;
+    try { await fs.access(metricReportPath); geometryReportExists = true; } catch { /* The metric script may fail before writing a report. */ }
     const report = {
         schemaVersion: 2,
         status,
@@ -673,7 +696,9 @@ async function main() {
         sourceId,
         candidateSha256: sha256(candidateBytes),
         checks,
-        ...(checks.metric.passed ? { geometryReport: path.basename(metricReportPath) } : {}),
+        initialQualification: { ...initialQualification,
+            ...(usableGeography ? {} : { reason: 'Cache has no nonempty usable WGS84 Polygon or MultiPolygon features.' }) },
+        ...(geometryReportExists ? { geometryReport: path.basename(metricReportPath) } : {}),
         ...(checks.alignment.reportFile ? { alignmentReport: checks.alignment.reportFile } : {}),
         cacheFile: path.basename(cachePath),
         cacheSha256: cacheHash,
@@ -689,7 +714,7 @@ async function main() {
         failures,
         limitations: [
             'Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.',
-            'The alignment gate verifies the published coordinate transform; basemap disagreement is never corrected with a fitted offset.',
+            'Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy.',
             ...(!areaEnumeration ? ['Area enumeration is unsupported by descriptor; point/exact-ID checks do not imply area completeness.'] : [])
         ]
     };

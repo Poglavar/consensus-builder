@@ -20,6 +20,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import parcel_discovery_outcomes
+from parcel_qualification_policy import REQUIRED_CHECKS, initial_qualification_review
 
 REQUIRED = (
     "candidate.json",
@@ -27,14 +28,10 @@ REQUIRED = (
     "evidence/metric-report.json",
     "evidence/independent-metric-report.json",
     "evidence/full-safe.geojson",
-    "evidence/alignment-report.json",
-    "evidence/independent-alignment-report.json",
-    "evidence/alignment-evidence.json",
-    "evidence/alignment-metadata.json",
-    "evidence/alignment-native.json",
 )
-GATES = ("classification", "exactIds", "stableGeometry", "explicitAbsence", "sampling",
-         "completeness", "binding", "metric", "alignment")
+GATES = REQUIRED_CHECKS
+OPTIONAL = ("evidence/initial-review.json", "evidence/alignment-report.json", "evidence/independent-alignment-report.json",
+            "evidence/alignment-evidence.json", "evidence/alignment-metadata.json", "evidence/alignment-native.json")
 ADMISSION_FILES = (
     "backend/parcels/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
     "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
@@ -258,6 +255,7 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
         except ValueError:
             return _block("adapter artifact directory is outside this runner's ignored qualification state")
         original = {name: artifact_root / name for name in REQUIRED}
+        original.update({name: artifact_root / name for name in OPTIONAL if (artifact_root / name).is_file()})
         missing = [name for name, path in original.items() if not path.is_file()]
         if missing:
             return _block("adapter qualification artifacts are incomplete: " + ", ".join(missing))
@@ -286,7 +284,7 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
         if (q.get("status") != "technical-qualified" or str(q.get("cityCode")) != code
                 or str(q.get("cityName")) != name or q.get("candidateSha256") != hashlib.sha256(candidate_bytes).hexdigest()
                 or not all(q.get("checks", {}).get(gate, {}).get("passed") is True for gate in GATES)):
-            return _block("qualification record does not bind this exact candidate/city or pass all nine gates")
+            return _block("qualification record does not bind this exact candidate/city or pass parcel-availability core checks")
 
         country_code = str(descriptor.get("countryCode") or candidate_city.get("countryCode") or country_code).upper()
         if country_code != str(city.get("iso2") or city.get("countryCode") or "").upper():
@@ -320,7 +318,7 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
 
         relative_files = [
             "attempt-01/candidate.json",
-            *[f"attempt-01/{name}" for name in REQUIRED if name.startswith("evidence/")],
+            *[f"attempt-01/{name}" for name in original if name.startswith("evidence/")],
         ]
         queue_path = state_dir / "frozen-queue.json"
         queue_record = {
@@ -332,12 +330,12 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
         _write_json(queue_path, {"schemaVersion": 1, "pointOrder": "latitude-longitude", "records": [queue_record]})
         state = {"schemaVersion": 1, "queuePath": str(queue_path), "cities": {code: {
             "status": "technical-qualified", "finishedAt": datetime.now(timezone.utc).isoformat(),
-            "summary": "All nine qualification gates passed; adapter stage artifacts were rechecked by admission.",
+            "summary": "Working parcel source initially qualified; detailed quality findings are retained for follow-up.",
             "evidenceFiles": relative_files,
         }}}
         _write_json(state_dir / "state.json", state)
         outcomes_path = work / "qualification-outcomes.json"
-        basis = f"Adapter-ready qualification for WUP city {code}; discovery receipt {receipt['taskId']} and nine-gate evidence verified."
+        basis = f"Adapter-ready qualification for WUP city {code}; discovery receipt {receipt['taskId']} and initial parcel-availability evidence verified."
         _run_checked(["python3", str(root / "scripts/export-qualification-outcomes.py"), "--state", str(state_dir),
                       "--output", str(outcomes_path), "--basis", basis], root, "qualification-outcomes export")
 

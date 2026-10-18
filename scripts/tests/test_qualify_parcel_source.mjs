@@ -1,10 +1,54 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { REQUIRED_CHECKS } from '../lib/parcel-qualification-policy.mjs';
 import { addCanonicalFeature, assessForcedQueryEvidence, forcedEvidenceMode, assessHmlrBrowserCompletenessEvidence,
-    canonicalSafeFeature, cellsForPoint, exactReadCost, footprintBbox, makeSafeFetch, shouldShrinkCell } from '../qualify-parcel-source.mjs';
+    assessInitialQualification, canonicalSafeFeature, cellsForPoint, exactReadCost, footprintBbox, makeSafeFetch,
+    hasUsableGeographicPolygons, shouldShrinkCell, validateCandidate } from '../qualify-parcel-source.mjs';
 
 const geometry = { type:'Polygon', coordinates:[[[0,0],[1,0],[1,1],[0,1],[0,0]]] };
 const feature = (id, extra = {}) => ({ type:'Feature', id, properties:{ parcelId:id, sourceId:'public-test', sourceParcelId:id.slice(5), owner:'omit', ...extra }, geometry });
+
+test('initial parcel availability qualifies with missing alignment recorded as follow-up', () => {
+    const checks = Object.fromEntries(['classification','exactIds','stableGeometry','explicitAbsence','sampling','completeness','binding','metric','alignment']
+        .map(key => [key, { passed: ['classification','exactIds','stableGeometry'].includes(key) }]));
+    const result = assessInitialQualification(checks, [feature('SRC-123')]);
+    assert.deepEqual(REQUIRED_CHECKS, ['classification','exactIds','stableGeometry']);
+    assert.equal(result.passed, true);
+    assert.equal(result.policy, 'parcel-availability-v1');
+    assert.equal(result.status, 'follow-up-required');
+    assert.ok(result.followUp.some(item => item.check === 'alignment'));
+    assert.equal(checks.alignment.passed, false);
+});
+
+test('non-parcel classification, missing polygons, and broken exact IDs cannot qualify', () => {
+    const core = { classification:{ passed:true }, exactIds:{ passed:true }, stableGeometry:{ passed:true } };
+    assert.equal(assessInitialQualification({ ...core, classification:{ passed:false } }, [feature('SRC-123')]).passed, false);
+    assert.equal(assessInitialQualification(core, []).passed, false);
+    assert.equal(assessInitialQualification({ ...core, exactIds:{ passed:false } }, [feature('SRC-123')]).passed, false);
+    assert.equal(assessInitialQualification({ ...core, stableGeometry:{ passed:false } }, [feature('SRC-123')]).passed, false);
+    assert.equal(hasUsableGeographicPolygons([{ ...feature('SRC-123'), geometry:{ type:'Polygon', coordinates:[[[0,0],[999,0],[1,1],[0,0]]] } }]), false);
+});
+
+test('unrun and failed advisory checks remain false and never count as proof', () => {
+    const checks = { classification:{ passed:true }, exactIds:{ passed:true }, stableGeometry:{ passed:true },
+        explicitAbsence:{ passed:false, reason:'Deferred to second-pass review.' }, sampling:{ passed:false }, completeness:{ passed:false },
+        binding:{ passed:false }, metric:{ passed:false }, alignment:{ passed:false } };
+    const result = assessInitialQualification(checks, [feature('SRC-123')]);
+    assert.equal(result.passed, true);
+    assert.deepEqual(['explicitAbsence','sampling','completeness','binding','metric','alignment'].map(key => checks[key].passed),
+        [false,false,false,false,false,false]);
+    assert.ok(result.followUp.some(item => item.check === 'alignment'));
+});
+
+test('initial candidate validation allows no absent-ID codec while deep review requires a distinct prefixed ID', () => {
+    const candidate = { descriptor:{ id:'public-test', adapter:'arcgis', idPrefix:'SRC-' },
+        city:{ code:'test', name:'Test', point:[0,0] }, sampleIds:['SRC-123'], metricEpsg:32631 };
+    assert.doesNotThrow(() => validateCandidate(candidate));
+    assert.throws(() => validateCandidate(candidate, { deepReview:true }), /Deep review requires/);
+    assert.throws(() => validateCandidate({ ...candidate, absentId:'SRC-123' }), /distinct canonical/);
+    assert.throws(() => validateCandidate({ ...candidate, absentId:'OTHER-1' }), /distinct canonical/);
+    assert.doesNotThrow(() => validateCandidate({ ...candidate, absentId:'SRC-999' }, { deepReview:true }));
+});
 
 test('builds thirteen bounded WGS84 cells around explicit lon/lat', () => {
     const cells = cellsForPoint([-1.2, 51.5], 0.001);

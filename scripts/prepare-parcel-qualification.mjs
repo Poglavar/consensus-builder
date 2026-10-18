@@ -165,15 +165,16 @@ export async function prepareCandidate(city, { repoRoot, sourceRoot } = {}) {
         const acceptsId = async id => {
             try { await adapter.queryIds([id]); return true; } catch (error) { return Number(error?.status ?? error?.httpStatus) !== 400; }
         };
-        const codec = await absentId(descriptor, features[0], root, acceptsId);
-        if (typeof codec !== 'string' || !codec.startsWith(idPrefix) || sampleIds.includes(codec)) return needs('No existing identity codec can safely produce a format-valid absent ID for this adapter.');
+        const generatedAbsentId = await absentId(descriptor, features[0], root, acceptsId);
+        const codec = typeof generatedAbsentId === 'string' && generatedAbsentId.startsWith(idPrefix) && !sampleIds.includes(generatedAbsentId)
+            ? generatedAbsentId : null;
         const checkedSampleIds = sampleIds.slice(0, MAX_SAMPLES);
         if (!['geojson-snapshot', 'shapefile-snapshot', 'shapefile-zip', 'nairobi-outlines'].includes(descriptor.adapter)) {
             try {
-                await adapter.queryIds([...checkedSampleIds, codec]);
+                await adapter.queryIds(checkedSampleIds);
             } catch (error) {
                 if (Number(error?.status ?? error?.httpStatus) === 400) {
-                    return needs('Production adapter rejected the native sample or absent-ID encoding.');
+                    return needs('Production adapter rejected one or more native sample IDs.');
                 }
             }
         }
@@ -214,7 +215,7 @@ export async function prepareCandidate(city, { repoRoot, sourceRoot } = {}) {
         return { status: 'prepared', candidate: {
             descriptor,
             city: { code: cityCode, name: String(frozen.cityName ?? packet.cityName ?? packet.name ?? ''), point },
-            sampleIds: checkedSampleIds, absentId: codec, metricEpsg,
+            sampleIds: checkedSampleIds, ...(codec ? { absentId: codec } : {}), metricEpsg,
             sourceClassification: { isParcel: true, evidence },
             cellSizeDegrees: 0.001
         } };

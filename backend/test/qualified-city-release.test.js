@@ -31,6 +31,8 @@ const context = { console, URL, URLSearchParams }; context.window = context;
 runInNewContext(read('frontend/js/city-config.js').toString(), context);
 const blockers = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount',
     'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
+const initialQualificationChecks = ['classification', 'exactIds', 'stableGeometry'];
+const alignmentEvidenceFiles = ['alignment', 'independentAlignment', 'alignmentEvidence', 'alignmentMetadata', 'alignmentNative'];
 
 describe('qualified city production admission', () => {
     it('keeps every admission cohort complete and uniquely bound to app cities', () => {
@@ -89,14 +91,36 @@ describe('qualified city production admission', () => {
         expect(qualification.sourceId).toBe(city.sourceId);
         expect(qualification.cityCode).toBe(city.cityCode);
         expect(qualification.candidateSha256).toBe(city.candidate.qualificationRecordedSha256);
-        expect(Object.values(qualification.checks).filter(gate => gate.passed).length).toBe(8);
         const metric = json(city.evidenceFiles.metric);
         expect(metric.inputSha256).toBe(qualification.cacheSha256);
         const independent = json(city.evidenceFiles.independentMetricAudit);
         expect(independent.inputSha256).toBe(metric.inputSha256);
         expect(independent.geometryChangedOrRepaired).toBe(false);
-        expect(independent.geometryPass).toBe(true);
-        for (const field of blockers) expect(independent[field]).toBe(0);
+        if (city.qualification.initialQualificationReview?.policy === 'parcel-availability-v1') {
+            expect(city.qualification.initialQualificationReview.requiredChecks).toEqual(initialQualificationChecks);
+            for (const key of initialQualificationChecks) expect(qualification.checks[key]?.passed).toBe(true);
+            for (const [key, passed] of Object.entries(city.qualification.gates)) {
+                expect(passed).toBe(qualification.checks[key]?.passed === true);
+            }
+            const cacheBytes = read(city.evidenceFiles.cache);
+            expect(digest(city.evidenceFiles.cache)).toBe(city.cache.evidenceExportSha256);
+            expect(digest(city.evidenceFiles.cache)).toBe(qualification.cacheSha256);
+            const cache = JSON.parse(cacheBytes);
+            expect(cache.type).toBe('FeatureCollection');
+            expect(cache.features.length).toBeGreaterThan(0);
+            expect(cache.features.every(feature => ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type))).toBe(true);
+            expect(independent.inputSha256).toBe(qualification.cacheSha256);
+            const presentAlignment = alignmentEvidenceFiles.filter(key => Boolean(city.evidenceFiles[key]));
+            if (presentAlignment.length !== alignmentEvidenceFiles.length) {
+                expect(city.qualification.gates.alignment).toBe(false);
+                expect(city.qualification.initialQualificationReview.followUp.some(item => item.check === 'alignment')).toBe(true);
+            }
+        } else {
+            // Historical releases keep their stricter original evidence contract.
+            expect(Object.values(qualification.checks).filter(gate => gate.passed).length).toBe(8);
+            expect(independent.geometryPass).toBe(true);
+            for (const field of blockers) expect(independent[field]).toBe(0);
+        }
         for (const locale of ['en', 'es', 'hr', 'sr']) {
             expect(json(`frontend/i18n/${locale}.json`).city.labels[city.appCityId]).toBeTruthy();
         }
