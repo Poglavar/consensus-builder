@@ -103,9 +103,11 @@ function rowAutosave(feature) {
         currentRowRule: () => rule('row', 'range'), rowVariationSeed: 991,
         currentBuildingLength: 40, currentBuildingWidth: 10, currentBuildingHeight: 17.5,
         currentChamfer: 0, currentOffsetX: 0, currentOffsetY: 0, currentRotation: 0,
-        rowHouseManualMode: true, cachedSuperparcel: site, turf
+        rowHouseManualMode: true, rowHouseBlock: block, cachedSuperparcel: site, turf
     };
-    const source = functionSources('../../frontend/js/row-house.js').get('autosaveRowHouseDraft');
+    // The autosave records the Row's site through rowHouseSiteBoundary, so it runs with it.
+    const functions = functionSources('../../frontend/js/row-house.js');
+    const source = `${functions.get('rowHouseSiteBoundary')}\n${functions.get('autosaveRowHouseDraft')}`;
     runFunction(source, 'autosaveRowHouseDraft', bindings);
     return saved[0]?.[1] || null;
 }
