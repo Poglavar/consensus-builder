@@ -1297,79 +1297,79 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-38c115ff213947-1",
+      "id": "control-549392a09100f7-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-min-0\" value=\"0\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-min-0\" aria-label=\"Lower width bound (m)\" data-i18n-key=\"sidebar.roads.legendMinLabel\" data-i18n-attr=\"aria-label\" value=\"0\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-01d64aff115eaa-1",
+      "id": "control-a80489e1a1fa8e-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-max-0\" value=\"3\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-max-0\" aria-label=\"Upper width bound (m)\" data-i18n-key=\"sidebar.roads.legendMaxLabel\" data-i18n-attr=\"aria-label\" value=\"3\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-3dab88fda28d45-1",
+      "id": "control-46a19be1f98118-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-min-1\" value=\"3\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-min-1\" aria-label=\"Lower width bound (m)\" data-i18n-key=\"sidebar.roads.legendMinLabel\" data-i18n-attr=\"aria-label\" value=\"3\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-ee934ce716be14-1",
+      "id": "control-a9a83c7544f32d-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-max-1\" value=\"5\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-max-1\" aria-label=\"Upper width bound (m)\" data-i18n-key=\"sidebar.roads.legendMaxLabel\" data-i18n-attr=\"aria-label\" value=\"5\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-410013309a7c3b-1",
+      "id": "control-5f5eac527f205e-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-min-2\" value=\"5\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-min-2\" aria-label=\"Lower width bound (m)\" data-i18n-key=\"sidebar.roads.legendMinLabel\" data-i18n-attr=\"aria-label\" value=\"5\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-8fa2650f7d0da6-1",
+      "id": "control-5d405a9654bdff-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-max-2\" value=\"7\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-max-2\" aria-label=\"Upper width bound (m)\" data-i18n-key=\"sidebar.roads.legendMaxLabel\" data-i18n-attr=\"aria-label\" value=\"7\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-42144b50b37aca-1",
+      "id": "control-1ebb03ef9810a4-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-min-3\" value=\"7\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-min-3\" aria-label=\"Lower width bound (m)\" data-i18n-key=\"sidebar.roads.legendMinLabel\" data-i18n-attr=\"aria-label\" value=\"7\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-1ff5d4312986a8-1",
+      "id": "control-a410683d98b675-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-max-3\" value=\"9\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-max-3\" aria-label=\"Upper width bound (m)\" data-i18n-key=\"sidebar.roads.legendMaxLabel\" data-i18n-attr=\"aria-label\" value=\"9\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-63101cab70d511-1",
+      "id": "control-62fa566c4abaed-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-min-4\" value=\"9\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-min-4\" aria-label=\"Lower width bound (m)\" data-i18n-key=\"sidebar.roads.legendMinLabel\" data-i18n-attr=\"aria-label\" value=\"9\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-f62a17c94acf79-1",
+      "id": "control-4f0e58b36292e5-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-max-4\" value=\"12\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-max-4\" aria-label=\"Upper width bound (m)\" data-i18n-key=\"sidebar.roads.legendMaxLabel\" data-i18n-attr=\"aria-label\" value=\"12\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
     {
-      "id": "control-fc7dcc3bcb66ab-1",
+      "id": "control-e8cdcda1c18bf6-1",
       "source": "index.html",
-      "markup": "<input type=\"number\" id=\"legend-min-5\" value=\"12\" style=\"width:40px;\">",
+      "markup": "<input type=\"number\" id=\"legend-min-5\" aria-label=\"Lower width bound (m)\" data-i18n-key=\"sidebar.roads.legendMinLabel\" data-i18n-attr=\"aria-label\" value=\"12\" style=\"width:40px;\">",
       "interaction": "change",
       "controlType": "number"
     },
@@ -2066,9 +2066,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-d3bdbd654e10d7-1",
+      "id": "control-14aadbecd39c85-1",
       "source": "index.html",
-      "markup": "<input type=\"text\" id=\"username-input\" placeholder=\"Your username\" required data-i18n-key=\"modal.welcome.usernamePlaceholder\" data-i18n-attr=\"placeholder\">",
+      "markup": "<input type=\"text\" id=\"username-input\" placeholder=\"Your username\" aria-label=\"Your username\" required data-i18n-key=\"modal.welcome.usernamePlaceholder\" data-i18n-attr=\"placeholder,aria-label\">",
       "interaction": "change",
       "controlType": "text"
     },
@@ -5922,16 +5922,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-fb97f1b1e16464-1",
+      "id": "control-165962494b5fcc-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-convert-freeform\" onclick=\"convertProposalToFreeform(${inlineJsArg(proposalKey)})\" title=\"${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the rule\\'s massing at the greatest height it allows, as one building you edit directly. The rule\\'s parameters no longer apply afterwards.'))}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-72b6ee50c52729-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-edit-approval\" title=\"${safeAgentText(tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.'))}\" onclick=\"editProposalApproval(${inlineJsArg(proposalKey)})\">",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-edit-approval\" title=\"${safeAgentText(window.ProposalLineage?.editsInPlace?.(fullProposal || proposal) === true ? tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving updates this proposal in place; acceptances given so far are cleared.') : tProposal('panel.proposal.actions.editApprovalHintCounterproposal', 'Opens the editor on its Approval tab. Saving creates a counterproposal; acceptances of this one do not carry over.'))}\" onclick=\"editProposalApproval(${inlineJsArg(proposalKey)})\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6016,6 +6009,13 @@
       "id": "control-ec8968b312551c-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-proposal-details\" onclick=\"toggleProposalDetailsPanelMinimized(false)\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-fb97f1b1e16464-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-convert-freeform\" onclick=\"convertProposalToFreeform(${inlineJsArg(proposalKey)})\" title=\"${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the rule\\'s massing at the greatest height it allows, as one building you edit directly. The rule\\'s parameters no longer apply afterwards.'))}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6152,6 +6152,20 @@
           "occurrences": 1
         }
       ]
+    },
+    {
+      "id": "control-0d942c64563e46-1",
+      "source": "js/proposals/dialog-create.js",
+      "markup": "<input type=\"radio\" name=\"proposalKind\" value=\"${kind}\"${kind === kinds.DEFAULT_PUBLISH_KIND ? ' checked' : ''} onchange=\"applyProposalKindToDialog(); updateCreateProposalSubmitState()\">",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-1d5b0b2dd2a8a0-1",
+      "source": "js/proposals/dialog-create.js",
+      "markup": "<input type=\"number\" id=\"proposalVoteExpiryDays\" class=\"proposal-option-number\" min=\"1\" max=\"365\" value=\"365\">",
+      "interaction": "change",
+      "controlType": "number"
     },
     {
       "id": "control-42ab2cf72bee74-1",
@@ -6586,9 +6600,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-bb5a166eb44a95-1",
+      "id": "control-ca3dbb0f5f5f48-1",
       "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"text\" id=\"proposalOffer\" placeholder=\"${offerPlaceholder}\" inputmode=\"numeric\" oninput=\"handleProposalOfferInput(this)\">",
+      "markup": "<input type=\"text\" id=\"proposalOffer\" placeholder=\"${offerPlaceholder}\" inputmode=\"decimal\" oninput=\"handleProposalOfferInput(this)\" onchange=\"formatProposalOfferInput(this)\">",
       "interaction": "change",
       "controlType": "text"
     },
@@ -6619,20 +6633,6 @@
       "markup": "<input type=\"text\" id=\"proposalExpiryTime\" class=\"proposal-option-time\" value=\"${expiryPlaceholder}\" placeholder=\"${expiryPlaceholder}\" disabled>",
       "interaction": "change",
       "controlType": "text"
-    },
-    {
-      "id": "control-1d5b0b2dd2a8a0-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"number\" id=\"proposalVoteExpiryDays\" class=\"proposal-option-number\" min=\"1\" max=\"365\" value=\"365\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-0d942c64563e46-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"radio\" name=\"proposalKind\" value=\"${kind}\"${kind === kinds.DEFAULT_PUBLISH_KIND ? ' checked' : ''} onchange=\"applyProposalKindToDialog(); updateCreateProposalSubmitState()\">",
-      "interaction": "change",
-      "controlType": "radio"
     },
     {
       "id": "control-89efe47e0b4d9e-1",
@@ -7447,9 +7447,9 @@
       "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-plan-action=\"close\">"
     },
     {
-      "id": "control-b2d593266294ae-1",
+      "id": "control-3ff3eba5460332-1",
       "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"plan-view-member\" data-plan-member=\"${escapeText(id)}\"${state.layers.has(id) ? '' : ' disabled'}>"
+      "markup": "<button type=\"button\" class=\"btn btn-quiet plan-view-member\" data-plan-member=\"${escapeText(id)}\"${state.layers.has(id) ? '' : ' disabled'}>"
     },
     {
       "id": "control-f2213b963dbc79-1",

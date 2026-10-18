@@ -428,6 +428,12 @@
       ]
     },
     {
+      "id": "parcel.proposals",
+      "specs": [
+        "tests/named-plans.spec.ts"
+      ]
+    },
+    {
       "id": "parcel.compare",
       "specs": [
         "tests/proposal-browsing.spec.ts"
@@ -611,6 +617,12 @@
       "id": "layers.urbanBlocks",
       "specs": [
         "tests/urban-blocks.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.schellingPlan",
+      "specs": [
+        "tests/schelling-plan.spec.ts"
       ]
     },
     {
