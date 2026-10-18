@@ -2,14 +2,15 @@
 //
 // Block, Row and Detached are RULES: their buildings are what the rule produces on its parcels, so
 // they cannot be moved off them. Leaving the parcels is a conversion to a Freeform building (goal
-// 'single', one building): the buildings the rule last produced are frozen and merged into one —
-// footprint, height, floors — and from then on it is edited directly and the rule's parameters no
-// longer apply. The other way to land
+// 'single', one building): the rule's stored massing (the envelope, at the maximum height the rule
+// allows) is frozen and merged into one — footprint, height, floors — and from then on it is edited
+// directly and the rule's parameters no longer apply. The varied heights the map shows are only an
+// example build-out and are never frozen (user decision 2026-10-18). The other way to land
 // a rule somewhere new is to run the same rule on the parcels there (parcelsMostlyInside, also what
 // a cadastre-source swap will use to find a rule's new parcels).
 //
-// Pure: geometry operations and the rule's realisation are injected, so node tests run the same
-// code as the browser (window.__freeformConversion).
+// Pure: geometry operations are injected, so node tests run the same code as the browser
+// (window.__freeformConversion).
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -18,12 +19,12 @@
     'use strict';
 
     const RULE_TYPOLOGIES = Object.freeze(['block', 'row', 'parcelBased']);
-    // The rules that convert to Freeform. Detached is a per-parcel rule over a selection: separate
-    // houses on separate parcels are not one building, so it converts only when it covers exactly
-    // one parcel, which is one house (convertsToFreeform).
+    // The rules a saved record converts from (convertsToFreeform). Detached is a per-parcel rule over
+    // a selection: separate houses are not one building, so a saved Detached converts only when it
+    // covers exactly one parcel, which is one house. Dropped elsewhere in its editor, a Detached on
+    // several parcels becomes one Freeform per house instead (proposal-editor-shell.js
+    // convertActiveDesignToFreeformBuildings).
     const CONVERTIBLE_TYPOLOGIES = Object.freeze(['block', 'row']);
-    // Parts closer in height than this are one height (the editor rounds to 0.1 m).
-    const HEIGHT_TOLERANCE_M = 0.05;
     // A Freeform building is never lower than this (single-building.js height slider floor).
     const MIN_HEIGHT_M = 3;
     const DEFAULT_HEIGHT_M = 10;
@@ -71,24 +72,21 @@
 
     // The one building a Block or Row becomes. A Freeform building is ONE building on its own parcel,
     // so the rule's party-wall buildings merge: the footprint is the union of theirs (a courtyard
-    // block keeps its hole), the height is theirs. `realize(feature)` turns a stored rule massing into
-    // the build-out it stands for (urban-rule-variation.js realizeFeature: a storey count and height
-    // inside the envelope); without it the stored massing is taken as is. Every rule input
-    // (urbanRule, variationSeed, massing, setbacks …) is dropped: what remains is the building.
+    // block keeps its hole). The stored massing is taken as is: the envelope at the rule's maximum
+    // height, never the example build-out the map varies inside it. Parts of different heights take
+    // the highest, the most the rule allows; the user lowers it afterwards in the Freeform editor.
+    // Every rule input (urbanRule, variationSeed, massing, setbacks …) is dropped: what remains is
+    // the building.
     //
     // Refused, with a code, when the result would not be one building:
     //   'not-contiguous'    the footprints do not touch (a block split by gaps, separate buildings)
-    //   'different-heights' the parts differ in height: one Freeform building carries one height,
-    //                       and flattening them silently would change the design
     // ops: { union(featureA, featureB) -> Feature | null }.
-    function mergedBuilding(features, ops = {}, options = {}) {
-        const realize = typeof options.realize === 'function' ? options.realize : null;
+    function mergedBuilding(features, ops = {}) {
         const parts = [];
         (Array.isArray(features) ? features : []).forEach(feature => {
             if (!feature || !feature.geometry) return;
-            const built = (realize && realize(feature)) || feature;
-            const properties = built.properties || {};
-            polygonsOf(built.geometry).forEach(coordinates => {
+            const properties = feature.properties || {};
+            polygonsOf(feature.geometry).forEach(coordinates => {
                 if (!Array.isArray(coordinates) || !Array.isArray(coordinates[0]) || coordinates[0].length < 4) return;
                 parts.push({
                     feature: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: clone(coordinates) } },
@@ -99,10 +97,7 @@
             });
         });
         if (!parts.length) return { ok: false, code: 'no-buildings' };
-        const heights = parts.map(part => part.height);
-        if (Math.max(...heights) - Math.min(...heights) > HEIGHT_TOLERANCE_M) {
-            return { ok: false, code: 'different-heights', heights };
-        }
+        const tallest = parts.reduce((best, part) => (part.height > best.height ? part : best), parts[0]);
         let footprint = parts[0].feature;
         if (parts.length > 1) {
             if (typeof ops.union !== 'function') return { ok: false, code: 'no-geometry-engine' };
@@ -113,7 +108,7 @@
         }
         const merged = polygonsOf(footprint.geometry);
         if (merged.length !== 1) return { ok: false, code: 'not-contiguous', parts: merged.length };
-        const floors = parts.every(part => part.floors === parts[0].floors) ? parts[0].floors : null;
+        const floors = tallest.floors;
         const modelUrl = parts.length === 1 ? parts[0].modelUrl : null;
         return {
             ok: true,
@@ -121,7 +116,7 @@
                 type: 'Feature',
                 properties: {
                     type: 'proposedBuildingSingle',
-                    height: parts[0].height,
+                    height: tallest.height,
                     rotation: 0,
                     footprintMode: 'polygon',
                     ...(floors ? { floors: Math.round(floors) } : {}),

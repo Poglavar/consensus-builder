@@ -619,7 +619,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? `
         <button type="button" class="btn btn-convert-freeform"
             onclick="convertProposalToFreeform(${inlineJsArg(proposalKey)})"
-            title="${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the buildings as they are now and edit them directly. The rule\'s parameters no longer apply afterwards.'))}">
+            title="${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the rule\'s massing at the greatest height it allows, as one building you edit directly. The rule\'s parameters no longer apply afterwards.'))}">
             <i class="fas fa-shapes" aria-hidden="true"></i> ${tProposal('proposalDrafts.freeform.title', 'Convert to freeform building')}
         </button>
     `

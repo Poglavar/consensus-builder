@@ -1160,20 +1160,9 @@
         return tDraft(entry[0], entry[1]);
     }
 
-    // The build-out a stored rule massing stands for (urban-rule-variation.js), frozen as is.
-    function realizeRuleFeature(feature) {
-        try {
-            return global.UrbanRuleVariation?.realizeFeature?.(feature, { turf: global.turf }) || feature;
-        } catch (error) {
-            console.warn('[ProposalEditor] could not realise a rule massing; keeping the envelope', error);
-            return feature;
-        }
-    }
-
     // The one Freeform building a Block or Row becomes, or the reason it cannot become one.
     const MERGE_REFUSALS = {
         'not-contiguous': ['proposalDrafts.freeform.notContiguous', 'Its buildings do not touch each other, so they cannot become one Freeform building.'],
-        'different-heights': ['proposalDrafts.freeform.differentHeights', 'Its buildings have different heights, and a Freeform building has one height.'],
         'no-buildings': ['proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.']
     };
 
@@ -1181,7 +1170,7 @@
         const conversion = global.__freeformConversion;
         const result = conversion.mergedBuilding(features || [], {
             union: (a, b) => global.turf.union(a, b)
-        }, { realize: realizeRuleFeature });
+        });
         if (result.ok) return result;
         const refusal = MERGE_REFUSALS[result.code] || MERGE_REFUSALS['no-buildings'];
         return { ...result, reason: tDraft(refusal[0], refusal[1]) };
@@ -1197,10 +1186,12 @@
     }
 
     // The Freeform design REPLACES the rule's: a merge would keep the rule's parameters (setback,
-    // gaps, rule kind …) inside the Freeform record, where they no longer mean anything.
+    // gaps, rule kind …) inside the Freeform record, where they no longer mean anything. Its type
+    // label is Freeform's too, so a house converted without a name is named as a Freeform building.
     function replaceWithFreeform(store, draft, patch) {
         return store.updateDraft(draft.id, current => ({
             ...current,
+            proposalType: proposalLabel('single'),
             ...patch,
             fields: { ...(current.fields || {}), ...(patch.fields || {}) }
         }), { recordHistory: false, force: true });
@@ -1208,12 +1199,21 @@
 
     // Says plainly what converting does: one building, frozen, and the rule's parameters gone. `record`
     // is the saved proposal (or the design's source) the edit rule is judged on.
-    async function confirmFreeformConversion(record, typology) {
+    async function confirmFreeformConversion(record, typology, count = 1) {
         const inPlace = !record?.proposalId || global.ProposalLineage?.editsInPlace?.(record) === true;
-        const params = { name: record?.title || record?.name || record?.proposalId || ruleLabel(typology), rule: ruleLabel(typology) };
+        const params = { name: record?.title || record?.name || record?.proposalId || ruleLabel(typology), rule: ruleLabel(typology), count };
+        if (count > 1) {
+            return global.CbDialog.confirm(inPlace
+                ? tDraft('proposalDrafts.freeform.confirmLocalMany', '“{{name}}” becomes {{count}} Freeform proposals, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The first keeps this proposal; the rule\'s parameters no longer apply afterwards.', params)
+                : tDraft('proposalDrafts.freeform.confirmPublishedMany', '“{{name}}” is published, so {{count}} Freeform counterproposals are made, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The published proposal stays as it is.', params), {
+                title: tDraft('proposalDrafts.freeform.titleMany', 'Convert to freeform buildings'),
+                okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
+                cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
+            });
+        }
         return global.CbDialog.confirm(inPlace
-            ? tDraft('proposalDrafts.freeform.confirmLocal', '“{{name}}” becomes one Freeform building with the footprint and height its {{rule}} rule produces now. The rule\'s parameters no longer apply afterwards: you edit the building directly.', params)
-            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform counterproposal is made: one building with the footprint and height its {{rule}} rule produces now. The rule\'s parameters do not apply to it: you edit the building directly. The published proposal stays as it is.', params), {
+            ? tDraft('proposalDrafts.freeform.confirmLocal', '“{{name}}” becomes one Freeform building: its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply afterwards: you edit the building, and lower it, directly.', params)
+            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform counterproposal is made: one building, its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters do not apply to it: you edit the building directly. The published proposal stays as it is.', params), {
             title: tDraft('proposalDrafts.freeform.title', 'Convert to freeform building'),
             okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
             cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
@@ -1270,21 +1270,104 @@
         return { ok: true };
     }
 
+    // Freeform drafts that save after the design session's own draft: a Detached rule converts to
+    // one Freeform building per house, and the active draft holds only the first. Keyed by the
+    // active draft id; saved (or dropped) by finishProposalDraftDesignSession.
+    const freeformSiblingDrafts = new Map();
+
+    // A Detached rule's conversion: one Freeform proposal per house, each standing on its own
+    // `site`. `houses` is [{ feature, site }], the rule's stored massing per parcel (moved by the drag
+    // offset when dropped). The active draft becomes the first house: in place for one's own local
+    // record, a counterproposal of a published one. Every further house is a new proposal, or a
+    // counterproposal of the same published source. Resolves { ok, reason, cancelled }.
+    async function convertActiveDesignToFreeformBuildings({ houses, typology = 'parcelBased', confirm = true } = {}) {
+        const list = (houses || []).filter(house => house?.feature?.geometry);
+        if (list.length <= 1) {
+            return convertActiveDesignToFreeform({ features: list.map(house => house.feature), site: list[0]?.site, typology, confirm });
+        }
+        const conversion = global.__freeformConversion;
+        const store = global.proposalDraftStore;
+        const draft = getActiveProposalDesignDraft();
+        if (!conversion || !store || !draft) {
+            return { ok: false, reason: tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.') };
+        }
+        const merged = list.map(house => mergeRuleBuildings([house.feature]));
+        const refused = merged.find(result => !result.ok);
+        if (refused) return refused;
+        const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
+        const published = !!source && global.ProposalLineage?.editsInPlace?.(source) !== true;
+        if (confirm && !(await confirmFreeformConversion(source || { title: draft.fields?.name }, typology, list.length))) {
+            return { ok: false, cancelled: true };
+        }
+        const siblings = [];
+        try {
+            list.slice(1).forEach((house, index) => {
+                // A further house is its own proposal: it starts unnamed, so it is named from the
+                // parcels it binds to like any new object.
+                const sibling = published
+                    ? store.createDraftFromProposal(source, { activate: false, forceNew: true })
+                    : store.createDraft({
+                        cityId: draft.cityId, goal: draft.goal, adapterKey: draft.adapterKey, proposalType: draft.proposalType,
+                        fields: { ...(draft.fields || {}), name: '', description: '' },
+                        editorPayload: draft.editorPayload, activate: false
+                    });
+                siblings.push(sibling.id);
+                const patch = conversion.freeformDraftPatch(sibling, { building: merged[index + 1].building, site: house.site });
+                replaceWithFreeform(store, sibling, { ...patch, fields: { ...(patch.fields || {}), name: '', description: '' } });
+            });
+        } catch (error) {
+            siblings.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
+            return { ok: false, reason: error?.message || String(error) };
+        }
+        replaceWithFreeform(store, draft, conversion.freeformDraftPatch(draft, { building: merged[0].building, site: list[0].site }));
+        freeformSiblingDrafts.set(String(draft.id), siblings);
+        return { ok: true, count: list.length };
+    }
+
+    // The further houses save one after another once the first has saved: they are cut into the
+    // ground after it, never alongside it. If the first cannot be saved, the others are dropped
+    // with it (its design is reopened for repair; converting again makes them anew).
+    async function saveFreeformSiblings(firstResult, siblingIds) {
+        if (!siblingIds?.length) return firstResult;
+        const store = global.proposalDraftStore;
+        if (!firstResult) {
+            siblingIds.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
+            console.warn('[ProposalEditor] First Freeform house not saved; further houses dropped', siblingIds);
+            global.showEphemeralMessage?.(tDraft('proposalDrafts.freeform.siblingsDropped', 'The other houses were not converted, because the first one could not be saved.'), 7000, 'error');
+            return firstResult;
+        }
+        for (const id of siblingIds) {
+            await instantCreateProposalFromDraft(id);
+        }
+        return firstResult;
+    }
+
+    function dropFreeformSiblings(draftId) {
+        const siblings = freeformSiblingDrafts.get(String(draftId)) || [];
+        freeformSiblingDrafts.delete(String(draftId));
+        siblings.forEach(id => { try { global.proposalDraftStore?.deleteDraft?.(id); } catch (_) { } });
+    }
+
     // The choice a rule editor offers when its design is dropped off its parcels. Resolves 'convert',
     // 'rule' or 'cancel'. `tryConvert()` and `tryRule()` carry the choice out and resolve
     // { ok, reason }; a refusal is said in the same dialog, which stays open. Without `tryConvert`
     // (a Detached rule on several parcels) only the rule and Cancel are offered.
-    async function chooseRuleDrop({ typology, tryConvert = null, tryRule } = {}) {
+    async function chooseRuleDrop({ typology, tryConvert = null, tryRule, buildings = 1 } = {}) {
+        const many = buildings > 1;
         let reason = '';
         for (;;) {
             const rule = ruleLabel(typology);
             const intro = tDraft('proposalDrafts.freeform.dropMessage', 'The {{rule}} rule builds on its own parcels, so the design cannot simply move. What should happen here?', { rule })
                 + (typeof tryConvert === 'function'
-                    ? `\n\n${tDraft('proposalDrafts.freeform.dropConvertMeaning', 'Converting keeps the building as it is now; the rule\'s parameters no longer apply to it.')}`
+                    ? `\n\n${many
+                        ? tDraft('proposalDrafts.freeform.dropConvertMeaningMany', 'Converting makes each of the {{count}} houses one Freeform proposal: its parcel\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply to them.', { count: buildings })
+                        : tDraft('proposalDrafts.freeform.dropConvertMeaning', 'Converting keeps the rule\'s massing at the greatest height it allows; the rule\'s parameters no longer apply to it.')}`
                     : '');
             const answer = await global.CbDialog.choice(reason ? `${reason}\n\n${intro}` : intro, [
                 ...(typeof tryConvert === 'function'
-                    ? [{ value: 'convert', label: tDraft('proposalDrafts.freeform.dropConvert', 'Convert to Freeform and keep it here'), primary: true }]
+                    ? [{ value: 'convert', label: many
+                        ? tDraft('proposalDrafts.freeform.titleMany', 'Convert to freeform buildings')
+                        : tDraft('proposalDrafts.freeform.dropConvert', 'Convert to Freeform and keep it here'), primary: true }]
                     : []),
                 { value: 'rule', label: tDraft('proposalDrafts.freeform.dropRule', 'Apply the same rule to the parcels here'), primary: typeof tryConvert !== 'function' },
                 { value: 'cancel', label: tDraft('proposalDrafts.freeform.dropCancel', 'Cancel') }
@@ -1703,16 +1786,21 @@
             const commitId = geometryEditCommitDraftId;
             geometryEditCommitDraftId = null;
             const current = global.proposalDraftStore.getDraft(commitId);
+            const siblings = freeformSiblingDrafts.get(String(commitId)) || [];
+            freeformSiblingDrafts.delete(String(commitId));
             if (current && current.dirty) {
-                Promise.resolve(instantCreateProposalFromDraft(commitId, { commitOnFinish: true })).catch(error => {
+                Promise.resolve(instantCreateProposalFromDraft(commitId, { commitOnFinish: true }))
+                    .then(result => saveFreeformSiblings(result, siblings)).catch(error => {
                     console.warn('[ProposalEditor] Geometry edit commit failed; draft kept', error);
                     reportProposalDesignSaveFailure(error);
                     reopenFailedProposalDraftOnce(commitId, global.proposalDraftStore, { commitOnFinish: true });
                 });
             } else if (current) {
+                siblings.forEach(id => { try { global.proposalDraftStore.deleteDraft(id); } catch (_) { } });
                 global.proposalDraftStore.deleteDraft(commitId);
             }
         }
+        dropFreeformSiblings(activeId);
         if (editorState.draftId === activeId && ensureShell()?.classList.contains('is-open')) renderShell();
         return draft;
     }
@@ -1738,6 +1826,7 @@
         // that too, or the "Multiparcel selection" panel resurfaces on later clicks.
         try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
         try { global.proposalDraftStore?.deleteDraft?.(commitId); } catch (_) { }
+        dropFreeformSiblings(commitId);
         clearProposalDraftComparison();
         return true;
     }
@@ -2461,6 +2550,7 @@
     global.editProposalGeometry = editProposalGeometry;
     global.convertProposalToFreeform = convertProposalToFreeform;
     global.convertActiveDesignToFreeform = convertActiveDesignToFreeform;
+    global.convertActiveDesignToFreeformBuildings = convertActiveDesignToFreeformBuildings;
     global.chooseRuleDrop = chooseRuleDrop;
     global.ruleDropLabel = ruleLabel;
     global.canEditProposalGeometry = canEditProposalGeometry;

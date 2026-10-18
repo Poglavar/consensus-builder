@@ -190,4 +190,47 @@ test.describe('Building-family placement @features', () => {
     expect(saved.buildingProposal.parameters).not.toHaveProperty('width');
     expect(saved.freePlacement).toBe(true);
   });
+
+  test('a Detached design dragged off its parcels moves as a whole and converts to one Freeform proposal per house', async ({ mockApi: page }) => {
+    await installLayerDatasets(page);
+    await openCity(page);
+    await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
+    await openParcel(page, 'info', BLOCK_PARCEL_IDS[0]);
+    await page.locator('.multi-select-detect-btn').click();
+    await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
+    await page.locator('#parcel-info-panel .close-button').click();
+    await page.locator('#selection-tray [data-command="selection.propose"]').click();
+    await page.locator('.parcel-build-btn--parcelBased').click();
+    await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
+    const houses = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.buildings.length);
+    expect(houses).toBeGreaterThan(1);
+    const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().map((proposal: any) => proposal.proposalId));
+
+    // Grab one house; the whole design goes with it.
+    const grab = await page.evaluate(() => {
+      const w = window as any;
+      const house = w.getActiveProposalDesignDraft().editorPayload.context.buildings[0];
+      const [lng, lat] = w.turf.pointOnFeature(house).geometry.coordinates;
+      const point = w.map.latLngToContainerPoint([lat, lng]);
+      const rect = document.getElementById('map')!.getBoundingClientRect();
+      return { x: point.x + rect.left, y: point.y + rect.top };
+    });
+    await page.mouse.move(grab.x, grab.y);
+    await page.mouse.down();
+    await page.mouse.move(grab.x - 220, grab.y + 30, { steps: 12 });
+    await page.mouse.up();
+
+    const dialog = dropDialog(page);
+    await expect(dialog).toBeVisible({ timeout: 20_000 });
+    await expect(dialog.getByRole('button')).toContainText(['Convert to freeform buildings', 'Apply the same rule to the parcels here', 'Put it back']);
+    await dialog.getByRole('button', { name: 'Convert to freeform buildings' }).click();
+    await expect(page.locator('#parcelbased').locator('.on-map-editor__panel')).toBeHidden({ timeout: 20_000 });
+
+    const created = () => page.evaluate(ids => (window as any).proposalStorage.getAllProposals()
+      .filter((proposal: any) => !(ids as string[]).includes(proposal.proposalId))
+      .map((proposal: any) => ({ goal: proposal.goal, buildings: proposal.geometry?.buildings?.length, applied: proposal.applied === true })), before);
+    await expect.poll(async () => (await created()).length, { timeout: 30_000 }).toBe(houses);
+    await expect.poll(async () => (await created()).every(item => item.applied), { timeout: 30_000 }).toBe(true);
+    (await created()).forEach(item => expect(item).toMatchObject({ goal: 'single', buildings: 1 }));
+  });
 });

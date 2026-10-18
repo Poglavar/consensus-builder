@@ -807,11 +807,10 @@
             "title": "Convertir en edificio libre",
             "convert": "Convertir",
             "keepRule": "Mantener la regla",
-            "confirmLocal": "«{{name}}» pasa a ser un solo edificio libre con la huella y la altura que su regla {{rule}} produce ahora. Después, los parámetros de la regla ya no se aplican: editas el edificio directamente.",
-            "confirmPublished": "«{{name}}» está publicada, así que se crea una contrapropuesta de edificio libre: un edificio con la huella y la altura que su regla {{rule}} produce ahora. Los parámetros de la regla no se le aplican: editas el edificio directamente. La propuesta publicada queda como está.",
+            "confirmLocal": "«{{name}}» se convierte en un edificio libre: el volumen de su regla {{rule}} a la mayor altura que la regla permite. Después los parámetros de la regla ya no se aplican: editas el edificio, y lo bajas, directamente.",
+            "confirmPublished": "«{{name}}» está publicada, así que se crea una contrapropuesta de edificio libre: un edificio, el volumen de su regla {{rule}} a la mayor altura que la regla permite. Los parámetros de la regla no se le aplican: editas el edificio directamente. La propuesta publicada queda como está.",
             "noBuildings": "Esta propuesta no tiene edificios que conservar.",
             "notContiguous": "Sus edificios no se tocan entre sí, así que no pueden convertirse en un solo edificio libre.",
-            "differentHeights": "Sus edificios tienen alturas distintas, y un edificio libre tiene una sola altura.",
             "dropTitle": "Fuera de sus parcelas",
             "dropMessage": "La regla {{rule}} construye sobre sus propias parcelas, así que el diseño no puede moverse sin más. ¿Qué debe pasar aquí?",
             "dropConvert": "Convertir en edificio libre y dejarlo aquí",
@@ -820,7 +819,12 @@
             "ruleFailed": "La regla no puede construir sobre las parcelas de aquí.",
             "ruleFailedHere": "La regla {{rule}} no puede construir un edificio sobre las parcelas de aquí.",
             "noParcelsHere": "Ninguna parcela queda mayormente dentro del contorno soltado.",
-            "dropConvertMeaning": "Convertir conserva el edificio tal como está ahora; los parámetros de la regla ya no se le aplican."
+            "dropConvertMeaning": "Convertir conserva el volumen de la regla a la mayor altura que permite; los parámetros de la regla ya no se le aplican.",
+            "titleMany": "Convertir en edificios libres",
+            "dropConvertMeaningMany": "Convertir hace de cada una de las {{count}} casas una propuesta de edificio libre: el volumen de su parcela a la mayor altura que la regla permite. Los parámetros de la regla ya no se les aplican.",
+            "confirmLocalMany": "«{{name}}» se convierte en {{count}} propuestas de edificio libre, un edificio por casa: el volumen de cada parcela a la mayor altura que su regla {{rule}} permite. La primera conserva esta propuesta; después los parámetros de la regla ya no se aplican.",
+            "confirmPublishedMany": "«{{name}}» está publicada, así que se crean {{count}} contrapropuestas de edificio libre, un edificio por casa: el volumen de cada parcela a la mayor altura que su regla {{rule}} permite. La propuesta publicada queda como está.",
+            "siblingsDropped": "Las demás casas no se convirtieron, porque la primera no se pudo guardar."
         }
     },
     "languages": {
@@ -1689,7 +1693,7 @@
                 "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
                 "betOutcome": "Apostar al resultado",
                 "editApprovalHintCounterproposal": "Abre el editor en la pestaña Aprobación. Al guardar se crea una contrapropuesta; las aceptaciones de esta no se trasladan.",
-                "convertToFreeformHint": "Conserva los edificios tal como están ahora y edítalos directamente como un solo edificio. Después, los parámetros de la regla ya no se aplican."
+                "convertToFreeformHint": "Conserva el volumen de la regla a la mayor altura que permite, como un edificio que editas directamente. Después los parámetros de la regla ya no se aplican."
             },
             "expiry": {
                 "expired": "Propuesta caducada",

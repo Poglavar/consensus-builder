@@ -563,10 +563,10 @@
     }
 
     // ---- Dragging: a Detached rule stays on its parcels ----
-    // Dragging the houses previews them at the drop, and the drop asks (proposal-editor-shell.js
-    // chooseRuleDrop): run the same rule on the parcels mostly inside the dropped outline, or cancel.
-    // Separate houses on separate parcels are not one building, so converting to Freeform is offered
-    // only when the rule covers exactly one parcel: one house.
+    // Grabbing any house drags the whole design; the drop asks (proposal-editor-shell.js
+    // chooseRuleDrop): run the same rule on the parcels mostly inside the dropped outline, convert to
+    // Freeform buildings (one Freeform proposal per house, since a Freeform stays one building), or
+    // put it back. The houses keep their stored massing and relative positions, moved by the drag.
 
     function parcelBasedLatLng(event) {
         const nativeEvent = event?.originalEvent || event;
@@ -576,7 +576,7 @@
     }
 
     function movedParcelBasedFeature(feature, from, to) {
-        if (!feature?.geometry) return feature;
+        if (!feature?.geometry || !from || !to) return feature;
         const geometry = window.SingleBuildingGeometry?.moveGeometry?.(feature.geometry, from, to);
         return geometry ? { ...feature, geometry } : feature;
     }
@@ -645,13 +645,29 @@
         return { ok: true };
     }
 
-    // A Detached rule on exactly one parcel is one house: it converts like a Freeform building.
+    // The footer's conversion (no drag) is offered only on one parcel: one house. A Detached record on
+    // several parcels cannot be rebuilt from its merged outline after a cadastre swap, so without a
+    // drag it gets the rule re-run, not a conversion.
     function parcelBasedConvertsToFreeform() {
         return (getActiveParcelBasedBlock()?.parcels?.length || 0) === 1 && (generatedParcelBasedFeatures?.length || 0) === 1;
     }
 
-    async function convertParcelBasedToFreeform(features, site, confirm) {
-        const result = await window.convertActiveDesignToFreeform?.({ features, site, typology: 'parcelBased', confirm });
+    // Each house as it would stand converted: its stored massing (the envelope the record saves)
+    // and its own parcel as its ground, both moved by the drag offset (none without a drag).
+    function parcelBasedHouses(from = null, to = null) {
+        const parcels = getActiveParcelBasedBlock()?.parcels || [];
+        return (generatedParcelBasedFeatures || []).filter(feature => feature?.geometry).map(envelope => {
+            const parcelId = String(envelope.properties?.parcelId || '');
+            const parcel = parcels.find(candidate => String(candidate?.id || '') === parcelId
+                || (typeof ensureParcelId === 'function' && candidate?.feature && String(ensureParcelId(candidate.feature)) === parcelId));
+            const feature = movedParcelBasedFeature(envelope, from, to);
+            const ground = parcel?.feature?.geometry ? movedParcelBasedFeature(parcel.feature, from, to) : feature;
+            return { feature, site: window.__siteDraft?.siteFromFeatures?.([ground]) || ground.geometry };
+        });
+    }
+
+    async function convertParcelBasedToFreeform(houses, confirm) {
+        const result = await window.convertActiveDesignToFreeformBuildings?.({ houses, typology: 'parcelBased', confirm });
         if (result?.ok) closeParcelBasedModal({ preservePending: true });
         return result || { ok: false };
     }
@@ -672,13 +688,12 @@
             return;
         }
         const outline = parcelBasedBoundary?.geometry ? movedParcelBasedFeature(parcelBasedBoundary, drag.start, drag.end) : null;
-        const movedEnvelopes = generatedParcelBasedFeatures.map(feature => movedParcelBasedFeature(feature, drag.start, drag.end));
+        const houses = parcelBasedHouses(drag.start, drag.end);
         const answer = typeof window.chooseRuleDrop === 'function'
             ? await window.chooseRuleDrop({
                 typology: 'parcelBased',
-                tryConvert: parcelBasedConvertsToFreeform()
-                    ? async () => convertParcelBasedToFreeform(movedEnvelopes, window.__siteDraft?.siteFromFeatures?.([outline || movedEnvelopes[0]]), false)
-                    : null,
+                buildings: houses.length,
+                tryConvert: async () => convertParcelBasedToFreeform(houses, false),
                 tryRule: async () => parcelBasedRuleAtOutline(outline)
             })
             : 'cancel';
@@ -840,8 +855,7 @@
             // One house on one parcel converts like a Freeform building (proposal-editor-shell.js).
             document.getElementById('btn-parcelbased-freeform')?.addEventListener('click', async () => {
                 if (!parcelBasedConvertsToFreeform()) return;
-                const result = await convertParcelBasedToFreeform(generatedParcelBasedFeatures,
-                    window.__siteDraft?.siteFromFeatures?.([parcelBasedBoundary?.geometry ? parcelBasedBoundary : generatedParcelBasedFeatures[0]]), true);
+                const result = await convertParcelBasedToFreeform(parcelBasedHouses(), true);
                 if (!result.ok && !result.cancelled) setParcelBasedInfo('', result.reason || '');
             });
 

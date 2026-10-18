@@ -807,11 +807,10 @@
             "title": "Pretvori u slobodnu zgradu",
             "convert": "Pretvori",
             "keepRule": "Zadrži pravilo",
-            "confirmLocal": "„{{name}}” postaje jedna slobodna zgrada s tlocrtom i visinom koje njezino pravilo {{rule}} sada daje. Nakon toga parametri pravila više ne vrijede: zgradu uređujete izravno.",
-            "confirmPublished": "„{{name}}” je objavljen, pa nastaje protuprijedlog slobodne zgrade: jedna zgrada s tlocrtom i visinom koje njegovo pravilo {{rule}} sada daje. Parametri pravila na nju se ne primjenjuju: zgradu uređujete izravno. Objavljeni prijedlog ostaje kakav jest.",
+            "confirmLocal": "„{{name}}” postaje jedna slobodna zgrada: volumen njegova pravila {{rule}} u najvećoj visini koju pravilo dopušta. Parametri pravila poslije više ne vrijede: zgradu uređujete, i snižavate, izravno.",
+            "confirmPublished": "„{{name}}” je objavljen, pa nastaje protuprijedlog slobodne zgrade: jedna zgrada, volumen njegova pravila {{rule}} u najvećoj visini koju pravilo dopušta. Parametri pravila na nju ne vrijede: zgradu uređujete izravno. Objavljeni prijedlog ostaje kakav jest.",
             "noBuildings": "Ovaj prijedlog nema zgrada koje bi se zadržale.",
             "notContiguous": "Njegove se zgrade ne dodiruju, pa ne mogu postati jedna slobodna zgrada.",
-            "differentHeights": "Njegove zgrade imaju različite visine, a slobodna zgrada ima jednu visinu.",
             "dropTitle": "Pomaknuto s njegovih čestica",
             "dropMessage": "Pravilo {{rule}} gradi na svojim česticama, pa se dizajn ne može samo pomaknuti. Što da se ovdje dogodi?",
             "dropConvert": "Pretvori u slobodnu zgradu i ostavi je ovdje",
@@ -820,7 +819,12 @@
             "ruleFailed": "Pravilo ne može graditi na česticama ovdje.",
             "ruleFailedHere": "Pravilo {{rule}} ne može izgraditi zgradu na česticama ovdje.",
             "noParcelsHere": "Nijedna čestica ne leži većim dijelom unutar spuštenog obrisa.",
-            "dropConvertMeaning": "Pretvaranje zadržava zgradu kakva je sada; parametri pravila na nju više ne vrijede."
+            "dropConvertMeaning": "Pretvaranje zadržava volumen pravila u najvećoj visini koju dopušta; parametri pravila na njega više ne vrijede.",
+            "titleMany": "Pretvori u slobodne zgrade",
+            "dropConvertMeaningMany": "Pretvaranje od svake od {{count}} kuća čini jedan prijedlog slobodne zgrade: volumen njezine čestice u najvećoj visini koju pravilo dopušta. Parametri pravila na njih više ne vrijede.",
+            "confirmLocalMany": "„{{name}}” postaje {{count}} prijedloga slobodnih zgrada, jedna zgrada po kući: volumen svake čestice u najvećoj visini koju njegovo pravilo {{rule}} dopušta. Prva zadržava ovaj prijedlog; parametri pravila poslije više ne vrijede.",
+            "confirmPublishedMany": "„{{name}}” je objavljen, pa nastaje {{count}} protuprijedloga slobodnih zgrada, jedna zgrada po kući: volumen svake čestice u najvećoj visini koju njegovo pravilo {{rule}} dopušta. Objavljeni prijedlog ostaje kakav jest.",
+            "siblingsDropped": "Ostale kuće nisu pretvorene jer se prva nije mogla spremiti."
         }
     },
     "languages": {
@@ -1676,7 +1680,7 @@
                 "unapplyUnavailable": "Ovaj prijedlog nije moguće ukloniti s karte.",
                 "betOutcome": "Kladi se na ishod",
                 "editApprovalHintCounterproposal": "Otvara uređivač na kartici Odobravanje. Spremanje stvara protuprijedlog; prihvaćanja ovog prijedloga se ne prenose.",
-                "convertToFreeformHint": "Zadržava zgrade kakve su sada i uređuje ih izravno kao jednu zgradu. Nakon toga parametri pravila više ne vrijede."
+                "convertToFreeformHint": "Zadrži volumen pravila u najvećoj visini koju dopušta, kao jednu zgradu koju uređujete izravno. Parametri pravila poslije više ne vrijede."
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",

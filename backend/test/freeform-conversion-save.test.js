@@ -1,13 +1,16 @@
 // "Convert to freeform building" on a saved Block (proposal-editor-shell.js convertProposalToFreeform):
 // the stored massing becomes one Freeform building in a draft that saves by the ordinary edit rule —
 // one's own local record in place, a published one as a Freeform counterproposal — and a Block whose
-// buildings do not touch is refused before anything is saved. Runs the real shell over stubbed stores.
+// buildings do not touch is refused before anything is saved. A Detached rule dropped elsewhere
+// becomes one Freeform proposal per house (convertActiveDesignToFreeformBuildings). Runs the real
+// shell over stubbed stores.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const shellPath = require.resolve('../../frontend/js/proposal-editor-shell.js');
+const variation = require('../../frontend/js/urban-rule-variation.js');
 const saved = new Map();
 
 function install(name, value) {
@@ -32,10 +35,18 @@ function block(extra = {}, buildings = [{ type: 'Feature', properties: { height:
 
 function loadShell(source) {
     const drafts = new Map();
+    let nextDraft = 0;
+    const draftId = () => (nextDraft++ === 0 ? 'conversion-draft' : `draft-${nextDraft}`);
     const store = {
+        createDraft: vi.fn(input => {
+            const draft = { ...JSON.parse(JSON.stringify(input)), id: draftId(), sourceProposalId: input.sourceProposalId || null, validation: { valid: true, errors: [] } };
+            delete draft.activate;
+            drafts.set(draft.id, draft);
+            return JSON.parse(JSON.stringify(draft));
+        }),
         createDraftFromProposal: vi.fn(proposal => {
             const draft = {
-                id: 'conversion-draft', sourceProposalId: proposal.proposalId, sourceSnapshot: proposal,
+                id: draftId(), sourceProposalId: proposal.proposalId, sourceSnapshot: proposal,
                 adapterKey: 'buildings', goal: 'buildings', fields: { name: proposal.title },
                 editorPayload: { typology: 'block', context: { blockName: 'Block 7', parameters: { mode: 'parametric', setback: 2, typology: 'block' } } },
                 validation: { valid: true, errors: [] }
@@ -54,19 +65,21 @@ function loadShell(source) {
             };
             const next = typeof patch === 'function' ? patch(JSON.parse(JSON.stringify(draft))) : merge(draft, patch);
             Object.keys(draft).forEach(key => delete draft[key]);
-            Object.assign(draft, next);
+            Object.assign(draft, next, { dirty: true });
             return draft;
         }),
         getDraft: id => drafts.get(id) || null,
+        flush: vi.fn(),
         validateDraft: id => drafts.get(id),
         deleteDraft: vi.fn(id => drafts.delete(id)),
-        buildProposalFromDraft: vi.fn(id => ({ goal: drafts.get(id).goal, title: source.title, editorPayload: drafts.get(id).editorPayload })),
+        buildProposalFromDraft: vi.fn(id => ({ goal: drafts.get(id).goal, title: drafts.get(id).fields?.name ?? source.title, site: drafts.get(id).fields?.site, editorPayload: drafts.get(id).editorPayload })),
         consumeAfterPublish: vi.fn()
     };
     install('proposalDraftStore', store);
+    let forks = 0;
     install('proposalStorage', {
         getProposal: id => (String(id) === source.proposalId ? source : null),
-        addProposal: vi.fn(() => 'fork-1'),
+        addProposal: vi.fn(() => `fork-${++forks}`),
         save: vi.fn()
     });
     install('getProposalByIdOrHash', id => (String(id) === source.proposalId ? source : null));
@@ -83,12 +96,16 @@ function loadShell(source) {
     install('__freeformConversion', require('../../frontend/js/proposals/freeform-conversion.js'));
     install('__siteDraft', require('../../frontend/js/proposals/site-draft.js'));
     install('turf', turf);
+    install('UrbanRuleVariation', variation);
     install('CbDialog', { confirm: vi.fn(async () => true) });
     install('isProposalApplied', record => record?.applied === true);
     install('showStyledAlert', vi.fn());
     install('showEphemeralMessage', vi.fn());
     install('beginApplyIndicator', vi.fn());
     install('endApplyIndicator', vi.fn());
+    install('proposalEditorAdapterRegistry', { get: () => ({ key: 'parcelBased', canEdit: () => true }) });
+    install('openProposalDraftDesign', vi.fn(async id => { globalThis.activeProposalDesignDraftId = id; return true; }));
+    install('activeProposalDesignDraftId', null);
     delete require.cache[shellPath];
     require(shellPath);
     return { store, drafts, ProposalManager };
@@ -159,5 +176,96 @@ describe('convertProposalToFreeform', () => {
         globalThis.CbDialog.confirm.mockResolvedValue(false);
         await expect(globalThis.convertProposalToFreeform('own-block')).resolves.toBeNull();
         expect(store.createDraftFromProposal).not.toHaveBeenCalled();
+    });
+});
+
+// A Detached rule on two parcels: one envelope per parcel (at the rule's maximum height), side by
+// side with a gap between them. The map draws a lower example house inside each; that is not frozen.
+function detached(extra = {}) {
+    const house = (west, floors, parcelId) => ({ type: 'Feature',
+        properties: { height: floors * 3, floors, parcelId, urbanRule: variation.normalizeParcelRule({ kind: 'max', maxFloors: floors, minFloors: 1, floorHeightM: 3 }), variationSeed: 7, massing: true },
+        geometry: box(west, 45, west + D, 45 + D) });
+    const houses = [house(16, 3, 'HR-1'), house(16 + 3 * D, 4, 'HR-2')];
+    return block({ proposalId: 'own-detached', typologyType: 'parcelBased', title: 'Two houses',
+        buildingProposal: { typologyType: 'parcelBased', parameters: { typology: 'parcelBased' } }, ...extra }, houses);
+}
+const shift = (geometry, dx) => ({ ...geometry, coordinates: geometry.coordinates.map(ring => ring.map(([x, y]) => [x + dx, y])) });
+const droppedHouses = source => source.geometry.buildings.map(feature => {
+    const moved = { ...feature, geometry: shift(feature.geometry, 10 * D) };
+    return { feature: moved, site: moved.geometry };
+});
+const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+async function flushSaves(ProposalManager, store, expectedCreates) {
+    for (let i = 0; i < 50 && store.buildProposalFromDraft.mock.calls.length < expectedCreates; i++) await settle();
+    await settle();
+}
+
+describe('convertActiveDesignToFreeformBuildings: a dropped Detached becomes one Freeform per house', () => {
+    it('one\'s own local Detached: the first house keeps the id, the second is a new proposal, saved after it', async () => {
+        const source = detached();
+        const { store, drafts, ProposalManager } = loadShell(source);
+        await globalThis.editProposalGeometry('own-detached');
+
+        const result = await globalThis.convertActiveDesignToFreeformBuildings({ houses: droppedHouses(source), confirm: false });
+        expect(result).toMatchObject({ ok: true, count: 2 });
+        // The further house is a fresh draft, not a second copy of the source.
+        expect(store.createDraft).toHaveBeenCalledOnce();
+        const [first, second] = [...drafts.values()];
+        expect(first.sourceProposalId).toBe('own-detached');
+        expect(second.sourceProposalId).toBeNull();
+        expect(second.fields.name).toBe('');
+        // Named, when saved, as the Freeform building it now is.
+        expect(second.proposalType).toBe(first.proposalType);
+        expect(second.proposalType).toBe('single');
+        [first, second].forEach((draft, index) => {
+            const envelope = droppedHouses(source)[index].feature;
+            // The example house the map draws is lower than the envelope; the envelope is what freezes.
+            expect(variation.realizeFeature(envelope, { turf }).properties.height).toBeLessThan(envelope.properties.height);
+            expect(draft).toMatchObject({ goal: 'single', adapterKey: 'single' });
+            expect(draft.editorPayload.context.buildings).toHaveLength(1);
+            expect(draft.editorPayload.context.parameters).toEqual({ typology: 'single', height: [9, 12][index], rotation: 0, footprintMode: 'polygon' });
+            expect(turf.area(draft.editorPayload.context.buildings[0])).toBeCloseTo(turf.area(envelope), 1);
+            expect(draft.fields.site).toEqual(droppedHouses(source)[index].site);
+        });
+
+        globalThis.finishProposalDraftDesignSession();
+        await flushSaves(ProposalManager, store, 2);
+        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledOnce();
+        expect(ProposalManager.updateProposalInPlace.mock.calls[0][0]).toBe('own-detached');
+        expect(globalThis.proposalStorage.addProposal).toHaveBeenCalledOnce();
+        expect(globalThis.proposalStorage.addProposal.mock.calls[0][0].site).toEqual(droppedHouses(source)[1].site);
+        // The first is saved before the second is built.
+        expect(ProposalManager.updateProposalInPlace.mock.invocationCallOrder[0])
+            .toBeLessThan(globalThis.proposalStorage.addProposal.mock.invocationCallOrder[0]);
+    });
+
+    it('a published Detached: every house becomes a counterproposal and the source stays as it is', async () => {
+        const source = detached({ serverProposalId: '902' });
+        const before = JSON.parse(JSON.stringify(source));
+        const { store, ProposalManager } = loadShell(source);
+        await globalThis.editProposalGeometry('own-detached');
+
+        await expect(globalThis.convertActiveDesignToFreeformBuildings({ houses: droppedHouses(source), confirm: false })).resolves.toMatchObject({ ok: true });
+        expect(store.createDraft).not.toHaveBeenCalled();
+        expect(store.createDraftFromProposal).toHaveBeenCalledTimes(2);
+        globalThis.finishProposalDraftDesignSession();
+        await flushSaves(ProposalManager, store, 2);
+
+        expect(globalThis.proposalStorage.addProposal).toHaveBeenCalledTimes(2);
+        expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
+        expect(source).toEqual(before);
+    });
+
+    it('drops the further houses when the editor is abandoned instead of confirmed', async () => {
+        const source = detached();
+        const { store, drafts } = loadShell(source);
+        await globalThis.editProposalGeometry('own-detached');
+        await globalThis.convertActiveDesignToFreeformBuildings({ houses: droppedHouses(source), confirm: false });
+        expect(drafts.size).toBe(2);
+
+        globalThis.discardProposalDraftDesignSession();
+
+        expect(drafts.size).toBe(0);
+        expect(store.buildProposalFromDraft).not.toHaveBeenCalled();
     });
 });
