@@ -28,7 +28,9 @@
                 // explicitly given. An unrelated viewport request must never leak into whichever
                 // proposal happens to be applying at the time.
                 if (context.mutation) {
-                    context.mutation.seedCadastre(features);
+                    // The boot replay's slicer seeds an arriving cell's parcels a few at a time.
+                    if (context.slicer) await global.__workSlicer.runSliced(context.mutation.seedCadastreSteps(features), context.slicer);
+                    else context.mutation.seedCadastre(features);
                     return;
                 }
 
@@ -220,7 +222,7 @@
             if (!list.length || typeof dependencies.onFeatures !== 'function') return;
             await dependencies.onFeatures(list, {
                 city: normalizeId(options.city) || cityKey(),
-                mutation: options.mutation || null
+                mutation: options.mutation || null, slicer: options.slicer || null
             });
         }
 
@@ -368,7 +370,7 @@
                         city,
                         requestedIds,
                         skipConversion: result && result.returnsWGS84 === true,
-                        mutation: options.mutation || null
+                        mutation: options.mutation || null, slicer: options.slicer || null
                     }))
                     .finally(() => {
                         requestedIds.forEach(id => {
@@ -399,7 +401,7 @@
             });
             const features = foundIds.map(id => clone(store.get(id)));
             if (options.retainOnly !== true) {
-                await provideFeatures(features, { city, mutation: options.mutation || null });
+                await provideFeatures(features, { city, mutation: options.mutation || null, slicer: options.slicer || null });
             }
             return {
                 status: absentIds.length ? 'partial' : 'ready',
@@ -508,13 +510,13 @@
             const key = scoped(city, fingerprint);
             if (footprintResults.has(key)) {
                 const result = clone(footprintResults.get(key));
-                await provideFeatures(result.features, { city, mutation: options.mutation || null });
+                await provideFeatures(result.features, { city, mutation: options.mutation || null, slicer: options.slicer || null });
                 return { members: 1, coveredMembers: 1, requests: 0, result, elapsed: now() - started };
             }
             const pending = footprintInFlight.get(key);
             if (pending) {
                 const shared = clone(await pending);
-                await provideFeatures(shared.result?.features, { city, mutation: options.mutation || null });
+                await provideFeatures(shared.result?.features, { city, mutation: options.mutation || null, slicer: options.slicer || null });
                 return shared;
             }
             const requestTransport = transport();
@@ -558,7 +560,7 @@
                 .finally(() => { if (footprintInFlight.get(key) === task) footprintInFlight.delete(key); });
             footprintInFlight.set(key, task);
             const result = clone(await task);
-            await provideFeatures(result.result?.features, { city, mutation: options.mutation || null });
+            await provideFeatures(result.result?.features, { city, mutation: options.mutation || null, slicer: options.slicer || null });
             return result;
         }
 
@@ -575,7 +577,7 @@
             const idResult = allIds.length ? await ensureIds(allIds, {
                 city,
                 onProgress: options.onProgress,
-                mutation: options.mutation || null
+                mutation: options.mutation || null, slicer: options.slicer || null
             }) : {
                 cachedIds: [], requestedIds: [], waitingIds: [], missingIds: [], requestCount: 0, features: []
             };
@@ -639,7 +641,7 @@
             if (cachedFootprintFeatures.length) {
                 await provideFeatures(cachedFootprintFeatures, {
                     city,
-                    mutation: options.mutation || null
+                    mutation: options.mutation || null, slicer: options.slicer || null
                 });
             }
 
@@ -664,7 +666,7 @@
                     const result = await ensureFootprint(geometry, {
                         city,
                         parcelsOnly: true,
-                        mutation: options.mutation || null
+                        mutation: options.mutation || null, slicer: options.slicer || null
                     });
                     const elapsed = now() - requestStarted;
                     profile.footprintRequests += result.requests || 0;
@@ -739,7 +741,7 @@
                     features: Array.from(cachedIds, id => featureStore(city).get(id)).filter(Boolean),
                     requestCount: 0
                 };
-                await provideFeatures(result.features, { city, mutation: options.mutation || null });
+                await provideFeatures(result.features, { city, mutation: options.mutation || null, slicer: options.slicer || null });
                 return result;
             }
 
@@ -764,7 +766,7 @@
                 if (pending) join(pending);
                 else ownKeys.push(key);
             });
-            const provision = { city, mutation: options.mutation || null };
+            const provision = { city, mutation: options.mutation || null, slicer: options.slicer || null };
             let requestCount = 0;
             if (ownKeys.length) {
                 const requestTransport = transport();
@@ -892,6 +894,12 @@
             return Array.from(featureStore(city).values(), clone);
         }
 
+        // The ids of every retained fact, without copying one.
+        function listIds(options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            return Array.from(featureStore(city).keys());
+        }
+
         // Pure repository query used after `ensure*` has made ground available.  Consumers never
         // scan a second cache or a renderer: the same service that owns retrieval owns the answer.
         function coverageOf(geometry, options = {}) {
@@ -1012,6 +1020,7 @@
             getMany,
             peekMany,
             list,
+            listIds,
             coverageOf,
             isPointLoaded,
             roadClassificationAvailable,

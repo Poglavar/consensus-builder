@@ -2,6 +2,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const workSlicer = require('../../frontend/js/work-slicer.js');
 
 const source = readFileSync(new URL('../../frontend/js/parcels/ground-service.js', import.meta.url), 'utf8');
 
@@ -31,6 +35,7 @@ function boot({ features, absent = [], mutation } = {}) {
         ProposalManager: { integrateCadastralGround: integrate },
         withCorridorStripRefreshHeld: run => run()
     };
+    window.__workSlicer = workSlicer;
     vm.runInNewContext(source, { window, Promise, console, performance, AbortController });
     return { window, fabric, fetchBounds, integrate, mutation };
 }
@@ -74,5 +79,21 @@ describe('global cadastral repository fabric adapter', () => {
         expect(Array.from(seedCadastre.mock.calls[0][0], item => item.properties.parcelId)).toEqual(['HR-A', 'HR-B']);
         expect(other.fabric.absentCadastreIds).not.toHaveBeenCalled();
         expect(other.integrate).not.toHaveBeenCalled();
+    });
+
+    it('seeds an explicit draft in the slices of the slicer it is given (the boot replay), one parcel a step', async () => {
+        const rows = [feature('HR-A'), feature('HR-B', 2), feature('HR-C', 4)];
+        const seeded = [];
+        const explicitMutation = {
+            seedCadastre: vi.fn(),
+            *seedCadastreSteps(features) { for (const item of features) { seeded.push(item.properties.parcelId); yield; } }
+        };
+        let t = 0;
+        const slicer = workSlicer.createSlicer({ budgetMs: 1, now: () => (t += 1), yieldNow: async () => {} });
+        const f = boot({ features: rows });
+        await f.window.CadastralParcelRepository.ensureBounds(bounds, { city: 'test', mutation: explicitMutation, slicer });
+        expect(seeded).toEqual(['HR-A', 'HR-B', 'HR-C']);
+        expect(explicitMutation.seedCadastre).not.toHaveBeenCalled();
+        expect(slicer.pauses).toBeGreaterThanOrEqual(3);
     });
 });

@@ -40,6 +40,15 @@ const parcelMutationCoordinator = (typeof window !== 'undefined' && window.Parce
     ? window.ParcelMutation
     : require('./proposals/apply/transaction.js').ParcelMutation;
 
+// Clock-checked, background-priority slices for the boot replay (work-slicer.js).
+const workSlicerApi = (typeof window !== 'undefined' && window.__workSlicer)
+    ? window.__workSlicer
+    : require('./work-slicer.js');
+
+// A replay is rolled back only when it has made no progress for this long (every slice and every
+// ground arrival is progress). A total limit rolled a slow phone back mid-replay.
+const REPLAY_STALL_TIMEOUT_MS = 60000;
+
 // The parcel-identity + ownership helpers moved to proposal-parcel-identity.js (a sibling classic
 // script the browser loads first, so they are globals there). Under node they are module-scoped, so
 // load that file to publish them onto globalThis before the ProposalManager literal below references
@@ -305,7 +314,10 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
             storage,
             fabric: mutatesMap ? browserRoot.LiveParcelFabric : null,
             // undefined → the coordinator's PARCEL_MUTATION_TIMEOUT_MS (or a window override).
-            timeoutMs: options && options.mutationTimeoutMs
+            timeoutMs: options && options.mutationTimeoutMs,
+            // The boot replay: a no-progress deadline instead of a total one, and its slicer.
+            progressTimeoutMs: options && options.mutationProgressTimeoutMs,
+            slicer: options && options.mutationSlicer
         });
         if (reportsApply) {
             if (result !== false) manager._clearLastApplyFailure?.(proposalId);
@@ -324,6 +336,100 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
         }
         throw error;
     }
+}
+
+// Reset the derived fabric to pristine cadastre inside the mutation's draft: the step function
+// behind ProposalManager._resetDerivedFabric (one go) and _resetDerivedFabricSliced (the replay).
+// It yields after each small unit (a parcel seeded, a piece checked, a record cleared).
+function* _derivedFabricResetSteps(manager, appliedList, options = {}) {
+    const fabric = _fabricDraft(options);
+    const repository = _cadastralParcelRepository();
+    if (!fabric) {
+        throw new Error('Resetting derived parcels requires a parcel mutation draft.');
+    }
+    if (!repository || typeof repository.listIds !== 'function' || typeof repository.peekMany !== 'function') {
+        throw new Error('Resetting derived parcels requires the cadastral repository.');
+    }
+
+    const requestedScope = Array.isArray(options.cadastreParcelIds)
+        ? options.cadastreParcelIds
+        : (options.cadastreParcelIds instanceof Set ? Array.from(options.cadastreParcelIds) : null);
+    const scope = new Set((requestedScope || []).map(String).filter(Boolean));
+    if (!requestedScope) {
+        // Ids only: copying every retained fact and every live piece to read their ids cost
+        // ~150 ms of a full reset.
+        repository.listIds().forEach(id => scope.add(String(id)));
+        fabric.occupiedCadastreIds().forEach(id => scope.add(String(id)));
+    }
+    const ids = Array.from(scope);
+    // The retained facts themselves (frozen): the fabric copies what it keeps.
+    const canonical = repository.peekMany(ids);
+    yield;
+    const found = new Set(canonical.map(_getParcelIdFromFeature).filter(Boolean).map(String));
+    const missing = ids.filter(id => !found.has(id));
+    if (missing.length) {
+        const error = new Error(`Cadastral ground is unavailable for reset: ${missing.join(', ')}`);
+        error.code = 'cadastral-reset-incomplete';
+        error.parcelIds = missing;
+        throw error;
+    }
+    // Register the repository facts in this same draft before asking the fabric to prove that
+    // the replacement is an exact partition. Existing derived occupants prevent seedCadastre
+    // from adding duplicate live parcels; it still records their immutable source geometry.
+    // A plan on open ground only (an explore city) has no cadastral scope to replace.
+    if (ids.length) {
+        yield* fabric.seedCadastreSteps(canonical);
+        yield* fabric.replaceCadastreScopeSteps(ids, canonical);
+    }
+    // Pieces on open ground only are anchored to no cadastral parcel, so the scope replacement
+    // above cannot reach them: a full reset drops them all, a scoped one those of its records.
+    const groundProducers = requestedScope
+        ? new Set((Array.isArray(options.proposalIds) ? options.proposalIds : [])
+            .map(value => String((value && typeof value === 'object') ? value.proposalId : value)))
+        : null;
+    const staleGround = (groundProducers
+        ? Array.from(groundProducers).flatMap(id => fabric.producedBy(id))
+        : fabric.peekList())
+        .filter(feature => openGroundApi.isGroundPiece(feature))
+        .map(_getParcelIdFromFeature).filter(Boolean);
+    if (staleGround.length) fabric.removeIds(staleGround);
+
+    const proposalIds = new Set((Array.isArray(options.proposalIds)
+        ? options.proposalIds
+        : (requestedScope ? [] : (Array.isArray(appliedList) ? appliedList : [])))
+        .map(value => (value && typeof value === 'object') ? value.proposalId : value)
+        .filter(value => value !== undefined && value !== null)
+        .map(String));
+    const resetCollection = name => {
+        const collection = _collection(name, options);
+        if (!collection) return;
+        const retained = collection.filter(feature => {
+            const owner = String(feature?.properties?.proposalId || '');
+            if (!owner) return true;
+            return requestedScope ? !proposalIds.has(owner) : false;
+        });
+        collection.splice(0, collection.length, ...retained);
+    };
+    resetCollection('parks');
+    resetCollection('squares');
+    resetCollection('lakes');
+    resetCollection('transitStations');
+    resetCollection('proposedBuildings');
+
+    for (const proposal of (Array.isArray(options.recordsToClear) ? options.recordsToClear : (Array.isArray(appliedList) ? appliedList : []))) {
+        manager._clearDerivedRecordState(proposal);
+        yield;
+    }
+
+    // One after-commit step per layer, so a sliced commit can yield between them.
+    [
+        () => { if (typeof updateParksLayer === 'function') updateParksLayer(); },
+        () => { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); },
+        () => { if (typeof updateLakesLayer === 'function') updateLakesLayer(); },
+        () => { if (typeof updateTransitStationsLayer === 'function') updateTransitStationsLayer(); },
+        () => { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); }
+    ].forEach(refresh => options._parcelMutation.afterCommit(() => { try { refresh(); } catch (_) { } }));
+    return { parcels: ids.length };
 }
 
 function _proposalStore(options) {
@@ -1117,8 +1223,30 @@ const ProposalManager = {
     async rebuildAppliedFabric(options = {}) {
         const opts = options || {};
         if (!opts._parcelMutation) {
-            return _runProposalMutationBoundary(this, 'rebuild-applied-fabric', null, opts,
-                async (_context, transactionOptions) => {
+            // The whole replay runs in clock-checked slices that yield at background priority
+            // (work-slicer.js), so timers, input and network replies get the thread first. It can
+            // be cancelled at any slice boundary (cancelReplay; a city switch); the private draft is
+            // then discarded, as on a failure.
+            const controller = typeof AbortController === 'function' ? new AbortController() : null;
+            let mutationContext = null;
+            const slicer = workSlicerApi.createSlicer({
+                signal: controller ? controller.signal : null,
+                onPause: () => { if (mutationContext) mutationContext.progress(); }
+            });
+            const progressOf = event => {
+                if (mutationContext) mutationContext.progress();
+                if (typeof opts.onProgress === 'function') opts.onProgress(event);
+            };
+            const stopListening = this._listenForReplaySupersession(reason => controller && controller.abort(reason));
+            this._replayController = controller;
+            try {
+                return await _runProposalMutationBoundary(this, 'rebuild-applied-fabric', null, {
+                    ...opts,
+                    onProgress: progressOf,
+                    mutationProgressTimeoutMs: this.replayStallTimeoutMs,
+                    mutationSlicer: slicer
+                }, async (context, transactionOptions) => {
+                    mutationContext = context;
                     const result = await this.rebuildAppliedFabric(transactionOptions);
                     // A boot replay is one materialization of one applied-set snapshot. A member
                     // failure rolls the entire draft back; it may never commit an `applied=true`
@@ -1129,6 +1257,14 @@ const ProposalManager = {
                     }
                     return result;
                 });
+            } catch (error) {
+                if (!workSlicerApi.isCancelled(error)) throw error;
+                console.info(`[${new Date().toISOString()}] [rebuildAppliedFabric] cancelled (${error.reason || 'superseded'}); the private draft was discarded`);
+                return { ok: false, cancelled: true, reason: error.reason || null };
+            } finally {
+                stopListening();
+                if (this._replayController === controller) this._replayController = null;
+            }
         }
         if (this._rebuildInProgress) {
             console.warn('[rebuildAppliedFabric] re-entered — skipped');
@@ -1201,8 +1337,13 @@ const ProposalManager = {
             _emitProposalProgress(opts.onProgress, { phase: 'corridor-strips' });
             // The whole rebuild's presentation, once: members replay with deferPresentation, and
             // _resetDerivedFabric's own afterCommit redraws the structure and building layers.
-            opts._parcelMutation.afterCommit(() => {
-                try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
+            opts._parcelMutation.afterCommit(async () => {
+                // One road per slice: the first draw of a city's roads is about a second of work.
+                try {
+                    if (typeof refreshAppliedCorridorStripsSliced === 'function') {
+                        await refreshAppliedCorridorStripsSliced(opts._parcelMutation.slicer || null);
+                    }
+                } catch (error) { console.warn('[rebuildAppliedFabric] corridor strips refresh failed', error); }
                 try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
                 try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
                 try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -1249,6 +1390,38 @@ const ProposalManager = {
             // In `finally`, so a derivation that throws does not leave the bar spinning for ever.
             try { if (typeof spinnerHeld === 'function') spinnerHeld(); } catch (_) { }
         }
+    },
+
+    replayStallTimeoutMs: REPLAY_STALL_TIMEOUT_MS,
+
+    // Stops a running replay at its next slice boundary (rebuildAppliedFabric). Nothing it built is
+    // kept: the mutation rolls its private draft back.
+    cancelReplay(reason = 'superseded') {
+        const controller = this._replayController;
+        if (!controller || controller.signal.aborted) return false;
+        controller.abort(reason);
+        return true;
+    },
+
+    // What supersedes a replay: leaving the city (city-config.js announces the navigation before
+    // the page goes) or the current city changing under it. Returns the unsubscribe.
+    _listenForReplaySupersession(cancel) {
+        const target = (typeof window !== 'undefined' && window && typeof window.addEventListener === 'function') ? window : null;
+        if (!target) return () => {};
+        const startedIn = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
+            ? window.CityConfigManager.getCurrentCityId()
+            : null;
+        const onLeaving = event => cancel(`leaving for ${event?.detail?.cityId || 'another city'}`);
+        const onChanged = event => {
+            const cityId = event?.detail?.cityId || null;
+            if (cityId && cityId !== startedIn) cancel(`city changed to ${cityId}`);
+        };
+        target.addEventListener('cityLeaving', onLeaving);
+        target.addEventListener('cityChanged', onChanged);
+        return () => {
+            target.removeEventListener('cityLeaving', onLeaving);
+            target.removeEventListener('cityChanged', onChanged);
+        };
     },
 
     _orderedStandingProposals() {
@@ -1866,7 +2039,8 @@ const ProposalManager = {
         const profile = await service.ensureProposalGround(members, {
             purpose,
             onProgress: options.onProgress,
-            mutation: _fabricDraft(options) || undefined
+            mutation: _fabricDraft(options) || undefined,
+            slicer: options.slicer || undefined
         });
         if (Array.isArray(profile?.missingIds) && profile.missingIds.length) {
             const error = new Error(_proposalApplyFailure('cadastral-ground-absent', { parcels: profile.missingIds.join(', ') }).message);
@@ -2103,21 +2277,22 @@ const ProposalManager = {
 
     async _deriveCorridorFabricBody(options = {}) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
-        const breathe = async () => {
-            if (typeof browserRoot.yieldToBrowser === 'function') await browserRoot.yieldToBrowser();
-        };
-        // Breathing on the CLOCK, not a count. A fixed chunk of 40 was 40 clips — half a
-        // millisecond each on simple parcels and several on corridor-dense ones, so the same chunk
-        // was either nothing or several dropped frames depending on where the pan landed.
-        const CHUNK = 40;
-        const _sliceNow = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
-        let _sliceStarted = _sliceNow();
-        const breatheIfDue = async () => {
-            if (_sliceNow() - _sliceStarted >= 12) {
-                await breathe();
-                _sliceStarted = _sliceNow();
+        // Breathing on the CLOCK, not a count, checked after every parcel. A fixed chunk of 40 was
+        // 40 clips — half a millisecond each on simple parcels and several on corridor-dense ones,
+        // so the same chunk was either nothing or several dropped frames depending on where the pan
+        // landed. The replay hands in its slicer (8 ms, background priority, cancellable); other
+        // derivations breathe every 12 ms with yieldToBrowser.
+        const replaySlicer = options.slicer || null;
+        const slicer = replaySlicer || workSlicerApi.createSlicer({
+            budgetMs: 12,
+            yieldNow: async () => {
+                if (typeof browserRoot.yieldToBrowser === 'function') await browserRoot.yieldToBrowser();
             }
+        });
+        const breatheIfDue = async () => {
+            if (slicer.due()) await slicer.pause();
         };
+        const PROGRESS_EVERY = 40;
         const A = browserRoot.__parcelArrangement;
         const repository = _cadastralParcelRepository();
         if (!A || typeof A.takeHitsOn !== 'function' || typeof A.fabricOver !== 'function') {
@@ -2167,11 +2342,15 @@ const ProposalManager = {
         const hitsById = (options.hitsById && typeof options.hitsById.get === 'function')
             ? options.hitsById
             : new Map();
-        const candidateFeatures = repository.getMany(scope);
-        const candidates = candidateFeatures.map(feature => ({
-            id: String(_getParcelIdFromFeature(feature) || ''),
-            feature
-        })).filter(entry => entry.id);
+        // One parcel at a time: a copy of every parcel under the city's roads was one 60 ms block.
+        const candidates = [];
+        for (const scopeId of scope) {
+            repository.getMany([scopeId]).forEach(feature => {
+                const id = String(_getParcelIdFromFeature(feature) || '');
+                if (id) candidates.push({ id, feature });
+            });
+            await breatheIfDue();
+        }
         const foundIds = new Set(candidates.map(entry => entry.id));
         const missingIds = Array.from(scope).filter(id => !foundIds.has(id));
         if (missingIds.length) {
@@ -2186,21 +2365,22 @@ const ProposalManager = {
             done: 0,
             total: candidates.length
         });
-        for (let i = 0; i < candidates.length; i += CHUNK) {
-            for (const entry of candidates.slice(i, i + CHUNK)) {
-                const id = String(entry.id);
-                const relevantTakes = takesByCadastreId.get(id) || [];
-                if (!hitsById.has(id)) {
-                    hitsById.set(id, A.takeHitsOn(entry.feature, relevantTakes));
-                }
-                parcels.push(entry);
+        for (let i = 0; i < candidates.length; i += 1) {
+            const entry = candidates[i];
+            const id = String(entry.id);
+            const relevantTakes = takesByCadastreId.get(id) || [];
+            if (!hitsById.has(id)) {
+                hitsById.set(id, A.takeHitsOn(entry.feature, relevantTakes));
             }
-            _emitProposalProgress(options.onProgress, {
-                phase: 'fabric-scan',
-                done: Math.min(i + CHUNK, candidates.length),
-                total: candidates.length
-            });
-            if (i + CHUNK < candidates.length) await breatheIfDue();
+            parcels.push(entry);
+            if ((i + 1) % PROGRESS_EVERY === 0 || i + 1 === candidates.length) {
+                _emitProposalProgress(options.onProgress, {
+                    phase: 'fabric-scan',
+                    done: i + 1,
+                    total: candidates.length
+                });
+            }
+            if (i + 1 < candidates.length) await breatheIfDue();
         }
         if (!parcels.length) {
             _emitProposalProgress(options.onProgress, { phase: 'fabric-ready', parcels: 0, added: 0, removed: 0 });
@@ -2267,16 +2447,24 @@ const ProposalManager = {
             parcels: parcels.length
         });
 
-        const features = pieces.map(piece => {
+        const features = [];
+        for (const piece of pieces) {
             const base = parcelById.get(String(piece.parcelId));
-            if (piece.id === piece.parcelId) return base;
             const take = piece.takers.length ? takeById.get(piece.takers[0]) : null;
-            return A.featureForPiece(piece, base, {
+            const feature = piece.id === piece.parcelId ? base : A.featureForPiece(piece, base, {
                 isTrack: !!(take && take.isTrack),
                 roadName: take ? take.name : null
             });
-        }).filter(Boolean);
-        fabricStore.replaceCadastreScope(parcelById.keys(), features);
+            if (feature) features.push(feature);
+            await breatheIfDue();
+        }
+        // The check of every piece against the cadastre is the costliest step of a whole-city
+        // derivation; the replay runs it in its slices, other edits in one go.
+        if (replaySlicer) {
+            await workSlicerApi.runSliced(fabricStore.replaceCadastreScopeSteps(parcelById.keys(), features), replaySlicer);
+        } else {
+            fabricStore.replaceCadastreScope(parcelById.keys(), features);
+        }
 
         _emitProposalProgress(options.onProgress, {
             phase: 'fabric-ready',
@@ -2619,6 +2807,9 @@ const ProposalManager = {
 
     async _rebuildPass(appliedList, opts) {
         const passOptions = opts || {};
+        // Every step below checks the clock after each small unit of work and yields when the
+        // slice is used up (the replay's slicer, carried by its mutation).
+        const slicer = passOptions._parcelMutation?.slicer || workSlicerApi.createSlicer();
         const failed = [];
         let appliedCount = 0;
         // A replay is an ordered fold of disposable output. Authored `applied` flags remain stable
@@ -2642,7 +2833,8 @@ const ProposalManager = {
             this._loadReplayGround(appliedList, {
                 onProgress: passOptions.onProgress,
                 purpose: 'replay',
-                _parcelMutation: passOptions._parcelMutation
+                _parcelMutation: passOptions._parcelMutation,
+                slicer
             }),
             this._prefetchDemolitionBuildings(appliedList, { onProgress: passOptions.onProgress })
         ]);
@@ -2650,12 +2842,12 @@ const ProposalManager = {
         // The old implementation reset Leaflet first and fetched second, exposing an empty/partial
         // map for the entire replay and making a failed request destructive.
         const resetStarted = _now();
-        this._resetDerivedFabric(appliedList, {
+        await this._resetDerivedFabricSliced(appliedList, {
             cadastreParcelIds: passOptions.cadastreParcelIds,
             proposalIds: passOptions.resetProposalIds,
             recordsToClear: passOptions.recordsToClear,
             _parcelMutation: passOptions._parcelMutation
-        });
+        }, slicer);
         const resetMs = _now() - resetStarted;
         _emitProposalProgress(passOptions.onProgress, {
             phase: 'rebuild-reset',
@@ -2690,6 +2882,7 @@ const ProposalManager = {
             takes,
             onProgress: passOptions.onProgress,
             _parcelMutation: passOptions._parcelMutation,
+            slicer,
             ...(passOptions.cadastreParcelIds ? { parcelIds: passOptions.cadastreParcelIds } : {})
         });
         if (Array.isArray(fabric?.failed) && fabric.failed.length) {
@@ -2764,15 +2957,14 @@ const ProposalManager = {
                 }
                 ok = await this.applyProposal(key, replayOptions);
             } catch (error) {
+                if (workSlicerApi.isCancelled(error)) throw error;
                 console.error('[rebuildAppliedFabric] apply threw for', key, error);
                 ok = false;
             }
-            // Between members, not inside one: a replay of 180 proposals is a minute of work, and
-            // without a macrotask boundary the whole minute is one frame. Costs ~4 ms a member and
-            // buys back a map you can pan while it runs.
-            if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
-                await window.yieldToBrowser();
-            }
+            // The clock is checked after every member, and the replay yields once ~8 ms have
+            // passed (not once per member however long each takes): without a task boundary a
+            // replay of 180 proposals is one frame, and with one per member it paid ~4 ms each.
+            await slicer.checkpoint();
             const memberMs = _now() - memberStarted;
             if (!slowest || memberMs > slowest.ms) slowest = { key: String(key), ms: memberMs };
             // Re-derivation is not a proposal edit. Apply tails stamp `appliedAt`/`updatedAt`; put
@@ -2860,95 +3052,14 @@ const ProposalManager = {
     // former map-owned registry could put old ground back into the next cut. Derived parcels are
     // regenerated by applied records;
     // an unknown/orphan token has no standing claim and is purged as well.
+    // Reset to the cadastre: one step function (_derivedFabricResetSteps), run in one go here and
+    // in the replay's slices by _resetDerivedFabricSliced.
     _resetDerivedFabric(appliedList, options = {}) {
-        const fabric = _fabricDraft(options);
-        const repository = _cadastralParcelRepository();
-        if (!fabric) {
-            throw new Error('Resetting derived parcels requires a parcel mutation draft.');
-        }
-        if (!repository || typeof repository.list !== 'function' || typeof repository.getMany !== 'function') {
-            throw new Error('Resetting derived parcels requires the cadastral repository.');
-        }
+        return workSlicerApi.runToCompletion(_derivedFabricResetSteps(this, appliedList, options));
+    },
 
-        const requestedScope = Array.isArray(options.cadastreParcelIds)
-            ? options.cadastreParcelIds
-            : (options.cadastreParcelIds instanceof Set ? Array.from(options.cadastreParcelIds) : null);
-        const scope = new Set((requestedScope || []).map(String).filter(Boolean));
-        if (!requestedScope) {
-            repository.list().forEach(feature => {
-                const id = _getParcelIdFromFeature(feature);
-                if (id) scope.add(String(id));
-            });
-            fabric.list().forEach(feature => {
-                proposalClaims.cadastreParcelIdsOf(feature?.properties || feature)
-                    .forEach(id => scope.add(String(id)));
-            });
-        }
-        const ids = Array.from(scope);
-        const canonical = repository.getMany(ids);
-        const found = new Set(canonical.map(_getParcelIdFromFeature).filter(Boolean).map(String));
-        const missing = ids.filter(id => !found.has(id));
-        if (missing.length) {
-            const error = new Error(`Cadastral ground is unavailable for reset: ${missing.join(', ')}`);
-            error.code = 'cadastral-reset-incomplete';
-            error.parcelIds = missing;
-            throw error;
-        }
-        // Register the repository facts in this same draft before asking the fabric to prove that
-        // the replacement is an exact partition. Existing derived occupants prevent seedCadastre
-        // from adding duplicate live parcels; it still records their immutable source geometry.
-        // A plan on open ground only (an explore city) has no cadastral scope to replace.
-        if (ids.length) {
-            fabric.seedCadastre(canonical);
-            fabric.replaceCadastreScope(ids, canonical);
-        }
-        // Pieces on open ground only are anchored to no cadastral parcel, so the scope replacement
-        // above cannot reach them: a full reset drops them all, a scoped one those of its records.
-        const groundProducers = requestedScope
-            ? new Set((Array.isArray(options.proposalIds) ? options.proposalIds : [])
-                .map(value => String((value && typeof value === 'object') ? value.proposalId : value)))
-            : null;
-        const staleGround = (groundProducers
-            ? Array.from(groundProducers).flatMap(id => fabric.producedBy(id))
-            : fabric.list())
-            .filter(feature => openGroundApi.isGroundPiece(feature))
-            .map(_getParcelIdFromFeature).filter(Boolean);
-        if (staleGround.length) fabric.removeIds(staleGround);
-
-        const proposalIds = new Set((Array.isArray(options.proposalIds)
-            ? options.proposalIds
-            : (requestedScope ? [] : (Array.isArray(appliedList) ? appliedList : [])))
-            .map(value => (value && typeof value === 'object') ? value.proposalId : value)
-            .filter(value => value !== undefined && value !== null)
-            .map(String));
-        const resetCollection = name => {
-            const collection = _collection(name, options);
-            if (!collection) return;
-            const retained = collection.filter(feature => {
-                const owner = String(feature?.properties?.proposalId || '');
-                if (!owner) return true;
-                return requestedScope ? !proposalIds.has(owner) : false;
-            });
-            collection.splice(0, collection.length, ...retained);
-        };
-        resetCollection('parks');
-        resetCollection('squares');
-        resetCollection('lakes');
-        resetCollection('transitStations');
-        resetCollection('proposedBuildings');
-
-        (Array.isArray(options.recordsToClear) ? options.recordsToClear : (Array.isArray(appliedList) ? appliedList : []))
-            .forEach(proposal => this._clearDerivedRecordState(proposal));
-
-        const refresh = () => {
-            try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
-            try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
-            try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
-            try { if (typeof updateTransitStationsLayer === 'function') updateTransitStationsLayer(); } catch (_) { }
-            try { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); } catch (_) { }
-        };
-        options._parcelMutation.afterCommit(refresh);
-        return { parcels: ids.length };
+    _resetDerivedFabricSliced(appliedList, options = {}, slicer = null) {
+        return workSlicerApi.runSliced(_derivedFabricResetSteps(this, appliedList, options), slicer);
     },
 
     _upsertParcelProperties(parcelId, mutator, options = {}) {

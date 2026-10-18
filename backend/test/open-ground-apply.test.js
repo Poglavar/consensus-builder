@@ -98,6 +98,7 @@ function repositoryOf(facts) {
         getMany(ids) { return Array.from(ids || []).map(id => byId.get(String(id))).filter(Boolean).map(f => structuredClone(f)); },
         peekMany(ids) { return this.getMany(ids); },
         list() { return [...byId.values()].map(f => structuredClone(f)); },
+        listIds() { return [...byId.keys()]; },
         async ensureProposalGround(records) {
             this.calls.push(records.map(record => String(record.proposalId)));
             const missingIds = records.flatMap(record => record.cadastreParcelIds || []).filter(id => !byId.has(String(id)));

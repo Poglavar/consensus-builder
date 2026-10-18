@@ -377,12 +377,13 @@
             }
 
             for (const callback of afterCommitCallbacks) {
-                try { await callback(result); }
-                catch (error) { console.error('[ParcelMutation] after-commit callback failed', error); }
-                // Committed: a cancelled slicer no longer stops anything, the presentation finishes.
+                // A slice ends between the publication and each presentation step. Committed: a
+                // cancelled slicer no longer stops anything, the presentation finishes.
                 if (slicer && slicer.due() && !slicer.cancelled) {
                     try { await slicer.pause(); } catch (_) { /* cancelled while yielding */ }
                 }
+                try { await callback(result); }
+                catch (error) { console.error('[ParcelMutation] after-commit callback failed', error); }
             }
             return result;
         } catch (error) {

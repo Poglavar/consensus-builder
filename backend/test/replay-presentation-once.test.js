@@ -37,7 +37,7 @@ function replayHarness(records) {
         refreshParcelStylesForAppliedProposals: vi.fn(),
         updateProposalList: vi.fn(),
         updateShowProposalsButton: vi.fn(),
-        refreshAppliedCorridorStrips: vi.fn()
+        refreshAppliedCorridorStripsSliced: vi.fn(async () => {})
     };
     Object.entries(presentation).forEach(([name, fn]) => installGlobal(name, fn));
     installGlobal('isProposalCurrentlyApplied', record => record && record.applied === true);
@@ -57,7 +57,7 @@ function replayHarness(records) {
         _rebuildInProgress: false,
         _loadReplayGround: vi.fn(async () => 0),
         _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
-        _resetDerivedFabric: vi.fn(),
+        _resetDerivedFabricSliced: vi.fn(async () => ({ parcels: 0 })),
         _appliedCorridorTakes: vi.fn(() => []),
         _deriveCorridorFabric: vi.fn(async () => ({ parcels: 0, added: 0, removed: 0, unchanged: 0, failed: [] })),
         _reconcileStructurePresentation: vi.fn(),
@@ -87,10 +87,10 @@ describe('replay presentation', () => {
         expect(applyOptions).toHaveLength(4);
         expect(applyOptions.every(options => options.deferPresentation === true)).toBe(true);
 
-        afterCommit.forEach(callback => callback());
+        for (const callback of afterCommit) await callback();
         expect(presentation.refreshParcelStylesForAppliedProposals).toHaveBeenCalledTimes(1);
         expect(presentation.updateProposalList).toHaveBeenCalledTimes(1);
         expect(presentation.updateShowProposalsButton).toHaveBeenCalledTimes(1);
-        expect(presentation.refreshAppliedCorridorStrips).toHaveBeenCalledTimes(1);
+        expect(presentation.refreshAppliedCorridorStripsSliced).toHaveBeenCalledTimes(1);
     });
 });

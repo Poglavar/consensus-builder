@@ -31,12 +31,12 @@ describe('yielding is a macrotask, not an await', () => {
         expect(ui).toContain('window.yieldToBrowser = yieldToBrowser;');
     });
 
-    it('is taken between replay members', () => {
+    it('is taken between replay members, on the clock (work-slicer.js; behaviour: replay-slicing.test.js)', () => {
         const loop = manager.slice(
             manager.indexOf('        for (const proposal of appliedList) {'),
             manager.indexOf('        this._lastRebuildProfile = {')
         );
-        expect(loop).toContain('await window.yieldToBrowser();');
+        expect(loop).toContain('await slicer.checkpoint();');
     });
 
     it('is taken between batch-created blocks', () => {

@@ -90,7 +90,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
 
         const stateBeforeEachApply = [];
         const manager = {
-            _resetDerivedFabric: vi.fn(),
+            _resetDerivedFabricSliced: vi.fn(async () => ({ parcels: 0 })),
             _reconcileStructurePresentation: vi.fn(),
             applyProposal: vi.fn(async proposalId => {
                 stateBeforeEachApply.push(proposals.map(proposal => isApplied(proposal)));
@@ -141,7 +141,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
         const beforeLater = [];
         const manager = {
             _lastApplyFailureByProposalId: new Map(),
-            _resetDerivedFabric: vi.fn(),
+            _resetDerivedFabricSliced: vi.fn(async () => ({ parcels: 0 })),
             _reconcileStructurePresentation: vi.fn(),
             applyProposal: vi.fn(async proposalId => {
                 if (proposalId === 'failed') return false;
@@ -447,8 +447,8 @@ describe('ProposalManager._resetDerivedFabric — pristine registry', () => {
         seedMutation.publish();
         const mutation = fabric.beginMutation({ id: 'reset' });
         const repository = {
-            list: vi.fn(() => [cadastral]),
-            getMany: vi.fn(ids => ids.includes('HR-A') ? [cadastral] : [])
+            listIds: vi.fn(() => ['HR-A']),
+            peekMany: vi.fn(ids => ids.includes('HR-A') ? [cadastral] : [])
         };
         installGlobal('window', {
             LiveParcelFabric: fabric,

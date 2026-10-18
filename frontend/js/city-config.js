@@ -11402,6 +11402,9 @@
                 ['proposalShare', 'shared', 'parcel', 'bets', 'focusProposal', 'arrive', 'activity', 'scene']
                     .forEach(param => url.searchParams.delete(param));
             }
+            // The page is leaving this city: work for it (the applied plan's replay) stops now
+            // instead of holding the thread, and writing, until the next page replaces this one.
+            try { window.dispatchEvent(new CustomEvent('cityLeaving', { detail: { cityId: nextId } })); } catch (_) { /* best-effort notice */ }
             window.location.href = url.toString();
             return true;
         } catch (_) {
