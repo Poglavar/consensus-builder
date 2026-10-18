@@ -636,8 +636,8 @@
             headers: { Accept: 'application/json' },
             cache: 'no-store'
         });
-        if (!Array.isArray(payload.features)) throw new Error('Road classification response has no features array.');
-        const ids = payload.features.map(feature => normalizeFeatureId(feature)).filter(Boolean);
+        if (!Array.isArray(payload.ids)) throw new Error('Road classification response has no ids array.');
+        const ids = payload.ids.map(id => String(id ?? '').trim()).filter(Boolean);
         options.onProgress?.({ done: ids.length, total: ids.length });
         return { status: 'ready', ids: Array.from(new Set(ids)) };
     }

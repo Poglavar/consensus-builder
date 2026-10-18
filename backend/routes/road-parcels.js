@@ -1,12 +1,13 @@
-// Serve classified road parcels as GeoJSON, clipped to a viewport bbox.
-// Accepts WGS84 (EPSG:4326) bbox for easy integration with Leaflet maps.
+// Serve the ids of the classified road parcels that touch a viewport bbox.
+// Accepts WGS84 (EPSG:4326) bbox for easy integration with Leaflet maps. Ids only: the one consumer
+// (fetchRoadIds in frontend/js/parcels/fetch.js) marks parcels it already has by id.
 
 import { POSTGIS_SRID, MAX_VIEW_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 
 // Row ceilings. The frontend asks with its map view (road parcels are auto-fetched after parcels
 // load at z17+; the sidebar button can ask at any zoom), so the bbox cap bounds the area and these
-// bound the payload. `truncated: true` in the response says the list is not complete.
-export const MAX_ROAD_PARCEL_FEATURES = 20000;
+// bound the payload. `truncated: true` in the response says the id list is not complete.
+export const MAX_ROAD_PARCEL_IDS = 20000;
 
 function parseWgs84Bbox(raw) {
     if (!raw || typeof raw !== 'string') return null;
@@ -44,14 +45,9 @@ export function setupRoadParcelsRoute(app, pool) {
                         ${POSTGIS_SRID}
                     ) AS geom
                 )
-                SELECT ST_AsGeoJSON(
-                    ST_Transform(
-                        ST_Intersection(rpc.geom, e.geom),
-                        4326
-                    )
-                )::json AS geometry,
-                    'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcel_id,
-                    rpc.total_score AS score
+                -- parcelId matches the id the frontend's /parcels features carry, so the client
+                -- marks road parcels by id instead of geometry matching.
+                SELECT 'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcel_id
                 FROM road_parcel_classification rpc
                 JOIN parcel p ON p.cestica_id = rpc.cestica_id AND p.current = true
                 CROSS JOIN envelope e
@@ -61,20 +57,10 @@ export function setupRoadParcelsRoute(app, pool) {
                 LIMIT $5
             `;
 
-            const { rows: fetched } = await client.query(sql, [...bbox, MAX_ROAD_PARCEL_FEATURES + 1]);
-            const truncated = fetched.length > MAX_ROAD_PARCEL_FEATURES;
-            const rows = truncated ? fetched.slice(0, MAX_ROAD_PARCEL_FEATURES) : fetched;
-            const features = rows
-                .filter(r => r.geometry)
-                .map(r => ({
-                    type: 'Feature',
-                    // parcelId matches the id the frontend's /parcels features carry, so the
-                    // client can mark road parcels by id instead of geometry matching.
-                    properties: { parcelId: r.parcel_id, score: r.score },
-                    geometry: r.geometry,
-                }));
-
-            res.json({ type: 'FeatureCollection', features, truncated });
+            const { rows: fetched } = await client.query(sql, [...bbox, MAX_ROAD_PARCEL_IDS + 1]);
+            const truncated = fetched.length > MAX_ROAD_PARCEL_IDS;
+            const rows = truncated ? fetched.slice(0, MAX_ROAD_PARCEL_IDS) : fetched;
+            res.json({ ids: rows.map(r => r.parcel_id), truncated });
         } catch (err) {
             console.error('Error in /road-parcels:', err);
             res.status(500).json({ error: 'Internal server error' });

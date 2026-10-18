@@ -247,4 +247,19 @@ describe('cadastral parcel fetch transport', () => {
         expect(queryIds).toHaveBeenCalledWith('pl-sample-source', ['PL-SAMPLE-7'], { city: 'sample' });
         expect(fetch).not.toHaveBeenCalled();
     });
+
+    it('reads curated road parcel ids from the ids-only /road-parcels answer', async () => {
+        const asked = [];
+        const fetchWithRetry = vi.fn(async url => {
+            asked.push(String(url));
+            return { ok: true, status: 200, json: async () => ({ ids: ['HR-335754-1', 'HR-335754-2', 'HR-335754-1'], truncated: false }) };
+        });
+        const window = bootPage('zagreb', vi.fn(), { source: 'parcel-bg' }, {}, { fetchWithRetry });
+        window.CityConfigManager.getCityConfig = () => ({ id: 'zagreb', parcels: { source: 'parcel-bg' }, curatedRoads: { url: '/road-parcels' } });
+
+        const result = await window.__cadastralGroundTransport.fetchRoadIds([15.965, 45.805, 15.99, 45.82], { city: 'zagreb' });
+
+        expect(result).toEqual({ status: 'ready', ids: ['HR-335754-1', 'HR-335754-2'] });
+        expect(asked).toEqual([`https://api.urbangametheory.xyz/road-parcels?bbox=${encodeURIComponent('15.965,45.805,15.99,45.82')}`]);
+    });
 });

@@ -23,7 +23,7 @@ async function openLayers(page: any, { curatedRoads = true } = {}) {
   if (!curatedRoads) {
     await page.route('**/road-parcels**', (route: any) => route.request().resourceType() === 'script'
       ? route.continue()
-      : route.fulfill({ json: { type: 'FeatureCollection', features: [] } }));
+      : route.fulfill({ json: { ids: [], truncated: false } }));
   }
   await openCity(page);
   await page.evaluate(async ids => {

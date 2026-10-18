@@ -141,9 +141,7 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   // Only the API: the glob also matches the app's own js/road-parcels.js.
   await page.route('**/road-parcels**', route => {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
-    return route.fulfill({ json: { type: 'FeatureCollection', features: [
-      { type: 'Feature', properties: { parcelId: FIXTURE_ROAD_PARCEL_ID }, geometry: roadParcel.geometry },
-    ] } });
+    return route.fulfill({ json: { ids: [FIXTURE_ROAD_PARCEL_ID], truncated: false } });
   });
   await page.route('**/js/plan.json', route => route.fulfill({ json: [{
     plan_name: 'E2E road plan', government_name: 'Fixture authority', plan_version: '1',

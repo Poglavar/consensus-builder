@@ -74,7 +74,7 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
   await mockStreetsRoute(page);
   await page.route('**/road-parcels**', route => {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
-    return route.fulfill({ json: { type: 'FeatureCollection', features: [] } });
+    return route.fulfill({ json: { ids: [], truncated: false } });
   });
   // Last, so it answers before '**/buildings**' (newest route first): the archive URL ends in
   // buildings.pmtiles. Cities on Overture's tiles read an empty archive instead of the real CDN.
