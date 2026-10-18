@@ -3152,20 +3152,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-29aa611454ccdc-1",
-      "source": "js/building-blocks.js",
-      "markup": "<button type=\"button\" id=\"blockify-rotate-counterclockwise\" class=\"btn\" aria-label=\"Rotate counterclockwise 5 degrees\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-24a61a7a43f0f6-1",
-      "source": "js/building-blocks.js",
-      "markup": "<button type=\"button\" id=\"blockify-rotate-clockwise\" class=\"btn\" aria-label=\"Rotate clockwise 5 degrees\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-7b2f9c91090779-1",
       "source": "js/building-blocks.js",
       "markup": "<button type=\"button\" id=\"blockify-geojson-upload\" class=\"btn btn-block\" data-i18n-key=\"blockify.modal.manual.uploadGeojson\" data-i18n-attr=\"text\">",
@@ -3190,6 +3176,13 @@
       "id": "control-553d785a73a743-1",
       "source": "js/building-blocks.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-regenerate\" hidden data-i18n-key=\"blockify.modal.regenerate\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-76f0845e4b4e42-1",
+      "source": "js/building-blocks.js",
+      "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-freeform\" data-i18n-key=\"proposalDrafts.freeform.title\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -4326,6 +4319,13 @@
       "id": "control-be28836e667d47-1",
       "source": "js/parcel-based.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-parcelbased-regenerate\" data-i18n-key=\"parcelBased.modal.regenerate\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-8c41ccd45fc867-1",
+      "source": "js/parcel-based.js",
+      "markup": "<button type=\"button\" class=\"btn\" id=\"btn-parcelbased-freeform\" hidden data-i18n-key=\"proposalDrafts.freeform.title\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5918,6 +5918,13 @@
       "id": "control-3d37472a6fc466-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-edit-geometry\" onclick=\"editProposalGeometry(${inlineJsArg(proposalKey)})\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-fb97f1b1e16464-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-convert-freeform\" onclick=\"convertProposalToFreeform(${inlineJsArg(proposalKey)})\" title=\"${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the rule\\'s massing at the greatest height it allows, as one building you edit directly. The rule\\'s parameters no longer apply afterwards.'))}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7919,6 +7926,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-2121f55a7c530f-1",
+      "source": "js/row-house.js",
+      "markup": "<button type=\"button\" class=\"btn\" id=\"btn-rowhouse-freeform\" data-i18n-key=\"proposalDrafts.freeform.title\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-50b4989ebf6fb4-1",
       "source": "js/row-house.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" id=\"btn-rowhouse-done\" data-i18n-key=\"rowHouses.modal.done\" data-i18n-attr=\"text\">",
@@ -8629,6 +8643,48 @@
           "labelPattern": "^Create the parcel anchors?$",
           "attrs": {
             "data-action-id": "mint"
+          }
+        },
+        {
+          "name": "Rule drop: convert to one Freeform building kept here",
+          "label": "Convert to Freeform and keep it here",
+          "attrs": {
+            "data-action-id": "convert"
+          }
+        },
+        {
+          "name": "Rule drop: convert a Detached to one Freeform building per house",
+          "label": "Convert to freeform buildings",
+          "attrs": {
+            "data-action-id": "convert"
+          }
+        },
+        {
+          "name": "Rule drop: apply the same rule to the parcels here",
+          "label": "Apply the same rule to the parcels here",
+          "attrs": {
+            "data-action-id": "rule"
+          }
+        },
+        {
+          "name": "Rule drop: put it back",
+          "label": "Put it back",
+          "attrs": {
+            "data-action-id": "cancel"
+          }
+        },
+        {
+          "name": "Freeform conversion confirm: convert",
+          "label": "Convert",
+          "attrs": {
+            "data-action-id": "ok"
+          }
+        },
+        {
+          "name": "Freeform conversion confirm: keep the rule",
+          "label": "Keep the rule",
+          "attrs": {
+            "data-action-id": "cancel"
           }
         }
       ],

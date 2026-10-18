@@ -854,7 +854,7 @@
       ]
     },
     {
-      "feature": "block and row generated placement, manual edits, undo, saved frame regeneration and zero-parcel sites",
+      "feature": "block, row and detached rules stay on their parcels: drop dialog (put back, apply the rule where it lands and save there, convert to Freeform), Convert to freeform building from editor footers and the details panel (in place, counterproposal, refusal of gapped massing), conversions over an applied proposal take it off the map, manual edits and undo",
       "specs": [
         "tests/building-family-placement.spec.ts"
       ]
