@@ -10,165 +10,165 @@
 // keyboard shortcut that fires while you are typing, or that lets the browser's own undo through, is
 // worse than not having it.
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+// Drives the real road-drawing.js in the fake browser world (helpers/road-drawing-env.js): keys are
+// dispatched on its document, and what they did is read off the drawing (points, pen, tool, build).
 
-const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
-const roadSource = read('../../frontend/js/road-drawing.js');
-const historySource = read('../../frontend/js/geometry-edit/history.js');
+import { describe, it, expect, afterEach } from 'vitest';
+import { createRequire } from 'node:module';
+import { loadRoadDrawing, at, makeElement } from './helpers/road-drawing-env.js';
 
-function lift(name) {
-    const start = roadSource.indexOf(`function ${name}(`);
-    expect(start, `${name} not found`).toBeGreaterThan(-1);
-    return roadSource.slice(start, roadSource.indexOf('\n}', start) + 2);
-}
+const require = createRequire(import.meta.url);
+const GeometryEditHistory = require('../../frontend/js/geometry-edit/history.js');
 
-let calls;
-let handle;
-
-beforeEach(() => {
-    calls = { undo: 0, finish: 0, exit: 0, escape: 0, status: [] };
-    // eslint-disable-next-line no-new-func
-    handle = new Function(
-        'document',
-        'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'handleRoadEscape',
-        'afterRoadPlacement',
-        'updateStatus', 'translateRoadText', 'hasDrawableCorridor', 'roadFinalizationGate',
-        'roadSegmentPlacementInProgress', 'roadHasStarted',
-        `${lift('handleRoadKeydown')}; return handleRoadKeydown;`
-    )(
-        { body: { classList: { contains: () => false } } },
-        () => { calls.undo += 1; },
-        () => { calls.finish += 1; },
-        () => { calls.exit += 1; },
-        () => { calls.escape += 1; },
-        // No click is being placed: the deferred action runs at once.
-        action => action(),
-        message => calls.status.push(message),
-        (key, fallback) => fallback,
-        () => true,
-        { isRunning: () => false },
-        false,
-        false
-    );
+let env = null;
+afterEach(() => {
+    env?.dispose();
+    env = null;
 });
 
-// A keydown with a recording preventDefault, on a plain (non-typing) target.
-function key(init) {
-    const event = {
-        key: 'z',
-        metaKey: false, ctrlKey: false, altKey: false, shiftKey: false, repeat: false,
-        target: { tagName: 'BODY', isContentEditable: false },
-        defaultPrevented: false,
-        preventDefault() { this.defaultPrevented = true; },
-        ...init
-    };
-    handle(event);
-    return event;
+// The tool open on a three-point road with the pen still down.
+async function drawThreePoints() {
+    env = loadRoadDrawing();
+    await env.api.requestCorridorDrawingTool('road');
+    for (const point of [at(0, 0), at(100, 0), at(100, 100)]) await env.click(point);
+    expect(env.session.roadPoints).toHaveLength(3);
+}
+
+// A keydown with a recording preventDefault, on a plain (non-typing) target, and what it did.
+async function key(init) {
+    const placed = () => env.api.getAllRoadSegments(true).flat().length;
+    const before = placed();
+    const event = env.key(init.key ?? 'z', { target: makeElement(null, 'BODY'), ...init });
+    await env.idle();
+    return { event, undone: before - placed() };
 }
 
 describe('Ctrl/Cmd+Z undoes, just like U', () => {
-    it('undoes on Ctrl+Z', () => {
-        key({ ctrlKey: true });
-        expect(calls.undo).toBe(1);
+    it('undoes on Ctrl+Z', async () => {
+        await drawThreePoints();
+        expect((await key({ ctrlKey: true })).undone).toBe(1);
     });
 
-    it('undoes on Cmd+Z', () => {
-        key({ metaKey: true });
-        expect(calls.undo).toBe(1);
+    it('undoes on Cmd+Z', async () => {
+        await drawThreePoints();
+        expect((await key({ metaKey: true })).undone).toBe(1);
     });
 
-    it('still undoes on U', () => {
-        key({ key: 'u' });
-        expect(calls.undo).toBe(1);
+    it('still undoes on U', async () => {
+        await drawThreePoints();
+        expect((await key({ key: 'u' })).undone).toBe(1);
     });
 
-    it('and on a capital U, since Shift does not change what the key means', () => {
-        key({ key: 'U', shiftKey: true });
-        expect(calls.undo).toBe(1);
+    it('and on a capital U, since Shift does not change what the key means', async () => {
+        await drawThreePoints();
+        expect((await key({ key: 'U', shiftKey: true })).undone).toBe(1);
     });
 
-    it('takes the browser undo away while the tool is open', () => {
+    it('takes the browser undo away while the tool is open', async () => {
         // Otherwise the page's own undo fires alongside — or instead of — the road undo.
-        expect(key({ ctrlKey: true }).defaultPrevented).toBe(true);
+        await drawThreePoints();
+        expect((await key({ ctrlKey: true })).event.defaultPrevented).toBe(true);
     });
 });
 
 describe('what it deliberately does not do', () => {
-    it('swallows Shift+Ctrl+Z rather than undoing, because there is no redo', () => {
-        const event = key({ ctrlKey: true, shiftKey: true });
-        expect(calls.undo).toBe(0);
+    it('swallows Shift+Ctrl+Z rather than undoing, because there is no redo', async () => {
+        await drawThreePoints();
+        const { event, undone } = await key({ ctrlKey: true, shiftKey: true });
+        expect(undone).toBe(0);
         expect(event.defaultPrevented).toBe(true);
     });
 
-    it('ignores Alt+Ctrl+Z, which is somebody else’s shortcut', () => {
-        const event = key({ ctrlKey: true, altKey: true });
-        expect(calls.undo).toBe(0);
+    it('ignores Alt+Ctrl+Z, which is somebody else’s shortcut', async () => {
+        await drawThreePoints();
+        const { event, undone } = await key({ ctrlKey: true, altKey: true });
+        expect(undone).toBe(0);
         expect(event.defaultPrevented).toBe(false);
     });
 
-    it('leaves a bare Z alone', () => {
-        key({ key: 'z' });
-        expect(calls.undo).toBe(0);
+    it('leaves a bare Z alone', async () => {
+        await drawThreePoints();
+        expect((await key({ key: 'z' })).undone).toBe(0);
     });
 
-    it.each(['INPUT', 'TEXTAREA', 'SELECT'])('does nothing while typing in %s', tagName => {
-        key({ ctrlKey: true, target: { tagName, isContentEditable: false } });
-        expect(calls.undo).toBe(0);
+    it.each(['INPUT', 'TEXTAREA', 'SELECT'])('does nothing while typing in %s', async tagName => {
+        await drawThreePoints();
+        expect((await key({ ctrlKey: true, target: makeElement(null, tagName) })).undone).toBe(0);
     });
 
-    it('does nothing in a contenteditable either', () => {
-        key({ ctrlKey: true, target: { tagName: 'DIV', isContentEditable: true } });
-        expect(calls.undo).toBe(0);
+    it('does nothing in a contenteditable either', async () => {
+        await drawThreePoints();
+        const target = { ...makeElement(null, 'DIV'), isContentEditable: true };
+        expect((await key({ ctrlKey: true, target })).undone).toBe(0);
     });
 
-    it('does not finish the road on its way past', () => {
+    it('does not finish the road on its way past', async () => {
         // The undo branch returns; falling through would hand Ctrl+Z to the F/Escape handling too.
-        key({ ctrlKey: true });
-        expect(calls.finish).toBe(0);
-        expect(calls.exit).toBe(0);
-        expect(calls.escape).toBe(0);
+        await drawThreePoints();
+        await key({ ctrlKey: true });
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(0);
+        expect(env.session.roadDrawingMode).toBe(true);
+        expect(env.session.roadHasStarted).toBe(true);
     });
 });
 
 describe('Escape', () => {
-    it('hands over to handleRoadEscape, which decides lift / ask / close when it runs', () => {
-        const event = key({ key: 'Escape' });
+    it('hands over to handleRoadEscape, which decides lift / ask / close when it runs', async () => {
+        await drawThreePoints();
+        const { event, undone } = await key({ key: 'Escape' });
         expect(event.defaultPrevented).toBe(true);
-        expect(calls.escape).toBe(1);
+        // The pen is down, so it is lifted and every point stays.
+        expect(env.session.roadHasStarted).toBe(false);
+        expect(undone).toBe(0);
         // Never a silent build, never a silent close from the key handler itself.
-        expect(calls.finish).toBe(0);
-        expect(calls.exit).toBe(0);
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(0);
+        expect(env.session.roadDrawingMode).toBe(true);
     });
 
-    it('acts once for a held key: a repeat neither lifts again nor opens the close prompt', () => {
-        key({ key: 'Escape', repeat: true });
-        expect(calls.escape).toBe(0);
+    it('acts once for a held key: a repeat neither lifts again nor opens the close prompt', async () => {
+        await drawThreePoints();
+        await key({ key: 'Escape', repeat: true });
+        expect(env.session.roadHasStarted).toBe(true);
+        expect(globalThis.showStyledChoice.calls).toHaveLength(0);
     });
 });
 
 describe('it matches the shared undo, rather than inventing a second set of rules', () => {
-    const shared = historySource.slice(historySource.indexOf('function bindKeyboard('));
-    const branch = lift('handleRoadKeydown');
+    // The shared history bound to a fake target with one step on its stack: did a key undo it, and
+    // did it take the browser's undo away?
+    function sharedAnswer(init) {
+        let handler = null;
+        let restored = 0;
+        const history = GeometryEditHistory.create({ capture: () => ({}), restore: () => { restored += 1; } });
+        history.record();
+        history.bindKeyboard({ addEventListener: (_type, fn) => { handler = fn; }, removeEventListener: () => {} });
+        const event = {
+            key: 'z', metaKey: false, ctrlKey: false, altKey: false, shiftKey: false,
+            target: makeElement(null, 'BODY'), defaultPrevented: false,
+            preventDefault() { this.defaultPrevented = true; },
+            ...init
+        };
+        handler(event);
+        return { undone: restored, prevented: event.defaultPrevented };
+    }
 
-    it('excludes Alt the same way', () => {
-        expect(shared).toContain('event.altKey');
-        expect(branch).toContain('!e.altKey');
-    });
+    async function roadAnswer(init) {
+        await drawThreePoints();
+        const { event, undone } = await key(init);
+        env.dispose();
+        env = null;
+        return { undone, prevented: event.defaultPrevented };
+    }
 
-    it('matches the key case-insensitively the same way', () => {
-        expect(shared).toMatch(/toLowerCase\(\) !== 'z'/);
-        expect(branch).toMatch(/toLowerCase\(\) === 'z'/);
-    });
+    const cases = {
+        'excludes Alt the same way': { ctrlKey: true, altKey: true },
+        'matches the key case-insensitively the same way': { ctrlKey: true, key: 'Z' },
+        'swallows Shift the same way': { metaKey: true, shiftKey: true },
+        'guards contenteditable the same way': { ctrlKey: true, target: { ...makeElement(null, 'DIV'), isContentEditable: true } },
+        'guards a text field the same way': { metaKey: true, target: makeElement(null, 'INPUT') }
+    };
 
-    it('swallows Shift the same way', () => {
-        expect(shared).toMatch(/if \(event\.shiftKey\) return;/);
-        expect(branch).toMatch(/if \(e\.shiftKey\) return;/);
-    });
-
-    it('guards contenteditable the same way', () => {
-        expect(shared).toContain('isContentEditable');
-        expect(branch).toContain('isContentEditable');
+    it.each(Object.entries(cases))('%s', async (_name, init) => {
+        expect(await roadAnswer(init)).toEqual(sharedAnswer(init));
     });
 });
