@@ -3879,17 +3879,22 @@ function _shouldSkipUncutRemainder(parentParcelArea, pieceArea) {
     return Math.abs(parentArea - remainderArea) <= tolerance;
 }
 
+// The boot replay starts once the map core is ready: index.html runs initializeMapCore behind
+// PersistentStorage.ready, after every classic script has run (DOMContentLoaded). It used to wait
+// for window `load`, which also waits for every basemap tile image: with slow tiles that fired at
+// 85 s, and the replay and the map's applied plan waited with it.
+function startBootReplayWhenReady(root) {
+    root.document.addEventListener('DOMContentLoaded', () => {
+        if (typeof root.whenMapCoreReady !== 'function') {
+            throw new Error('[ProposalManager] whenMapCoreReady (map-core.js) is not loaded; the applied plan cannot be replayed.');
+        }
+        root.whenMapCoreReady().then(() => root.ProposalManager.reapplyAppliedProposals());
+    }, { once: true });
+}
+
 (function registerProposalReapplyHooks() {
     if (typeof window === 'undefined') return;
-
-    // Full reapply once on load (after parcels start arriving)
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if (window.ProposalManager && typeof window.ProposalManager.reapplyAppliedProposals === 'function') {
-                window.ProposalManager.reapplyAppliedProposals();
-            }
-        }, 300);
-    });
+    startBootReplayWhenReady(window);
 })();
 
 
@@ -3900,12 +3905,13 @@ if (typeof window !== 'undefined') {
 
 // Also export for node, so the pure id-composition and remainder-guard helpers can be unit-tested
 // without a browser (backend/test/proposal-manager-ids.test.js). Everything above is unchanged for
-// the browser, which still loads this as a classic script; the load hook above already no-ops when
-// `window` is absent.
+// the browser, which still loads this as a classic script; the boot-replay hook above already no-ops
+// when `window` is absent.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ProposalManager,
         _flatGroundCoverageIsComplete,
-        _shouldSkipUncutRemainder
+        _shouldSkipUncutRemainder,
+        startBootReplayWhenReady
     };
 }

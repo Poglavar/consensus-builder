@@ -1031,6 +1031,9 @@ function setupMapEventHandlers() {
         markReady();
     };
     window.whenAppBooted = () => booted;
+    // Map core (and therefore PersistentStorage) ready, without waiting for window `load` and its
+    // basemap tiles. The boot replay starts here (proposal-manager.js startBootReplayWhenReady).
+    window.whenMapCoreReady = () => mapCoreReady;
 })();
 
 function initializeMapCore() {
