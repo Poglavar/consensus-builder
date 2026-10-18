@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Generate ignored browser RPC maps from backend/.env without printing provider URLs.
 
-Solana clusters come from SOLANA_*_RPC_URL; EVM chains from EVM_BROWSER_RPC_URL_<chainId>. Everything
-written here is public (every visitor downloads it), so the API's keyed EVM_RPC_URL_<chainId> is never
-read: a browser EVM endpoint is named separately and must be keyless or domain-restricted."""
+Everything written here is public (every visitor downloads it), so only browser names are read:
+SOLANA_BROWSER_*_RPC_URL and EVM_BROWSER_RPC_URL_<chainId>. The API's keyed SOLANA_RPC_URL and
+EVM_RPC_URL_<chainId> are never copied; a browser endpoint must be keyless or domain-restricted."""
 
 import argparse
 import json
@@ -14,13 +14,12 @@ from urllib.parse import urlparse
 
 
 ENV_KEYS = (
-    'SOLANA_RPC_URL',
-    'SOLANA_DEVNET_RPC_URL',
-    'SOLANA_MAINNET_RPC_URL',
-    'SOLANA_TESTNET_RPC_URL',
-    'SOLANA_PROGRAM_ACCOUNTS_RPC_URL',
-    'SOLANA_PROGRAM_ACCOUNTS_MAINNET_RPC_URL',
-    'SOLANA_PROGRAM_ACCOUNTS_TESTNET_RPC_URL',
+    'SOLANA_BROWSER_RPC_URL',
+    'SOLANA_BROWSER_MAINNET_RPC_URL',
+    'SOLANA_BROWSER_TESTNET_RPC_URL',
+    'SOLANA_BROWSER_PROGRAM_ACCOUNTS_RPC_URL',
+    'SOLANA_BROWSER_PROGRAM_ACCOUNTS_MAINNET_RPC_URL',
+    'SOLANA_BROWSER_PROGRAM_ACCOUNTS_TESTNET_RPC_URL',
 )
 EVM_KEY = re.compile(r'^EVM_BROWSER_RPC_URL_([0-9]+)$')
 
@@ -54,14 +53,14 @@ def build_config(values):
     overrides = {key: value for key, value in os.environ.items() if value and (key in ENV_KEYS or EVM_KEY.match(key))}
     sources = {**values, **overrides}
     rpc = {
-        'devnet': validate_url(sources.get('SOLANA_DEVNET_RPC_URL') or sources.get('SOLANA_RPC_URL'), 'SOLANA_RPC_URL'),
-        'mainnet-beta': validate_url(sources.get('SOLANA_MAINNET_RPC_URL'), 'SOLANA_MAINNET_RPC_URL'),
-        'testnet': validate_url(sources.get('SOLANA_TESTNET_RPC_URL'), 'SOLANA_TESTNET_RPC_URL'),
+        'devnet': validate_url(sources.get('SOLANA_BROWSER_RPC_URL'), 'SOLANA_BROWSER_RPC_URL'),
+        'mainnet-beta': validate_url(sources.get('SOLANA_BROWSER_MAINNET_RPC_URL'), 'SOLANA_BROWSER_MAINNET_RPC_URL'),
+        'testnet': validate_url(sources.get('SOLANA_BROWSER_TESTNET_RPC_URL'), 'SOLANA_BROWSER_TESTNET_RPC_URL'),
     }
     program_accounts = {
-        'devnet': validate_url(sources.get('SOLANA_PROGRAM_ACCOUNTS_RPC_URL'), 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL'),
-        'mainnet-beta': validate_url(sources.get('SOLANA_PROGRAM_ACCOUNTS_MAINNET_RPC_URL'), 'SOLANA_PROGRAM_ACCOUNTS_MAINNET_RPC_URL'),
-        'testnet': validate_url(sources.get('SOLANA_PROGRAM_ACCOUNTS_TESTNET_RPC_URL'), 'SOLANA_PROGRAM_ACCOUNTS_TESTNET_RPC_URL'),
+        'devnet': validate_url(sources.get('SOLANA_BROWSER_PROGRAM_ACCOUNTS_RPC_URL'), 'SOLANA_BROWSER_PROGRAM_ACCOUNTS_RPC_URL'),
+        'mainnet-beta': validate_url(sources.get('SOLANA_BROWSER_PROGRAM_ACCOUNTS_MAINNET_RPC_URL'), 'SOLANA_BROWSER_PROGRAM_ACCOUNTS_MAINNET_RPC_URL'),
+        'testnet': validate_url(sources.get('SOLANA_BROWSER_PROGRAM_ACCOUNTS_TESTNET_RPC_URL'), 'SOLANA_BROWSER_PROGRAM_ACCOUNTS_TESTNET_RPC_URL'),
     }
     evm = {EVM_KEY.match(key).group(1): validate_url(value, key) for key, value in sorted(sources.items()) if EVM_KEY.match(key)}
     rpc = {key: value for key, value in rpc.items() if value}
