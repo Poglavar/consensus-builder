@@ -3712,12 +3712,13 @@ const ProposalManager = {
                 if (!seen.has(id)) { seen.add(id); candidates.push(feature); }
             });
             if (groundHost) candidates = candidates.concat([groundHost]);
-            hits = order.computeBaseAncestry(footprint, candidates.map(feature => ({
+            // Ancestors and covered area are measured apart (plan-order.js measureCoverage).
+            const measured = order.measureCoverage(footprint, candidates.map(feature => ({
                 id: String(_getParcelIdFromFeature(feature)),
                 feature
             })));
-            const coveredArea = hits.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0);
-            coverage = Math.max(0, Math.min(1, coveredArea / footprintArea));
+            hits = measured.hits;
+            coverage = Math.max(0, Math.min(1, measured.coveredArea / footprintArea));
         } catch (error) {
             const message = `Cannot apply ${formationLabel}: cadastral-scope coverage could not be evaluated.`;
             try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-evaluation-failed', message, error: error?.message }); } catch (_) { }

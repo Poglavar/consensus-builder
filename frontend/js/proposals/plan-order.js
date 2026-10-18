@@ -190,6 +190,25 @@
         return hits;
     }
 
+    // How much of a footprint the given parcels cover, and which of them it stands on. Two questions
+    // with two floors: an ANCESTOR must hold at least MIN_INTERSECTION_M2 of the footprint (less is a
+    // shared edge, not ground it stands on), but the COVERED AREA counts every overlap, however small.
+    // Summing only the ancestors' areas left the slivers along shared edges out of the covered area,
+    // so a footprint lying wholly inside its parcels read as sticking out: a park snapped onto a
+    // neighbouring plot touched a third parcel by 0.09 m², that sliver was dropped from the sum, and
+    // the park was refused as extending beyond its parcels (2026-10-17). Parcels of one cadastre do
+    // not overlap, so the plain sum is the area of the footprint inside their union.
+    // Returns { hits: ancestors (as computeBaseAncestry), coveredArea: m² }.
+    function measureCoverage(footprint, baseParcels, options) {
+        const opts = options || {};
+        const floor = Number.isFinite(opts.minAreaM2) ? opts.minAreaM2 : MIN_INTERSECTION_M2;
+        const overlaps = computeBaseAncestry(footprint, baseParcels, { ...opts, minAreaM2: Number.MIN_VALUE });
+        return {
+            hits: overlaps.filter(hit => hit.area >= floor),
+            coveredArea: overlaps.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0)
+        };
+    }
+
     function recordKey(record) {
         const value = record && (record.proposalId ?? record.key ?? record.id);
         return value === undefined || value === null ? '' : String(value);
@@ -234,6 +253,7 @@
         footprintOf,
         cadastreCoverageIdsForGeometry,
         computeBaseAncestry,
+        measureCoverage,
         compareFormationOrder,
         orderFormations
     };

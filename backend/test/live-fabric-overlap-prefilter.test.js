@@ -66,12 +66,17 @@ function resolve() {
             missingIds: []
         })
     };
+    const wholeParcels = (_shape, entries) => entries.map(entry => ({
+        id: entry.id,
+        area: turf.area(entry.feature)
+    }));
     window.__planOrder = {
         footprintOf: () => footprint,
-        computeBaseAncestry: (_shape, entries) => entries.map(entry => ({
-            id: entry.id,
-            area: turf.area(entry.feature)
-        }))
+        computeBaseAncestry: wholeParcels,
+        measureCoverage: (shape, entries) => {
+            const hits = wholeParcels(shape, entries);
+            return { hits, coveredArea: hits.reduce((sum, hit) => sum + hit.area, 0) };
+        }
     };
     const harness = Object.create(ProposalManager);
     harness._setLastApplyFailure = () => {};

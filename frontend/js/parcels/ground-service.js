@@ -455,18 +455,19 @@
             }
             const order = root.__planOrder;
             const turf = root.turf;
-            if (!order || typeof order.computeBaseAncestry !== 'function'
+            if (!order || typeof order.measureCoverage !== 'function'
                 || !turf || typeof turf.area !== 'function') {
                 return { ids: [], coverage: 0 };
             }
             try {
                 const footprintArea = Number(turf.area(footprint)) || 0;
                 if (!(footprintArea > 0)) return { ids: [], coverage: 0 };
-                const hits = order.computeBaseAncestry(footprint, stored.map(feature => ({
+                // Ancestors and covered area are measured apart (plan-order.js measureCoverage): an
+                // edge sliver below the ancestry floor is still ground the footprint stands inside.
+                const { hits, coveredArea } = order.measureCoverage(footprint, stored.map(feature => ({
                     id: featureId(feature),
                     feature
                 })));
-                const coveredArea = hits.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0);
                 return {
                     ids: assertCadastralIds(hits.map(hit => hit.id)),
                     coverage: Math.max(0, Math.min(1, coveredArea / footprintArea))
