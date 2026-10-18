@@ -2,7 +2,7 @@
 // block inspector tabs through their real entry paths and visible state changes.
 import { Page, Route } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { openCity, openParcel, expectStatusLogged } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { selectNativeOption } from '../helpers/controls';
 
@@ -168,7 +168,7 @@ test('Propose turns the selected layout\'s new streets into applied road proposa
     .filter((proposal: any) => proposal.roadProposal?.definition?.metadata?.source === 'block-breakup')
     .map((proposal: any) => ({ goal: proposal.goal, title: proposal.title })));
   expect(proposed.every(proposal => proposal.goal === 'road-track')).toBe(true);
-  await expect(page.locator('#status')).toContainText(`Proposed ${proposed.length} of`);
+  await expectStatusLogged(page, `Proposed ${proposed.length} of`);
   // The applied streets split the block: it is gone, its pieces replace it, the rest keep their ids.
   await expect.poll(async () => (await blockIds()).includes(original)).toBe(false);
   const after = await blockIds();

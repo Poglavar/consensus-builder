@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { openAndClosePopup } from '../helpers/controls';
 
@@ -152,7 +152,7 @@ test.describe('Layers sheet behavior @features', () => {
     })).toBeGreaterThan(0);
 
     await page.locator('#showWFSPolygons').check();
-    await expect(page.locator('#status')).toContainText('Drew 1 DGU road-usage polygons');
+    await expectStatusLogged(page, 'Drew 1 DGU road-usage polygons');
     const withDguUse = await page.evaluate(() => {
       let count = 0;
       (window as any).map.eachLayer((layer: any) => { if (layer.getLayers?.().some((child: any) => child.feature?.properties?.OBJECTID === 801)) count++; });

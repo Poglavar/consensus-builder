@@ -2,7 +2,7 @@
 // corridor records: Escape ownership, snapped junction authoring, stretch profiles, and import.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
-import { clickMapPoint, drawCorridor, openCity, openParcel, proposalState, showProposal } from '../helpers/runtime';
+import { clickMapPoint, drawCorridor, openCity, openParcel, proposalState, showProposal, expectStatusLogged } from '../helpers/runtime';
 
 test.describe('Road editor complete controls @features', () => {
   test('Escape closes the shared cross-section editor without cancelling the road draft, then lifts the road pen', async ({ mockApi: page }) => {
@@ -38,7 +38,7 @@ test.describe('Road editor complete controls @features', () => {
     await page.keyboard.press('Escape');
     await expect(page.locator('#road-drawing-controls')).toBeVisible();
     await expect(length).toHaveText(retainedLength);
-    await expect(page.locator('#status')).toContainText('Pen lifted');
+    await expectStatusLogged(page, 'Pen lifted');
 
     await page.locator('#finishRoadButton').click();
     await expect(page.locator('#road-drawing-controls')).toBeHidden();

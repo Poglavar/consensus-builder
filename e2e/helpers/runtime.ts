@@ -6,6 +6,13 @@ import { selectNativeOption } from './controls';
 export const PARCEL_ID = sampleParcels.features[0].properties.parcelId;
 export const PARCEL_GEOMETRY = sampleParcels.features[0].geometry;
 
+// The status line has one writer at a time and ground loading writes to it too, so a message can be
+// replaced before an assertion reads it. Logged messages (non-transient updateStatus calls) are
+// asserted from the session's status log instead.
+export async function expectStatusLogged(page: Page, text: string): Promise<void> {
+  await expect.poll(() => page.evaluate(t => (window as any).statusLogEntries().some((entry: any) => String(entry.message).includes(t)), text)).toBe(true);
+}
+
 export async function openCity(page: Page): Promise<void> {
   // Readiness is the map/repository below; slow external basemap tiles must not hold navigation open.
   await page.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });

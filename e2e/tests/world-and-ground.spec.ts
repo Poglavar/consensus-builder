@@ -52,10 +52,13 @@ test.describe('World navigation and open ground @features', () => {
   });
 
   // Show my location treats the browser's position as a search hit: the globe flies there and
-  // opens what is available at that point; a refused position says so in the results.
+  // opens what is available at that point; with no position it says so in the results. The failure
+  // comes first: the app accepts a position up to a minute old, so after a fix it would reuse it.
   test('the world globe Show my location opens the place at the browser position, and says when there is none', async ({ mockApi: page }) => {
+    // Permission granted but no fix (Playwright's emulation of an unavailable position); a refused
+    // permission would prompt in headed Chrome instead of answering.
     await page.context().grantPermissions(['geolocation']);
-    await page.context().setGeolocation({ latitude: 44.8125, longitude: 20.4612 });
+    await page.context().setGeolocation(null);
     await openCity(page);
     await page.locator('#settings-button').click();
     await page.locator('#world-view-button').click();
@@ -63,12 +66,12 @@ test.describe('World navigation and open ground @features', () => {
     await expect(world.locator('canvas')).toBeVisible();
     const locate = world.getByRole('button', { name: 'Show my location', exact: true });
     await locate.click();
+    await expect(world.locator('.world-search__empty')).toHaveText('Could not get your location.', { timeout: 20_000 });
+
+    await page.context().setGeolocation({ latitude: 44.8125, longitude: 20.4612 });
+    await locate.click();
     await expect(world.locator('.world-popup__title')).toHaveText('Belgrade', { timeout: 20_000 });
     await expect(world.getByRole('button', { name: /Open Belgrade/ })).toBeVisible();
-
-    await page.context().clearPermissions();
-    await locate.click();
-    await expect(world.locator('.world-search__empty')).toHaveText('Could not get your location.');
   });
 
   test('Back to map closes the world globe and restores the current city map', async ({ mockApi: page }) => {

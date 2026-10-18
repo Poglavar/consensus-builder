@@ -1,7 +1,7 @@
 import { selectNativeOption } from '../helpers/controls';
 // Exercise proposal modal buttons through the UI, with local server and wallet boundaries.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, showProposal, chooseTermsForShare, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, chooseTermsForShare, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockEvmWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
@@ -232,7 +232,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await failure.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(failure).toBeHidden();
     await expect(create).toBeVisible();
-    await expect(page.locator('#status')).toHaveText('Proposal creation cancelled.');
+    await expectStatusLogged(page, 'Proposal creation cancelled.');
     await expect(create.locator('#createProposalSubmitButton')).toBeEnabled();
     await expect(create.locator('#proposalName')).toHaveValue('Retry mint failure');
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals()

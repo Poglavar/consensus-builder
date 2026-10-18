@@ -4,7 +4,7 @@
 // paint a block, Escape back with the blocks kept) and Propose roads landing road proposals.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
-import { openCity } from '../helpers/runtime';
+import { openCity, expectStatusLogged } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 
 async function openLayers(page: Page): Promise<void> {
@@ -139,7 +139,7 @@ test('Propose from this plan is the panel\'s next step: painted blocks wait whil
     .map((proposal: any) => ({ goal: proposal.goal, title: proposal.title })));
   expect(proposed[0].goal).toBe('road-track');
   expect(proposed[0].title).toMatch(/^Schelling roads 45x30-8x8-30-12@46N/);
-  await expect(page.locator('#status')).toContainText('Proposed 1 of 1 Schelling road networks');
+  await expectStatusLogged(page, 'Proposed 1 of 1 Schelling road networks');
 
   // What was proposed is done with: the next visit starts from the superblock.
   await page.locator('#schelling-plan-propose').click();

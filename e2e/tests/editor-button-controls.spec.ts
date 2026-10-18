@@ -147,8 +147,13 @@ test.describe('Editor button effects @features', () => {
       geometry: { type: 'Polygon', coordinates: [[[15.98206,45.800205],[15.98214,45.800205],[15.98214,45.800245],[15.98206,45.800245],[15.98206,45.800205]]] },
     };
     if (!(await page.locator('#single-building-geojson-upload').isVisible())) await page.locator('#single-building-editor details > summary').click();
+    // The button opens its own file input; the chooser is taken at Playwright's boundary, so a
+    // headed run never shows the native dialog.
+    const singleChooser = page.waitForEvent('filechooser');
     await page.locator('#single-building-geojson-upload').click();
-    await page.locator('#single-building-geojson-input').setInputFiles({
+    const singleFiles = await singleChooser;
+    expect(await singleFiles.element().evaluate(input => (input as HTMLInputElement).id)).toBe('single-building-geojson-input');
+    await singleFiles.setFiles({
       name: 'footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     const footprint = page.locator('#map-container path.single-building-fill--active');
@@ -208,8 +213,13 @@ test.describe('Editor button effects @features', () => {
     });
     const beforeUpload = await page.locator('#rowhouse-area-value').textContent();
     if (!(await page.locator('#rowhouse-geojson-upload').isVisible())) await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
+    // The button opens its own file input; the chooser is taken at Playwright's boundary, so a
+    // headed run never shows the native dialog.
+    const rowChooser = page.waitForEvent('filechooser');
     await page.locator('#rowhouse-geojson-upload').click();
-    await page.locator('#rowhouse-geojson-input').setInputFiles({
+    const rowFiles = await rowChooser;
+    expect(await rowFiles.element().evaluate(input => (input as HTMLInputElement).id)).toBe('rowhouse-geojson-input');
+    await rowFiles.setFiles({
       name: 'row-footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect.poll(() => page.locator('#rowhouse-area-value').textContent()).not.toBe(beforeUpload);
@@ -300,8 +310,13 @@ test.describe('Editor button effects @features', () => {
       geometry: { type: 'Polygon', coordinates: [[[15.9820,45.80010],[15.98235,45.80010],[15.98235,45.80030],[15.9820,45.80030],[15.9820,45.80010]]] },
     };
     if (!(await page.locator('#blockify-geojson-upload').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
+    // The button opens its own file input; the chooser is taken at Playwright's boundary, so a
+    // headed run never shows the native dialog.
+    const blockChooser = page.waitForEvent('filechooser');
     await page.locator('#blockify-geojson-upload').click();
-    await page.locator('#blockify-geojson-input').setInputFiles({
+    const blockFiles = await blockChooser;
+    expect(await blockFiles.element().evaluate(input => (input as HTMLInputElement).id)).toBe('blockify-geojson-input');
+    await blockFiles.setFiles({
       name: 'block-footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect.poll(() => vertices.count()).toBeGreaterThan(2);
