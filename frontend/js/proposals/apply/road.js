@@ -13,6 +13,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('../parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     // Below this, two polygons are not meaningfully related — the same measured-noise floor
     // plan-order.js uses for ancestry. It is NOT a tolerance for cut debris: the fabric is read at
     // full precision now (see cadastre-ancestry.js), so ground a road actually cut leaves exactly
@@ -127,7 +135,15 @@
                 try {
                     const hit = clip('intersect', body, claim.feature);
                     overlapM2 = hit ? area(hit) : 0;
-                } catch (_) { overlapM2 = 0; }
+                } catch (error) {
+                    // Zero would leave the later corridor's ribbon inside this formation: two
+                    // proposals owning the same ground.
+                    throw clipFailureApi().clipFailure('intersect', error, {
+                        site: 'apply-road.groundAfterLaterCorridors',
+                        proposalId: record.proposalId,
+                        takeId: claim.id
+                    }, [body, claim.feature]);
+                }
                 if (overlapM2 < MIN_REAL_OVERLAP_M2) continue;
                 corridorIds.add(claim.id);
                 cut = true;
@@ -193,12 +209,21 @@
                 try {
                     const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: claim });
                     overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
-                } catch (_) { overlapM2 = 0; }
+                } catch (error) {
+                    // Zero would let a take stand on an applied road unchecked.
+                    throw clipFailureApi().clipFailure('intersect', error, {
+                        site: 'apply-road.appliedRoadOverlappedByTaking',
+                        proposalId: excludeKey || null,
+                        takeId: p.proposalId
+                    }, [taken, claim]);
+                }
                 // Abutting a street is normal composition and measures exactly zero now that the
                 // fabric is read at full precision; anything above the noise floor is a real take.
                 if (overlapM2 >= MIN_REAL_OVERLAP_M2) return { proposal: p, overlapM2 };
             }
         } catch (error) {
+            // A clip that could not be done refuses the take; it is not "no road here".
+            if (error && error.name === 'ClipFailure') throw error;
             console.warn('[_appliedRoadOverlappedByTaking] road-overlap pre-check failed', error);
         }
         return null;

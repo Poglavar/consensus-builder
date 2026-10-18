@@ -1,6 +1,15 @@
 // proposals/geometry.js — geometry helpers: feature/parcel geometry assembly, bounds, area,
 // lake zones, building-feature collection, thumbnails. Extracted from proposals.js (pure relocation).
 
+// Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+// File-unique name: this is a classic script, so a top-level function here is a global.
+function proposalGeometryClipApi() {
+    const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+    if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+    return api;
+}
+
 function getFeatureCentroid(feature) {
     if (!feature || !feature.geometry) return null;
     try {
@@ -694,16 +703,17 @@ function buildGeometryFromParcels(parcelInputs = []) {
     let mergedFeature = null;
 
     // Prefer a plain turf union to avoid the small buffer used by robustUnion, which can seal holes.
+    // A union that throws refuses: the raw-coordinates fallback saved overlapping, undissolved
+    // parcel rings as the proposal's geometry.
     if (parcelFeatures.length && typeof turf !== 'undefined') {
-        try {
-            let merged = null;
-            parcelFeatures.forEach(feature => {
-                merged = merged ? (turf.union(merged, feature) || merged) : feature;
-            });
-            mergedFeature = merged;
-        } catch (e) {
-            console.warn('turf.union failed for parcel selection geometry, falling back to raw coordinates', e);
-        }
+        let merged = null;
+        parcelFeatures.forEach(feature => {
+            if (!merged) { merged = feature; return; }
+            try { merged = turf.union(merged, feature) || merged; } catch (error) {
+                throw proposalGeometryClipApi().clipFailure('union', error, { site: 'proposals-geometry.buildGeometryFromParcels' }, [merged, feature]);
+            }
+        });
+        mergedFeature = merged;
     }
 
     // After union, detect any internal gaps (areas enclosed by the union but not covered by any parcel)
@@ -735,7 +745,10 @@ function buildGeometryFromParcels(parcelInputs = []) {
                     if (!gaps) break;
                     try {
                         gaps = turf.difference(gaps, parcel);
-                    } catch (_) { /* ignore */ }
+                    } catch (error) {
+                        // Ignoring it would carve this parcel's own ground out as a "hole".
+                        throw proposalGeometryClipApi().clipFailure('difference', error, { site: 'proposals-geometry.internalGaps' }, [gaps, parcel]);
+                    }
                 }
 
                 // If there are gaps, they represent internal holes that should be preserved
@@ -796,6 +809,7 @@ function buildGeometryFromParcels(parcelInputs = []) {
                 }
             }
         } catch (e) {
+            if (e && e.name === 'ClipFailure') throw e;
             console.warn('Failed to detect/preserve internal gaps in parcel selection', e);
         }
     }
@@ -860,7 +874,11 @@ function computeLakeZonesForGeometry(baseFeature, options = {}) {
             continue;
         }
         let shore = null;
-        try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
+        try { shore = turf.difference(baseFeature, water); } catch (error) {
+            // Lake graphics only: the shore falls back to the whole lake, reported.
+            proposalGeometryClipApi().reportClipFailure('difference', error, { site: 'proposals-geometry.lakeShore' }, [baseFeature, water]);
+            shore = null;
+        }
         if (!shore) shore = baseFeature;
         const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
         const delta = Math.abs(ratio - targetRatio);
@@ -882,7 +900,11 @@ function computeLakeZonesForGeometry(baseFeature, options = {}) {
         const outerWidth = Math.max(minWidth, chosen.width * 0.55);
         const outer = turf.buffer(baseFeature, -outerWidth, { units: 'meters', steps: 32 });
         if (outer && outer.geometry && chosen.water && chosen.water.geometry) {
-            try { transition = turf.difference(outer, chosen.water); } catch (_) { transition = null; }
+            try { transition = turf.difference(outer, chosen.water); } catch (error) {
+                // Lake graphics only: no transition band, reported.
+                proposalGeometryClipApi().reportClipFailure('difference', error, { site: 'proposals-geometry.lakeTransition' }, [outer, chosen.water]);
+                transition = null;
+            }
         }
     } catch (_) { transition = null; }
 
@@ -912,7 +934,10 @@ function buildLakeGraphicsFromGeometry(geometry, options = {}) {
         try {
             const next = turf.union(merged, polygons[i]);
             if (next && next.geometry) merged = next;
-        } catch (_) { /* keep best-so-far */ }
+        } catch (error) {
+            // Lake graphics only: the parts stay separate, reported.
+            proposalGeometryClipApi().reportClipFailure('union', error, { site: 'proposals-geometry.lakeUnion' }, [merged, polygons[i]]);
+        }
     }
     const base = merged && merged.geometry ? merged : polygons[0];
 

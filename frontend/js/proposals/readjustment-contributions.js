@@ -25,6 +25,14 @@
         ? turf
         : (typeof require === 'function' ? require('@turf/turf') : null);
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     // Below this a contribution is boundary noise from a cut, not land someone is owed for.
     const MIN_CONTRIBUTION_M2 = 0.25;
 
@@ -94,8 +102,12 @@
                     const hit = t.intersect(feature, takeFeature);
                     contributedM2 = hit ? t.area(hit) : 0;
                 }
-            } catch (_) {
-                contributedM2 = 0;
+            } catch (error) {
+                // Zero would drop this parcel's owners from the pool — paying the wrong people.
+                throw clipFailureApi().clipFailure('intersect', error, {
+                    site: 'readjustment-contributions.contributionsByOwner',
+                    parcelId: feature.properties && (feature.properties.parcelId || feature.properties.PARCEL_ID)
+                }, [feature, takeFeature]);
             }
             if (!(contributedM2 > MIN_CONTRIBUTION_M2)) return;
             totalM2 += contributedM2;
@@ -194,7 +206,13 @@
                     if (areaM2 > Math.max(0.5, smaller * 0.001)) {
                         overlaps.push({ a: i, b: j, areaM2 });
                     }
-                } catch (_) { /* an unmeasurable pair is reported by the geometry gates, not here */ }
+                } catch (error) {
+                    // An unmeasurable pair is not a pair that does not overlap: this is the apply
+                    // path's only double-cover check, so it refuses rather than passing it.
+                    throw clipFailureApi().clipFailure('intersect', error, {
+                        site: 'readjustment-contributions.overlappingPlots'
+                    }, [features[i], features[j]]);
+                }
             }
         }
         return overlaps;

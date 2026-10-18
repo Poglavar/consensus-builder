@@ -15,6 +15,14 @@
     // ground), not enclosed neighbours; robustUnion's ±0.1 m dissolve buffer heals exactly these.
     const MICRO_GAP_WIDTH_M = 0.2;
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function T(options) {
         if (options && options.turf) return options.turf;
         if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
@@ -89,7 +97,8 @@
     }
 
     // Plain union (no buffer): the vertices of the result are the parcels' own vertices and the exact
-    // intersections of their edges. null when any piece fails to union (the caller decides).
+    // intersections of their edges. null when a union comes back empty (the caller decides); a union
+    // that THROWS is a ClipFailure, so the clipper's own error reaches whoever must refuse.
     function exactUnion(features, options) {
         const t = T(options);
         if (!t) throw new Error('site-clip: turf is not available');
@@ -100,7 +109,9 @@
             const f = { type: 'Feature', properties: {}, geometry: g };
             if (!acc) { acc = f; continue; }
             let next = null;
-            try { next = t.union(acc, f); } catch (_) { return null; }
+            try { next = t.union(acc, f); } catch (error) {
+                throw clipFailureApi().clipFailure('union', error, { site: 'site-clip.exactUnion' }, [acc, f]);
+            }
             if (!next || !next.geometry) return null;
             acc = next;
         }

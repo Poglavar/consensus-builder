@@ -7,6 +7,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('../parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function openGroundApi() {
         if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
         return typeof require === 'function' ? require('../open-ground.js') : null;
@@ -266,8 +274,11 @@
         }
         const anchorCtx = {
             area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            // Zero would drop a parcel from a plot's provenance (whose ground it is).
             intersectionArea: (a, b) => {
-                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
+                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (error) {
+                    throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-parcels.intersectionArea', proposalId }, [a, b]);
+                }
             }
         };
         // Provenance per plot: the cadastral parcels under it and, on open ground, the ground id of
@@ -312,7 +323,10 @@
                 let plotsUnion = null;
                 childFeatures.forEach(feature => {
                     const f = { type: 'Feature', properties: {}, geometry: feature.geometry };
-                    try { plotsUnion = plotsUnion ? turfRemainder.union(plotsUnion, f) : f; } catch (_) { }
+                    try { plotsUnion = plotsUnion ? turfRemainder.union(plotsUnion, f) : f; } catch (error) {
+                        // A plot missing from the union would be minted back as the owner's remainder.
+                        throw clipFailureApi().clipFailure('union', error, { site: 'apply-parcels.plotsUnion', proposalId }, [plotsUnion, f]);
+                    }
                 });
                 if (plotsUnion) {
                     parentFeatures.forEach(parentFeature => {
@@ -324,7 +338,15 @@
                         try {
                             leftover = turfRemainder.difference(
                                 { type: 'Feature', properties: {}, geometry: parentFeature.geometry }, plotsUnion);
-                        } catch (_) { leftover = null; }
+                        } catch (error) {
+                            // Null here means "no remainder": the owner's leftover strip would be
+                            // consumed and never minted — a hole in the fabric.
+                            throw clipFailureApi().clipFailure('difference', error, {
+                                site: 'apply-parcels.remainder',
+                                proposalId,
+                                parcelId: _getParcelIdFromFeature(parentFeature)
+                            }, [parentFeature, plotsUnion]);
+                        }
                         if (!leftover || !leftover.geometry) return;
                         let leftoverArea = 0;
                         try { leftoverArea = turfRemainder.area(leftover) || 0; } catch (_) { leftoverArea = 0; }
@@ -398,6 +420,8 @@
                 }
             }
         } catch (remainderError) {
+            // A clip failure keeps its type, site and parcel.
+            if (remainderError && remainderError.name === 'ClipFailure') throw remainderError;
             throw new Error(`Readjustment remainder formation failed: ${remainderError.message || remainderError}`);
         }
 

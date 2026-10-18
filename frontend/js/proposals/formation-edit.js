@@ -13,6 +13,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     const DEFAULT_TOLERANCE_PCT = 1;
     const DEFAULT_TOLERANCE_M2 = 1;
     // Slivers below this are rounding, not land.
@@ -29,9 +37,13 @@
         try { return ctx.area(feature) || 0; } catch (_) { return 0; }
     }
 
+    // An overlap the clipper could not compute is unknown, not zero: zero would leave a piece the
+    // taking crosses untouched (and every overlap test here decides what an apply takes).
     function safeIntersectionArea(ctx, a, b) {
         if (!a || !b) return 0;
-        try { return ctx.intersectionArea(a, b) || 0; } catch (_) { return 0; }
+        try { return ctx.intersectionArea(a, b) || 0; } catch (error) {
+            throw clipFailureApi().clipFailure('intersect', error, { site: 'formation-edit.intersectionArea' }, [a, b]);
+        }
     }
 
     function cadastreIdsOfFeature(feature) {
@@ -119,7 +131,10 @@
             const overlap = safeIntersectionArea(ctx, feature, taken);
             if (overlap <= minPieceM2) { out.push(piece); return; } // untouched (or rounding)
             let residual = null;
-            try { residual = asFeature(ctx.difference(feature, taken)); } catch (_) { residual = null; }
+            // A difference that throws is not "fully taken": the piece would leave the plan.
+            try { residual = asFeature(ctx.difference(feature, taken)); } catch (error) {
+                throw clipFailureApi().clipFailure('difference', error, { site: 'formation-edit.clipPiecesByTaking' }, [feature, taken]);
+            }
             const before = safeArea(ctx, feature);
             const left = safeArea(ctx, residual);
             if (!residual || left < minPieceM2) {
@@ -328,7 +343,10 @@
             const overlap = safeIntersectionArea(ctx, feature, taken);
             if (overlap < MIN_DELTA_PIECE_M2) return { touched: false, parts: meaningfulParts(feature.geometry) };
             let diff = null;
-            try { diff = ctx.difference(feature, taken); } catch (_) { diff = null; }
+            // A difference that throws is not "consumed": the severance verdict would be invented.
+            try { diff = ctx.difference(feature, taken); } catch (error) {
+                throw clipFailureApi().clipFailure('difference', error, { site: 'formation-edit.severanceVerdict' }, [feature, taken]);
+            }
             return { touched: true, parts: diff && diff.geometry ? meaningfulParts(diff.geometry) : 0 };
         };
 

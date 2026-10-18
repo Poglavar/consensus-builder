@@ -19,6 +19,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     const DETACHED_PLOT_WIDTH_M = 20;
     const ROW_PLOT_WIDTH_M = 7;
     // A strip narrower than this share of the plot width is a sliver and joins its neighbour.
@@ -255,8 +263,11 @@
         return polygonsOf(feature).map(rings => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: rings } }));
     }
 
+    // null only when the strip misses the site; a THROW is not a miss (the plot would vanish).
     function intersectOrNull(t, a, b) {
-        try { return t.intersect(a, b); } catch (_) { return null; }
+        try { return t.intersect(a, b); } catch (error) {
+            throw clipFailureApi().clipFailure('intersect', error, { site: 'site-plots.strip' }, [a, b]);
+        }
     }
 
     // Join `piece` to whichever neighbouring plot it shares an edge with; false when none does.
@@ -264,7 +275,10 @@
         const order = plots.map((_, i) => i).sort((i, j) => Math.abs(i - preferIndex) - Math.abs(j - preferIndex));
         for (const i of order) {
             let merged = null;
-            try { merged = t.union(plots[i].feature, piece); } catch (_) { merged = null; }
+            try { merged = t.union(plots[i].feature, piece); } catch (error) {
+                // A union that throws is not "not a neighbour": the sliver would become a plot.
+                throw clipFailureApi().clipFailure('union', error, { site: 'site-plots.mergeIntoNeighbour' }, [plots[i].feature, piece]);
+            }
             if (merged && merged.geometry && merged.geometry.type === 'Polygon') {
                 plots[i].feature = merged;
                 return true;

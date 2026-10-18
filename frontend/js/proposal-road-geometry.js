@@ -91,11 +91,21 @@ function _mergeParcelGeometries(features = []) {
     }
 
     for (let i = 1; i < polygons.length; i++) {
+        let next;
         try {
-            merged = turf.union(merged, turf.polygon(polygons[i]));
+            next = turf.polygon(polygons[i]);
         } catch (err) {
-            console.warn('[_mergeParcelGeometries] Failed to union polygons', err);
+            console.warn('[_mergeParcelGeometries] Failed to initialise polygon', err);
             return null;
+        }
+        try {
+            merged = turf.union(merged, next);
+        } catch (err) {
+            // A typed ClipFailure (parcel-arrangement.js) instead of a null the caller can only
+            // report as "failed to merge": the refusal now names the clipper's own error.
+            const clipApi = (typeof window !== 'undefined' && window.__parcelArrangement)
+                || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+            throw clipApi ? clipApi.clipFailure('union', err, { site: 'proposal-road-geometry.mergeParcelGeometries' }, [merged, next]) : err;
         }
     }
 

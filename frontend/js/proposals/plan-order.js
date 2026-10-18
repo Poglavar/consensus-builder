@@ -18,6 +18,14 @@
         ? turf
         : (typeof require === 'function' ? require('@turf/turf') : null);
 
+    // A clip the clipper could not do is a typed ClipFailure, recorded in one place
+    // (parcel-arrangement.js clipHealth), never a silent zero.
+    const clipFailureOf = (operation, error, context, operands) => {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        return api && typeof api.clipFailure === 'function' ? api.clipFailure(operation, error, context, operands) : error;
+    };
+
     // Below this an intersection is shared-border noise from coordinate rounding, not a real
     // relationship. Two parcels that merely abut produce slivers of a few cm².
     //
@@ -129,8 +137,12 @@
         try {
             const hit = t.intersect(a, b);
             return hit ? t.area(hit) : 0;
-        } catch (_) {
-            if (typeof t.buffer !== 'function') return 0;
+        } catch (error) {
+            // Zero area here reads as "the footprint does not stand on this parcel" — a wrong
+            // ancestry, a wrong coverage. Only the measured repair below may answer instead.
+            if (typeof t.buffer !== 'function') {
+                throw clipFailureOf('intersect', error, { site: 'plan-order.intersectionArea' }, [a, b]);
+            }
             const retry = (left, right) => {
                 try {
                     const repaired = t.buffer(right, TOPOLOGY_REPAIR_BUFFER_M, { units: 'meters' });
@@ -148,7 +160,9 @@
             const repairedB = retry(a, b);
             if (repairedB !== null) return repairedB;
             const repairedA = retry(b, a);
-            return repairedA === null ? 0 : repairedA;
+            if (repairedA !== null) return repairedA;
+            // Every repair threw too: the overlap is unknown, so say so.
+            throw clipFailureOf('intersect', error, { site: 'plan-order.intersectionArea' }, [a, b]);
         }
     }
 

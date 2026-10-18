@@ -17,6 +17,14 @@
     // Below this a piece is clipping noise, not ground.
     const MIN_PIECE_M2 = 0.5;
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function T(options) {
         if (options && options.turf) return options.turf;
         if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
@@ -77,7 +85,10 @@
             if (!g) continue;
             const parcelFeature = { type: 'Feature', properties: {}, geometry: g };
             let hit = null;
-            try { hit = t.intersect(siteFeature, parcelFeature); } catch (_) { hit = null; }
+            try { hit = t.intersect(siteFeature, parcelFeature); } catch (error) {
+                // Not "this parcel contributes nothing": its owner's share of the pool would vanish.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'subdivision.sitePool', parcelId: parcel.id }, [siteFeature, parcelFeature]);
+            }
             const areaM2 = hit ? areaOf(t, hit) : 0;
             if (areaM2 >= MIN_PIECE_M2) parts.push({ parcelId: String(parcel.id), geometry: hit.geometry, areaM2 });
             if (open) {
@@ -181,7 +192,10 @@
         const overlap = geometry => {
             const other = asFeature(geometry);
             if (!other) return 0;
-            try { const hit = t.intersect(plot, other); return hit ? areaOf(t, hit) : 0; } catch (_) { return 0; }
+            try { const hit = t.intersect(plot, other); return hit ? areaOf(t, hit) : 0; } catch (error) {
+                // Zero would hand the plot to whichever contributor's overlap did compute.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'subdivision.ownerKeyByGround' }, [plot, other]);
+            }
         };
         const byParcel = new Map((pool.parts || []).map(part => [String(part.parcelId), overlap(part.geometry)]));
         let best = null;

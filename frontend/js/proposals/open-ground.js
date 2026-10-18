@@ -23,6 +23,14 @@
     const DEFAULT_CELL_DEG = 0.005;
     const MAX_CELLS_PER_ENTRY = 64;
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function T(options) {
         if (options && options.turf) return options.turf;
         if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
@@ -173,9 +181,15 @@
             try {
                 next = clip('difference', open, t.feature(geometry));
             } catch (error) {
-                const failure = new Error(`Open ground could not be separated from parcel ${parcel.id}: ${error && error.message}`);
+                // Already a refusal; the clip itself is also typed and counted in clipHealth().
+                const clipped = clipFailureApi().clipFailure('difference', error, {
+                    site: 'open-ground.openGroundGeometry',
+                    parcelId: parcel.id
+                }, [open, geometry]);
+                const failure = new Error(`Open ground could not be separated from parcel ${parcel.id}: ${clipped.originalMessage}`);
                 failure.code = 'open-ground-derivation-failed';
                 failure.parcelId = parcel.id === undefined ? null : String(parcel.id);
+                failure.cause = clipped;
                 throw failure;
             }
             if (!next || !polygonsOf(next).length) return null;

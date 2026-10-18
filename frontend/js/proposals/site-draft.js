@@ -19,6 +19,14 @@
     // Snapping radius for a drawn vertex, in screen pixels (converted by the caller to metres).
     const SNAP_RADIUS_PX = 12;
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function T(options) {
         if (options && options.turf) return options.turf;
         if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
@@ -92,7 +100,10 @@
             if (!isPolygonal(g)) return;
             const f = t.feature(g);
             if (!acc) { acc = f; return; }
-            try { acc = t.union(acc, f) || acc; } catch (_) { /* keep what we have */ }
+            try { acc = t.union(acc, f) || acc; } catch (error) {
+                // Keeping what we have would save a site that silently lacks this feature.
+                throw clipFailureApi().clipFailure('union', error, { site: 'site-draft.siteFromFeatures' }, [acc, f]);
+            }
         });
         return acc ? toMultiPolygon(acc.geometry) : null;
     }
@@ -326,7 +337,13 @@
         for (const parcel of parcels || []) {
             const g = geometryOf(parcel && (parcel.geometry || parcel));
             if (!open || !isPolygonal(g)) continue;
-            try { open = t.difference(open, t.feature(g)); } catch (_) { /* keep the larger estimate */ }
+            try { open = t.difference(open, t.feature(g)); } catch (error) {
+                // The preview hatch keeps the larger estimate; the failure is reported.
+                clipFailureApi().reportClipFailure('difference', error, {
+                    site: 'site-draft.openGroundOf',
+                    parcelId: parcel && (parcel.id || (parcel.properties && parcel.properties.parcelId))
+                }, [open, g]);
+            }
         }
         if (!open || !open.geometry) return null;
         const polygons = (open.geometry.type === 'Polygon' ? [open.geometry.coordinates] : open.geometry.coordinates)

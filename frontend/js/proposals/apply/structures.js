@@ -34,6 +34,14 @@
         return typeof require === 'function' ? require('../open-ground.js') : null;
     }
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('../parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function structureTakeContext(turfRef, arrangement) {
         const intersect = arrangement && typeof arrangement.clip === 'function'
             ? (left, right) => arrangement.clip('intersect', left, right)
@@ -46,7 +54,11 @@
                 try {
                     const hit = intersect(left, right);
                     return hit ? turfRef.area(hit) : 0;
-                } catch (_) { return 0; }
+                } catch (error) {
+                    // Zero read a complete block as "41% uncovered" (see below); an overlap that
+                    // cannot be computed refuses the take instead.
+                    throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-structures.intersectionArea' }, [left, right]);
+                }
             }
         };
     }
@@ -487,8 +499,13 @@
                     outside = turfRef.difference(
                         { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint);
                 } catch (error) {
-                    console.error('[_formStructureParcel] partial-cut difference failed for', String(partial.id), error);
-                    outside = null;
+                    // Refuses the apply naming the parcel and the clip; falling back to the
+                    // partial-coverage refusal misreported it as a footprint problem.
+                    throw clipFailureApi().clipFailure('difference', error, {
+                        site: 'apply-structures.partialCut',
+                        proposalId: idLabel,
+                        parcelId: partial.id
+                    }, [entry.feature, footprint]);
                 }
                 if (!outside || !outside.geometry) { cutsOk = false; return; }
                 const parts = [];

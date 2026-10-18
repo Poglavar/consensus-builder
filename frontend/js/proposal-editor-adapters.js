@@ -609,6 +609,14 @@
         return fabric.cadastreIdsForParcelIds(values);
     }
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function featureOverlapsFootprint(domainFeature, footprint) {
         if (!footprint) return true;
         // Building drafts preview an array of authored features. Passing that array to Turf as
@@ -627,7 +635,13 @@
                 const hit = turfRef.intersect(feature, footprint);
                 return !!hit && turfRef.area(hit) > 0.25;
             }
-        } catch (_) { return false; }
+        } catch (error) {
+            // "Does not overlap" would silently drop a parcel from the draft's selection.
+            throw clipFailureApi().clipFailure('intersect', error, {
+                site: 'proposal-editor-adapters.featureOverlapsFootprint',
+                parcelId: feature.properties && (feature.properties.parcelId || feature.properties.id)
+            }, [feature, footprint]);
+        }
         return true;
     }
 

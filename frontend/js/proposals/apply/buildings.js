@@ -7,6 +7,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('../parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function openGroundApi() {
         if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
         return typeof require === 'function' ? require('../open-ground.js') : null;
@@ -240,8 +248,12 @@
         }
         const takeCtx = {
             area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            // An overlap that cannot be computed is unknown, not zero: zero decides which
+            // parcels the building takes.
             intersectionArea: (a, b) => {
-                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
+                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (error) {
+                    throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.intersectionArea', proposalId: idLabel }, [a, b]);
+                }
             }
         };
         const footprint = { type: 'Feature', properties: {}, geometry: footprintGeometry };
@@ -272,7 +284,10 @@
         const groundTakeGeometries = [];
         takenHosts.forEach(entry => {
             let hit = null;
-            try { hit = turfRef.intersect(footprint, asPlain(entry.feature.geometry)); } catch (_) { hit = null; }
+            try { hit = turfRef.intersect(footprint, asPlain(entry.feature.geometry)); } catch (error) {
+                // Null would leave the building's open ground out of its own parcel.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.groundTake', proposalId: idLabel, parcelId: entry.id }, [footprint, entry.feature]);
+            }
             if (hit && hit.geometry) groundTakeGeometries.push(hit.geometry);
         });
         const hostOverlapM2 = groundTakeGeometries.reduce((sum, geometry) => sum + takeCtx.area(asPlain(geometry)), 0);
@@ -335,14 +350,21 @@
             // A whole-parcel adopt is still a fresh formation stamp. Always mint its parcel and
             // hide the source instead of mutating a cadastral feature in place.
             let unionFeature = null;
+            let unionFailure = null;
             try {
                 unionFeature = [...takenFeatures.map(feature => feature.geometry), ...groundTakeGeometries].reduce((acc, geometry) => {
                     const asFeat = { type: 'Feature', properties: {}, geometry };
                     return acc ? turfRef.union(acc, asFeat) : asFeat;
                 }, null);
-            } catch (_) { unionFeature = null; }
+            } catch (error) {
+                // Already a refusal below; the clipper's own error now travels with it.
+                unionFailure = clipFailureApi().clipFailure('union', error, { site: 'apply-buildings.hostUnion', proposalId: idLabel }, []);
+                unionFeature = null;
+            }
             if (!unionFeature || !unionFeature.geometry) {
-                const message = 'Could not merge the host parcels into one parcel.';
+                const message = unionFailure
+                    ? `Could not merge the host parcels into one parcel: ${unionFailure.originalMessage}`
+                    : 'Could not merge the host parcels into one parcel.';
                 try { this._setLastApplyFailure(idLabel, { code: 'building-merge-failed', message }); } catch (_) { }
                 return { ok: false };
             }
@@ -473,19 +495,22 @@
         // rounding that used to leave sliver debris along every cut. Silently returning a cut
         // computed at centimetre precision is a wrong answer wearing a right answer's clothes.
         // A throw here is a real failure and is reported as one.
-        const safeDifference = (aGeometry, bFeature) => {
+        const safeDifference = (aGeometry, bFeature, hostId) => {
             const a = { type: 'Feature', properties: {}, geometry: aGeometry };
             try {
-                return { result: turfRef.difference(a, bFeature), threw: false };
+                return { result: turfRef.difference(a, bFeature), threw: false, failure: null };
             } catch (error) {
-                console.error('[_formBuildingParcel] difference failed on host geometry', error);
-                return { result: null, threw: true };
+                const failure = clipFailureApi().clipFailure('difference', error, { site: 'apply-buildings.hostRemainder', proposalId: idLabel, parcelId: hostId }, [a, bFeature]);
+                console.error(`[${new Date().toISOString()}] [_formBuildingParcel] ${failure.message}`);
+                return { result: null, threw: true, failure };
             }
         };
         let cutFailedHostId = null;
+        let cutFailure = null;
         hostFeatures.forEach(hostFeature => {
             if (cutFailedHostId) return;
-            const { result: difference, threw } = safeDifference(hostFeature.geometry, footprint);
+            const { result: difference, threw, failure } = safeDifference(hostFeature.geometry, footprint,
+                _getParcelIdFromFeature(hostFeature));
             if (!difference || !difference.geometry) {
                 // "Fully consumed" must be TRUE, not an exception artifact: a sweep-line throw
                 // here used to hide the host with no remainder minted — a whole parcel of DEAD
@@ -498,6 +523,7 @@
                         { type: 'Feature', properties: {}, geometry: hostFeature.geometry }, footprint);
                     if (!(hostArea > 0) || (hostArea - covered) > Math.max(1, hostArea * 0.01)) {
                         cutFailedHostId = String(_getParcelIdFromFeature(hostFeature) || 'unknown');
+                        cutFailure = failure;
                     }
                 }
                 return; // host fully consumed by the footprint
@@ -549,7 +575,8 @@
         });
 
         if (cutFailedHostId) {
-            const message = `Cannot apply the building: the remainder of parcel ${cutFailedHostId} could not be computed — applying would leave its ground dead on the map.`;
+            const message = `Cannot apply the building: the remainder of parcel ${cutFailedHostId} could not be computed — applying would leave its ground dead on the map.`
+                + (cutFailure ? ` (${cutFailure.originalMessage})` : '');
             if (typeof updateStatus === 'function') updateStatus(message);
             try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
             try { this._setLastApplyFailure(idLabel, { code: 'building-cut-failed', message, parcelId: cutFailedHostId }); } catch (_) { }

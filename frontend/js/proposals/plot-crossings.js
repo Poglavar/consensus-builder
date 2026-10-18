@@ -25,6 +25,14 @@
         return typeof require === 'function' ? require('@turf/turf') : null;
     }
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     const asFeature = value => {
         if (!value) return null;
         if (value.type === 'Feature') return value.geometry ? value : null;
@@ -38,8 +46,9 @@
             const hit = t.intersect(a, b);
             return hit ? (Number(t.area(hit)) || 0) : 0;
         } catch (error) {
-            console.warn('[plot-crossings] intersection failed', error);
-            return 0;
+            // Zero would leave a crossed plot or building out of "Build through?" — the user would
+            // approve a road without being told what it cuts.
+            throw clipFailureApi().clipFailure('intersect', error, { site: 'plot-crossings.overlapM2' }, [a, b]);
         }
     }
 

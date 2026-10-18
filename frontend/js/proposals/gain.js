@@ -13,6 +13,14 @@
     // same footprint — this double-counts existing volume in the gain calc. Two buildings are the
     // same when their vertex-mean centroids are within ~2 m and their vertical extents match within
     // 1 m. A ~5 m grid with a 3x3 neighbour scan keeps this O(vertices).
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     function localFrameApi() {
         if (global && global.LocalFrame) return global.LocalFrame;
         if (typeof require === 'function') return require('../local-frame.js');
@@ -84,7 +92,11 @@
             const fp = footprintOf ? footprintOf(bld) : null;
             if (!fp) continue;
             let inter = null;
-            try { inter = turf.intersect(fp, parcelFeature); } catch (_) { inter = null; }
+            try { inter = turf.intersect(fp, parcelFeature); } catch (error) {
+                // A panel figure: the building is left out of it, and the failure is reported.
+                clipFailureApi().reportClipFailure('intersect', error, { site: 'gain.builtVolume' }, [fp, parcelFeature]);
+                inter = null;
+            }
             if (!inter) continue;
             let a = 0;
             try { a = turf.area(inter); } catch (_) { a = 0; }
@@ -98,7 +110,11 @@
             const h = heightOf ? heightOf(feat) : 0;
             if (!(h > 0)) continue;
             let inter = null;
-            try { inter = turf.intersect(feat, parcelFeature); } catch (_) { inter = null; }
+            try { inter = turf.intersect(feat, parcelFeature); } catch (error) {
+                // A panel figure: the proposed volume is left out of it, and the failure is reported.
+                clipFailureApi().reportClipFailure('intersect', error, { site: 'gain.proposedVolume' }, [feat, parcelFeature]);
+                inter = null;
+            }
             if (!inter) continue;
             let a = 0;
             try { a = turf.area(inter); } catch (_) { a = 0; }

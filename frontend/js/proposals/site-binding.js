@@ -25,6 +25,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
     // Policy default: any reach into a parcel binds it (PARCEL-OPTIONAL.md, MEMORY 2026-10-01).
     const DEFAULT_INTRUSION_TOLERANCE_M = 0;
     // Arithmetic floor, not policy: shared edges and coordinate rounding produce sub-millimetre
@@ -135,7 +143,10 @@
         for (const feature of features) {
             if (!feature) continue;
             if (!acc) { acc = feature; continue; }
-            try { acc = t.union(acc, feature) || acc; } catch (_) { /* keep what we have */ }
+            try { acc = t.union(acc, feature) || acc; } catch (error) {
+                // Keeping what we have would leave this parcel out of the site.
+                throw clipFailureApi().clipFailure('union', error, { site: 'site-binding.unionAll' }, [acc, feature]);
+            }
         }
         return acc;
     }
@@ -277,9 +288,15 @@
             if (!geometry) continue;
             const parcelFeature = t.feature(geometry);
             let intersection = null;
-            try { intersection = t.intersect(siteFeature, parcelFeature); } catch (_) { intersection = null; }
+            try { intersection = t.intersect(siteFeature, parcelFeature); } catch (error) {
+                // Null would leave a parcel the site reaches into unbound — stored on the record.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'site-binding.bindingFromParcels', parcelId: parcel.id }, [siteFeature, parcelFeature]);
+            }
             if (open) {
-                try { open = t.difference(open, parcelFeature); } catch (_) { /* keep the larger estimate */ }
+                try { open = t.difference(open, parcelFeature); } catch (error) {
+                    // "The larger estimate" overstated the unsurveyed ground the binding records.
+                    throw clipFailureApi().clipFailure('difference', error, { site: 'site-binding.unsurveyed', parcelId: parcel.id }, [open, parcelFeature]);
+                }
             }
             if (!intersection || !polygonsOf(intersection).length) continue;
             const overlapM2 = t.area(intersection);
