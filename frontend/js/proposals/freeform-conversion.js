@@ -31,6 +31,12 @@
     const STOREY_HEIGHT_M = 3.3;
     // A parcel belongs to the dropped outline when at least this share of its own area lies inside.
     const MOSTLY_INSIDE_SHARE = 0.5;
+    // A rule cuts its massing per parcel, so neighbouring buildings each compute their shared seam
+    // vertices on their own and they differ by floating-point noise (~1e-14°, nanometres): the
+    // union then leaves them as separate polygons touching at a point. Vertices of different parts
+    // closer than this are one vertex. The smallest real gap between a rule's buildings in the
+    // stored proposals is 0.43 m (2026-10-18), so 1 cm closes seams and never bridges a gap.
+    const SEAM_TOLERANCE_M = 0.01;
 
     const clone = value => (value === undefined || value === null) ? value : JSON.parse(JSON.stringify(value));
     const key = value => String(value === undefined || value === null ? '' : value).trim().toLowerCase().replace(/[\s_-]+/g, '');
@@ -70,6 +76,58 @@
         return [];
     }
 
+    // Seam vertices of the parts (rings of [lon, lat]) moved onto the same vertex of an earlier part
+    // when they lie within `toleranceM` of it, so a seam computed twice is one seam. Only earlier
+    // parts' vertices are indexed while a part is moved, so a part's own vertices never merge with
+    // each other; a vertex repeated by the move is dropped, and a ring left with fewer than four
+    // positions is removed.
+    function closeSeams(polygons, toleranceM = SEAM_TOLERANCE_M) {
+        const first = polygons[0]?.[0]?.[0];
+        if (!first) return polygons;
+        // Local metres: an equirectangular scale at the first vertex is exact to well under 1 %
+        // over a building, far finer than the tolerance needs.
+        const kx = 111320 * Math.cos(first[1] * Math.PI / 180);
+        const ky = 110540;
+        const cellOf = (x, y) => [Math.floor(x / toleranceM), Math.floor(y / toleranceM)];
+        const grid = new Map();
+        const nearest = (x, y) => {
+            const [cx, cy] = cellOf(x, y);
+            let best = null;
+            let bestDistance = toleranceM;
+            for (let dx = -1; dx <= 1; dx += 1) {
+                for (let dy = -1; dy <= 1; dy += 1) {
+                    (grid.get(`${cx + dx},${cy + dy}`) || []).forEach(vertex => {
+                        const distance = Math.hypot(vertex.x - x, vertex.y - y);
+                        if (distance <= bestDistance) { bestDistance = distance; best = vertex; }
+                    });
+                }
+            }
+            return best;
+        };
+        return polygons.map(rings => {
+            const snapped = rings.map(ring => {
+                const moved = ring.map(position => {
+                    const match = nearest(position[0] * kx, position[1] * ky);
+                    return match ? match.position.slice() : position.slice();
+                });
+                const kept = moved.filter((position, index) => index === 0
+                    || position[0] !== moved[index - 1][0] || position[1] !== moved[index - 1][1]);
+                return kept.length >= 4 ? kept : null;
+            });
+            // A part whose outer ring collapsed is gone; a collapsed hole is closed.
+            if (!snapped[0]) return [];
+            const kept = snapped.filter(Boolean);
+            kept.forEach(ring => ring.forEach(position => {
+                const x = position[0] * kx;
+                const y = position[1] * ky;
+                const cell = cellOf(x, y).join(',');
+                if (!grid.has(cell)) grid.set(cell, []);
+                grid.get(cell).push({ x, y, position });
+            }));
+            return kept;
+        }).filter(rings => rings.length);
+    }
+
     // The one building a Block or Row becomes. A Freeform building is ONE building on its own parcel,
     // so the rule's party-wall buildings merge: the footprint is the union of theirs (a courtyard
     // block keeps its hole). The stored massing is taken as is: the envelope at the rule's maximum
@@ -78,6 +136,8 @@
     // Every rule input (urbanRule, variationSeed, massing, setbacks …) is dropped: what remains is
     // the building.
     //
+    // Seams between the per-parcel cuts are closed first (closeSeams, SEAM_TOLERANCE_M), so buildings
+    // that share a party wall merge even when their wall's vertices differ by rounding noise.
     // Refused, with a code, when the result would not be one building:
     //   'not-contiguous'    the footprints do not touch (a block split by gaps, separate buildings)
     // ops: { union(featureA, featureB) -> Feature | null }.
@@ -97,6 +157,12 @@
             });
         });
         if (!parts.length) return { ok: false, code: 'no-buildings' };
+        if (parts.length > 1) {
+            const closed = closeSeams(parts.map(part => part.feature.geometry.coordinates));
+            if (closed.length === parts.length) {
+                parts.forEach((part, index) => { part.feature.geometry.coordinates = closed[index]; });
+            }
+        }
         const tallest = parts.reduce((best, part) => (part.height > best.height ? part : best), parts[0]);
         let footprint = parts[0].feature;
         if (parts.length > 1) {
@@ -203,7 +269,9 @@
         RULE_TYPOLOGIES,
         CONVERTIBLE_TYPOLOGIES,
         MOSTLY_INSIDE_SHARE,
+        SEAM_TOLERANCE_M,
         ruleTypologyOf,
+        closeSeams,
         convertsToFreeform,
         mergedBuilding,
         freeformContext,

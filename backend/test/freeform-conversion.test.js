@@ -71,6 +71,38 @@ describe('mergedBuilding: a Block or Row becomes one Freeform building', () => {
         expect(conversion.mergedBuilding([gapped], ops)).toMatchObject({ ok: false, code: 'not-contiguous' });
     });
 
+    // Each per-parcel cut computes the shared party wall on its own, so the two sides differ by
+    // rounding noise. Block c2-1mj2jq51s6y4m1 (2026-10-18) was refused this way: its seam vertices
+    // differ by 9e-15°, and turf's union left the buildings as two polygons touching at a point.
+    it('closes a party-wall seam whose two sides differ by rounding noise', () => {
+        const lon = 15.874;
+        const lat = 43.749;
+        const noise = 9e-15;
+        const west = box(lon, lat, lon + D, lat + D, { height: 17.5 });
+        const east = box(lon + D + noise, lat, lon + 2 * D, lat + D, { height: 17.5 });
+        // The seam itself: a plain union does not see one building.
+        expect(turf.union(west, east).geometry.type).toBe('MultiPolygon');
+
+        const result = conversion.mergedBuilding([west, east], ops);
+
+        expect(result.ok).toBe(true);
+        expect(result.building.geometry.type).toBe('Polygon');
+        expect(turf.area(result.building)).toBeCloseTo(turf.area(box(lon, lat, lon + 2 * D, lat + D)), 0);
+    });
+
+    it('closes seams only within the tolerance: a 2 cm gap stays a gap', () => {
+        const lon = 15.874;
+        const lat = 43.749;
+        const metre = 1 / (111320 * Math.cos(lat * Math.PI / 180));
+        expect(conversion.SEAM_TOLERANCE_M).toBe(0.01);
+        const pair = gapM => [
+            box(lon, lat, lon + D, lat + D, { height: 9 }),
+            box(lon + D + gapM * metre, lat, lon + 2 * D, lat + D, { height: 9 })
+        ];
+        expect(conversion.mergedBuilding(pair(0.005), ops).ok).toBe(true);
+        expect(conversion.mergedBuilding(pair(0.02), ops)).toMatchObject({ ok: false, code: 'not-contiguous', parts: 2 });
+    });
+
     it('takes the highest of parts of different heights: the most the rule allows', () => {
         const stepped = [box(0, 0, D, D, { height: 9, floors: 3 }), box(D, 0, 2 * D, D, { height: 15, floors: 5 }), box(2 * D, 0, 3 * D, D, { height: 12, floors: 4 })];
         const result = conversion.mergedBuilding(stepped, ops);
