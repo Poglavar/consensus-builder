@@ -4,6 +4,14 @@ The October 2026 spike in [`../guess-spike/`](../guess-spike/README.md) trained 
 
 Everything here runs on the laptop in seconds. Training does **not**: it runs on a rented GPU (user decision, 2026-10-12), see [Compute](#compute).
 
+The primary product target is **suburban and village communities and their growth edges** (user
+decision, 2026-10-19). Sampling, training coverage and model decisions should serve those contexts;
+dense urban centres are a secondary comparison. Settlement context needs its own evidence and labels:
+the existing low/medium/high/dense bins count cadastral parcels per tile and do not identify suburbs
+or villages. The next step is a coverage audit and, where needed, a separately frozen development
+cohort before the proposed confidence-versus-coverage study. Frozen historical results retain their
+original definitions. See [the current plan](PLAN.md#product-priority-suburban-and-village-communities).
+
 ## Principles
 
 1. **One frozen benchmark, one scorer.** A city manifest fixes the tiles, their strata, the reference hashes and the scoring parameters. Every number comes from `score.py`. The final split is scored once per milestone and the result goes into the ledger; the selection split chooses checkpoints, thresholds and cleanup.

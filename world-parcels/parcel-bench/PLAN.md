@@ -4,7 +4,50 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (three-seed RGB normalization trial complete; advancement failed; raw RGB retained; GPU closed). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (suburban and village communities are the primary product target; normalization trial complete; GPU closed). Status values: todo · running · done · dropped (with the reason).
+
+## Product priority: suburban and village communities
+
+User decision, 2026-10-19: prioritize suburban and village communities, where the user expects most
+growth. Dense urban centres are a secondary comparison. Future sampling, training pools, headline
+metrics and advancement decisions must reflect this use case.
+
+The target includes established low-rise suburbs, village and ribbon settlements, and their growth
+edges with large or partly undeveloped plots. Settlement type is separate from cadastral parcel
+density: a compact village can contain many small parcels, while a low-count tile can contain a
+farm, park, industrial site or vacant tract. Land around a community can be relevant to growth;
+parcel count alone cannot establish that context.
+
+Immediate next work, before the proposed confidence-versus-coverage comparison:
+
+1. Audit existing blocks for settlement context using imagery, building pattern and available
+   settlement/land-use evidence, recording the classification method and uncertain cases. Report
+   independent communities/blocks, parcel counts, plot sizes and clipped/interior references per
+   context. Keep parcel-count density as a separate descriptive variable.
+2. Where coverage is insufficient, freeze an additional development cohort of independent suburban,
+   village and settlement-edge sites before reading model outcomes. Choose sampling and headline
+   weights prospectively so dense centres or one large community cannot dominate the target result.
+   Check geographic buffers and source IDs against every compared checkpoint's exposure. Previously
+   trained tiles require fresh refits; reserved final sets and untouched confirmation cities stay sealed.
+3. Run the saved-output precision-versus-coverage analysis on adequately represented target contexts.
+   Report suburbs and villages separately, with precision, parcel/area recall, retained prediction
+   coverage and whole-community/geographic-block uncertainty. Dense-centre scores are secondary.
+   Audit training-pool representation before the next training experiment.
+
+Current evidence is not settlement-stratified: both v2 manifests label parcel count only. Zagreb's
+low-count selection group has 12 tiles in three blocks, 114 references and 16 interior references;
+Split's has four tiles in one block, 21 references and zero interior references. These groups cannot
+be renamed suburbs/villages or used alone to support a target-community claim. The 153.6 m tile
+contract also needs review for larger plots: new export geometry must preserve useful image detail
+and report clipping explicitly. Any revised contract is a separate frozen cohort/experiment.
+The current `export_city.py`/`export_pool.py` code screens out tiles with fewer than five or more
+than 160 parcel intersections. Audit that eligibility rule for the new target cohort: it can omit
+large-plot settlement edges. Keep imagery, coverage and geographic-separation checks independent
+of the parcel-count choice. The frozen Split export does not record its screen-parameter receipt;
+the cutoff is established by current/contemporaneous exporter code and corroborating sample counts.
+
+Existing manifests, scores, trial gates and decisions remain historical evidence under their original
+protocols. This priority does not retroactively promote a treatment that failed its frozen gate.
 
 ## Where we stand (2026-10-19)
 
@@ -79,6 +122,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
 | 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | zero-shot comparison done; advancement failed; untouched confirmation and target fine-tuning deferred |
+| 13 | Suburban/village coverage audit and settlement-focused development cohort | metadata + saved imagery | next; product priority recorded; cohort and weights not yet frozen |
 
 ### Agreed reconstruction and transfer sequence (2026-10-15)
 
@@ -261,12 +305,16 @@ like Zagreb's, but another country) and a Spanish Csa city (Catastro + PNOA, Spl
 legal tradition). Training rights checked before any download. Success: a donor × target table, three
 seeds, saying whether a same-tradition or a same-climate donor saves more target labels. ETA 0.5–1 day
 per exporter, about 2.5 GPU-h, about $1.20.
+Select suburban, village and growth-edge communities within candidate regions as the primary sites;
+an administrative city name or its dense centre is not itself a representative target sample.
 
 **9. Serving check.** CPU time per tile for model plus watershed, measured on the laptop. Success: a
 city's tiles can be guessed in acceptable time on a server CPU. ETA 30 min, $0.
 
 **10. Product decision.** Whether to show guesses, flagged as estimates, in cities whose held-out score
 clears a bar the user sets.
+Evaluate that bar separately on the primary suburban/village contexts, including the amount of useful
+land and parcel coverage retained. An aggregate city score must not hide weak target-community quality.
 
 **11. Satellite domain.** (a) Score the frozen benchmarks with the imagery degraded to satellite-like input
 (0.5 m and 1 m, blur and haze, a few metres of misregistration) to measure the drop; (b) train with that
