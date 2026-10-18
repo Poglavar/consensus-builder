@@ -106,6 +106,8 @@ function environment(proposals) {
     };
     context.window = context;
     context.globalThis = context;
+    // The refresh is a step function run by work-slicer.js, loaded before it in the browser.
+    context.__workSlicer = require('../../frontend/js/work-slicer.js');
     vm.runInNewContext(renderSource, context);
     return { context, map, buildCorridorStrips, buildCorridorJunctionSet, state: context.__corridorRenderState, proposals };
 }
@@ -207,6 +209,57 @@ describe('keyed applied-corridor render', () => {
         env.context.clearCorridorProfilePreview();
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(1);
         expect(env.state.byId.get('b').group).toBe(groupB);
+    });
+});
+
+// The boot replay and the scheduled refresh draw in slices, one corridor per step
+// (refreshAppliedCorridorStripsSliced); the synchronous callers run the same steps in one go.
+describe('sliced applied-corridor refresh', () => {
+    const workSlicer = require('../../frontend/js/work-slicer.js');
+    const roads = () => [road('a', near(0, 0)), road('b', near(0.0005, 0.0005)), road('c', near(0.0002, 0.0008)), road('d', near(0.0009, 0.0001))];
+    // Pauses after every step and counts them; `onPause` runs while the refresh is paused.
+    const pausing = (onPause = () => {}) => {
+        let t = 0;
+        let pauses = 0;
+        return workSlicer.createSlicer({ budgetMs: 1, now: () => (t += 1), yieldNow: async () => { pauses += 1; onPause(pauses); } });
+    };
+    const shape = env => ({
+        corridors: Array.from(env.state.byId.keys()).sort(),
+        junctions: Array.from(env.state.junctions.keys()).sort(),
+        onRoot: env.state.root.getLayers().length,
+        events: env.context.dispatchEvent.mock.calls.map(([event]) => event.type)
+    });
+
+    it('draws what the one-shot refresh draws, one corridor per slice', async () => {
+        const oneShot = environment(roads());
+        oneShot.context.refreshAppliedCorridorStrips();
+        const sliced = environment(roads());
+        const slicer = pausing();
+        await sliced.context.refreshAppliedCorridorStripsSliced(slicer);
+        expect(shape(sliced)).toEqual(shape(oneShot));
+        expect(sliced.buildCorridorStrips).toHaveBeenCalledTimes(4);
+        expect(slicer.pauses).toBeGreaterThanOrEqual(4);
+    });
+
+    it('a refresh that supersedes a sliced one finishes the drawing once, with nothing drawn twice', async () => {
+        const env = environment(roads());
+        const slicer = pausing(pauses => { if (pauses === 2) env.context.refreshAppliedCorridorStrips(); });
+        await env.context.refreshAppliedCorridorStripsSliced(slicer);
+        const reference = environment(roads());
+        reference.context.refreshAppliedCorridorStrips();
+        expect(shape(env)).toEqual(shape(reference));
+        // Every corridor built exactly once across both runs, and the map told once.
+        expect(env.buildCorridorStrips).toHaveBeenCalledTimes(4);
+        expect(env.context.dispatchEvent).toHaveBeenCalledTimes(1);
+    });
+
+    it('a refresh that supersedes a sliced one after its last corridor still tells the map', async () => {
+        const env = environment(roads());
+        // removed (1) + four corridors (4) + junction layers (1): superseded just before its tail.
+        const slicer = pausing(pauses => { if (pauses === 6) env.context.refreshAppliedCorridorStrips(); });
+        await env.context.refreshAppliedCorridorStripsSliced(slicer);
+        expect(env.buildCorridorStrips).toHaveBeenCalledTimes(4);
+        expect(env.context.dispatchEvent.mock.calls.map(([event]) => event.type)).toEqual(['appliedCorridorsChanged']);
     });
 });
 

@@ -567,7 +567,7 @@ function renderCorridorStrips(strips, options = {}) {
 // ids it joins plus its position. A refresh rebuilds only what the hashes say changed: one road
 // edit is one corridor's strips plus the junctions it takes part in, not the whole town (~640 ms on
 // the Šibenik plan when every refresh rebuilt all 127 corridors).
-const corridorRenderState = { root: null, byId: new Map(), junctions: new Map() };
+const corridorRenderState = { root: null, byId: new Map(), junctions: new Map(), presentationPending: false };
 let corridorRefreshHandle = null;
 
 // While the cross-section editor is open it overrides one proposal's profile, so the map shows the edit
@@ -1152,7 +1152,37 @@ function refreshCorridorJunctionLayers(junctionSet, scopeIds) {
     });
 }
 
+// The refresh is one step function: `refreshAppliedCorridorStrips` runs it to completion (the
+// synchronous callers), `refreshAppliedCorridorStripsSliced` and the scheduled refresh run it in
+// clock-checked slices, one corridor per step (work-slicer.js). Each step leaves the keyed state
+// consistent, and a newer refresh supersedes a sliced one at its next step: the newer one diffs
+// against what the older one already drew.
+function corridorWorkSlicer() {
+    if (typeof window !== 'undefined' && window.__workSlicer) return window.__workSlicer;
+    if (typeof require === 'function') return require('./work-slicer.js');
+    throw new Error('corridor-render: work-slicer.js is not loaded');
+}
+
+let corridorStripRun = null;
+
 function refreshAppliedCorridorStrips() {
+    if (corridorStripRun) corridorStripRun.superseded = true;
+    corridorStripRun = null;
+    return corridorWorkSlicer().runToCompletion(corridorStripRefreshSteps({ superseded: false }));
+}
+
+async function refreshAppliedCorridorStripsSliced(slicer) {
+    if (corridorStripRun) corridorStripRun.superseded = true;
+    const run = { superseded: false };
+    corridorStripRun = run;
+    try {
+        return await corridorWorkSlicer().runSliced(corridorStripRefreshSteps(run), slicer || corridorWorkSlicer().createSlicer());
+    } finally {
+        if (corridorStripRun === run) corridorStripRun = null;
+    }
+}
+
+function* corridorStripRefreshSteps(run) {
     if (corridorRefreshHeld) {
         corridorRefreshMissed = true;
         return;
@@ -1206,17 +1236,28 @@ function refreshAppliedCorridorStrips() {
             && state.byId.get(item.id).junctionSignature !== corridorJunctionSignature(item.id, junctionsByCorridor.get(item.id) || [])))
         .map(item => item.id);
 
+    if (removed.length || changed.length) state.presentationPending = true;
     removed.forEach(id => dropCorridorRender(id));
-    changed.forEach(id => {
+    yield;
+    if (run.superseded) return;
+    for (const id of changed) {
         dropCorridorRender(id);
         const entry = buildCorridorRender(appliedById.get(id).proposal, junctionsByCorridor.get(id) || []);
         entry.hash = appliedById.get(id).hash;
         state.byId.set(id, entry);
         state.root.addLayer(entry.group);
-    });
+        yield;
+        if (run.superseded) return;
+    }
     refreshCorridorJunctionLayers(junctionSet, [...removed, ...changed]);
+    yield;
+    if (run.superseded) return;
 
-    if (removed.length || changed.length) {
+    // Pending, not "changed in this run": a refresh that superseded a sliced one finds the
+    // corridors that one already drew unchanged, and still owes the map what follows from them.
+    const presentationPending = state.presentationPending === true;
+    state.presentationPending = false;
+    if (presentationPending) {
         // Applied roads cut through parks/squares/lakes at render time — any corridor change
         // (apply, unapply, node drag, width edit) must re-cut them, including when the last
         // corridor disappears and the structures heal back to their full shape.
@@ -1232,7 +1273,7 @@ function refreshAppliedCorridorStrips() {
 
     // Demolitions live on applied corridors: any corridor change can raze or restore buildings.
     // Not optional cosmetics — a failure here leaves razed buildings standing, so it must be loud.
-    if ((removed.length || changed.length) && window.buildingFeaturePool?.length) {
+    if (presentationPending && window.buildingFeaturePool?.length) {
         try {
             if (typeof window.refreshBuildingOutcomesFromRecords !== 'function') {
                 throw new Error('map-core local building outcome refresher is unavailable');
@@ -1247,15 +1288,15 @@ function refreshAppliedCorridorStrips() {
 // Applying a proposal can rebuild a lot of the map; coalesce the redraws that follow into one.
 // Deliberately not requestAnimationFrame: it never fires while the tab is not rendering, and the
 // corridor would then have no cross-section until something else happened to repaint the map.
+// The scheduled refresh is sliced: nothing waits for it, and a whole city's first draw is a second
+// of work.
 function scheduleCorridorStripRefresh() {
     if (corridorRefreshHandle) return;
     corridorRefreshHandle = setTimeout(() => {
         corridorRefreshHandle = null;
-        try {
-            refreshAppliedCorridorStrips();
-        } catch (error) {
+        refreshAppliedCorridorStripsSliced().catch(error => {
             console.warn('[corridor-render] failed to refresh applied corridor strips', error);
-        }
+        });
     }, 0);
 }
 
@@ -1271,6 +1312,7 @@ if (typeof window !== 'undefined') {
     window.clearCorridorProfilePreview = clearCorridorProfilePreview;
     window.corridorProposalDefinition = corridorProposalDefinition;
     window.refreshAppliedCorridorStrips = refreshAppliedCorridorStrips;
+    window.refreshAppliedCorridorStripsSliced = refreshAppliedCorridorStripsSliced;
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;
     window.withCorridorStripRefreshHeld = withCorridorStripRefreshHeld;
     window.clearAppliedCorridorStrips = clearAppliedCorridorStrips;
