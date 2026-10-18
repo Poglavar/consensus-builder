@@ -2235,7 +2235,7 @@
   },
   "84532": {
     "CityMemeToken": {
-      "address": "0x24AA6831a7b782Fd3F3643652b706CDC3AEda3Bc",
+      "address": "0x3F7FF9fC46F32b462f4Cc2d02D07Ac3b6c0c2AeE",
       "abi": [
         {
           "inputs": [],
@@ -2381,6 +2381,25 @@
             {
               "indexed": true,
               "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "registeredAt",
+              "type": "uint256"
+            }
+          ],
+          "name": "CitizenRegistered",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
               "name": "previousOwner",
               "type": "address"
             },
@@ -2417,6 +2436,31 @@
             }
           ],
           "name": "Transfer",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "balanceWithdrawn",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdrawal",
           "type": "event"
         },
         {
@@ -2488,11 +2532,54 @@
               "type": "address"
             }
           ],
+          "name": "availableBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
           "name": "balanceOf",
           "outputs": [
             {
               "internalType": "uint256",
               "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "name": "citizens",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "registeredAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "balanceWithdrawn",
               "type": "uint256"
             }
           ],
@@ -2554,6 +2641,13 @@
             }
           ],
           "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "registerAsCitizen",
+          "outputs": [],
+          "stateMutability": "nonpayable",
           "type": "function"
         },
         {
@@ -2664,6 +2758,19 @@
             }
           ],
           "name": "transferOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "withdraw",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -3532,949 +3639,1534 @@
       }
     },
     "ProposalNFT": {
-      "address": "0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F",
+      "address": "0xFf162bC8De48AA39582c9389D60a7487b6330342",
       "abi": [
         {
+          "type": "constructor",
           "inputs": [
             {
-              "internalType": "address",
               "name": "_parcelNFTAddress",
-              "type": "address"
+              "type": "address",
+              "internalType": "address"
             },
             {
-              "internalType": "address",
               "name": "_cityTokenAddress",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "constructor"
-        },
-        {
-          "inputs": [],
-          "name": "ERC721EnumerableForbiddenBatchMint",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
+              "type": "address",
+              "internalType": "address"
             },
             {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
+              "name": "_easAddress",
+              "type": "address",
+              "internalType": "address"
             },
             {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
-          ],
-          "name": "ERC721IncorrectOwner",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
+              "name": "_ownThisSchemaUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
             },
             {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "ERC721InsufficientApproval",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "approver",
-              "type": "address"
-            }
-          ],
-          "name": "ERC721InvalidApprover",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            }
-          ],
-          "name": "ERC721InvalidOperator",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
-          ],
-          "name": "ERC721InvalidOwner",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "receiver",
-              "type": "address"
-            }
-          ],
-          "name": "ERC721InvalidReceiver",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            }
-          ],
-          "name": "ERC721InvalidSender",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "ERC721NonexistentToken",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
+              "name": "_endorsementSchemaUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
             },
             {
-              "internalType": "uint256",
-              "name": "index",
-              "type": "uint256"
+              "name": "_ownerListSchemaUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
             }
           ],
-          "name": "ERC721OutOfBoundsIndex",
-          "type": "error"
+          "stateMutability": "nonpayable"
         },
         {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnableInvalidOwner",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            }
-          ],
-          "name": "OwnableUnauthorizedAccount",
-          "type": "error"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "approved",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "bool",
-              "name": "approved",
-              "type": "bool"
-            }
-          ],
-          "name": "ApprovalForAll",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "ethAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenAmount",
-              "type": "uint256"
-            }
-          ],
-          "name": "FundsDeposited",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "ethAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenAmount",
-              "type": "uint256"
-            }
-          ],
-          "name": "FundsDistributed",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "parcelId",
-              "type": "string"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
-          ],
-          "name": "ProposalAccepted",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "parcelId",
-              "type": "string"
-            }
-          ],
+          "type": "function",
           "name": "acceptProposal",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
           "inputs": [
             {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "approve",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
-          ],
-          "name": "balanceOf",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "cityToken",
-          "outputs": [
-            {
-              "internalType": "contract IERC20",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "tokenAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
               "name": "proposalId",
-              "type": "uint256"
+              "type": "uint256",
+              "internalType": "uint256"
             },
             {
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "depositERC20",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            }
-          ],
-          "name": "depositFunds",
-          "outputs": [],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            }
-          ],
-          "name": "distributeFunds",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "getApproved",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            }
-          ],
-          "name": "getProposal",
-          "outputs": [
-            {
-              "internalType": "string[]",
-              "name": "parcelIds",
-              "type": "string[]"
-            },
-            {
-              "internalType": "bool",
-              "name": "isConditional",
-              "type": "bool"
-            },
-            {
-              "internalType": "string",
-              "name": "imageURI",
-              "type": "string"
-            },
-            {
-              "internalType": "bool",
-              "name": "isActive",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "ethBalance",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenBalance",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "acceptanceCount",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "proposalId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
               "name": "parcelId",
-              "type": "string"
-            }
-          ],
-          "name": "hasAccepted",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
+              "type": "string",
+              "internalType": "string"
             },
             {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            }
-          ],
-          "name": "isApprovedForAll",
-          "outputs": [
+              "name": "ownerListUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
             {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
+              "name": "claimUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "endorsementUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "outputs": [],
+          "stateMutability": "nonpayable"
         },
         {
+          "type": "function",
+          "name": "approve",
           "inputs": [
             {
-              "internalType": "address",
               "name": "to",
-              "type": "address"
+              "type": "address",
+              "internalType": "address"
             },
             {
-              "internalType": "string[]",
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "balanceOf",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "castVote",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "claimUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "endorsementUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "cityToken",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "contract IERC20"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "contributeFunds",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "tokenAddress",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "payable"
+        },
+        {
+          "type": "function",
+          "name": "distributeFunds",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "eas",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "contract IEAS"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "endorsementSchemaUid",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getApproved",
+          "inputs": [
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getLens",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[]",
+              "internalType": "address[]"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getProposal",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
               "name": "parcelIds",
-              "type": "string[]"
+              "type": "string[]",
+              "internalType": "string[]"
             },
             {
-              "internalType": "bool",
               "name": "isConditional",
-              "type": "bool"
+              "type": "bool",
+              "internalType": "bool"
             },
             {
-              "internalType": "string",
               "name": "imageURI",
-              "type": "string"
+              "type": "string",
+              "internalType": "string"
             },
             {
-              "internalType": "uint256",
-              "name": "ethAmount",
-              "type": "uint256"
+              "name": "acceptancePossible",
+              "type": "bool",
+              "internalType": "bool"
             },
             {
-              "internalType": "uint256",
-              "name": "tokenAmount",
-              "type": "uint256"
-            }
-          ],
-          "name": "mintAndFund",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "name",
-          "outputs": [
-            {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "ownerOf",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "parcelNFT",
-          "outputs": [
-            {
-              "internalType": "contract ParcelNFT",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "name": "proposals",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "isConditional",
-              "type": "bool"
+              "name": "status",
+              "type": "uint8",
+              "internalType": "enum ProposalNFT.ProposalStatus"
             },
             {
-              "internalType": "string",
-              "name": "imageURI",
-              "type": "string"
-            },
-            {
-              "internalType": "bool",
-              "name": "isActive",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
               "name": "ethBalance",
-              "type": "uint256"
+              "type": "uint256",
+              "internalType": "uint256"
             },
             {
-              "internalType": "uint256",
               "name": "tokenBalance",
-              "type": "uint256"
+              "type": "uint256",
+              "internalType": "uint256"
             },
             {
-              "internalType": "uint256",
               "name": "acceptanceCount",
-              "type": "uint256"
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "expiryTimestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "expiringPercentage",
+              "type": "uint256",
+              "internalType": "uint256"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "stateMutability": "view"
         },
         {
-          "inputs": [],
-          "name": "renounceOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
+          "type": "function",
+          "name": "getProposalsBatch",
           "inputs": [
             {
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
+              "name": "proposalIds",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
             }
           ],
-          "name": "safeTransferFrom",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bytes",
-              "name": "data",
-              "type": "bytes"
-            }
-          ],
-          "name": "safeTransferFrom",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            },
-            {
-              "internalType": "bool",
-              "name": "approved",
-              "type": "bool"
-            }
-          ],
-          "name": "setApprovalForAll",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "interfaceId",
-              "type": "bytes4"
-            }
-          ],
-          "name": "supportsInterface",
           "outputs": [
             {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "symbol",
-          "outputs": [
+              "name": "parcelIdsArray",
+              "type": "string[][]",
+              "internalType": "string[][]"
+            },
             {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
+              "name": "isConditionalArray",
+              "type": "bool[]",
+              "internalType": "bool[]"
+            },
+            {
+              "name": "imageURIArray",
+              "type": "string[]",
+              "internalType": "string[]"
+            },
+            {
+              "name": "acceptancePossibleArray",
+              "type": "bool[]",
+              "internalType": "bool[]"
+            },
+            {
+              "name": "statusArray",
+              "type": "uint8[]",
+              "internalType": "enum ProposalNFT.ProposalStatus[]"
+            },
+            {
+              "name": "ethBalanceArray",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+            },
+            {
+              "name": "tokenBalanceArray",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+            },
+            {
+              "name": "acceptanceCountArray",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+            },
+            {
+              "name": "expiryTimestampArray",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+            },
+            {
+              "name": "expiringPercentageArray",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "stateMutability": "view"
         },
         {
+          "type": "function",
+          "name": "getProposalsForParcel",
           "inputs": [
             {
-              "internalType": "uint256",
-              "name": "index",
-              "type": "uint256"
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
             }
           ],
-          "name": "tokenByIndex",
           "outputs": [
             {
-              "internalType": "uint256",
               "name": "",
-              "type": "uint256"
+              "type": "uint256[]",
+              "internalType": "uint256[]"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "stateMutability": "view"
         },
         {
+          "type": "function",
+          "name": "getProposalsForParcelWithStatus",
           "inputs": [
             {
-              "internalType": "address",
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "proposalIds",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+            },
+            {
+              "name": "acceptanceStatus",
+              "type": "bool[]",
+              "internalType": "bool[]"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getTokensByOwner",
+          "inputs": [
+            {
               "name": "owner",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "index",
-              "type": "uint256"
+              "type": "address",
+              "internalType": "address"
             }
           ],
-          "name": "tokenOfOwnerByIndex",
           "outputs": [
             {
-              "internalType": "uint256",
               "name": "",
-              "type": "uint256"
+              "type": "uint256[]",
+              "internalType": "uint256[]"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "stateMutability": "view"
         },
         {
+          "type": "function",
+          "name": "getVoteInfo",
           "inputs": [
             {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
             }
           ],
-          "name": "tokenURI",
           "outputs": [
             {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "totalSupply",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
+              "name": "isVote",
+              "type": "bool",
+              "internalType": "bool"
             },
             {
-              "internalType": "address",
+              "name": "voteCount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "expiryTimestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "concluded",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "hasAccepted",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "hasVoted",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "voter",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "isApprovedForAll",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "operator",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "mintAndFund",
+          "inputs": [
+            {
               "name": "to",
-              "type": "address"
+              "type": "address",
+              "internalType": "address"
             },
             {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "transferFrom",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
+              "name": "parcelIds",
+              "type": "string[]",
+              "internalType": "string[]"
+            },
             {
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
+              "name": "isConditional",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "imageURI",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "ethAmount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "tokenAmount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "lens",
+              "type": "address[]",
+              "internalType": "address[]"
             }
           ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "usdcToken",
           "outputs": [
             {
-              "internalType": "contract IERC20",
               "name": "",
-              "type": "address"
+              "type": "uint256",
+              "internalType": "uint256"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "stateMutability": "payable"
+        },
+        {
+          "type": "function",
+          "name": "mintVote",
+          "inputs": [
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "parcelIds",
+              "type": "string[]",
+              "internalType": "string[]"
+            },
+            {
+              "name": "imageURI",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "expiryTimestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "lens",
+              "type": "address[]",
+              "internalType": "address[]"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "name",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "string",
+              "internalType": "string"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "ownThisSchemaUid",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "owner",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "ownerListSchemaUid",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "ownerOf",
+          "inputs": [
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "parcelIdToProposals",
+          "inputs": [
+            {
+              "name": "",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "parcelNFT",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "contract ParcelNFT"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "proposals",
+          "inputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "isConditional",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "imageURI",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "acceptancePossible",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "status",
+              "type": "uint8",
+              "internalType": "enum ProposalNFT.ProposalStatus"
+            },
+            {
+              "name": "ethBalance",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "tokenBalance",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "acceptanceCount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "expiryTimestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "expiringPercentage",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "isVote",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "voteCount",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "renounceOwnership",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "rescindVote",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "safeTransferFrom",
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "safeTransferFrom",
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "setApprovalForAll",
+          "inputs": [
+            {
+              "name": "operator",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "approved",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "supportsInterface",
+          "inputs": [
+            {
+              "name": "interfaceId",
+              "type": "bytes4",
+              "internalType": "bytes4"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "symbol",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "string",
+              "internalType": "string"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "tokenByIndex",
+          "inputs": [
+            {
+              "name": "index",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "tokenOfOwnerByIndex",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "index",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "tokenURI",
+          "inputs": [
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "string",
+              "internalType": "string"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "totalSupply",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "transferFrom",
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "transferOwnership",
+          "inputs": [
+            {
+              "name": "newOwner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "usdcToken",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "contract IERC20"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "withdrawAcceptance",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "ownerListUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "claimUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "endorsementUid",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "event",
+          "name": "Approval",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "approved",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "ApprovalForAll",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "operator",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "approved",
+              "type": "bool",
+              "indexed": false,
+              "internalType": "bool"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "FundsContributed",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "tokenAddress",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "FundsDistributed",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "ethAmount",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            },
+            {
+              "name": "tokenAmount",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "inputs": [
+            {
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "ProposalAcceptanceWithdrawn",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "indexed": false,
+              "internalType": "string"
+            },
+            {
+              "name": "owner",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "ProposalAccepted",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "indexed": false,
+              "internalType": "string"
+            },
+            {
+              "name": "owner",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "Transfer",
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "VoteCast",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "indexed": false,
+              "internalType": "string"
+            },
+            {
+              "name": "voter",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "VoteProposalMinted",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            },
+            {
+              "name": "expiryTimestamp",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "VoteRescinded",
+          "inputs": [
+            {
+              "name": "proposalId",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+            },
+            {
+              "name": "parcelId",
+              "type": "string",
+              "indexed": false,
+              "internalType": "string"
+            },
+            {
+              "name": "voter",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "error",
+          "name": "ERC721EnumerableForbiddenBatchMint",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "ERC721IncorrectOwner",
+          "inputs": [
+            {
+              "name": "sender",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721InsufficientApproval",
+          "inputs": [
+            {
+              "name": "operator",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721InvalidApprover",
+          "inputs": [
+            {
+              "name": "approver",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721InvalidOperator",
+          "inputs": [
+            {
+              "name": "operator",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721InvalidOwner",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721InvalidReceiver",
+          "inputs": [
+            {
+              "name": "receiver",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721InvalidSender",
+          "inputs": [
+            {
+              "name": "sender",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721NonexistentToken",
+          "inputs": [
+            {
+              "name": "tokenId",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ERC721OutOfBoundsIndex",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "index",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "OwnableInvalidOwner",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "OwnableUnauthorizedAccount",
+          "inputs": [
+            {
+              "name": "account",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "StringsInsufficientHexLength",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "length",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
         }
       ],
       "inheritedFunctions": {

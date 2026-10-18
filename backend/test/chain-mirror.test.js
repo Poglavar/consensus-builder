@@ -35,13 +35,13 @@ async function recordFor(overrides = {}) {
 async function verifiedMirror(record, chainOverrides = {}) {
     record ||= await recordFor();
     const metadataUri = `ipfs://${CID}`;
-    const chain = { ref: { chainType: 'evm', chainId: '84532', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: '5' },
+    const chain = { ref: { chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '5' },
         metadataUri, cadastreParcelIds: record.cadastreParcelIds, lens: record.lens, isConditional: record.isConditional, ...chainOverrides };
     return loadChainMirror(chain.ref, { readChain: async () => chain,
         readMetadata: async () => ({ properties: chainRecord.metadataProperties(record) }), now: () => new Date('2026-10-11T00:00:00Z') });
 }
 
-const validRef = { chainType: 'evm', chainId: '84532', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: '5' };
+const validRef = { chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '5' };
 let pool;
 let app;
 let warn;

@@ -6,7 +6,7 @@ import { selectNativeOption } from '../helpers/controls';
 import { connectWalletByConnectorId, injectMockEvmWallet } from '../helpers/blockchain';
 
 const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
-const CONTRACT = '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F';
+const CONTRACT = '0xFf162bC8De48AA39582c9389D60a7487b6330342';
 const SOLANA_AUTHOR = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
 const SOLANA_LENS = 'GsbwXfJraMomNxBcjYLcG3mxkBUiyWXAB32fGbSMQRdW';
 const METADATA_URI = 'ipfs://QmMintedProposalMetadata000000000000000000000000000000000000';

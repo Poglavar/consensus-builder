@@ -40,8 +40,8 @@ function proposalAccount({ parcels = ['HR-1'], uri = 'ipfs://metadata-cid', lens
 
 describe('normalizeChainRef', () => {
     it('canonicalizes configured EVM and Solana locations', () => {
-        expect(normalizeChainRef({ chainType: 'EVM', chainId: '0x14a34', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: '0005' }))
-            .toEqual({ chainType: 'evm', chainId: '84532', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: '5' });
+        expect(normalizeChainRef({ chainType: 'EVM', chainId: '0x14a34', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '0005' }))
+            .toEqual({ chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '5' });
         expect(normalizeChainRef({ chainType: 'solana', chainId: 'devnet', contract: SOL_PROGRAM, tokenId: SOL_ADDRESS }))
             .toEqual({ chainType: 'solana', chainId: 'solana-devnet', contract: SOL_PROGRAM, tokenId: SOL_ADDRESS });
     });
@@ -53,15 +53,15 @@ describe('normalizeChainRef', () => {
             .toThrow(expect.objectContaining({ status: 422 }));
         expect(() => normalizeChainRef({ chainType: 'canton', chainId: 'devnet', contract: 'canton', tokenId: 'cid' }))
             .toThrow(expect.objectContaining({ status: 422, code: 'chain-mirror-private' }));
-        expect(() => normalizeChainRef({ chainType: 'evm', chainId: '84532', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: '9'.repeat(79) }))
+        expect(() => normalizeChainRef({ chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '9'.repeat(79) }))
             .toThrow(expect.objectContaining({ status: 422, code: 'chain-proof-invalid' }));
-        expect(() => normalizeChainRef({ chainType: 'evm', chainId: '84532', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: ((1n << 256n) - 1n + 1n).toString() }))
+        expect(() => normalizeChainRef({ chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: ((1n << 256n) - 1n + 1n).toString() }))
             .toThrow(expect.objectContaining({ status: 422, code: 'chain-proof-invalid' }));
     });
 });
 
 describe('readChainProposal (EVM)', () => {
-    const ref = { chainType: 'evm', chainId: '84532', contract: '0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F', tokenId: '5' };
+    const ref = { chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '5' };
 
     it('reads parcel consent, metadata URI, lens, conditional flag, and owner from the configured contract', async () => {
         const result = await readChainProposal(ref, {
