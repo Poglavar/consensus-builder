@@ -143,12 +143,19 @@
             if (puts.has(key)) return puts.get(key);
             return storage?.getItem?.(key) ?? null;
         };
+        // A value equal to the committed one is not a change. A replay re-serializes every record
+        // it re-derived and rewrote ~4 MB of identical rows on each reload; now it writes none.
         const setItem = (rawKey, rawValue) => {
             const key = String(rawKey == null ? '' : rawKey);
             if (!key) throw new TypeError('Mutation storage key cannot be empty.');
-            remember(key);
+            const value = String(rawValue == null ? '' : rawValue);
             deletes.delete(key);
-            puts.set(key, String(rawValue == null ? '' : rawValue));
+            if ((storage?.getItem?.(key) ?? null) === value) {
+                puts.delete(key);
+                return;
+            }
+            remember(key);
+            puts.set(key, value);
         };
         const removeItem = rawKey => {
             const key = String(rawKey == null ? '' : rawKey);

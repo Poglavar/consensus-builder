@@ -1180,8 +1180,13 @@ const ProposalManager = {
 
             const stripsStarted = _now();
             _emitProposalProgress(opts.onProgress, { phase: 'corridor-strips' });
+            // The whole rebuild's presentation, once: members replay with deferPresentation, and
+            // _resetDerivedFabric's own afterCommit redraws the structure and building layers.
             opts._parcelMutation.afterCommit(() => {
                 try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
+                try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
+                try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+                try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
             });
             // Built by _rebuildPass; defaulted here so a caller that supplies its own pass (tests
             // do) is not broken by the reporting.
@@ -2725,6 +2730,9 @@ const ProposalManager = {
                     replay: true,
                     forceMaterialize: true,
                     preserveAppliedSet: passOptions.preserveAppliedSet === true,
+                    // rebuildAppliedFabric refreshes the UI once after commit. Per member, the
+                    // Šibenik reload restyled every parcel layer 163 times in one 1-second task.
+                    deferPresentation: true,
                     _parcelMutation: passOptions._parcelMutation
                 };
                 if (demolitionBuildings && demolitionBuildings.has(String(key))) {
