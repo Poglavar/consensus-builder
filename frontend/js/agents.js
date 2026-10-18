@@ -18,6 +18,20 @@ function getChainCurrencySymbol() {
     return 'ETH';
 }
 
+// The stored form of the agents. ownedParcels mirrors the parcel owner rows, and a derived live
+// piece's owner row is memory-only (persistent-storage.js isMemoryOnlyKey: the replay rebuilds it),
+// so derived piece ids are left out of the stored list too.
+function agentRowsForStorage(agents) {
+    const derived = id => PersistentStorage.isDerivedParcelId(id);
+    return Array.from(agents.entries()).map(([id, agent]) => ({
+        id,
+        ...agent,
+        ...(Array.isArray(agent && agent.ownedParcels)
+            ? { ownedParcels: agent.ownedParcels.filter(parcelId => !derived(parcelId)) }
+            : {})
+    }));
+}
+
 // Agent storage and management
 const agentStorage = {
     agents: new Map(), // Key: agentId, Value: agent object
@@ -43,7 +57,7 @@ const agentStorage = {
     },
 
     serializeMutationDraft(draft) {
-        const serialize = agents => JSON.stringify(Array.from(agents.entries()).map(([id, agent]) => ({ id, ...agent })));
+        const serialize = agents => JSON.stringify(agentRowsForStorage(agents));
         const value = serialize(draft.agents);
         // Unchanged agents mean nothing durable to write for this store.
         if (value === serialize(this.agents)) return null;
@@ -62,11 +76,7 @@ const agentStorage = {
 
     // Save agents to PersistentStorage
     save() {
-        const data = Array.from(this.agents.entries()).map(([id, agent]) => ({
-            id,
-            ...agent
-        }));
-        PersistentStorage.setItem('consensus_agents', JSON.stringify(data));
+        PersistentStorage.setItem('consensus_agents', JSON.stringify(agentRowsForStorage(this.agents)));
     },
 
     // Load agents from PersistentStorage

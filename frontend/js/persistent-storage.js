@@ -30,6 +30,24 @@
         readyResolve = resolve;
     });
 
+    // Owner rows of derived live pieces (parcel_<piece id with #>_owner) are rebuilt by every replay
+    // of the applied plan, so they live in this cache only: the browser stores no part of the built
+    // map. Durable rows of that shape written before this rule are not loaded; their keys are kept
+    // here and deleted from IndexedDB with the next write.
+    function isDerivedParcelId(id) {
+        return String(id == null ? '' : id).includes('#');
+    }
+    function isMemoryOnlyKey(key) {
+        const text = String(key == null ? '' : key);
+        return text.startsWith('parcel_') && text.endsWith('_owner') && isDerivedParcelId(text.slice(7, -6));
+    }
+    const storedMemoryOnlyKeys = new Set();
+    function takeStoredMemoryOnlyKeys() {
+        const keys = Array.from(storedMemoryOnlyKeys);
+        storedMemoryOnlyKeys.clear();
+        return keys;
+    }
+
     // Writes issued before a city is bound. They must not be guessed into the legacy database:
     // that store belongs to the pre-upgrade world, and a stray write there would go to a city the
     // user is not in. Held here and flushed once the scope is known.
@@ -125,26 +143,39 @@
     // after the IndexedDB transaction completes, so synchronous readers never observe a value that
     // failed to reach durable storage. Preference writes may continue to use setItem/removeItem.
     async function atomicWrite(change = {}) {
-        const puts = normalizedAtomicPuts(change.puts).map(([key, value]) => [
+        const allPuts = normalizedAtomicPuts(change.puts).map(([key, value]) => [
             key != null ? String(key) : '',
             value != null ? String(value) : ''
         ]);
-        const deletes = Array.from(change.deletes || [], key => key != null ? String(key) : '');
-        const invalidKey = puts.some(([key]) => !key) || deletes.some(key => !key);
+        const allDeletes = Array.from(change.deletes || [], key => key != null ? String(key) : '');
+        const invalidKey = allPuts.some(([key]) => !key) || allDeletes.some(key => !key);
         if (invalidKey) throw new TypeError('PersistentStorage.atomicWrite requires non-empty string keys.');
-        if (!puts.length && !deletes.length) return;
+        if (!allPuts.length && !allDeletes.length) return;
+        const puts = allPuts.filter(([key]) => !isMemoryOnlyKey(key));
+        const memoryPuts = allPuts.filter(([key]) => isMemoryOnlyKey(key));
+        const memoryDeletes = allDeletes.filter(isMemoryOnlyKey);
 
         // Mutations are not allowed to guess a city before city-config binds the store. Await the
         // same readiness barrier used by all proposal boot code.
         await ready;
 
-        if (!hasIndexedDB) {
+        const leftovers = takeStoredMemoryOnlyKeys();
+        const deletes = allDeletes.filter(key => !isMemoryOnlyKey(key)).concat(leftovers);
+        const publish = () => {
             deletes.forEach(key => cache.delete(key));
+            memoryDeletes.forEach(key => cache.delete(key));
             puts.forEach(([key, value]) => cache.set(key, value));
+            memoryPuts.forEach(([key, value]) => cache.set(key, value));
+        };
+        if (!hasIndexedDB || (!puts.length && !deletes.length)) {
+            publish();
             return;
         }
 
-        const db = await openDb();
+        // A failed write leaves the leftover derived-owner rows for the next one.
+        const restoreLeftovers = () => leftovers.forEach(key => storedMemoryOnlyKeys.add(key));
+        let db;
+        try { db = await openDb(); } catch (error) { restoreLeftovers(); throw error; }
         await new Promise((resolve, reject) => {
             let transaction;
             let failure = null;
@@ -152,6 +183,7 @@
             const fail = error => {
                 if (settled) return;
                 settled = true;
+                restoreLeftovers();
                 reject(error || failure || new Error('IndexedDB atomic write failed'));
             };
             try {
@@ -168,8 +200,7 @@
                 transaction.oncomplete = () => {
                     if (settled) return;
                     settled = true;
-                    deletes.forEach(key => cache.delete(key));
-                    puts.forEach(([key, value]) => cache.set(key, value));
+                    publish();
                     resolve();
                 };
                 transaction.onerror = () => {
@@ -318,7 +349,9 @@
                     const record = cursor.value;
                     // Never clobber a value already in the cache: it was written before the scope
                     // was bound and is newer than what the database holds.
-                    if (record && typeof record.key === 'string' && !cache.has(record.key)) {
+                    if (record && typeof record.key === 'string' && isMemoryOnlyKey(record.key)) {
+                        storedMemoryOnlyKeys.add(record.key);
+                    } else if (record && typeof record.key === 'string' && !cache.has(record.key)) {
                         cache.set(record.key, typeof record.value === 'string' ? record.value : JSON.stringify(record.value));
                     }
                     cursor.continue();
@@ -400,15 +433,18 @@
             const strKey = key != null ? String(key) : '';
             const strValue = value != null ? String(value) : '';
             cache.set(strKey, strValue);
-            persistPair(strKey, strValue);
+            if (!isMemoryOnlyKey(strKey)) persistPair(strKey, strValue);
+            else if (storedMemoryOnlyKeys.delete(strKey)) removePair(strKey);
         },
         removeItem(key) {
             const strKey = key != null ? String(key) : '';
             cache.delete(strKey);
-            removePair(strKey);
+            if (!isMemoryOnlyKey(strKey)) removePair(strKey);
+            else if (storedMemoryOnlyKeys.delete(strKey)) removePair(strKey);
         },
         clear() {
             cache.clear();
+            storedMemoryOnlyKeys.clear();
             clearStore();
         },
         key(index) {
@@ -428,6 +464,8 @@
         },
         ensureReady,
         atomicWrite,
+        isDerivedParcelId,
+        isMemoryOnlyKey,
 
         // Bind this browser session to one city's database. Called once by city-config, before
         // anything reads. Migrates the pre-city-scope database on first run.
