@@ -276,12 +276,16 @@ async function absentId(descriptor, sampleFeature, root, acceptsId = async () =>
         codec.decodeSnapshotNativeId(tail, count);
         return `${descriptor.idPrefix}${tail}`;
     }
-    if (descriptor.adapter === 'nairobi-outlines') {
+    if (descriptor.identityKind === 'geometry-sha256-v1') {
         const codec = await import(pathToFileURL(path.join(root, 'backend/parcels/geometry-identity.js')));
-        const coordinate = sampleFeature?.geometry?.coordinates?.[0]?.[0]?.[0];
-        if (!Array.isArray(coordinate) || coordinate.length < 2) return null;
-        const candidate = `${descriptor.idPrefix}g1~${Math.round(coordinate[0] * 1e7)}~${Math.round(coordinate[1] * 1e7)}~${'0'.repeat(64)}`;
-        try { codec.parseGeometryParcelId(descriptor, candidate); return candidate; } catch { return null; }
+        try {
+            const sampleId = await canonicalId(sampleFeature, descriptor, root);
+            const locator = codec.parseGeometryParcelId(descriptor, sampleId);
+            const hash = (locator.hash === '0'.repeat(64) ? 'f' : '0').repeat(64);
+            const candidate = `${descriptor.idPrefix}g1~${locator.longitude}~${locator.latitude}~${hash}`;
+            codec.parseGeometryParcelId(descriptor, candidate);
+            return candidate;
+        } catch { return null; }
     }
     const sampleNative = rawNativeId(sampleFeature, descriptor);
     if (!sampleNative) return null;

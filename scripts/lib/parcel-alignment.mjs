@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { encodeArcgisCompositeId } from '../../backend/parcels/arcgis-source.js';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const COORDINATE_FIELDS = ['id', 'adapter', 'endpoint', 'idPrefix', 'idField', 'idFields', 'objectIdField',
@@ -74,6 +75,12 @@ export async function importAlignmentEvidence({ reference, candidateDir, outputD
 }
 
 export async function collectArcgisAlignment({ descriptor, cityCode, exactFeatures, reads, outputDir, fetchImpl }) {
+    if (descriptor.nativeGeometryMode === 'parts') {
+        error('Multipart ArcGIS geometry needs a source-specific unchanged-native proof.');
+    }
+    if (descriptor.nativeGeometryMode !== undefined || descriptor.overlapResolution !== undefined) {
+        error('Derived or overlap-adjusted ArcGIS geometry needs a source-specific unchanged-native proof.');
+    }
     const metadataUrl = new URL(descriptor.endpoint);
     metadataUrl.search = '?f=json';
     const response = await fetchImpl(metadataUrl.href, { headers: { Accept: 'application/json' } });
@@ -95,6 +102,20 @@ export async function collectArcgisAlignment({ descriptor, cityCode, exactFeatur
         if (!Number.isSafeInteger(objectId) || objectId < 0) continue;
         let match;
         if (descriptor.idField) match = wanted.find(item => item.properties.sourceParcelId === String(feature.properties[descriptor.idField]));
+        else if (Array.isArray(descriptor.idFields) && descriptor.idFields.length > 1) {
+            const values = descriptor.idFields.map(field => feature.properties[field]);
+            const complete = values.every((value, index) => {
+                if (descriptor.idFieldTypes?.[descriptor.idFields[index]] === 'integer') {
+                    return (typeof value === 'number' && Number.isSafeInteger(value))
+                        || (typeof value === 'string' && /^(0|[1-9][0-9]*)$/.test(value) && Number.isSafeInteger(Number(value)));
+                }
+                return typeof value === 'string' && value.length > 0 && value.length <= 256;
+            });
+            if (complete) {
+                const compositeId = encodeArcgisCompositeId(values);
+                match = wanted.find(item => item.properties.sourceParcelId === compositeId);
+            }
+        }
         else if (descriptor.identityKind === 'geometry-sha256-v1') {
             const geometryHash = hash(JSON.stringify(feature.geometry));
             match = wanted.find(item => item.properties.sourceParcelId === geometryHash);

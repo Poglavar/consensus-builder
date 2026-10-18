@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-18: Resume parcel research and qualification on Valhalla toward 1,000 supported cities, continuing from the latest saved evidence; this lifts the October 12 worldwide-research pause.
+
 - 2026-10-18: road-drawing.js state stays in its top-level `let`s; `window.__roadDrawing.session` (module.exports in node) is a live read/write view of every one of them, so tests drive the real tool across calls without a 1,000-reference rename that would collide with concurrent edits.
 - 2026-10-18: road-drawing.js is a classic script with one namespace export: every top-level function stays a browser global and is also listed on `window.__roadDrawing` / `module.exports`; the finalization gate resolves road-finalization-state.js by require when its global is absent.
 - 2026-10-18: reparcellization.js is a factory, `createReparcellizationEditor()` (fresh state per call, returns openReparcellizationModal + state + every function); the page makes one editor at load for `window.openReparcellizationModal`, node require() returns only the factory.

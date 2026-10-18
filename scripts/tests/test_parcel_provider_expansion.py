@@ -81,6 +81,20 @@ class ProviderControllerTests(unittest.TestCase):
  def test_safe_descriptor_keeps_catalog_host_spelling_and_strips_credentials(self):
   d=ctl._safe_descriptor({'id':'x','endpoint':'https://user:pw@bz1uwWPKUInZBK94.svcs5.arcgis.com:8443/a/FeatureServer/0?token=s&f=json'})
   self.assertEqual(d['endpoint'],'https://bz1uwWPKUInZBK94.svcs5.arcgis.com:8443/a/FeatureServer/0?f=json')
+ def test_geometry_reference_provenance_is_retained_and_never_labelled_native(self):
+  item=self.item(413); item['provider']['descriptor'].update({'identityKind':'geometry-sha256-v1','groupFields':['survey_key'],'zoom':14})
+  sample={'type':'FeatureCollection','features':[{'type':'Feature','geometry':{'type':'Polygon','coordinates':[[[23,12],[23.1,12],[23.1,12.1],[23,12]]]},'properties':{'id':'g1~230000000~120000000~'+'a'*64}}]}
+  result=self.probe_result(None,'discovered')|{'verifiedQuery':{'bbox':[23,12,23.1,12.1]}}
+  args=(item['city'],item['provider'],result,[],sample,'sample.geojson','city.json')
+  with self.assertRaisesRegex(ValueError,'explicit source-bound identity provenance'): ctl._make_packets(*args)
+  result['identityProvenance']={'kind':'geometry-sha256-v1','native':False,'sourceNamespace':'src-413'}
+  city,review=ctl._make_packets(*args)
+  for packet in (city,review):
+   reuse=packet['providerReuse']; self.assertEqual(reuse['nativeIds'],[])
+   self.assertEqual(reuse['referenceIds'],[{'field':'id','value':sample['features'][0]['properties']['id']}])
+   self.assertEqual(reuse['identityProvenance'],result['identityProvenance'])
+   self.assertEqual(reuse['descriptor']['identityKind'],'geometry-sha256-v1')
+   self.assertEqual(reuse['descriptor']['groupFields'],['survey_key'])
  def test_controller_rejects_unsafe_sample_id_key(self):
   unsafe={'type':'FeatureCollection','features':[{'type':'Feature','geometry':{'type':'Polygon','coordinates':[[[23,12],[23.1,12],[23.1,12.1],[23,12]]]},'properties':{'owner_id':'private'}}]}
   with self.assertRaises(ValueError): ctl.coord._validate_sample(unsafe)
