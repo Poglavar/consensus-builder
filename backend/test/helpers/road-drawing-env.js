@@ -250,8 +250,40 @@ function memoryStorage() {
     };
 }
 
+// A stand-in for corridor-render.js (the Leaflet canvas renderer the drawing's cross-section is
+// drawn with): its panes and three render calls, each recording what it was handed in `rendered`.
+function makeCorridorRenderer(rendered) {
+    return {
+        CORRIDOR_STRIPS_PANE: 'corridorStripsPane',
+        CORRIDOR_JUNCTIONS_PANE: 'corridorJunctionsPane',
+        CORRIDOR_MARKINGS_PANE: 'corridorMarkingsPane',
+        ensureCorridorStripsPane: () => {},
+        ensureCorridorJunctionsPane: () => {},
+        ensureCorridorMarkingsPane: () => {},
+        renderCorridorStrips: (strips, renderOptions = {}) => {
+            rendered.strips.push({ strips, options: renderOptions });
+            return new FakeLayer('strips', null, { pane: renderOptions.pane });
+        },
+        renderCorridorJunctions: (junctions, group, pane) => {
+            rendered.junctions.push({ junctions, pane });
+            new FakeLayer('junctions', null, { pane }).addTo(group);
+        },
+        renderCorridorLaneMarkings: (markings, group, pane) => {
+            rendered.markings.push({ markings, pane });
+        },
+        // corridor-profile.js puts buildCorridorStrips on window only, not on module.exports. The
+        // drawing calls it one segment at a time, which buildCorridorPieceStrips reaches exactly
+        // for an untapered piece.
+        buildCorridorStrips: (segments, profile, frame) => {
+            if (!Array.isArray(segments) || segments.length !== 1) throw new Error('buildCorridorStrips stand-in: one segment at a time');
+            return corridorProfile.buildCorridorPieceStrips({ points: segments[0], profile, taper: null }, frame);
+        }
+    };
+}
+
 // Installs the world on globalThis (window === globalThis, as in a browser) and loads a fresh copy
-// of road-drawing.js. `options.parcels` seeds the fabric, `options.proposals` the proposal store.
+// of road-drawing.js. `options.parcels` seeds the fabric, `options.proposals` the proposal store;
+// `options.renderer` installs the corridor-render.js stand-in, whose calls land in `env.rendered`.
 export function loadRoadDrawing(options = {}) {
     const before = new Map(Object.getOwnPropertyNames(globalThis)
         .map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]));
@@ -264,6 +296,7 @@ export function loadRoadDrawing(options = {}) {
     const store = makeProposalStore(options.proposals || []);
     const afterCommits = [];
     const draftStore = proposalDrafts.createProposalDraftStore({ storage: memoryStorage() });
+    const rendered = { strips: [], junctions: [], markings: [] };
 
     const installs = {
         window: g,
@@ -325,6 +358,7 @@ export function loadRoadDrawing(options = {}) {
         instantCreateProposalFromDraft: spy(async () => 'p-built'),
         showStyledChoice: spy(async () => 'keep'),
         showStyledAlert: spy(),
+        ...(options.renderer ? makeCorridorRenderer(rendered) : {}),
         ...(options.globals || {})
     };
     Object.entries(installs).forEach(([name, value]) => { g[name] = value; });
@@ -341,6 +375,7 @@ export function loadRoadDrawing(options = {}) {
         store,
         draftStore,
         presenterLayers,
+        rendered,
         statuses,
         lastStatus: () => statuses[statuses.length - 1],
         element: id => document.getElementById(id),
