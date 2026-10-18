@@ -103,6 +103,52 @@ def mocked_alignment_recompute(command, **kwargs):
     return SimpleNamespace(returncode=0, stdout='{"passed":true}', stderr="")
 
 
+def mocked_qualification_recomputes(command, **kwargs):
+    if any(str(part).endswith("parcel-alignment-check.py") for part in command):
+        return mocked_alignment_recompute(command, **kwargs)
+    cache_path, output_path = Path(command[2]), Path(command[3])
+    metric = json.loads((cache_path.parent / "metric-report.json").read_text())
+    metric["inputSha256"] = hashlib.sha256(cache_path.read_bytes()).hexdigest()
+    output_path.write_text(json.dumps(metric), encoding="utf-8")
+    return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+
+def worker_qualification_item(root: Path, *, omit_native=False):
+    city = queue_records(1)[0]
+    city_dir = root / "cities" / city["cityCode"]
+    attempt = city_dir / "attempt-01"
+    attempt.mkdir(parents=True)
+    write_valid_artifacts(attempt, city["cityCode"])
+    candidate_path = attempt / "candidate.json"
+    candidate = json.loads(candidate_path.read_text())
+    candidate["metricEpsg"] = "EPSG:32631"
+    candidate["city"].update(name=city["cityName"], point=[city["point"][1], city["point"][0]])
+    candidate_bytes = json.dumps(candidate, separators=(",", ":")).encode()
+    candidate_path.write_bytes(candidate_bytes)
+    q_path = attempt / "evidence" / "qualification.json"
+    qualification = json.loads(q_path.read_text())
+    qualification["candidateSha256"] = hashlib.sha256(candidate_bytes).hexdigest()
+    q_path.write_text(json.dumps(qualification), encoding="utf-8")
+    evidence = [
+        "attempt-01/candidate.json", "attempt-01/evidence/qualification.json",
+        "attempt-01/evidence/full-safe.geojson", "attempt-01/evidence/alignment-evidence.json",
+        "attempt-01/evidence/alignment-metadata.json", "attempt-01/evidence/alignment-native.json",
+        "attempt-01/evidence/alignment-report.json",
+    ]
+    if omit_native:
+        evidence.remove("attempt-01/evidence/alignment-native.json")
+    answer = {"data": {"cityCode": city["cityCode"], "status": "technical-qualified",
+                       "summary": "All worker gates passed.", "evidenceFiles": evidence}}
+    answer_path = attempt / "worker-answer.json"
+    answer_path.write_text(json.dumps(answer), encoding="utf-8")
+    queue = root / "queue.json"
+    queue.write_text(json.dumps([city]), encoding="utf-8")
+    args = SimpleNamespace(repo_root=str(root), queue=str(queue), source_root=str(root), state_dir="state")
+    job = runner.Runner(args)
+    item = {"city": city, "cityDir": city_dir, "attemptDir": attempt, "answerPath": answer_path, "phase": "llm"}
+    return job, item, answer
+
+
 class QualificationRunnerTests(unittest.TestCase):
     def test_direct_worker_does_not_invoke_llm(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -286,6 +332,44 @@ class QualificationRunnerTests(unittest.TestCase):
                 ok, reason = runner.verify_technical_artifacts(root, "10000")
             self.assertFalse(ok)
             self.assertIn("metadataFile SHA-256 mismatch", reason)
+
+    def test_parent_recomputed_reports_are_added_after_both_checks_pass(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            job, item, original_answer = worker_qualification_item(root)
+            original_manifest = list(original_answer["data"]["evidenceFiles"])
+            with patch.object(runner.subprocess, "run", side_effect=mocked_qualification_recomputes) as recompute:
+                result = job._verify_worker_answer(item)
+            evidence = result["evidenceFiles"]
+            self.assertIn("attempt-01/evidence/independent-metric-report.json", evidence)
+            self.assertIn("attempt-01/evidence/independent-alignment-report.json", evidence)
+            self.assertEqual(evidence.count("attempt-01/evidence/independent-metric-report.json"), 1)
+            self.assertEqual(evidence.count("attempt-01/evidence/independent-alignment-report.json"), 1)
+            self.assertEqual(original_answer["data"]["evidenceFiles"], original_manifest)
+            self.assertEqual(json.loads(item["answerPath"].read_text()), original_answer)
+            self.assertEqual(sum(any(str(part).endswith(suffix) for part in call.args[0])
+                                 for call in recompute.call_args_list
+                                 for suffix in ("parcel-qualification-metric.py", "parcel-alignment-check.py")), 2)
+
+    def test_missing_worker_native_alignment_evidence_still_rejects(self):
+        with tempfile.TemporaryDirectory() as temp:
+            job, item, _ = worker_qualification_item(Path(temp), omit_native=True)
+            with patch.object(runner.subprocess, "run", side_effect=mocked_qualification_recomputes):
+                with self.assertRaisesRegex(ValueError, "complete alignment evidence/report files"):
+                    job._verify_worker_answer(item)
+
+    def test_failed_parent_alignment_recomputation_still_rejects(self):
+        with tempfile.TemporaryDirectory() as temp:
+            job, item, _ = worker_qualification_item(Path(temp))
+
+            def failed_alignment(command, **kwargs):
+                if any(str(part).endswith("parcel-alignment-check.py") for part in command):
+                    return SimpleNamespace(returncode=2, stdout='{"passed":false}', stderr="failed")
+                return mocked_qualification_recomputes(command, **kwargs)
+
+            with patch.object(runner.subprocess, "run", side_effect=failed_alignment):
+                with self.assertRaisesRegex(ValueError, "independent recomputation of native CRS alignment failed"):
+                    job._verify_worker_answer(item)
 
     def test_missing_metric_blocker_count_fails_closed(self):
         with tempfile.TemporaryDirectory() as temp:

@@ -592,6 +592,7 @@ class Runner:
         evidence = data.get("evidenceFiles")
         if not isinstance(evidence, list) or not evidence:
             raise ValueError("worker result must name existing evidence files")
+        evidence = list(evidence)
         for path in evidence:
             if not isinstance(path, str) or not safe_relative(item["cityDir"], path).is_file():
                 raise ValueError(f"worker evidence path is missing or outside city workdir: {path}")
@@ -631,10 +632,20 @@ class Runner:
             ):
                 raise ValueError("candidate point does not match frozen queue [latitude, longitude]")
             prefix = item["attemptDir"].relative_to(item["cityDir"]).as_posix() + "/"
+            trusted_reports = [
+                prefix + "evidence/independent-metric-report.json",
+                prefix + "evidence/independent-alignment-report.json",
+            ]
+            for report in trusted_reports:
+                if not safe_relative(item["cityDir"], report).is_file():
+                    raise ValueError(f"trusted independent report is missing: {report}")
+                if report not in evidence:
+                    evidence.append(report)
             required = {prefix + "candidate.json", prefix + "evidence/qualification.json",
                         *(prefix + "evidence/" + name for name in (
                             "full-safe.geojson", "alignment-evidence.json", "alignment-metadata.json",
-                            "alignment-native.json", "alignment-report.json", "independent-alignment-report.json"))}
+                            "alignment-native.json", "alignment-report.json", "independent-metric-report.json",
+                            "independent-alignment-report.json"))}
             if not required.issubset(set(evidence)):
                 raise ValueError("technical-qualified evidence list must include candidate, full-safe cache, and complete alignment evidence/report files")
         return {"status": status, "summary": data["summary"], "evidenceFiles": evidence,
