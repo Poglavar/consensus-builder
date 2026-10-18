@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "in-ap-apsac-tiles",
+  "cityCode": "10677",
+  "passed": false,
+  "recomputationPerformed": false,
+  "reason": "No authenticated-as-first-party native CRS declaration, wire-axis declaration or unchanged native polygon evidence is available. No coordinate operation can be selected without guessing.",
+  "authenticationUsed": false,
+  "candidateSha256": "7c69aa54167a855889b0fc71690ef54298c36b2f516401a8229bd4ed3c369a2b",
+  "cacheSha256": "d4a0d2344b7f9710179556f7e01fa7a5ee37128067b58a221510b0cac132a3ae",
+  "metadataFile": "source-inspection.json",
+  "metadataSha256": "5b7ff915ae55f4fb1bf33738173b52891c78d596b7e7d1b0654964201141480d",
+  "snapshotMetadataFile": "snapshot-publisher-metadata.json",
+  "snapshotMetadataSha256": "4c190179aeb27631ce7fad08335adf20142ef1eba4411866f300be2c805cf9d5",
+  "retainedDerivedSampleFile": "frozen-packet-sample.geojson",
+  "retainedDerivedSampleSha256": "b4caaa5f1abd38c8b02e6cd378943d9b10c236b4e016445de641682f12db7275",
+  "retainedDerivedSampleIsNative": false,
+  "nativeSampleFile": null,
+  "alignmentEvidencePack": null,
+  "nativeCrs": null,
+  "nativeWireAxisOrder": null,
+  "coordinateOperation": null,
+  "datumAndGridAvailabilityVerified": false,
+  "ballparkAllowed": false,
+  "fittedOffsetApplied": false,
+  "geometryChangedByAuditor": false,
+  "originalAlignmentResult": {
+    "file": "qualification.json",
+    "sha256": "c7637cb07cfae9a6d7627329e3ea1e9e4dc3809556ad24fdae18bc801cd237cc",
+    "jsonPointer": "/checks/alignment"
+  },
+  "priorOriginalAlignmentResult": {
+    "file": "../../attempt-01/evidence/qualification.json",
+    "sha256": "b523f686d2bcc34f3fac0bafbe76292899607b94cec799136101f6033226ec05",
+    "jsonPointer": "/checks/alignment"
+  },
+  "missingGates": [
+    "First-party government evidence establishing cadastral purpose and actual Vijayawada coverage.",
+    "Published source-native parcel IDs and a production native-ID codec; the frozen source publishes only derived g1 geometry references.",
+    "First-party native CRS, datum/reference-frame and explicit wire axis order.",
+    "Bounded unchanged native parcel sample hash-bound to that first-party metadata.",
+    "Published coordinate operation and availability/integrity of every required grid.",
+    "Independent native-CRS recomputation against the retained cache."
+  ]
+}

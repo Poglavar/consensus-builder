@@ -1,0 +1,69 @@
+{
+  "descriptor": {
+    "adapter": "arcgis",
+    "attributeNotNull": [
+      "PARCEL_APN"
+    ],
+    "catalogueUrl": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "countryCode": "US",
+    "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "id": "us-ca-calfire-statewide-parcels",
+    "idFieldTypes": {
+      "FIPS_CODE": "string",
+      "PARCEL_APN": "string"
+    },
+    "idFields": [
+      "FIPS_CODE",
+      "PARCEL_APN"
+    ],
+    "idPrefix": "US-CA-STATEWIDE-",
+    "maxBboxKm2": 25,
+    "maxFeatures": 10000,
+    "metricSrid": 32611,
+    "name": "California Statewide Parcels Public View (CAL FIRE)",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "FIPS_CODE",
+      "PARCEL_APN"
+    ],
+    "pageSize": 500,
+    "scope": "Statewide California county-parcel compilation (58 county FIPS codes present, 13,138,000 rows on 2026-10-12). Canonical identity is the county FIPS code plus the county assessor parcel number; the 23,032 rows without an APN are outside this source.",
+    "stateCode": "CA",
+    "metricSridByCity": {
+      "3589": 32610
+    },
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "cityIds": [
+      "3589"
+    ]
+  },
+  "city": {
+    "code": "3589",
+    "name": "Modesto",
+    "point": [
+      -120.984434522145,
+      37.6482342106593
+    ]
+  },
+  "sampleIds": [
+    "US-CA-STATEWIDE-06099~111009001000",
+    "US-CA-STATEWIDE-06099~111049001000"
+  ],
+  "absentId": "US-CA-STATEWIDE-06099~999999999998",
+  "metricEpsg": "EPSG:32610",
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "https://www.arcgis.com/sharing/rest/content/items/2061fbc963464c5198ec064100802624?f=json \u2014 Publisher describes parcel boundaries for property identification, assessment, and statewide land records mapping; assembled from county parcel sources.",
+      "Frozen packet identifies the CAL FIRE statewide California county-parcel compilation; Modesto samples use Stanislaus county FIPS 06099. Safe live exact-ID/native queries verify these polygons in the supplied Modesto area; no citywide completeness is inferred."
+    ]
+  },
+  "alignmentEvidence": {
+    "file": "alignment-input/evidence.json",
+    "sha256": "1a2b24c0d18bf670ff262d57e85132ca34414629fae416480c13d7490c25ffb6"
+  }
+}

@@ -1,0 +1,1662 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "5001",
+  "cityName": "Hoyland",
+  "sourceId": "gb-hmlr-browser-v1",
+  "candidateSha256": "d5a54f558d379617c5b50edad662e0f3ee3a01482e41c66b07da59c43f519dc0",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 5
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2,
+      "freshCollectedIds": 190,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 190,
+      "collectedUniqueCount": 190
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 524,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          -1.366,
+          53.503,
+          -1.365,
+          53.504
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 7,
+        "ids": [
+          "GB-HMLR-BROWSER-v1-47929295",
+          "GB-HMLR-BROWSER-v1-47929298",
+          "GB-HMLR-BROWSER-v1-47929370",
+          "GB-HMLR-BROWSER-v1-47929405",
+          "GB-HMLR-BROWSER-v1-47929416",
+          "GB-HMLR-BROWSER-v1-47929417",
+          "GB-HMLR-BROWSER-v1-61411514"
+        ]
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 14,
+      "pagingRequired": false,
+      "immutableSnapshot": true,
+      "snapshotBound": true,
+      "sourceDateBound": true,
+      "sourceDate": "2026-10-04",
+      "exactSampleIdsRepeated": true,
+      "explicitAbsenceComplete": true,
+      "completeSampleQueries": true,
+      "stableSampleIds": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 2
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "2d581746283f736f9d08fc3e49c1233f5f7fbb80e2f293ac4cf3f3d6697b3fb3",
+      "featureCount": 190,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32630",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "2d581746283f736f9d08fc3e49c1233f5f7fbb80e2f293ac4cf3f3d6697b3fb3",
+  "featureCount": 190,
+  "sampleIds": [
+    "GB-HMLR-BROWSER-v1-47929416",
+    "GB-HMLR-BROWSER-v1-47929298"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -1.368,
+        53.502,
+        -1.367,
+        53.503
+      ],
+      "complete": true,
+      "featureCount": 27,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929439",
+        "GB-HMLR-BROWSER-v1-47929432",
+        "GB-HMLR-BROWSER-v1-47929256",
+        "GB-HMLR-BROWSER-v1-47929424",
+        "GB-HMLR-BROWSER-v1-47929316",
+        "GB-HMLR-BROWSER-v1-62294286",
+        "GB-HMLR-BROWSER-v1-47929302",
+        "GB-HMLR-BROWSER-v1-61330364",
+        "GB-HMLR-BROWSER-v1-47929403",
+        "GB-HMLR-BROWSER-v1-47929433",
+        "GB-HMLR-BROWSER-v1-47929278",
+        "GB-HMLR-BROWSER-v1-47929354",
+        "GB-HMLR-BROWSER-v1-47929393",
+        "GB-HMLR-BROWSER-v1-47929364",
+        "GB-HMLR-BROWSER-v1-47929428",
+        "GB-HMLR-BROWSER-v1-63069165",
+        "GB-HMLR-BROWSER-v1-47929303",
+        "GB-HMLR-BROWSER-v1-47929301",
+        "GB-HMLR-BROWSER-v1-47929458",
+        "GB-HMLR-BROWSER-v1-47929285",
+        "GB-HMLR-BROWSER-v1-47929250",
+        "GB-HMLR-BROWSER-v1-47929385",
+        "GB-HMLR-BROWSER-v1-47929249",
+        "GB-HMLR-BROWSER-v1-47929384",
+        "GB-HMLR-BROWSER-v1-47929410",
+        "GB-HMLR-BROWSER-v1-47929359",
+        "GB-HMLR-BROWSER-v1-47929442"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -1.367,
+        53.502,
+        -1.366,
+        53.503
+      ],
+      "complete": true,
+      "featureCount": 27,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929256",
+        "GB-HMLR-BROWSER-v1-47929342",
+        "GB-HMLR-BROWSER-v1-47929424",
+        "GB-HMLR-BROWSER-v1-47929316",
+        "GB-HMLR-BROWSER-v1-47929407",
+        "GB-HMLR-BROWSER-v1-47929283",
+        "GB-HMLR-BROWSER-v1-62294286",
+        "GB-HMLR-BROWSER-v1-62869111",
+        "GB-HMLR-BROWSER-v1-47929372",
+        "GB-HMLR-BROWSER-v1-54725885",
+        "GB-HMLR-BROWSER-v1-47929354",
+        "GB-HMLR-BROWSER-v1-57454611",
+        "GB-HMLR-BROWSER-v1-47929351",
+        "GB-HMLR-BROWSER-v1-47929381",
+        "GB-HMLR-BROWSER-v1-47929244",
+        "GB-HMLR-BROWSER-v1-63069165",
+        "GB-HMLR-BROWSER-v1-47929301",
+        "GB-HMLR-BROWSER-v1-47929458",
+        "GB-HMLR-BROWSER-v1-58498657",
+        "GB-HMLR-BROWSER-v1-47929255",
+        "GB-HMLR-BROWSER-v1-47929292",
+        "GB-HMLR-BROWSER-v1-47929250",
+        "GB-HMLR-BROWSER-v1-47929396",
+        "GB-HMLR-BROWSER-v1-47929385",
+        "GB-HMLR-BROWSER-v1-47929359",
+        "GB-HMLR-BROWSER-v1-47929442",
+        "GB-HMLR-BROWSER-v1-47929394"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -1.366,
+        53.502,
+        -1.365,
+        53.503
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929405",
+        "GB-HMLR-BROWSER-v1-47929342",
+        "GB-HMLR-BROWSER-v1-47929370",
+        "GB-HMLR-BROWSER-v1-62869111",
+        "GB-HMLR-BROWSER-v1-54725885",
+        "GB-HMLR-BROWSER-v1-57454611",
+        "GB-HMLR-BROWSER-v1-47929244",
+        "GB-HMLR-BROWSER-v1-47929295",
+        "GB-HMLR-BROWSER-v1-54718813"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -1.368,
+        53.503,
+        -1.367,
+        53.504
+      ],
+      "complete": true,
+      "featureCount": 45,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929432",
+        "GB-HMLR-BROWSER-v1-47929447",
+        "GB-HMLR-BROWSER-v1-47929374",
+        "GB-HMLR-BROWSER-v1-47929316",
+        "GB-HMLR-BROWSER-v1-47929294",
+        "GB-HMLR-BROWSER-v1-62294286",
+        "GB-HMLR-BROWSER-v1-63975943",
+        "GB-HMLR-BROWSER-v1-47929315",
+        "GB-HMLR-BROWSER-v1-47929241",
+        "GB-HMLR-BROWSER-v1-47929303",
+        "GB-HMLR-BROWSER-v1-47929377",
+        "GB-HMLR-BROWSER-v1-47929276",
+        "GB-HMLR-BROWSER-v1-47929325",
+        "GB-HMLR-BROWSER-v1-47929455",
+        "GB-HMLR-BROWSER-v1-47929421",
+        "GB-HMLR-BROWSER-v1-47929284",
+        "GB-HMLR-BROWSER-v1-47929408",
+        "GB-HMLR-BROWSER-v1-47929299",
+        "GB-HMLR-BROWSER-v1-47929272",
+        "GB-HMLR-BROWSER-v1-47929399",
+        "GB-HMLR-BROWSER-v1-47929398",
+        "GB-HMLR-BROWSER-v1-47929459",
+        "GB-HMLR-BROWSER-v1-47929448",
+        "GB-HMLR-BROWSER-v1-47929426",
+        "GB-HMLR-BROWSER-v1-47929314",
+        "GB-HMLR-BROWSER-v1-47929414",
+        "GB-HMLR-BROWSER-v1-47929449",
+        "GB-HMLR-BROWSER-v1-47929362",
+        "GB-HMLR-BROWSER-v1-47929280",
+        "GB-HMLR-BROWSER-v1-47929281",
+        "GB-HMLR-BROWSER-v1-47929375",
+        "GB-HMLR-BROWSER-v1-47929287",
+        "GB-HMLR-BROWSER-v1-47929310",
+        "GB-HMLR-BROWSER-v1-47929282",
+        "GB-HMLR-BROWSER-v1-55064836",
+        "GB-HMLR-BROWSER-v1-47929357",
+        "GB-HMLR-BROWSER-v1-47929273",
+        "GB-HMLR-BROWSER-v1-47929461",
+        "GB-HMLR-BROWSER-v1-47929363",
+        "GB-HMLR-BROWSER-v1-57077934",
+        "GB-HMLR-BROWSER-v1-57077933",
+        "GB-HMLR-BROWSER-v1-47929397",
+        "GB-HMLR-BROWSER-v1-47929400",
+        "GB-HMLR-BROWSER-v1-47929435",
+        "GB-HMLR-BROWSER-v1-57077932"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -1.367,
+        53.503,
+        -1.366,
+        53.504
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929424",
+        "GB-HMLR-BROWSER-v1-62294286",
+        "GB-HMLR-BROWSER-v1-63975943",
+        "GB-HMLR-BROWSER-v1-47929351",
+        "GB-HMLR-BROWSER-v1-47929315",
+        "GB-HMLR-BROWSER-v1-47929292",
+        "GB-HMLR-BROWSER-v1-47929325",
+        "GB-HMLR-BROWSER-v1-47929314"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -1.366,
+        53.503,
+        -1.365,
+        53.504
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929405",
+        "GB-HMLR-BROWSER-v1-47929416",
+        "GB-HMLR-BROWSER-v1-61411514",
+        "GB-HMLR-BROWSER-v1-47929298",
+        "GB-HMLR-BROWSER-v1-47929370",
+        "GB-HMLR-BROWSER-v1-47929295",
+        "GB-HMLR-BROWSER-v1-47929417"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -1.368,
+        53.504,
+        -1.367,
+        53.505
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-28281329",
+        "GB-HMLR-BROWSER-v1-58847429",
+        "GB-HMLR-BROWSER-v1-47929447",
+        "GB-HMLR-BROWSER-v1-60691452",
+        "GB-HMLR-BROWSER-v1-28279618",
+        "GB-HMLR-BROWSER-v1-47929374",
+        "GB-HMLR-BROWSER-v1-47929294",
+        "GB-HMLR-BROWSER-v1-28277153",
+        "GB-HMLR-BROWSER-v1-28275457",
+        "GB-HMLR-BROWSER-v1-28277790",
+        "GB-HMLR-BROWSER-v1-63447484",
+        "GB-HMLR-BROWSER-v1-63448191",
+        "GB-HMLR-BROWSER-v1-28276430"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -1.367,
+        53.504,
+        -1.366,
+        53.505
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-58847429",
+        "GB-HMLR-BROWSER-v1-47929447",
+        "GB-HMLR-BROWSER-v1-47929298",
+        "GB-HMLR-BROWSER-v1-28292086",
+        "GB-HMLR-BROWSER-v1-60691452"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -1.366,
+        53.504,
+        -1.365,
+        53.505
+      ],
+      "complete": true,
+      "featureCount": 34,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-58847429",
+        "GB-HMLR-BROWSER-v1-47929416",
+        "GB-HMLR-BROWSER-v1-61411476",
+        "GB-HMLR-BROWSER-v1-61411514",
+        "GB-HMLR-BROWSER-v1-47929298",
+        "GB-HMLR-BROWSER-v1-28292086",
+        "GB-HMLR-BROWSER-v1-62204478",
+        "GB-HMLR-BROWSER-v1-61515221",
+        "GB-HMLR-BROWSER-v1-62207327",
+        "GB-HMLR-BROWSER-v1-62207359",
+        "GB-HMLR-BROWSER-v1-62207181",
+        "GB-HMLR-BROWSER-v1-62759823",
+        "GB-HMLR-BROWSER-v1-62110563",
+        "GB-HMLR-BROWSER-v1-62207377",
+        "GB-HMLR-BROWSER-v1-61681631",
+        "GB-HMLR-BROWSER-v1-61723815",
+        "GB-HMLR-BROWSER-v1-61646565",
+        "GB-HMLR-BROWSER-v1-62204228",
+        "GB-HMLR-BROWSER-v1-61697898",
+        "GB-HMLR-BROWSER-v1-61496012",
+        "GB-HMLR-BROWSER-v1-61495817",
+        "GB-HMLR-BROWSER-v1-62204840",
+        "GB-HMLR-BROWSER-v1-62204854",
+        "GB-HMLR-BROWSER-v1-62207339",
+        "GB-HMLR-BROWSER-v1-61515288",
+        "GB-HMLR-BROWSER-v1-61646633",
+        "GB-HMLR-BROWSER-v1-64377510",
+        "GB-HMLR-BROWSER-v1-61812941",
+        "GB-HMLR-BROWSER-v1-62204841",
+        "GB-HMLR-BROWSER-v1-61681449",
+        "GB-HMLR-BROWSER-v1-61683574",
+        "GB-HMLR-BROWSER-v1-64377438",
+        "GB-HMLR-BROWSER-v1-61682493",
+        "GB-HMLR-BROWSER-v1-62207338"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -1.367,
+        53.501,
+        -1.366,
+        53.502
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929342",
+        "GB-HMLR-BROWSER-v1-47929425",
+        "GB-HMLR-BROWSER-v1-47929369",
+        "GB-HMLR-BROWSER-v1-53365364",
+        "GB-HMLR-BROWSER-v1-47929262",
+        "GB-HMLR-BROWSER-v1-63848141",
+        "GB-HMLR-BROWSER-v1-47929409",
+        "GB-HMLR-BROWSER-v1-47929380",
+        "GB-HMLR-BROWSER-v1-47929407",
+        "GB-HMLR-BROWSER-v1-47929436",
+        "GB-HMLR-BROWSER-v1-47929322",
+        "GB-HMLR-BROWSER-v1-47929354",
+        "GB-HMLR-BROWSER-v1-47929440",
+        "GB-HMLR-BROWSER-v1-47929430",
+        "GB-HMLR-BROWSER-v1-47929269",
+        "GB-HMLR-BROWSER-v1-63069165"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -1.367,
+        53.505,
+        -1.366,
+        53.506
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-28281329",
+        "GB-HMLR-BROWSER-v1-57886280",
+        "GB-HMLR-BROWSER-v1-63326875",
+        "GB-HMLR-BROWSER-v1-58847429",
+        "GB-HMLR-BROWSER-v1-57886313",
+        "GB-HMLR-BROWSER-v1-28287528",
+        "GB-HMLR-BROWSER-v1-58205978",
+        "GB-HMLR-BROWSER-v1-28287964",
+        "GB-HMLR-BROWSER-v1-28286790",
+        "GB-HMLR-BROWSER-v1-64106717",
+        "GB-HMLR-BROWSER-v1-28282849",
+        "GB-HMLR-BROWSER-v1-28283466",
+        "GB-HMLR-BROWSER-v1-28287631",
+        "GB-HMLR-BROWSER-v1-28283029",
+        "GB-HMLR-BROWSER-v1-28281072",
+        "GB-HMLR-BROWSER-v1-28283616",
+        "GB-HMLR-BROWSER-v1-28283333",
+        "GB-HMLR-BROWSER-v1-28282910"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -1.369,
+        53.503,
+        -1.368,
+        53.504
+      ],
+      "complete": true,
+      "featureCount": 41,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929439",
+        "GB-HMLR-BROWSER-v1-64576441",
+        "GB-HMLR-BROWSER-v1-64846063",
+        "GB-HMLR-BROWSER-v1-47929374",
+        "GB-HMLR-BROWSER-v1-47929294",
+        "GB-HMLR-BROWSER-v1-28268166",
+        "GB-HMLR-BROWSER-v1-47929303",
+        "GB-HMLR-BROWSER-v1-47929248",
+        "GB-HMLR-BROWSER-v1-47929455",
+        "GB-HMLR-BROWSER-v1-64576414",
+        "GB-HMLR-BROWSER-v1-47929408",
+        "GB-HMLR-BROWSER-v1-28267905",
+        "GB-HMLR-BROWSER-v1-47929272",
+        "GB-HMLR-BROWSER-v1-28266668",
+        "GB-HMLR-BROWSER-v1-47929459",
+        "GB-HMLR-BROWSER-v1-47929448",
+        "GB-HMLR-BROWSER-v1-47929426",
+        "GB-HMLR-BROWSER-v1-47929379",
+        "GB-HMLR-BROWSER-v1-64577330",
+        "GB-HMLR-BROWSER-v1-47929414",
+        "GB-HMLR-BROWSER-v1-47929260",
+        "GB-HMLR-BROWSER-v1-47929449",
+        "GB-HMLR-BROWSER-v1-47929362",
+        "GB-HMLR-BROWSER-v1-47929280",
+        "GB-HMLR-BROWSER-v1-47929281",
+        "GB-HMLR-BROWSER-v1-47929375",
+        "GB-HMLR-BROWSER-v1-47929422",
+        "GB-HMLR-BROWSER-v1-28269161",
+        "GB-HMLR-BROWSER-v1-28269381",
+        "GB-HMLR-BROWSER-v1-28268598",
+        "GB-HMLR-BROWSER-v1-28269991",
+        "GB-HMLR-BROWSER-v1-28270425",
+        "GB-HMLR-BROWSER-v1-28269595",
+        "GB-HMLR-BROWSER-v1-28270220",
+        "GB-HMLR-BROWSER-v1-28268129",
+        "GB-HMLR-BROWSER-v1-28268369",
+        "GB-HMLR-BROWSER-v1-28268841",
+        "GB-HMLR-BROWSER-v1-28269773",
+        "GB-HMLR-BROWSER-v1-47929397",
+        "GB-HMLR-BROWSER-v1-64578044",
+        "GB-HMLR-BROWSER-v1-64577329"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -1.365,
+        53.503,
+        -1.364,
+        53.504
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-58884117",
+        "GB-HMLR-BROWSER-v1-47929405",
+        "GB-HMLR-BROWSER-v1-47929416",
+        "GB-HMLR-BROWSER-v1-61411476",
+        "GB-HMLR-BROWSER-v1-61411514",
+        "GB-HMLR-BROWSER-v1-47929251",
+        "GB-HMLR-BROWSER-v1-55569237",
+        "GB-HMLR-BROWSER-v1-61295380",
+        "GB-HMLR-BROWSER-v1-61631985",
+        "GB-HMLR-BROWSER-v1-62204825",
+        "GB-HMLR-BROWSER-v1-61723843",
+        "GB-HMLR-BROWSER-v1-47929417"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -1.366,
+        53.503,
+        -1.365,
+        53.504
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "GB-HMLR-BROWSER-v1-47929295",
+        "GB-HMLR-BROWSER-v1-47929298",
+        "GB-HMLR-BROWSER-v1-47929370",
+        "GB-HMLR-BROWSER-v1-47929405",
+        "GB-HMLR-BROWSER-v1-47929416",
+        "GB-HMLR-BROWSER-v1-47929417",
+        "GB-HMLR-BROWSER-v1-61411514"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 72,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:04.146Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 53
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:04.277Z",
+      "queryHash": "a9980d68e514f152c8db02be1ae09c1ace8cb0bf608cd4f775d9d4be4d25f193",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:04.286Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 119
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:04.408Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:04.677Z",
+      "queryHash": "ac0511208cde968dbec473ed2bfa8c43dd3275af685f5191db70f7c186e3af80",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 393
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "datapub-prd-s3-bucket.s3.amazonaws.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:05.070Z",
+      "queryHash": "24fb1c1e07dce862c40f4e345b1ed228bf447819d60169cce8a847eafde03943",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:33.712Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 100
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:33.812Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 432
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:34.251Z",
+      "queryHash": "61e1855a77f3c60b7e4d3ef834ffb3948178c3d7e88b1aeb07243276f10cfa54",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "datapub-prd-s3-bucket.s3.amazonaws.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:25:34.598Z",
+      "queryHash": "3857bd3c00245f322ec2a7f75f1971cfe3bc031a51b24cd657000bf6fb9228fc",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 233
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:03.591Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 112
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:03.704Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 221
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:03.929Z",
+      "queryHash": "d8aa2776af29060072ad4435e474c158da06a068b49f6da92022146b667ab181",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 377
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "datapub-prd-s3-bucket.s3.amazonaws.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:04.307Z",
+      "queryHash": "d0900720c1346b586c22f8d8a6c2466a0cb9e777cf8c9c8dbf347d10aa6d2cd2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:39.051Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 107
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:39.158Z",
+      "queryHash": "a018ed37f94088fcc7cc776bdac6c8b0d98c6f59139f48649bb2cf97131c58f5",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "use-land-property-data.service.gov.uk",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:39.392Z",
+      "queryHash": "5b498f4d363002fd90738844d5111f713238c53220928e1f0393292aeb35a47b",
+      "safeParamNames": [],
+      "httpStatus": 302,
+      "elapsedMs": 411
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "datapub-prd-s3-bucket.s3.amazonaws.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:26:39.804Z",
+      "queryHash": "4665fd72e7123b4a3611efe0921610bb1ef9d22629fb6427f9c5becec8e6a7b6",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:27:27.113Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:27:27.189Z",
+      "queryHash": "a9980d68e514f152c8db02be1ae09c1ace8cb0bf608cd4f775d9d4be4d25f193",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:27:34.186Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:27:34.248Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:27:42.241Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 4
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:08.074Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 125
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:31.770Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:37.810Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:37.864Z",
+      "queryHash": "a9980d68e514f152c8db02be1ae09c1ace8cb0bf608cd4f775d9d4be4d25f193",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:43.006Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:49.405Z",
+      "queryHash": "dd770054eb1d701c4b5ad18e67a018a916939917ff0044be62a9fedb89d644a2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:49.456Z",
+      "queryHash": "cf9e4cf7c18799f0e1451b606742aa6f8cfc0ea2374b5a97b29ff869e9cb35ee",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 7
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:49.458Z",
+      "queryHash": "c80c6be792e9622d0793e7bdf64cf38edf507cb047a5877ffbd4230d99ba7fba",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 5
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:49.460Z",
+      "queryHash": "154e0aaf35b39a6cf6677c83ba4f03947aaa23d391b6f73d723c797df13b1677",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:49.461Z",
+      "queryHash": "9338d5f86c9a9e2f86636f9cf3f467201590046c6b734079df81f292c4585eb9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:49.462Z",
+      "queryHash": "a9980d68e514f152c8db02be1ae09c1ace8cb0bf608cd4f775d9d4be4d25f193",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.963Z",
+      "queryHash": "a3ac7c1f2e230208c83a09e815fae2652f2cad563505d890dfad78dcd5da10b2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 44
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.967Z",
+      "queryHash": "d78d85de7d0d22002ec28e92600c4ca866a43c380d906080a87a9615d5df1e2e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 40
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.969Z",
+      "queryHash": "183998a3ed6fd1c590683d381a9b00a74031a0f0cadd42d8adbfc5ec41aa42d1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 38
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.970Z",
+      "queryHash": "1639a926ee8c187ddba450d9691283212b6cf381c70bed6c4ab4eb50f02901f3",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 37
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.971Z",
+      "queryHash": "1567492bc0ff7b9062c6f81c506d7a124cabb07759ab55662e000142a5c808e9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 36
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.972Z",
+      "queryHash": "55a82bfdfee40216f07b913784cbf093ff4bffcf580f7833383a558bffdf8eff",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 35
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.975Z",
+      "queryHash": "be990902928f9f6848cf4ca150959e09ba17cf06fb4606018aedcb6cf69156c7",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 32
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.976Z",
+      "queryHash": "65dc28234784f3cc464767742b8d29b8aa59f7f9e674f2115e1012341019ff9b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 31
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.977Z",
+      "queryHash": "287332c10ae21d02addbb6bfaed9eb974acc2f0ce55a3be9a5ce5bae20c153bc",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 30
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.979Z",
+      "queryHash": "0640ef24024b74df799bec850039c2f2e9a99720524efc38cf9bc1283cc7ad98",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 28
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.980Z",
+      "queryHash": "16cbe01c1c91d21b6c67cb8f02285a6f3b373f970c0e8e5957063a821c690ea5",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 27
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.982Z",
+      "queryHash": "ea01a433fe506da75adf2620915f0e809e9fe50a2f57ce8dabcb8243cf91a0fe",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 25
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.984Z",
+      "queryHash": "8b2d0f7498d67a63a6574f6fe91422702c340abb8c89d677b4a40eb9994a6240",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 23
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.986Z",
+      "queryHash": "63e6d36616bcd2f621c843dc43948f8c3adc057d955f5f0c3bdcf45cfa2c21a9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 21
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.989Z",
+      "queryHash": "2b310c4ebd288356567ff0b86f34b2d8cf7ebd9461a3ca4fae9f630d4dd4ef04",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 18
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.992Z",
+      "queryHash": "cd8f2925cdca9d5f73d72147041f4df4763fbece19f5f946820c52db0be5d213",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 15
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.993Z",
+      "queryHash": "f94e88dfc0850af23c2b385e8e5ee761e29485c56f403cbd74bf6aec42e8bf9b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 14
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.994Z",
+      "queryHash": "4bfc887727a8c56f43c26b71e5716df92e2c8eca528701a715c220ee21d27def",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 13
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.996Z",
+      "queryHash": "bcce0f47e5b02ada82302923ef4f5eb7c674d89487d0494692499eca667d85dd",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 11
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.997Z",
+      "queryHash": "385c43fb8c7b42fd78de60841073f7095c9f19a24bb5c50dbfd61309e8974d24",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 10
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:54.998Z",
+      "queryHash": "4ee73ed4747e17219ad04974610cb3b4eafa579640cf447761dd4f0c84037039",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 9
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.001Z",
+      "queryHash": "b599f819200e5d9b2bdfa336e3dafa70ed731855cd83444db2c344d8bc09007f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 6
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.002Z",
+      "queryHash": "9369f00e433d93d640010658464fca464e6759756c1b6ac2b647c80fafe49cd2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 5
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.004Z",
+      "queryHash": "dab826f7d503a074cb52d23442c4205159e67f3b6e2acbec3f6b6789a12d1a69",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.006Z",
+      "queryHash": "a04ed3deb5112a3d1b73b962d94db97f431173cfa69d92465d37f8cfc3f1313c",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.710Z",
+      "queryHash": "e36e35e2fe82104683602192864865bcd49bf9b96e50b5a9863d7d3b7638da48",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 19
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.712Z",
+      "queryHash": "d1068f1a8b43f215954b62a6963d2ed02193af60ebda55060c6f6454a3c0ae78",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 17
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.713Z",
+      "queryHash": "a7a2fd04df515144260819c05a663dc2efb9f18989f530b9970321c1723c10bc",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 16
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.715Z",
+      "queryHash": "6e3644f2285bd8b37dc47342d63eb9f10224b93dfa742bd16a20a9e8808a75c4",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 14
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.716Z",
+      "queryHash": "2fb5edc6ef92a61afb471154f86a918cfe6a8571820315f433fe6732fa299cf1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 13
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.718Z",
+      "queryHash": "05f66f73c26bf3231ca17d7b5fbfd5e1443afe3fc88c72f95319ffe4796a85ca",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 11
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.721Z",
+      "queryHash": "fc6039ba1594087292f58cae529e02bb43e2e659d00194175635b2670ff8eb1c",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 8
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.722Z",
+      "queryHash": "9b1ba4b1891841861f21763fab21c8f1aa121f29f10d9a97fe180fec2f614062",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 7
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.723Z",
+      "queryHash": "7e401860d3b4421068bca71d6d6abcac2e9613d9c0d37434de0abf96855df274",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 6
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.724Z",
+      "queryHash": "b73b1ce75820d445541a56dc2affcc8aa80d89bbfe70a90b5e2b879439364ae6",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 5
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.726Z",
+      "queryHash": "eceb52ab7d3bc27921078c61241e329aa39a2fa78859a1a77e65f59364516568",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.727Z",
+      "queryHash": "70fbc9d0108e396108e42c9e1a158555f4f26681174a128620db28b259910d9c",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "urbangametheory.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-12T01:28:55.728Z",
+      "queryHash": "047a0b74ca35af93209e205ad1989f2c8809596a3859a2b3d80e81746b9aa72d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "initialPolicyReevaluation": {
+    "policy": "parcel-availability-v1",
+    "reevaluatedAt": "2026-10-18T21:05:23+00:00",
+    "originalStatus": "technical-qualified",
+    "newStatus": "technical-qualified",
+    "requiredChecks": {
+      "classification": {
+        "passed": true,
+        "evidenceCount": 5
+      },
+      "exactIds": {
+        "passed": true,
+        "requestedCount": 2,
+        "returnedCount": 2,
+        "freshCollectedIds": 190,
+        "freshBatchSize": 80
+      },
+      "stableGeometry": {
+        "passed": true,
+        "independentRead": true,
+        "comparedCount": 190,
+        "collectedUniqueCount": 190
+      }
+    },
+    "originalChecksPreserved": true,
+    "originalCheckFlags": {
+      "classification": {
+        "passed": true,
+        "evidenceCount": 5
+      },
+      "exactIds": {
+        "passed": true,
+        "requestedCount": 2,
+        "returnedCount": 2,
+        "freshCollectedIds": 190,
+        "freshBatchSize": 80
+      },
+      "stableGeometry": {
+        "passed": true,
+        "independentRead": true,
+        "comparedCount": 190,
+        "collectedUniqueCount": 190
+      },
+      "explicitAbsence": {
+        "passed": true,
+        "returnedCount": 0,
+        "absentCount": 1
+      },
+      "sampling": {
+        "passed": true,
+        "capability": "bbox-13-cell",
+        "cellCount": 13,
+        "passCount": 2,
+        "rowCount": 524,
+        "sampleCentroidCell": {
+          "index": 4,
+          "dx": 0,
+          "dy": 0,
+          "bbox": [
+            -1.366,
+            53.503,
+            -1.365,
+            53.504
+          ],
+          "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+          "complete": true,
+          "featureCount": 7,
+          "ids": [
+            "GB-HMLR-BROWSER-v1-47929295",
+            "GB-HMLR-BROWSER-v1-47929298",
+            "GB-HMLR-BROWSER-v1-47929370",
+            "GB-HMLR-BROWSER-v1-47929405",
+            "GB-HMLR-BROWSER-v1-47929416",
+            "GB-HMLR-BROWSER-v1-47929417",
+            "GB-HMLR-BROWSER-v1-61411514"
+          ]
+        }
+      },
+      "completeness": {
+        "passed": true,
+        "completePasses": 2,
+        "cellCount": 14,
+        "pagingRequired": false,
+        "immutableSnapshot": true,
+        "snapshotBound": true,
+        "sourceDateBound": true,
+        "sourceDate": "2026-10-04",
+        "exactSampleIdsRepeated": true,
+        "explicitAbsenceComplete": true,
+        "completeSampleQueries": true,
+        "stableSampleIds": true
+      },
+      "binding": {
+        "passed": true,
+        "geometryBindingCoverage": "complete",
+        "unsurveyedM2": 0,
+        "acceptedNoiseAllowanceM2": 0.01,
+        "actParcelCount": 2
+      },
+      "metric": {
+        "passed": true,
+        "reportPath": "metric-report.json",
+        "inputSha256": "2d581746283f736f9d08fc3e49c1233f5f7fbb80e2f293ac4cf3f3d6697b3fb3",
+        "featureCount": 190,
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32630",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      }
+    },
+    "requestTimestampsPreserved": [
+      {
+        "startedAt": "2026-10-12T01:25:04.146Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:04.277Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:04.286Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:04.408Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:04.677Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:05.070Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:33.712Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:33.812Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:34.251Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:25:34.598Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:03.591Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:03.704Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:03.929Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:04.307Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:39.051Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:39.158Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:39.392Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:26:39.804Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:27:27.113Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:27:27.189Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:27:34.186Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:27:34.248Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:27:42.241Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:08.074Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:31.770Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:37.810Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:37.864Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:43.006Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:49.405Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:49.456Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:49.458Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:49.460Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:49.461Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:49.462Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.963Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.967Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.969Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.970Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.971Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.972Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.975Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.976Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.977Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.979Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.980Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.982Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.984Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.986Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.989Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.992Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.993Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.994Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.996Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.997Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:54.998Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.001Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.002Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.004Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.006Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.710Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.712Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.713Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.715Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.716Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.718Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.721Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.722Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.723Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.724Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.726Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.727Z"
+      },
+      {
+        "startedAt": "2026-10-12T01:28:55.728Z"
+      }
+    ],
+    "sourceArtifactHashes": {
+      "candidateSha256": "d5a54f558d379617c5b50edad662e0f3ee3a01482e41c66b07da59c43f519dc0",
+      "qualificationSha256BeforePolicyUpdate": "7dce71150888d298eba05535d1377cda5777154c93f7438c9b90f7ad8c36eaf1",
+      "cacheSha256": "2d581746283f736f9d08fc3e49c1233f5f7fbb80e2f293ac4cf3f3d6697b3fb3",
+      "metricReportSha256": "d8ea06dade3769c8c103f9964362c14a69232ab7640b342c533586e859700c00"
+    },
+    "currentnessFollowUp": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in a second pass before admission. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation.",
+    "offlineOnly": true,
+    "networkRequestsMade": 0
+  }
+}

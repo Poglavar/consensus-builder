@@ -9798,7 +9798,104 @@
         "leicester",
         "brighton",
         "hull",
-        "southend_on_sea"
+        "southend_on_sea",
+        "plymouth",
+        "torquay",
+        "bridgend",
+        "exeter",
+        "barry",
+        "newport",
+        "weston_super_mare",
+        "blackpool",
+        "ellesmere_port",
+        "chester",
+        "carleton",
+        "shrewsbury",
+        "hereford",
+        "widnes",
+        "runcorn",
+        "wigan",
+        "warrington",
+        "crewe",
+        "bath",
+        "oswaldtwistle",
+        "gloucester",
+        "kidderminster",
+        "burnley",
+        "worcester_gb",
+        "cheltenham",
+        "stafford",
+        "cannock",
+        "redditch",
+        "keighley",
+        "elland",
+        "swindon",
+        "huddersfield",
+        "fazeley",
+        "wakefield",
+        "burton_on_trent",
+        "darlington",
+        "nuneaton",
+        "chesterfield",
+        "hoyland",
+        "eastleigh",
+        "sunderland",
+        "rotherham",
+        "hinckley",
+        "pontefract",
+        "newbury",
+        "rugby",
+        "kirkby_in_ashfield",
+        "loughborough",
+        "hartlepool",
+        "mansfield",
+        "doncaster",
+        "basingstoke",
+        "york",
+        "reading",
+        "aylesbury",
+        "farnham",
+        "high_wycombe",
+        "bracknell",
+        "maidenhead",
+        "bognor_regis",
+        "kettering",
+        "corby",
+        "scunthorpe",
+        "walton_on_thames",
+        "guildford",
+        "lincoln_gb",
+        "littlehampton",
+        "luton",
+        "bedford",
+        "hemel_hempstead",
+        "st_albans",
+        "horsham",
+        "peterborough",
+        "crawley",
+        "stevenage",
+        "reigate",
+        "grimsby",
+        "harlow",
+        "cambridge",
+        "royal_tunbridge_wells",
+        "polegate",
+        "brentwood",
+        "grays",
+        "northfleet",
+        "basildon",
+        "chelmsford",
+        "maidstone",
+        "braintree",
+        "hastings",
+        "colchester",
+        "ashford",
+        "clacton_on_sea",
+        "folkestone",
+        "norwich",
+        "margate",
+        "great_yarmouth",
+        "lowestoft"
       ],
       "defaultForCity": true,
       "maxFeatures": 5000,
@@ -9838,7 +9935,104 @@
         "leicester": 32630,
         "brighton": 32630,
         "hull": 32630,
-        "southend_on_sea": 32631
+        "southend_on_sea": 32631,
+        "plymouth": 32630,
+        "torquay": 32630,
+        "bridgend": 32630,
+        "exeter": 32630,
+        "barry": 32630,
+        "newport": 32630,
+        "weston_super_mare": 32630,
+        "blackpool": 32630,
+        "ellesmere_port": 32630,
+        "chester": 32630,
+        "carleton": 32630,
+        "shrewsbury": 32630,
+        "hereford": 32630,
+        "widnes": 32630,
+        "runcorn": 32630,
+        "wigan": 32630,
+        "warrington": 32630,
+        "crewe": 32630,
+        "bath": 32630,
+        "oswaldtwistle": 32630,
+        "gloucester": 32630,
+        "kidderminster": 32630,
+        "burnley": 32630,
+        "worcester_gb": 32630,
+        "cheltenham": 32630,
+        "stafford": 32630,
+        "cannock": 32630,
+        "redditch": 32630,
+        "keighley": 32630,
+        "elland": 32630,
+        "swindon": 32630,
+        "huddersfield": 32630,
+        "fazeley": 32630,
+        "wakefield": 32630,
+        "burton_on_trent": 32630,
+        "darlington": 32630,
+        "nuneaton": 32630,
+        "chesterfield": 32630,
+        "hoyland": 32630,
+        "eastleigh": 32630,
+        "sunderland": 32630,
+        "rotherham": 32630,
+        "hinckley": 32630,
+        "pontefract": 32630,
+        "newbury": 32630,
+        "rugby": 32630,
+        "kirkby_in_ashfield": 32630,
+        "loughborough": 32630,
+        "hartlepool": 32630,
+        "mansfield": 32630,
+        "doncaster": 32630,
+        "basingstoke": 32630,
+        "york": 32630,
+        "reading": 32630,
+        "aylesbury": 32630,
+        "farnham": 32630,
+        "high_wycombe": 32630,
+        "bracknell": 32630,
+        "maidenhead": 32630,
+        "bognor_regis": 32630,
+        "kettering": 32630,
+        "corby": 32630,
+        "scunthorpe": 32630,
+        "walton_on_thames": 32630,
+        "guildford": 32630,
+        "lincoln_gb": 32630,
+        "littlehampton": 32630,
+        "luton": 32630,
+        "bedford": 32630,
+        "hemel_hempstead": 32630,
+        "st_albans": 32630,
+        "horsham": 32630,
+        "peterborough": 32630,
+        "crawley": 32630,
+        "stevenage": 32630,
+        "reigate": 32630,
+        "grimsby": 32630,
+        "harlow": 32631,
+        "cambridge": 32631,
+        "royal_tunbridge_wells": 32631,
+        "polegate": 32631,
+        "brentwood": 32631,
+        "grays": 32631,
+        "northfleet": 32631,
+        "basildon": 32631,
+        "chelmsford": 32631,
+        "maidstone": 32631,
+        "braintree": 32631,
+        "hastings": 32631,
+        "colchester": 32631,
+        "ashford": 32631,
+        "clacton_on_sea": 32631,
+        "folkestone": 32631,
+        "norwich": 32631,
+        "margate": 32631,
+        "great_yarmouth": 32631,
+        "lowestoft": 32631
       },
       "cityScopes": {
         "manchester": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Manchester. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
@@ -11211,7 +11405,8 @@
       "cityIds": [
         "livermore",
         "davis",
-        "madera"
+        "madera",
+        "modesto"
       ],
       "discovery": {
         "jurisdiction": {
@@ -11231,7 +11426,8 @@
       "metricSridByCity": {
         "livermore": 32610,
         "davis": 32610,
-        "madera": 32610
+        "madera": 32610,
+        "modesto": 32610
       }
     },
     {
@@ -12941,7 +13137,8 @@
         "gwalior",
         "bhopal",
         "jabalpur",
-        "satna"
+        "satna",
+        "sagar"
       ],
       "scope": "Cadastral parcels of Madhya Pradesh from the MPBhulekh_MP_Survey_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
       "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
@@ -12961,7 +13158,8 @@
         "gwalior": 32644,
         "bhopal": 32643,
         "jabalpur": 32644,
-        "satna": 32644
+        "satna": 32644,
+        "sagar": 32644
       },
       "metricSrid": 32643
     },
@@ -13211,7 +13409,8 @@
         "coimbatore",
         "tiruppur",
         "erode",
-        "vellore"
+        "vellore",
+        "madurai"
       ],
       "scope": "Cadastral parcels of Tamil Nadu from the TNGIS_TN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
       "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
@@ -13229,7 +13428,8 @@
         "coimbatore": 32643,
         "tiruppur": 32643,
         "erode": 32643,
-        "vellore": 32644
+        "vellore": 32644,
+        "madurai": 32644
       },
       "metricSrid": 32643
     },
@@ -13648,7 +13848,8 @@
       "countryCode": "IN",
       "stateCode": "AP",
       "cityIds": [
-        "tirupati"
+        "tirupati",
+        "vijayawada"
       ],
       "scope": "Cadastral parcels of Andhra Pradesh from the APSAC_AP_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
       "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
@@ -13663,7 +13864,8 @@
         "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
       ],
       "metricSridByCity": {
-        "tirupati": 32644
+        "tirupati": 32644,
+        "vijayawada": 32644
       },
       "metricSrid": 32644
     }
@@ -13672,7 +13874,11 @@
     {
       "id": "oss-wfs",
       "name": "Croatian cadastral parcels in the app database (DGU OSS)",
-      "cityIds": ["zagreb", "split", "sibenik"],
+      "cityIds": [
+        "zagreb",
+        "split",
+        "sibenik"
+      ],
       "idPrefix": "HR-",
       "ownership": {
         "adapter": "hr-oss",
@@ -13683,7 +13889,9 @@
     {
       "id": "parcel-ba",
       "name": "Buenos Aires cadastral parcels in the app database",
-      "cityIds": ["buenos_aires"],
+      "cityIds": [
+        "buenos_aires"
+      ],
       "idPrefix": "AR-",
       "ownership": {
         "adapter": "ar-caba",
@@ -13694,7 +13902,9 @@
     {
       "id": "parcel-bg",
       "name": "Belgrade cadastral parcels in the app database (RGZ)",
-      "cityIds": ["belgrade"],
+      "cityIds": [
+        "belgrade"
+      ],
       "idPrefix": "SR-",
       "ownership": {
         "adapter": "rs-bg",
@@ -13705,7 +13915,9 @@
     {
       "id": "parcel-lj",
       "name": "Ljubljana cadastral parcels in the app database (GURS)",
-      "cityIds": ["ljubljana"],
+      "cityIds": [
+        "ljubljana"
+      ],
       "idPrefix": "SI-",
       "ownership": {
         "adapter": "si-gurs",
@@ -13716,7 +13928,9 @@
     {
       "id": "parcel-nyc",
       "name": "New York tax parcels in the app database (NYS)",
-      "cityIds": ["new_york"],
+      "cityIds": [
+        "new_york"
+      ],
       "idPrefix": "US-NY-",
       "ownership": {
         "adapter": "us-nyc",

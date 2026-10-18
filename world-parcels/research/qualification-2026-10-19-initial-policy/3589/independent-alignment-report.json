@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "passed": false,
+  "method": "Independent all-pairs geodesic vertex distances after native PROJ transformation; native polygon intersections measured separately in declared metre coordinates.",
+  "candidateSha256": "8c7fe0c0ab7c9b3702d1ba190246f1f6637ded9fa1e8949687d25184e1a8080a",
+  "cacheSha256": "9128e6536b49d657750c68b2aced0f2cdfab259779dc1079b3c0293ebe0ebf93",
+  "evidenceSha256": "1a2b24c0d18bf670ff262d57e85132ca34414629fae416480c13d7490c25ffb6",
+  "metadataSha256": "b1668fe14db19bd4f6ea1ac11bce81e2510c794e5b9b033a209ac2476269ae75",
+  "nativeSha256": "333ece9232a0dc4edbca145f45f91fd84cee1f215facb0bd9f760e851470dddc",
+  "originalReportSha256": "a314b124e03dedf0d3e7570dd8a17a35de8c9d51c9959df83fbb265cd45446ff",
+  "sourceId": "us-ca-calfire-statewide-parcels",
+  "cityCode": "3589",
+  "nativeCrs": "EPSG:6414",
+  "nativeDatum": "NAD83 (National Spatial Reference System 2011)",
+  "wireAxisOrder": "east-north",
+  "outputCrs": "EPSG:4326",
+  "operation": "Inverse of California Albers + NAD83(2011) to WGS 84 (1) + axis order change (2D)",
+  "pipeline": "proj=pipeline step inv proj=aea lat_0=0 lon_0=-120 lat_1=34 lat_2=40.5 x_0=0 y_0=-4000000 ellps=GRS80 step proj=unitconvert xy_in=rad xy_out=deg",
+  "accuracyM": 2.0,
+  "bestOperationAvailable": true,
+  "ballparkAllowed": false,
+  "requiredGrids": [],
+  "publisherOperationEstablished": false,
+  "toleranceM": 0.25,
+  "maxVertexDifferenceM": 1.276541743493535,
+  "samples": [
+    {
+      "parcelId": "US-CA-STATEWIDE-06099~111009001000",
+      "nativeVertices": 5,
+      "outputVertices": 5,
+      "bidirectionalVertexDifferenceM": 1.276541743493535
+    },
+    {
+      "parcelId": "US-CA-STATEWIDE-06099~111049001000",
+      "nativeVertices": 6,
+      "outputVertices": 6,
+      "bidirectionalVertexDifferenceM": 1.2765357603687342
+    }
+  ],
+  "nativeOverlapChecks": [
+    {
+      "parcelIds": [
+        "US-CA-STATEWIDE-06099~111009001000",
+        "US-CA-STATEWIDE-06099~111049001000"
+      ],
+      "nativePlanarIntersectionM2": 2.5669200125630893
+    }
+  ],
+  "reproducesOriginalVertexResult": true,
+  "sourceGeometryChanged": false,
+  "fittedOffsetApplied": false,
+  "reason": "Published native CRS and wire format are established; the provider WGS84 datum operation remains unidentified, and independent native recomputation exceeds tolerance."
+}

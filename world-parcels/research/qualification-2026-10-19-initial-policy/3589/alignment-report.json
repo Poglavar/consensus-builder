@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "passed": false,
+  "sourceId": "us-ca-calfire-statewide-parcels",
+  "cityCode": "3589",
+  "contractSha256": "3791be9ba1ed19b21e94d6e9f5d15438146cc07ddfc18679c85191e3c2ed7f4f",
+  "evidenceSha256": "4562c7d25c8e9e9d24454f98435ce7154564090ad3140aa96428fde59c690c19",
+  "metadataSha256": "b1668fe14db19bd4f6ea1ac11bce81e2510c794e5b9b033a209ac2476269ae75",
+  "nativeSha256": "333ece9232a0dc4edbca145f45f91fd84cee1f215facb0bd9f760e851470dddc",
+  "cacheSha256": "9128e6536b49d657750c68b2aced0f2cdfab259779dc1079b3c0293ebe0ebf93",
+  "nativeCrs": "EPSG:6414",
+  "nativeAxisOrder": "east-north",
+  "outputCrs": "EPSG:4326",
+  "coordinateOperation": "Inverse of California Albers + NAD83(2011) to WGS 84 (1) + axis order change (2D)",
+  "operationPipeline": "proj=pipeline step inv proj=aea lat_0=0 lon_0=-120 lat_1=34 lat_2=40.5 x_0=0 y_0=-4000000 ellps=GRS80 step proj=unitconvert xy_in=rad xy_out=deg",
+  "operationAccuracyM": 2.0,
+  "bestOperationAvailable": true,
+  "ballparkAllowed": false,
+  "toleranceM": 0.25,
+  "maxVertexDifferenceM": 1.276541743493535,
+  "featureCount": 2,
+  "samples": [
+    {
+      "parcelId": "US-CA-STATEWIDE-06099~111009001000",
+      "nativeVertexCount": 5,
+      "adapterVertexCount": 5,
+      "maxVertexDifferenceM": 1.276541743493535,
+      "maxBoundaryDifferenceM": 1.2765413880164151
+    },
+    {
+      "parcelId": "US-CA-STATEWIDE-06099~111049001000",
+      "nativeVertexCount": 6,
+      "adapterVertexCount": 6,
+      "maxVertexDifferenceM": 1.2765357603687342,
+      "maxBoundaryDifferenceM": 1.2765352496898148
+    }
+  ],
+  "maxBoundaryDifferenceM": 1.2765413880164151,
+  "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+  "operationChoiceUnresolved": true,
+  "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction.",
+  "sourceGeometryChanged": false,
+  "fittedOffsetApplied": false,
+  "sourceGeoreferencing": "unverified",
+  "limitations": [
+    "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+    "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+  ]
+}
