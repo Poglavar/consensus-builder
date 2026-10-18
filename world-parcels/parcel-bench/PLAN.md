@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-15 (bounded reconstruction, margin-0 and matched-donor comparisons complete; defaults unchanged; GPU closed). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (RGB normalization trial frozen and ready for rented GPU execution; defaults unchanged). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -27,6 +27,16 @@ split was scored in either comparison. Every v2 arm must be refit from ImageNet 
 selection tiles appeared in prior full-pool training. Those old checkpoints cannot validate v2. The visibility audit describes image
 support but does not measure a recoverability ceiling. More data, image quality, training and reconstruction
 remain hypotheses to compare; a nonsignificant gain does not identify which one limits performance.
+
+The next isolated trial is frozen in `gpu/plans/selection-v4-normalization.json` (SHA-256
+`fe834629bdf2f4367ea25c0655dbb1a30241db6a1605e3830b9ea64d68ad1700`). It compares three fresh
+30-epoch Zagreb fits using the actual pretrained ConvNeXt RGB mean/std against the immutable raw-RGB
+controls. OSM channels, margin-2 targets, initialization, source-only checkpoint/configuration selection,
+and schedule stay matched. Primary evidence is Zagreb-to-Split selection transfer, with the existing
+F1 and precision/interior/area-recall guards; Zagreb selection is secondary. The $1 rental cap includes
+setup and recovery, with a one-hour training timeout. No final split or untouched city is scored.
+`gpu/normalization_preflight.py` proves the actual 512 px encoder input transformation on CUDA;
+`layered/normalization_analysis.py` checks the recovered artifacts and paired block comparison.
 
 Croatia is the best case for imagery: low-altitude aircraft orthophotos at 0.15–0.5 m. Most of the world has
 only satellite imagery (0.3–0.5 m commercial at best, 1–10 m free, haze, off-nadir lean, older dates), so every

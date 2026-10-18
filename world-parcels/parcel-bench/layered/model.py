@@ -9,6 +9,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from rgb_normalization import definition as normalization_definition, validate_definition
+
 OUTPUTS = ('boundary', 'interior', 'distance')
 
 
@@ -19,8 +21,19 @@ def conv_block(in_channels, out_channels):
 
 
 class ParcelNet(nn.Module):
-    def __init__(self, encoder='convnext_tiny', in_chans=6, pretrained=True, decoder_widths=(256, 128, 64, 32, 32)):
+    def __init__(self, encoder='convnext_tiny', in_chans=6, pretrained=True, decoder_widths=(256, 128, 64, 32, 32),
+                 rgb_normalization=None):
         super().__init__()
+        self.rgb_normalization = (normalization_definition('none') if rgb_normalization is None
+                                  else validate_definition(rgb_normalization))
+        if self.rgb_normalization['mode'] == 'pretrained':
+            if in_chans < 3:
+                raise ValueError('RGB normalization requires at least three input channels')
+            # These constants live in checkpoint metadata, not learned weights. Moving the model moves
+            # them too; normalization never mutates the raw RGB/OSM cache or changes OSM dropout.
+            for key in ('mean', 'std'):
+                self.register_buffer(f'_rgb_{key}', torch.tensor(self.rgb_normalization[key], dtype=torch.float32)
+                                     .reshape(1, 3, 1, 1), persistent=False)
         self.encoder = timm.create_model(encoder, pretrained=pretrained, features_only=True, in_chans=in_chans)
         channels = list(self.encoder.feature_info.channels())
         widths = list(decoder_widths)[:len(channels) - 1]
@@ -37,6 +50,8 @@ class ParcelNet(nn.Module):
 
     def forward(self, x):
         size = x.shape[-2:]
+        if self.rgb_normalization['mode'] == 'pretrained':
+            x = torch.cat(((x[:, :3] - self._rgb_mean) / self._rgb_std, x[:, 3:]), dim=1)
         features = self.encoder(x)
         out = features[-1]
         for block, skip in zip(self.blocks, reversed(features[:-1])):

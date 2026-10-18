@@ -32,6 +32,7 @@ from train import RECIPE_FILES, TileIndex, evaluate, load_cache, log, pick_devic
 from exposure import validate_exposure  # noqa: E402
 from imagery import CASES, perturb_rgb  # noqa: E402
 from target_config import cache_namespace, recorded_targets  # noqa: E402
+from rgb_normalization import recorded as recorded_normalization  # noqa: E402
 
 METRICS = ('parcel_f1', 'precision', 'recall', 'area_weighted_recall', 'boundary_f1', 'overlap_fraction')
 
@@ -240,12 +241,14 @@ def main(argv=None):
                 validate_exposure(state.get('exposure'), index.manifest)
             results = read_json(run / 'results.json')
             definition = recorded_targets(state, read_json(run / 'recipe.json'), results=results)
+            normalization = recorded_normalization(state, read_json(run / 'recipe.json'), results=results)
             config = results['best']['config']
             match = re.fullmatch(r't([0-9.]+)-seeds([01])-hard([01])', config)
             if not match:
                 raise ValueError(f'unknown frozen reconstruction config: {config}')
             configs = [{'threshold': float(match[1]), 'interior_seeds': match[2] == '1', 'hard_barrier': match[3] == '1'}]
-            model = ParcelNet(state['encoder'], in_chans=state['in_chans'], pretrained=False).to(device)
+            model = ParcelNet(state['encoder'], in_chans=state['in_chans'], pretrained=False,
+                              rgb_normalization=normalization).to(device)
             model.load_state_dict(state['model'])
             size, recon_size = state['size'], state['recon_size']
             del state

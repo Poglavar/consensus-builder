@@ -38,10 +38,11 @@ from model import ParcelNet  # noqa: E402
 from reconstruct import RECON_DEFAULTS, reconstruct  # noqa: E402
 from targets import load_image, osm_channels, tile_targets  # noqa: E402
 from target_config import cache_namespace, from_args, recorded_targets, target_definition  # noqa: E402
+from rgb_normalization import definition as normalization_definition, recorded as recorded_normalization  # noqa: E402
 
 DEFAULT_MANIFEST = HERE.parent / 'manifests' / 'zagreb-v1.json'
 RECIPE_FILES = [HERE / 'train.py', HERE / 'model.py', HERE / 'targets.py', HERE / 'reconstruct.py',
-                HERE / 'exposure.py', HERE / 'imagery.py', HERE / 'target_config.py',
+                HERE / 'exposure.py', HERE / 'imagery.py', HERE / 'target_config.py', HERE / 'rgb_normalization.py',
                 HERE.parent.parent / 'guess-spike' / 'guess.py']
 
 
@@ -260,6 +261,7 @@ def evaluate(model, index, cache, ids, configs, device, *, recon_size, workers, 
     }
     if target_spec is not None:
         summary['target_definition'] = target_spec
+    summary['rgb_normalization'] = model.rgb_normalization
     if out_dir is not None:
         out_dir.mkdir(parents=True, exist_ok=True)
         for tile_id in ids:
@@ -294,7 +296,8 @@ def load_init(path, encoder, size, manifest):
     donor = read_json(donor) if donor.exists() else {}
     info = {'checkpoint': str(path), 'sha256': digest.hexdigest()[:16], 'epoch': state.get('epoch'),
             **{key: donor.get(key) for key in ('manifest_version', 'pool', 'n_train', 'seed', 'recipe_hash')}}
-    return state['model'], info, state.get('exposure')
+    normalization = recorded_normalization(state, read_json(Path(path).parent / 'recipe.json'), results=donor)
+    return state['model'], info, state.get('exposure'), normalization
 
 
 def make_scheduler(optimizer, total_steps, warmup):
@@ -325,8 +328,13 @@ def train(args):
     subset_seed = args.subset_seed if args.subset_seed is not None else args.seed
     train_ids = subset_ids(index.ids('train'), args.train_tiles, subset_seed)
     selection_ids = index.ids('selection')[:args.selection_tiles] if args.selection_tiles else index.ids('selection')
-    init_weights, init, ancestor = (load_init(args.init, args.encoder, args.size, index.manifest)
-                                     if args.init else (None, None, 'imagenet'))
+    init_weights, init, ancestor, init_normalization = (load_init(args.init, args.encoder, args.size, index.manifest)
+                                                        if args.init else (None, None, 'imagenet', None))
+    normalization = (init_normalization if init_normalization is not None and args.rgb_normalization is None
+                     else normalization_definition(args.rgb_normalization or 'none', args.encoder))
+    if init_normalization is not None and normalization != init_normalization:
+        raise ValueError('fine-tuning must preserve the donor RGB normalization')
+    args.rgb_normalization = normalization['mode']
     exposure = index.exposure(train_ids, selection_ids, ancestor)
     validate_exposure(exposure, index.manifest)
     recipe = {'args': json.loads(json.dumps({k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()})),
@@ -335,7 +343,7 @@ def train(args):
               'dataset_sha256': hashlib.sha256((args.dataset / 'manifest.json').read_bytes()).hexdigest(),
               'pool': index.pool_name, 'n_train': len(train_ids), 'subset_seed': subset_seed, 'reconstruction': RECON_DEFAULTS,
               'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids, 'exposure': exposure,
-              'target_definition': definition}
+              'target_definition': definition, 'rgb_normalization': normalization}
     resume_state = None
     if args.resume and not (out / 'recipe.json').exists():
         raise ValueError('--resume requires the original recipe.json')
@@ -348,6 +356,8 @@ def train(args):
         resume_state = torch.load(out / 'last.pt', map_location='cpu', weights_only=False)
         if recorded_targets(resume_state, read_json(out / 'recipe.json')) != definition:
             raise ValueError('resume target definition differs')
+        if recorded_normalization(resume_state, read_json(out / 'recipe.json')) != normalization:
+            raise ValueError('resume RGB normalization differs')
         validate_exposure(resume_state.get('exposure'), index.manifest)
         if resume_state.get('exposure') != exposure:
             raise ValueError('resume checkpoint does not match the recorded training exposure')
@@ -364,7 +374,8 @@ def train(args):
     recipe['pos_weight'] = float(pos_weight)
     (out / 'recipe.json').write_text(json.dumps(recipe, indent=2, sort_keys=True) + '\n')
 
-    model = ParcelNet(args.encoder, in_chans=6, pretrained=not (args.no_pretrained or args.init)).to(device)
+    model = ParcelNet(args.encoder, in_chans=6, pretrained=not (args.no_pretrained or args.init),
+                      rgb_normalization=normalization).to(device)
     if init_weights is not None:
         model.load_state_dict(init_weights)
         log(f"initialised from {args.init} (epoch {init['epoch'] + 1}, trained on {init['pool']}, n={init['n_train']})")
@@ -423,7 +434,7 @@ def train(args):
         state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
                  'scaler': scaler.state_dict(), 'epoch': epoch, 'best': best, 'encoder': args.encoder, 'in_chans': 6,
                  'size': args.size, 'recon_size': args.recon_size, 'exposure': exposure,
-                 'target_definition': definition}
+                 'target_definition': definition, 'rgb_normalization': normalization}
         if (epoch + 1) % args.eval_every == 0 or epoch + 1 == args.epochs:
             t1 = time.time()
             summary = evaluate(model, index, cache, selection_ids, configs, device, recon_size=args.recon_size,
@@ -445,7 +456,8 @@ def train(args):
                                                               'manifest_version': index.manifest['version'],
                                                               'pool': index.pool_name, 'n_train': len(train_ids),
                                                               'seed': args.seed, 'subset_seed': subset_seed, 'init': init,
-                                                              'target_definition': definition},
+                                                              'target_definition': definition,
+                                                              'rgb_normalization': normalization},
                                                              indent=2, sort_keys=True) + '\n')
                 log(f"new best checkpoint saved (epoch {epoch + 1}, parcel F1 {best['parcel_f1']:.3f})")
         # Save after evaluation so resume restores the newest checkpoint choice too.
@@ -475,6 +487,8 @@ def evaluate_only(args):
     definition = recorded_targets(state, read_json(checkpoint.parent / 'recipe.json'),
                                   {key: getattr(args, key) for key in ('cap_m', 'dilate_px', 'margin_px')},
                                   results=results)
+    normalization = recorded_normalization(state, read_json(checkpoint.parent / 'recipe.json'),
+                                            results=results, override=args.rgb_normalization)
     config = results['best']['config']
     ids = index.ids(args.split)[:args.selection_tiles] if args.selection_tiles else index.ids(args.split)
     cache_dir = args.output.parent / 'cache' / cache_namespace(definition)
@@ -487,7 +501,8 @@ def evaluate_only(args):
             metres_per_px = (bbox[2] - bbox[0]) / state['size']
             cache[tile_id] = dict(cache[tile_id], image=degrade_image(cache[tile_id]['image'].astype(np.float32),
                                                                        metres_per_px, args.degrade_gsd).astype(np.float16))
-    model = ParcelNet(state['encoder'], in_chans=state['in_chans'], pretrained=False).to(device)
+    model = ParcelNet(state['encoder'], in_chans=state['in_chans'], pretrained=False,
+                      rgb_normalization=normalization).to(device)
     model.load_state_dict(state['model'])
     match = re.fullmatch(r't([0-9.]+)-seeds([01])-hard([01])', config)
     configs = [{'threshold': float(match.group(1)), 'interior_seeds': match.group(2) == '1',
@@ -516,6 +531,9 @@ def main(argv=None):
     parser.add_argument('--output', type=Path, required=True, help='run directory (checkpoints, journal, results)')
     parser.add_argument('--encoder', default='convnext_tiny')
     parser.add_argument('--no-pretrained', action='store_true')
+    parser.add_argument('--rgb-normalization', choices=('none', 'pretrained'),
+                        help='training default none; pretrained normalizes RGB only using the encoder configuration; '
+                             'evaluation always restores the fitted values')
     parser.add_argument('--size', type=int, default=512, help='model input/target grid')
     parser.add_argument('--recon-size', type=int, default=256, help='reconstruction grid (the baseline uses 256)')
     parser.add_argument('--cap-m', type=float, help='distance target cap in metres (training default 12; evaluation uses fitted value)')

@@ -1,0 +1,316 @@
+{
+  "comparison": {
+    "confirmation": "No final or untouched-city scoring from this arm; separate frozen transfer comparison required.",
+    "epochs": 30,
+    "gates": {
+      "advancement_f1_interval_low_strict_min": 0.0,
+      "advancement_mean_f1_delta_min": 0.01,
+      "failed_or_inconclusive": "No default replacement. Failure closes this normalization recipe; a source-only gain cannot rescue failed transfer.",
+      "fixed_config_correctness_f1_interval_low_strict_min": -0.01,
+      "fresh_confirmation_mean_f1_delta_min": 0.02,
+      "guard_interval_low_strict_min": {
+        "area_weighted_recall": -0.01,
+        "interior_recall": -0.01,
+        "precision": -0.02
+      },
+      "mean_after_dropping_best_seed_strict_min": 0.0,
+      "median_seed_f1_delta_strict_min": 0.0
+    },
+    "guards": [
+      "precision",
+      "interior_recall",
+      "area_weighted_recall"
+    ],
+    "initialization": "Fresh original pinned ImageNet initialization for each seed; no donor initialization or continuation from the old controls.",
+    "maximum_rental_charge_usd": 1.0,
+    "maximum_rental_hours": 1.75,
+    "maximum_rental_rate_usd_per_hour": 0.5,
+    "maximum_training_hours": 1.0,
+    "maximum_transfer_charge_usd": 0.1,
+    "primary": "Zagreb-to-Split selection transfer, with checkpoint/configuration chosen solely on Zagreb selection.",
+    "reconstruction": "Original six source-only configs {.3,.5,.7} x interior seeds {off,on}, hard off, seed rim0, 120m2 merge; same shared implementation verified against every saved native control.",
+    "required_outputs": [
+      "All three seed metrics, checkpoints, source-only configuration choices and complete training journals",
+      "Paired whole-geographic-block intervals, clipped/interior counts and density strata",
+      "Production 512 px raw-cache and encoder-input proof, preserving OSM and initial learned parameters",
+      "Pinned runtime, input, source and local/remote output hashes; final splits remain unscored"
+    ],
+    "secondary": "Zagreb own-city selection; a source-only gain cannot rescue a failed primary transfer gate.",
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "statistics": {
+      "grouping": "layered.imagery_study.geographic_blocks and group_scores before bootstrap.bootstrap",
+      "level": 0.95,
+      "limits": "Conditional on the fitted seeds and repeatedly used selection geography; not selection-adjusted, not uncertainty across fitted seeds or new cities.",
+      "pairing": "Same sampled blocks across all arms and three fixed fitted seeds; preserve repeated-block multiplicity.",
+      "replicates": 2000,
+      "required_self_checks": [
+        "same-arm paired deltas are exactly zero",
+        "duplicate block draws retain duplicate weight"
+      ],
+      "seed": 0,
+      "unit": "whole touching 2x2 geographic block"
+    }
+  },
+  "decision_basis": {
+    "completed_work": "The reconstructed and matched-donor studies are already incorporated. Neither passed the general advancement gate.",
+    "default": "Raw RGB remains the default regardless of this reused-selection development result; any final confirmation requires a separately frozen decision.",
+    "next_treatment": "The remaining isolated preprocessing trial: raw RGB is currently passed to an ImageNet-pretrained ConvNeXt encoder."
+  },
+  "frozen_inputs": {
+    "dataset_manifest_sha256": "e2d7799672e34b148cd09b9e3fdf0bc7f2ae646d9ed392b19b5e0f7627855b31",
+    "eligible_training_tiles": 1623,
+    "manifests": {
+      "split-v2": "c697361f87e01a370db855fa9676fff3224c7ec3768a8966ceaf2faad32111f8",
+      "zagreb-v2": "c774064ccc09d126b0490b97b7e8fded27bbba698c03a0f4bc417b4f7adabd1b"
+    },
+    "recipe_hash": "29c8f10720f75e57",
+    "selection_tiles_per_city": 48
+  },
+  "name": "selection-v4-normalization",
+  "purpose": "Three fresh RGB-normalized fits against immutable three-seed raw-RGB controls. Normalize RGB with the actual pretrained configuration, leaving OSM, targets, schedule and source-only selection unchanged. No final or new-city scoring.",
+  "reference_recipe_hash": "48de5c48dab295de",
+  "reference_runs": [
+    {
+      "checkpoint_sha256": "cde3617f0b5ce3afc35845ec1f7d856fe1952f9531dc55878796bc2f32e1cfe5",
+      "directory": "output/runs/selection-v2-resolution/zagreb-base-n1623-s1",
+      "results_sha256": "57b709166014f21d75406edbc74b66db364a65a8291a195bf36bef0347b73872",
+      "run": "zagreb-base-n1623-s1",
+      "training_recipe_sha256": "b8260efdd55a3873916bec308c084f437e73aed939d7469825b2872f48ae8060"
+    },
+    {
+      "checkpoint_sha256": "1da23f04f0c1cacf5afc695411e9037f595f4ac3c84d72d8dae9fb86bf299e20",
+      "directory": "output/runs/selection-v2-resolution/zagreb-base-n1623-s2",
+      "results_sha256": "ebff32769d5c7458bb69aac2c0406e75c1b3213a64f7ee3c5a3f8582809bc2bb",
+      "run": "zagreb-base-n1623-s2",
+      "training_recipe_sha256": "05bcaa735e8f2827e557f562405486b28c20947fe8dba7531a423dcca4783e30"
+    },
+    {
+      "checkpoint_sha256": "f2132647c58e9c012300c0b7e9be2479ed70b240e6bede3468b6a09e75326529",
+      "directory": "output/runs/selection-v2-resolution/zagreb-base-n1623-s3",
+      "results_sha256": "26bd4893eaeae5fa0a99da87846d3cc7925a8dd67cada042a8cb14ce6b6b01e9",
+      "run": "zagreb-base-n1623-s3",
+      "training_recipe_sha256": "84f1d9a9de92a022b77c4602ddc504478bf746afc7062659bd690f38eed9377b"
+    }
+  ],
+  "rgb_normalization": {
+    "format": 1,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "mode": "pretrained",
+    "pretrained_model": "timm/convnext_tiny.in12k_ft_in1k",
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "runs": [
+    {
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ],
+      "name": "zagreb-normalized-n1623-s1",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "1",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--margin-px",
+        "2",
+        "--cap-m",
+        "12",
+        "--dilate-px",
+        "1",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0",
+        "--encoder",
+        "convnext_tiny",
+        "--size",
+        "512",
+        "--recon-size",
+        "256",
+        "--batch",
+        "6",
+        "--lr",
+        "0.0003",
+        "--encoder-lr-scale",
+        "0.3",
+        "--osm-dropout",
+        "0.2",
+        "--thresholds",
+        "0.3,0.5,0.7",
+        "--interior-seeds",
+        "both",
+        "--hard-barrier",
+        "off",
+        "--rgb-normalization",
+        "pretrained"
+      ]
+    },
+    {
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ],
+      "name": "zagreb-normalized-n1623-s2",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "2",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--margin-px",
+        "2",
+        "--cap-m",
+        "12",
+        "--dilate-px",
+        "1",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0",
+        "--encoder",
+        "convnext_tiny",
+        "--size",
+        "512",
+        "--recon-size",
+        "256",
+        "--batch",
+        "6",
+        "--lr",
+        "0.0003",
+        "--encoder-lr-scale",
+        "0.3",
+        "--osm-dropout",
+        "0.2",
+        "--thresholds",
+        "0.3,0.5,0.7",
+        "--interior-seeds",
+        "both",
+        "--hard-barrier",
+        "off",
+        "--rgb-normalization",
+        "pretrained"
+      ]
+    },
+    {
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ],
+      "name": "zagreb-normalized-n1623-s3",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "3",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--margin-px",
+        "2",
+        "--cap-m",
+        "12",
+        "--dilate-px",
+        "1",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0",
+        "--encoder",
+        "convnext_tiny",
+        "--size",
+        "512",
+        "--recon-size",
+        "256",
+        "--batch",
+        "6",
+        "--lr",
+        "0.0003",
+        "--encoder-lr-scale",
+        "0.3",
+        "--osm-dropout",
+        "0.2",
+        "--thresholds",
+        "0.3,0.5,0.7",
+        "--interior-seeds",
+        "both",
+        "--hard-barrier",
+        "off",
+        "--rgb-normalization",
+        "pretrained"
+      ]
+    }
+  ],
+  "runtime": {
+    "critical_packages": {
+      "huggingface_hub": "1.30.0",
+      "numpy": "2.5.3",
+      "opencv-python-headless": "5.0.0.93",
+      "pillow": "12.3.0",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "safetensors": "0.8.0",
+      "scikit-image": "0.26.0",
+      "scipy": "1.18.1",
+      "shapely": "2.2.0",
+      "timm": "1.0.30",
+      "torch": "2.13.0+cu126",
+      "torchvision": "0.28.0+cu126",
+      "tqdm": "4.70.0"
+    },
+    "pretrained_file": "model.safetensors",
+    "pretrained_file_sha256": "a1aefa409b513cf209b085424eb3efffe4e4a9f511491bc2c12ea35209e6bb95",
+    "pretrained_repository": "timm/convnext_tiny.in12k_ft_in1k",
+    "pretrained_revision": "aa096f03029c7f0ec052013f64c819b34f8ad790",
+    "reference_environment": "output/runs/integration-v2/runtime/package-versions.json"
+  },
+  "sources": {
+    "../guess-spike/guess.py": "58aecc9723ff2a8df5f58d18852c46f5ca9967405856829e24e6d8d18375b156",
+    "bootstrap.py": "c587ca5f77256ee3d66575c0ce3f93336c4674fcbdfa603392aa0c36264dfd47",
+    "gpu/normalization_preflight.py": "9c9a63e256e049dfed60fcc1177e3fcfa1b130df036f9aa03f848e8eda08ad6a",
+    "gpu/queue_runner.py": "bec14e9c876c55e5ee2716607a2dd937e460cc8e1e11e609e1f1b2b6577cf0af",
+    "layered/exposure.py": "916959536c1b67689d93d17022bb9f6ac855778bc0c06a64d182f1a88647c9b5",
+    "layered/imagery.py": "4f138f24f4faa9e03ea8350d302a4ce926c6b6ade5e12fe024d34ced9dd6d1e4",
+    "layered/imagery_study.py": "9d6d81148d43afa48d2d614fe9c8f8d51208d95af6eb472f760756c5959b85c9",
+    "layered/margin_analysis.py": "ba5ead3b31347ac65128b08aea3554fd5535a40f694eef1d6dab5cd42d8c9904",
+    "layered/model.py": "2b62ef67a1761a3fcbbe18ed3bbf834ad8006e3ca7f9194f81817f7962202e2c",
+    "layered/normalization_analysis.py": "3a9bd04123b07ed535a4398ff557300d274f07d327985f3e4c6fc91680177ba6",
+    "layered/reconstruct.py": "a3917ef87bcaa5bd7c209b69729f47973ae039aa789878dfce0151b4fbc7a23f",
+    "layered/reconstruction_analysis.py": "38435a11fd5f7971d4efc918bc770d315e1cdbafaf2dff3f1240120d1873e7f8",
+    "layered/rgb_normalization.py": "be017f9a063e96a8ab3fb121747c58fc249d9c0ddee7ad32fc9b640891ecc8e0",
+    "layered/target_config.py": "b661f4f947d02f64dd5ae4a03d6087168280f0803a235fc31eade084d7b571d6",
+    "layered/targets.py": "36a356af3d38a501d0e1d6d1fd7e5810b963334c26da35fed07a8d05cc08a5e5",
+    "layered/train.py": "f5e68fe747322b4dd112430eb1d1fc406505f9cdf49df8371ef52b1be9c2590c",
+    "ledger.py": "b34850e162998cc7c0996eef099762adcc74bb4f8f6a572fcb0485dc37fc9571",
+    "score.py": "32d78ae9c99af89fe8252e421f8c661b867ff185c661f3fa5f9935c9889843f0"
+  },
+  "target_definition": {
+    "cap_m": 12.0,
+    "dilate_px": 1,
+    "format": 1,
+    "margin_px": 2,
+    "size": 512
+  }
+}
