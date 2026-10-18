@@ -24,8 +24,8 @@
         const proposal = global.getProposalByIdOrHash?.(key) || null;
         if (!proposal || !proposal.roadProposal || !proposal.roadProposal.definition) return null;
         if (!isApplied(proposal, proposal.roadProposal)) return null;
-        // A minted road is node-editable too — the drag forks it into your local copy
-        // (updateLocalCorridorGeometry detaches its published pointers), never touching the NFT.
+        // A minted road is node-editable too — the drag saves a counterproposal
+        // (updateLocalCorridorGeometry), never touching the published road or the NFT.
         return proposal;
     }
 
@@ -677,7 +677,7 @@
             return;
         }
         const grouped = targetsByProposal(targets);
-        // The selected road first, so its replacement is the one the editor re-selects; the roads it
+        // The selected road first, so the road holding the edit is the one the editor re-selects; the roads it
         // meets follow.
         const order = [...grouped.keys()].sort((a, b) => (a === activeKey ? -1 : b === activeKey ? 1 : 0));
         let anyMoved = false;

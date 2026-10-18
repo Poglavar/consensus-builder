@@ -530,7 +530,6 @@
         },
         "sections": {
             "detailsTitle": "Detalles de la propuesta",
-            "detailsCopy": "Describe claramente el reemplazo. La propuesta original permanece inmutable.",
             "parcelsTitle": "Parcelas afectadas",
             "parcelsCopy": "Usa la selección actual del mapa o edita directamente los ID de parcela.",
             "ownershipTitle": "Propiedad",
@@ -538,7 +537,10 @@
             "termsTitle": "Condiciones",
             "termsCopy": "Ajusta la financiación, el vencimiento, la reducción y el depósito.",
             "designTitle": "Detalles del diseño",
-            "designCopy": "Edita la geometría y los parámetros canónicos en la herramienta de diseño vinculada al mapa."
+            "designCopy": "Edita la geometría y los parámetros canónicos en la herramienta de diseño vinculada al mapa.",
+            "detailsCopyNew": "Describe qué hace esta propuesta para que otros puedan seguirla.",
+            "detailsCopyEdit": "Describe qué hace esta propuesta. Al guardar se actualiza en el mismo lugar; conserva su id.",
+            "detailsCopyCounterproposal": "Describe en qué se diferencia esta contrapropuesta. La propuesta publicada se queda como está."
         },
         "approval": {
             "title": "Propiedad y aprobación",
@@ -683,7 +685,6 @@
         },
         "review": {
             "title": "Revisar cambios",
-            "immutableNotice": "La publicación crea una nueva propuesta inmutable. El origen no se modifica ni se elimina.",
             "newProposal": "Propuesta nueva",
             "noSource": "Sin propuesta de origen",
             "details": "Detalles",
@@ -696,7 +697,9 @@
             "lensMembers": "{{count}} miembro(s) de la lente: {{keys}}",
             "noApproval": "Sin configuración de aprobación",
             "rights": "Derechos de {{parcels}} parcela(s), {{owners}} propietario(s), de {{source}}.",
-            "noRights": "Sin datos de propiedad."
+            "noRights": "Sin datos de propiedad.",
+            "inPlaceNotice": "Al guardar, esta propuesta se actualiza en el mismo lugar. Conserva su id.",
+            "counterproposalNotice": "Al guardar se crea una contrapropuesta. La propuesta publicada no se cambia ni se elimina."
         },
         "validation": {
             "valid": "Lista para revisar",
@@ -705,7 +708,7 @@
             "issues": {
                 "missing-name": "Añade un nombre de propuesta.",
                 "missing-parcels": "Selecciona al menos una parcela.",
-                "missing-description": "Una descripción ayudará a entender el reemplazo.",
+                "missing-description": "Una descripción ayudará a otros a entender esta propuesta.",
                 "missing-goal": "Elige un tipo de propuesta o un cambio de propiedad.",
                 "invalid-centerline": "El corredor necesita un segmento válido de dos puntos.",
                 "invalid-width": "Define un ancho de corredor mayor que cero.",
@@ -1655,7 +1658,7 @@
                 "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta.",
                 "editApproval": "Editar propiedad y aprobación",
                 "addApproval": "Añadir propiedad y aprobación",
-                "editApprovalHint": "Abre el editor en la pestaña Aprobación. Guardar crea una propuesta de reemplazo; las aceptaciones de esta no se trasladan.",
+                "editApprovalHint": "Abre el editor en la pestaña Aprobación. Al guardar, esta propuesta se actualiza en el mismo lugar; las aceptaciones dadas hasta ahora se borran.",
                 "applyFailed": "No se pudo aplicar esta propuesta: {{reason}}",
                 "applyFailedUnknown": "No se pudo aplicar esta propuesta. Inténtalo de nuevo.",
                 "applyUnavailable": "Esta propuesta no se puede aplicar al mapa.",
@@ -1664,7 +1667,8 @@
                 "unapplyFailed": "No se pudo quitar esta propuesta del mapa: {{reason}}",
                 "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
                 "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
-                "betOutcome": "Apostar al resultado"
+                "betOutcome": "Apostar al resultado",
+                "editApprovalHintCounterproposal": "Abre el editor en la pestaña Aprobación. Al guardar se crea una contrapropuesta; las aceptaciones de esta no se trasladan."
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -2127,7 +2131,7 @@
             "importGeoJsonHint": "Ejes de calles como LineString (.geojson) desde QGIS o cualquier SIG.",
             "importShapefile": "Shapefile",
             "importShapefileHint": "Ejes de calles como shapefile de Esri (.zip con .shp, .shx y .dbf).",
-            "crossSectionHint": "Edita los carriles y anchos de esta calle. Una calle publicada se edita como tu copia local; la versión publicada no cambia.",
+            "crossSectionHint": "Edita los carriles y anchos de esta calle. El cambio de una calle publicada se guarda como contrapropuesta; la versión publicada no cambia.",
             "finishButton": "Terminar carretera (F)",
             "cancelButton": "Cancelar carretera (Esc)",
             "widthLabel": "Ancho de la carretera:",
@@ -2219,7 +2223,9 @@
                 "other": "{{count}} cruces de calle"
             },
             "snapsToStreet": "Se une a {{name}}",
-            "snapsToUnnamedStreet": "Se une a una calle existente"
+            "snapsToUnnamedStreet": "Se une a una calle existente",
+            "editNotFound": "Esta vía no está entre las propuestas de la ciudad del mapa. Cambia a la ciudad donde se creó y vuelve a intentarlo.",
+            "savedAsCounterproposal": "La vía publicada queda como está; tu cambio se guardó como contrapropuesta."
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -2505,7 +2511,7 @@
             "openError": "No se pudo abrir el editor de sección transversal.",
             "subtitle": "El ancho total es la suma de los carriles: añade o quita un carril y la vía se ensancha o se estrecha",
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
-            "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
+            "proposalSubtitle": "Previsualiza los cambios aquí y luego guárdalos en esta vía",
             "totalWidth": "Ancho total",
             "dragSeam": "Arrastra para cambiar el ancho de los carriles a ambos lados",
             "scopeLabel": "Se aplica a",
@@ -2515,7 +2521,6 @@
             "extendsCut": "Corta más profundo en un edificio ya recortado (ámbar en el mapa)",
             "cutsStructures": "Corta parques/plazas/lagos aplicados",
             "cancel": "Cancelar",
-            "save": "Guardar como nueva propuesta",
             "applyDrawing": "Aplicar al dibujo",
             "addLane": "Añadir carril",
             "addLaneOfType": "Añadir: {{lane}} ({{width}} m)",
@@ -2574,8 +2579,7 @@
             "noFitWinds": "No cabe ni desplazándola — hay espacio, pero el corredor se curva, así que una vía recta de {{width}} m no puede seguirlo. Cambia al modo de dibujo para curvar la vía por el espacio.",
             "widenInto": "Ensanchar hacia: {{side}}",
             "widenIntoLabel": "Tomar el ancho añadido ({{delta}} m) de un solo lado",
-            "fitMinted": "Esta propuesta está minteada y es inmutable — aplica la sección a un dibujo para moverla.",
-            "moveFailed": "No se pudo mover la vía (una propuesta minteada es inmutable).",
+            "moveFailed": "No se pudo mover la vía.",
             "movedStatus": "Vía desplazada {{move}}.",
             "narrowest": "Sección más estrecha: {{width}} m de espacio total (marcado en el mapa)",
             "whatIfDemolished": "Sin el edificio del lado {{side}}: construir hasta {{width}} m",
@@ -2645,7 +2649,9 @@
             "takeNoFootprint": "No se pudo calcular el nuevo terreno, así que no se pueden listar las parcelas que ocuparía.",
             "takeNoStoredLand": "Esta vía no tiene un terreno guardado con el que comparar, así que no se pueden listar las parcelas.",
             "takeApply": "Aplicar",
-            "keepEditing": "Seguir editando"
+            "keepEditing": "Seguir editando",
+            "saveFailed": "No se pudo guardar la sección transversal. Tus cambios siguen aquí.",
+            "saveCounterproposal": "Guardar como contrapropuesta"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",

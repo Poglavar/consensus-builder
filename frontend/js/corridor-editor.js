@@ -834,7 +834,7 @@ function corridorEditorCorridorBodyHtml() {
         : `<span class="corridor-stats-delta corridor-stats-delta--over">${corridorEditorI18n('modal.corridor.overCorridor', 'Too wide for the corridor by {{delta}} m', { delta: corridorEditorFormatMeters(-delta) })}</span>`;
 
     // Fit: only a single scoped segment can be moved as one piece (pick a segment on a network).
-    // A minted road can be moved like any other — the move forks it into your local copy.
+    // A minted road can be moved like any other — the move is saved as a counterproposal.
     const singleSegment = clearance.samplesBySegment.filter(samples => samples.length).length === 1;
     const fit = corridorFitShift(flat, width, { maxDistance: CORRIDOR_CLEARANCE_MAX, margin: 0.05 });
     let fitHtml = '';
@@ -1317,6 +1317,8 @@ async function corridorEditorApplyFitShift(shiftMeters) {
         corridorEditorRender();
         return;
     }
+    // A published road's move was saved as a counterproposal; the editor follows it.
+    if (typeof updated === 'string') state.proposalKey = updated;
     // The record now holds the moved road — and the carried cross-section, which is therefore no
     // longer a preview: it is what the editor opened from as far as the next Apply is concerned.
     const fresh = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(state.proposalKey) : null;
@@ -2481,17 +2483,16 @@ async function corridorEditorSave() {
     }
     const state = corridorEditorState;
     if (state.saving) return;
-    // Settle the informational collision indicator before minting the replacement snapshot.
+    // Settle the informational collision indicator before the edit is saved.
     if (corridorEditorObstacleTimer) {
         clearTimeout(corridorEditorObstacleTimer);
         corridorEditorObstacleTimer = null;
         corridorEditorRunObstacleCheck();
     }
-    const { source, profile } = state;
-    // Read before the editor closes; the mutator is what the commit below writes.
+    const { source } = state;
+    // The mutator is what the commit below writes.
     const mutator = corridorEditorProfileMutator(corridorEditorSaveRequest(state));
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
-    const sourceName = source.title || source.name || sourceKey;
 
     // A width change moves the land the road takes: name the parcels it adds and frees and ask, BEFORE
     // the editor closes. "Keep editing" goes back to the open editor with the preview as it was.
@@ -2515,25 +2516,31 @@ async function corridorEditorSave() {
             return;
         }
     }
-    corridorEditorClose();
-
-    // Editing creates a new local snapshot and parks the source; one replay applies the new order.
-    if (typeof window.updateLocalCorridorGeometry === 'function') {
-        const updated = await window.updateLocalCorridorGeometry(sourceKey, mutator);
-        if (updated) {
-            if (typeof updateStatus === 'function') updateStatus('Cross-section updated.');
-            return;
-        }
+    // Save straight from the editor (road-drawing.js updateLocalCorridorGeometry): one's own local
+    // road in place, a published or minted one as a counterproposal. The editor stays open until the
+    // save lands; a refused save has already been rolled back, so the reason is shown here with the
+    // user's cross-section still in the editor, ready to change and save again.
+    state.saving = true;
+    const saveButton = document.querySelector('.corridor-editor-save');
+    if (saveButton) saveButton.disabled = true;
+    let failure = null;
+    let updated = false;
+    try {
+        updated = await window.updateLocalCorridorGeometry(sourceKey, mutator, {
+            onFailure: reason => { failure = reason; }
+        });
+    } finally {
+        state.saving = false;
     }
-
-    const reopened = typeof copyCorridorIntoNewProposal === 'function'
-        && await copyCorridorIntoNewProposal(source, sourceKey, sourceName, { profile });
-    if (!reopened) {
-        console.warn('[corridorEditor] could not reopen the placed road as a drawing', sourceKey);
-        if (typeof showProposalAlertMessage === 'function') {
-            showProposalAlertMessage('corridor_drawing_unavailable', "Could not reopen this road's drawing. Switch to the city it was created in, then try again.");
-        }
+    if (corridorEditorState !== state) return;
+    if (updated) {
+        corridorEditorClose();
+        if (typeof updateStatus === 'function' && (updated === true || String(updated) === String(sourceKey))) updateStatus('Cross-section updated.');
+        return;
     }
+    console.warn('[corridorEditor] the cross-section was not saved', sourceKey, failure || '(no reason)');
+    state.notice = failure || corridorEditorI18n('modal.corridor.saveFailed', 'The cross-section could not be saved. Your changes are still here.');
+    corridorEditorRender();
 }
 
 function corridorEditorOpenOverlay() {
@@ -2603,7 +2610,7 @@ function corridorEditorOpenOverlayBody() {
         wide: true, modes: ['2d'], onCancel: corridorEditorCancel,
         content: `<p class="corridor-editor-subtitle">${drawing
             ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
-            : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then apply them to an editable road drawing')}</p>
+            : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then save them to this road')}</p>
             ${scopeHtml}${drawing ? '' : '<div class="corridor-editor-stretches-host"></div>'}
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
@@ -2616,7 +2623,10 @@ function corridorEditorOpenOverlayBody() {
                 <button type="button" class="btn corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
                 <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
                     ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
-                    : corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')}</button>
+                    // A placed road saves directly: in place, or as a counterproposal of a published one.
+                    : (window.ProposalLineage?.isPublished?.(corridorEditorState.source)
+                        ? corridorEditorI18n('modal.corridor.saveCounterproposal', 'Save as counterproposal')
+                        : corridorEditorI18n('proposalDrafts.actions.saveChanges', 'Save changes'))}</button>
             `
     });
     if (!corridorEditorSession) throw new Error('Another geometry editor owns the map.');

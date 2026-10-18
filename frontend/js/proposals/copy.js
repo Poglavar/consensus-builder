@@ -13,7 +13,7 @@
 // selection, so simply re-selecting the source's parcels reproduces it).
 const COPY_BUILDING_GOALS = ['buildings', 'row', 'parcelBased', 'single'];
 // Goals whose editor can reopen on an existing design, so a copy stays fully editable.
-// road-track has its own path (it reopens the drawing tool directly, see copyCorridorIntoNewProposal).
+// road-track is not listed: a road's node and cross-section editors save it directly.
 const COPY_EDITABLE_GOALS = [...COPY_BUILDING_GOALS, 'reparcellization'];
 
 function copyDeepClone(value) {
@@ -102,36 +102,6 @@ function isTrackProposal(source) {
     const definition = roadDefinitionOf(source);
     if (corridorIsTrack(definition)) return true;
     return source && source.primaryType === 'Track';
-}
-
-// Copying a corridor reopens its drawing tool on the existing centerline rather than the create dialog:
-// the whole point of copying a road or a track is to keep drawing it — extend it from either end, or
-// (for roads) branch off it. The dialog comes later, when the user presses C, prefilled by
-// finishRoadDrawing()/finishTrackDrawing() from the copy source we stash here.
-async function copyCorridorIntoNewProposal(source, sourceKey, sourceName, options = {}) {
-    const definition = roadDefinitionOf(source);
-    const centerline = roadCenterlineOf(definition);
-    if (!centerline.length) return false;
-
-    const isTrack = isTrackProposal(source);
-    const metadata = definition.metadata || {};
-    const seed = isTrack
-        ? { centerline: copyDeepClone(centerline), width: definition.width, tunnels: copyDeepClone(definition.tunnels || []) }
-        : buildCorridorDrawingSeed(definition, options.profile);
-    if (!seed) return false;
-    if (isTrack) {
-        seed.trackSpeed = metadata.trackSpeed;
-        seed.trackMinRadius = metadata.trackMinRadius;
-    }
-
-    const copySource = {
-        proposalId: String(sourceKey),
-        name: sourceName,
-        prefill: buildCopyPrefill(source)
-    };
-    return typeof startSeededCorridorDrawing === 'function'
-        ? startSeededCorridorDrawing(isTrack ? 'track' : 'road', seed, copySource)
-        : false;
 }
 
 // Put the source proposal's geometry back into the pending globals that createProposal() reads.
@@ -344,7 +314,6 @@ function copyProposalI18n(key, fallback, params) {
 }
 
 if (typeof window !== 'undefined') {
-    window.copyCorridorIntoNewProposal = copyCorridorIntoNewProposal;
     window.getPendingBuildingSeedFor = getPendingBuildingSeedFor;
     window.pendingBuildingSeedFeatures = pendingBuildingSeedFeatures;
     window.buildBlockifySeed = buildBlockifySeed;

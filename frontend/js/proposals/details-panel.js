@@ -475,13 +475,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         : '';
     // A road's cross-section is edited like its nodes are: directly, on the applied road the click
     // selected (proposals/road-actions-model.js decides when). Unlike Fork it does not clone the
-    // proposal; it goes through updateLocalCorridorGeometry, which on a published/minted road edits
-    // the local copy and detaches its published pointers — the server's and the chain's copies stay
-    // as they were. That is the node handles' rule, not a new one.
+    // proposal; it goes through updateLocalCorridorGeometry, which edits one's own local road in
+    // place and saves an edit of a published/minted road as a counterproposal, leaving the published
+    // road as it is. That is the node handles' rule, not a new one.
     const roadActionFacts = (proposalKey && window.RoadActions)
         ? window.RoadActions.factsFor(fullProposal || proposal, { proposalKey: String(proposalKey), applied: appliedState === true })
         : null;
-    const crossSectionHint = tProposal('panel.road.crossSectionHint', 'Edit this road\'s lanes and widths. A published road is edited as your local copy; the published version stays unchanged.');
+    const crossSectionHint = tProposal('panel.road.crossSectionHint', 'Edit this road\'s lanes and widths. An edit of a published road is saved as a counterproposal; the published version stays unchanged.');
     const crossSectionButtonHtml = (roadActionFacts && window.RoadActionsModel
         && window.RoadActionsModel.isActionAvailable('crossSection', roadActionFacts))
         ? `
@@ -507,8 +507,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
-    // The editor's Approval tab (rights, rule, lens) for a proposal the editor can open; saving there
-    // creates a replacement record, so acceptances of this one do not carry over.
+    // The editor's Approval tab (rights, rule, lens) for a proposal the editor can open. Saving there
+    // updates one's own local record in place and forks a counterproposal of a published one
+    // (proposals/lineage.js editsInPlace); either way the acceptances given so far do not carry over.
     const approvalEditable = proposalKey
         && typeof editProposalApproval === 'function'
         && typeof getProposalEditCapability === 'function'
@@ -518,7 +519,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? `
         <div class="approval-edit-action">
             <button type="button" class="btn btn-sm btn-edit-approval"
-                title="${safeAgentText(tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.'))}"
+                title="${safeAgentText(window.ProposalLineage?.editsInPlace?.(fullProposal || proposal) === true
+                    ? tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving updates this proposal in place; acceptances given so far are cleared.')
+                    : tProposal('panel.proposal.actions.editApprovalHintCounterproposal', 'Opens the editor on its Approval tab. Saving creates a counterproposal; acceptances of this one do not carry over.'))}"
                 onclick="editProposalApproval(${inlineJsArg(proposalKey)})">
                 <i class="fas fa-user-check" aria-hidden="true"></i> ${hasApprovalSetup
                     ? tProposal('panel.proposal.actions.editApproval', 'Edit ownership and approval')

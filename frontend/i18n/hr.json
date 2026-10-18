@@ -530,7 +530,6 @@
         },
         "sections": {
             "detailsTitle": "Detalji prijedloga",
-            "detailsCopy": "Jasno opišite zamjenu. Izvorni prijedlog ostaje nepromjenjiv.",
             "parcelsTitle": "Obuhvaćene čestice",
             "parcelsCopy": "Upotrijebite trenutačni odabir na karti ili izravno uredite ID-ove čestica.",
             "ownershipTitle": "Vlasništvo",
@@ -538,7 +537,10 @@
             "termsTitle": "Uvjeti",
             "termsCopy": "Prilagodite financiranje, istek, opadanje i polog.",
             "designTitle": "Pojedinosti dizajna",
-            "designCopy": "Uredite izvornu geometriju i parametre u postojećem alatu povezanom s kartom."
+            "designCopy": "Uredite izvornu geometriju i parametre u postojećem alatu povezanom s kartom.",
+            "detailsCopyNew": "Opišite što ovaj prijedlog radi kako bi ga drugi mogli pratiti.",
+            "detailsCopyEdit": "Opišite što ovaj prijedlog radi. Spremanje ga ažurira na mjestu; zadržava svoj id.",
+            "detailsCopyCounterproposal": "Opišite po čemu se ovaj protuprijedlog razlikuje. Objavljeni prijedlog ostaje kakav jest."
         },
         "approval": {
             "title": "Vlasništvo i odobravanje",
@@ -683,7 +685,6 @@
         },
         "review": {
             "title": "Pregled promjena",
-            "immutableNotice": "Objava stvara novi nepromjenjivi prijedlog. Izvor se ne mijenja niti uklanja.",
             "newProposal": "Novi prijedlog",
             "noSource": "Nema izvornog prijedloga",
             "details": "Detalji",
@@ -696,7 +697,9 @@
             "lensMembers": "Članova leće: {{count}} ({{keys}})",
             "noApproval": "Nema postavki odobravanja",
             "rights": "Prava za čestica: {{parcels}}, vlasnika: {{owners}}, izvor: {{source}}.",
-            "noRights": "Nema podataka o vlasništvu."
+            "noRights": "Nema podataka o vlasništvu.",
+            "inPlaceNotice": "Spremanje ažurira ovaj prijedlog na mjestu. Zadržava svoj id.",
+            "counterproposalNotice": "Spremanje stvara protuprijedlog. Objavljeni prijedlog se ne mijenja niti uklanja."
         },
         "validation": {
             "valid": "Spremno za pregled",
@@ -705,7 +708,7 @@
             "issues": {
                 "missing-name": "Dodajte naziv prijedloga.",
                 "missing-parcels": "Odaberite barem jednu česticu.",
-                "missing-description": "Opis će drugima pomoći razumjeti zamjenu.",
+                "missing-description": "Opis će drugima pomoći da razumiju ovaj prijedlog.",
                 "missing-goal": "Odaberite vrstu prijedloga ili promjenu vlasništva.",
                 "invalid-centerline": "Koridor treba valjani segment s dvije točke.",
                 "invalid-width": "Postavite širinu koridora veću od nule.",
@@ -1642,7 +1645,7 @@
                 "apply_disabled_for_type": "Primjena je onemogućena za ovu vrstu prijedloga.",
                 "editApproval": "Uredi vlasništvo i odobravanje",
                 "addApproval": "Dodaj vlasništvo i odobravanje",
-                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Spremanje stvara zamjenski prijedlog; prihvaćanja ovog prijedloga se ne prenose.",
+                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Spremanje ažurira ovaj prijedlog na mjestu; dosad dana prihvaćanja brišu se.",
                 "applyFailed": "Nije moguće primijeniti ovaj prijedlog: {{reason}}",
                 "applyFailedUnknown": "Nije moguće primijeniti ovaj prijedlog. Pokušajte ponovno.",
                 "applyUnavailable": "Ovaj prijedlog nije moguće primijeniti na kartu.",
@@ -1651,7 +1654,8 @@
                 "unapplyFailed": "Ovaj prijedlog nije moguće ukloniti s karte: {{reason}}",
                 "unapplyFailedUnknown": "Ovaj prijedlog nije moguće ukloniti s karte. Pokušajte ponovno.",
                 "unapplyUnavailable": "Ovaj prijedlog nije moguće ukloniti s karte.",
-                "betOutcome": "Kladi se na ishod"
+                "betOutcome": "Kladi se na ishod",
+                "editApprovalHintCounterproposal": "Otvara uređivač na kartici Odobravanje. Spremanje stvara protuprijedlog; prihvaćanja ovog prijedloga se ne prenose."
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",
@@ -2114,7 +2118,7 @@
             "importGeoJsonHint": "Osi cesta kao LineString geometrije (.geojson) iz QGIS-a ili bilo kojeg GIS-a.",
             "importShapefile": "Shapefile",
             "importShapefileHint": "Osi cesta kao Esri shapefile (.zip sa .shp, .shx i .dbf).",
-            "crossSectionHint": "Uredi trake i širine ove ceste. Objavljena cesta uređuje se kao tvoja lokalna kopija; objavljena verzija ostaje nepromijenjena.",
+            "crossSectionHint": "Uredi trake i širine ove ceste. Izmjena objavljene ceste sprema se kao protuprijedlog; objavljena verzija ostaje nepromijenjena.",
             "finishButton": "Završi cestu (F)",
             "cancelButton": "Otkaži cestu (Esc)",
             "widthLabel": "Širina ceste:",
@@ -2211,7 +2215,9 @@
                 "other": "{{count}} prijelaza ceste"
             },
             "snapsToStreet": "Spaja se na {{name}}",
-            "snapsToUnnamedStreet": "Spaja se na postojeću ulicu"
+            "snapsToUnnamedStreet": "Spaja se na postojeću ulicu",
+            "editNotFound": "Ova cesta nije među prijedlozima grada na karti. Prebacite se na grad u kojem je nastala pa pokušajte ponovno.",
+            "savedAsCounterproposal": "Objavljena cesta ostaje kakva jest; vaša izmjena spremljena je kao protuprijedlog."
         },
         "roadAnalysis": {
             "title": "Analiza širine ceste",
@@ -2471,7 +2477,7 @@
             "openError": "Nije moguće otvoriti uređivač poprečnog presjeka.",
             "subtitle": "Ukupna širina zbroj je traka — dodate li traku, cesta se proširi; uklonite li je, suzi se",
             "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
-            "proposalSubtitle": "Ovdje pregledajte promjene pa ih primijenite na crtež ceste koji se može uređivati",
+            "proposalSubtitle": "Ovdje pregledajte promjene, a zatim ih spremite na ovu cestu",
             "totalWidth": "Ukupna širina",
             "dragSeam": "Povucite za promjenu širine traka s obje strane",
             "scopeLabel": "Primjenjuje se na",
@@ -2481,7 +2487,6 @@
             "extendsCut": "Dodatno zasijeca već presječenu zgradu (žuto na karti)",
             "cutsStructures": "Presijeca postavljene parkove/trgove/jezera",
             "cancel": "Odustani",
-            "save": "Spremi kao novi prijedlog",
             "applyDrawing": "Primijeni na crtež",
             "addLane": "Dodaj traku",
             "addLaneOfType": "Dodaj: {{lane}} ({{width}} m)",
@@ -2540,8 +2545,7 @@
             "noFitWinds": "Ne stane ni pomicanjem — prostora ima, ali koridor zavija, pa ga ravna cesta od {{width}} m ne može pratiti. Prijeđite na crtanje da zakrivite cestu kroz prostor.",
             "widenInto": "Proširi prema: {{side}}",
             "widenIntoLabel": "Uzmi dodanu širinu ({{delta}} m) s jedne strane",
-            "fitMinted": "Prijedlog je mintan i nepromjenjiv — primijenite presjek na crtež da biste ga pomaknuli.",
-            "moveFailed": "Cestu nije bilo moguće pomaknuti (mintani prijedlog je nepromjenjiv).",
+            "moveFailed": "Cestu nije bilo moguće pomaknuti.",
             "movedStatus": "Cesta pomaknuta {{move}}.",
             "narrowest": "Najuži presjek: {{width}} m ukupnog prostora (označeno na karti)",
             "whatIfDemolished": "Bez zgrade na strani {{side}}: gradnja do {{width}} m",
@@ -2615,7 +2619,9 @@
             "takeNoFootprint": "Novi obuhvat nije bilo moguće izračunati, pa se čestice koje bi zauzeo ne mogu popisati.",
             "takeNoStoredLand": "Ova cesta nema spremljeni obuhvat za usporedbu, pa se čestice ne mogu popisati.",
             "takeApply": "Primijeni",
-            "keepEditing": "Nastavi uređivati"
+            "keepEditing": "Nastavi uređivati",
+            "saveFailed": "Poprečni presjek nije bilo moguće spremiti. Vaše promjene su i dalje ovdje.",
+            "saveCounterproposal": "Spremi kao protuprijedlog"
         },
         "corridorDraft": {
             "title": "Nespremljeni nacrt trase",

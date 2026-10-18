@@ -530,7 +530,6 @@
         },
         "sections": {
             "detailsTitle": "Proposal details",
-            "detailsCopy": "Describe the replacement clearly. The source proposal stays immutable.",
             "parcelsTitle": "Affected parcels",
             "parcelsCopy": "Use the current map selection, or edit the parcel IDs directly.",
             "ownershipTitle": "Ownership",
@@ -538,7 +537,10 @@
             "termsTitle": "Terms",
             "termsCopy": "Adjust financing, expiry, decay, and deposit terms.",
             "designTitle": "Design details",
-            "designCopy": "Edit canonical geometry and parameters in the existing map-aware design tool."
+            "designCopy": "Edit canonical geometry and parameters in the existing map-aware design tool.",
+            "detailsCopyNew": "Describe what this proposal does, so others can follow it.",
+            "detailsCopyEdit": "Describe what this proposal does. Saving updates it in place; it keeps its id.",
+            "detailsCopyCounterproposal": "Describe how this counterproposal differs. The published proposal stays as it is."
         },
         "approval": {
             "title": "Ownership and approval",
@@ -683,7 +685,6 @@
         },
         "review": {
             "title": "Review changes",
-            "immutableNotice": "Publishing creates a new immutable proposal. The source is not changed or removed.",
             "newProposal": "New proposal",
             "noSource": "No source proposal",
             "details": "Details",
@@ -696,7 +697,9 @@
             "lensMembers": "{{count}} lens member(s): {{keys}}",
             "noApproval": "No approval setup",
             "rights": "Rights for {{parcels}} parcel(s), {{owners}} owner(s), from {{source}}.",
-            "noRights": "No ownership data."
+            "noRights": "No ownership data.",
+            "inPlaceNotice": "Saving updates this proposal in place. It keeps its id.",
+            "counterproposalNotice": "Saving creates a counterproposal. The published proposal is not changed or removed."
         },
         "validation": {
             "valid": "Ready to review",
@@ -705,7 +708,7 @@
             "issues": {
                 "missing-name": "Add a proposal name.",
                 "missing-parcels": "Select at least one parcel.",
-                "missing-description": "A description will help others understand the replacement.",
+                "missing-description": "A description will help others understand this proposal.",
                 "missing-goal": "Choose a proposal type or an ownership change.",
                 "invalid-centerline": "The corridor needs a valid two-point segment.",
                 "invalid-width": "Set a corridor width greater than zero.",
@@ -1608,7 +1611,7 @@
                 "apply_disabled_for_type": "Apply is disabled for this proposal type.",
                 "editApproval": "Edit ownership and approval",
                 "addApproval": "Add ownership and approval",
-                "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.",
+                "editApprovalHint": "Opens the editor on its Approval tab. Saving updates this proposal in place; acceptances given so far are cleared.",
                 "applyFailed": "Could not apply this proposal: {{reason}}",
                 "applyFailedUnknown": "Could not apply this proposal. Please try again.",
                 "applyUnavailable": "This proposal cannot be applied to the map.",
@@ -1617,7 +1620,8 @@
                 "unapplyFailed": "Could not remove this proposal from the map: {{reason}}",
                 "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",
                 "unapplyUnavailable": "This proposal cannot be removed from the map.",
-                "betOutcome": "Bet on outcome"
+                "betOutcome": "Bet on outcome",
+                "editApprovalHintCounterproposal": "Opens the editor on its Approval tab. Saving creates a counterproposal; acceptances of this one do not carry over."
             },
             "expiry": {
                 "expired": "Proposal expired",
@@ -2080,7 +2084,7 @@
             "importGeoJsonHint": "Road centrelines as LineStrings (.geojson) from QGIS or any GIS.",
             "importShapefile": "Shapefile",
             "importShapefileHint": "Road centrelines as an Esri shapefile (.zip holding .shp, .shx and .dbf).",
-            "crossSectionHint": "Edit this road's lanes and widths. A published road is edited as your local copy; the published version stays unchanged.",
+            "crossSectionHint": "Edit this road's lanes and widths. An edit of a published road is saved as a counterproposal; the published version stays unchanged.",
             "finishButton": "Finish road (F)",
             "cancelButton": "Cancel road (Esc)",
             "widthLabel": "Road width:",
@@ -2172,7 +2176,9 @@
                 "other": "{{count}} road crossings"
             },
             "snapsToStreet": "Snaps to {{name}}",
-            "snapsToUnnamedStreet": "Snaps to an existing street"
+            "snapsToUnnamedStreet": "Snaps to an existing street",
+            "editNotFound": "This road is not among the proposals of the city on the map. Switch to the city it was created in, then try again.",
+            "savedAsCounterproposal": "The published road stays as it is; your edit was saved as a counterproposal."
         },
         "roadAnalysis": {
             "title": "Road width analysis",
@@ -2454,7 +2460,7 @@
             "openError": "The cross-section editor could not open.",
             "subtitle": "The total width is the sum of the lanes — add or remove a lane and the road widens or narrows",
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
-            "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",
+            "proposalSubtitle": "Preview changes here, then save them to this road",
             "totalWidth": "Total width",
             "dragSeam": "Drag to resize the lanes on both sides",
             "scopeLabel": "Applies to",
@@ -2464,7 +2470,6 @@
             "extendsCut": "Cuts deeper into an already-cut building (amber on the map)",
             "cutsStructures": "Cuts applied parks/squares/lakes",
             "cancel": "Cancel",
-            "save": "Save as new proposal",
             "applyDrawing": "Apply to drawing",
             "addLane": "Add lane",
             "addLaneOfType": "Add: {{lane}} ({{width}} m)",
@@ -2523,8 +2528,7 @@
             "noFitWinds": "Does not fit even if moved — there is room, but the corridor bends, so a straight {{width}} m road can't follow it. Switch to drawing mode to curve the road through the space.",
             "widenInto": "Widen toward: {{side}}",
             "widenIntoLabel": "Take the added width ({{delta}} m) from one side",
-            "fitMinted": "This proposal is minted and immutable — apply the cross-section to a drawing to move it.",
-            "moveFailed": "The road could not be moved (a minted proposal is immutable).",
+            "moveFailed": "The road could not be moved.",
             "movedStatus": "Road moved {{move}}.",
             "narrowest": "Narrowest cross-section: {{width}} m of total space (marked on the map)",
             "whatIfDemolished": "Without the building to the {{side}}: build up to {{width}} m",
@@ -2594,7 +2598,9 @@
             "takeNoFootprint": "The new land could not be built, so the parcels it would take cannot be listed.",
             "takeNoStoredLand": "This road has no stored land to compare with, so the parcels cannot be listed.",
             "takeApply": "Apply",
-            "keepEditing": "Keep editing"
+            "keepEditing": "Keep editing",
+            "saveFailed": "The cross-section could not be saved. Your changes are still here.",
+            "saveCounterproposal": "Save as counterproposal"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",

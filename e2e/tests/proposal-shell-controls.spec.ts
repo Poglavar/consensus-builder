@@ -196,10 +196,14 @@ test.describe('Shared proposal editor shell controls @core', () => {
 
     const sourceId = await addParkSource(page, 'publish');
     const draftId = await editSource(page, sourceId, 'details');
+    // The editor's copy follows what saving does: a local record is updated in place.
+    await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
+      .toHaveText('Describe what this proposal does. Saving updates it in place; it keeps its id.');
     await page.locator('[data-draft-path="fields.description"]').fill('Updated description from the proposal editor.');
 
     await page.locator('[data-editor-action="review"]').click();
     await expect(page.locator('.proposal-editor-review')).toContainText('Updated description from the proposal editor.');
+    await expect(page.locator('.proposal-editor-review-notice')).toHaveText('Saving updates this proposal in place. It keeps its id.');
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id).state, draftId)).toBe('review');
 
     await page.locator('[data-editor-action="back-to-edit"]').click();
@@ -223,5 +227,25 @@ test.describe('Shared proposal editor shell controls @core', () => {
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.sourceProposalId === id), sourceId)).toBe(false);
+  });
+
+  test('the editor copy for a published source says the edit becomes a counterproposal', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const sourceId = await addParkSource(page, 'published-copy');
+    await page.evaluate(id => {
+      const storage = (window as any).proposalStorage;
+      const source = storage.getProposal(id);
+      source.serverProposalId = '7412';
+      storage._indexProposal(source);
+      storage.save();
+    }, sourceId);
+    await editSource(page, sourceId, 'details');
+    await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
+      .toHaveText('Describe how this counterproposal differs. The published proposal stays as it is.');
+    await page.locator('[data-draft-path="fields.description"]').fill('A counterproposal of the published park.');
+    await page.locator('[data-editor-action="review"]').click();
+    await expect(page.locator('.proposal-editor-review-notice'))
+      .toHaveText('Saving creates a counterproposal. The published proposal is not changed or removed.');
   });
 });

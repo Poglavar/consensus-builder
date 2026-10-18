@@ -194,6 +194,25 @@
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
+    // What saving this draft does to its source, for the editor's copy: 'new' (no source), 'edit' (one's
+    // own local record, saved in place) or 'counterproposal' (a published or minted source, which stays
+    // as it is). The same rule as the save itself (proposals/lineage.js editsInPlace).
+    function draftSaveKind(draft) {
+        if (!draft?.sourceProposalId) return 'new';
+        const source = proposalById(draft.sourceProposalId) || draft.sourceSnapshot || null;
+        return global.ProposalLineage?.editsInPlace?.(source) === true ? 'edit' : 'counterproposal';
+    }
+
+    const DETAILS_COPY = {
+        new: ['proposalDrafts.sections.detailsCopyNew', 'Describe what this proposal does, so others can follow it.'],
+        edit: ['proposalDrafts.sections.detailsCopyEdit', 'Describe what this proposal does. Saving updates it in place; it keeps its id.'],
+        counterproposal: ['proposalDrafts.sections.detailsCopyCounterproposal', 'Describe how this counterproposal differs. The published proposal stays as it is.']
+    };
+    const REVIEW_NOTICE = {
+        edit: ['proposalDrafts.review.inPlaceNotice', 'Saving updates this proposal in place. It keeps its id.'],
+        counterproposal: ['proposalDrafts.review.counterproposalNotice', 'Saving creates a counterproposal. The published proposal is not changed or removed.']
+    };
+
     function renderDetails(draft) {
         const typeSelector = !draft.sourceProposalId
             ? `<label class="proposal-editor-field">
@@ -207,7 +226,7 @@
         return `
             <section class="proposal-editor-section" data-editor-section="details">
                 <h3>${escapeHtml(tDraft('proposalDrafts.sections.detailsTitle', 'Proposal details'))}</h3>
-                <p class="proposal-editor-section-copy">${escapeHtml(tDraft('proposalDrafts.sections.detailsCopy', 'Describe the replacement clearly. The source proposal stays immutable.'))}</p>
+                <p class="proposal-editor-section-copy">${escapeHtml(tDraft(...DETAILS_COPY[draftSaveKind(draft)]))}</p>
                 ${typeSelector}
                 <label class="proposal-editor-field">
                     <span>${escapeHtml(tDraft('proposalDrafts.fields.name', 'Name'))}</span>
@@ -484,7 +503,7 @@
         return `
             <section class="proposal-editor-review">
                 <h3>${escapeHtml(tDraft('proposalDrafts.review.title', 'Review changes'))}</h3>
-                <div class="proposal-editor-review-notice">${escapeHtml(tDraft('proposalDrafts.review.immutableNotice', 'Publishing creates a new immutable proposal. The source is not changed or removed.'))}</div>
+                ${REVIEW_NOTICE[draftSaveKind(draft)] ? `<div class="proposal-editor-review-notice">${escapeHtml(tDraft(...REVIEW_NOTICE[draftSaveKind(draft)]))}</div>` : ''}
                 <div class="proposal-editor-card">
                     <strong>${escapeHtml(summary?.sourceName || draft.sourceProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
                     <p>${escapeHtml(draft.sourceProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>

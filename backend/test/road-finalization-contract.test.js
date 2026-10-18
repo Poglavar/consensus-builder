@@ -107,13 +107,13 @@ describe('road drawing finalization contract', () => {
             'async function runLocalCorridorGeometryUpdate',
             '// ---------------------------------------------------------------------------\n// Snapping'
         );
-        // Nothing local is immutable. An edit used to clone the road into a NEW record with its
-        // identity deleted so "the published source stays immutable" — which bought a new proposal
-        // id per node drag and an editor that reasoned about provenance. The record keeps its id
-        // and is written through; only its pointers to the copies held elsewhere are dropped.
+        // One's own local road keeps its id and is written through. A published or minted road is
+        // immutable: its edit is a counterproposal made through the atomic corridor transaction
+        // (behaviour: road-edit-save.test.js), never a rewrite of the published record.
         expect(edit).toContain('writeRoadDefinition(sourceProposal, componentDefinitions[0])');
-        expect(edit).toContain('detachPublishedIdentity(sourceProposal)');
-        expect(edit).not.toContain('makeFreshRoadSnapshot(sourceProposal, componentDefinitions[0]');
+        expect(edit).toContain('window.ProposalLineage?.isPublished?.(sourceProposal)');
+        expect(edit).toContain('ProposalManager.createCorridorProposalAtomically(fork, { _parcelMutation: mutation })');
+        expect(edit).not.toContain('detachPublishedIdentity(sourceProposal)');
         // Old and new positions seed one local corridor derivation. A road need not be a fully
         // parcel-hosted formation, so it never enters the strict flat-ground resolver.
         expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.(');

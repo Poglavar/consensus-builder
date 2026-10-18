@@ -264,7 +264,7 @@
         const placementIssue = placementBindingIssue(draft);
         if (placementIssue) errors.push(placementIssue);
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
-            warnings.push(issue('missing-description', 'A description will help others understand the replacement.', 'fields.description'));
+            warnings.push(issue('missing-description', 'A description will help others understand this proposal.', 'fields.description'));
         }
         return { errors, warnings };
     }

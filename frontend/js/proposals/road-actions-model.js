@@ -19,9 +19,8 @@
     // crossSection follows the same gate as the road's node handles (road-node-edit.js
     // selectedCorridorProposal): the road must be applied (it is on the map, so the editor's live
     // preview has something to draw) and must carry a lane cross-section — a road DESIGNATION has
-    // none. Published/minted roads are NOT excluded: the edit lands on the local copy through
-    // updateLocalCorridorGeometry, which detaches the published pointers; the server's and the
-    // chain's copies stay as they were. While a corridor is being drawn, the drawing panel's own
+    // none. Published/minted roads are NOT excluded: updateLocalCorridorGeometry saves their edit as
+    // a counterproposal, and the published road stays as it was. While a corridor is being drawn, the drawing panel's own
     // "Edit cross-section" owns the editor.
     function isActionAvailable(action, facts) {
         const f = facts || {};

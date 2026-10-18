@@ -604,14 +604,6 @@ function stripRoadDerivedFields(record) {
     return record;
 }
 
-// What ties a local record to a copy someone else holds. The server and the chain are where a
-// proposal is genuinely immutable, so once an edit changes this record's shape it has stopped being
-// the thing published under those ids and must stop saying it is. The enclosing record snapshot
-// restores these fields if the edit transaction fails.
-function detachPublishedIdentity(record) {
-    return window.CorridorAuthoring.detachPublishedIdentity(record);
-}
-
 function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     const clone = cloneRoadValue(sourceProposal);
     [
@@ -726,7 +718,10 @@ function rebuildRoadDefinitionFootprint(definition) {
 }
 
 // Wrapper: every corridor geometry edit (node drag, bulldoze, delete, profile change) funnels through
-// the same immutable-snapshot transaction.
+// one parcel-mutation transaction. One's own local road is edited in place; a published or minted one
+// gets a counterproposal (runLocalCorridorGeometryUpdate). Resolves to the id of the road that now
+// holds the edit, or false when the edit was refused and rolled back; `options.onFailure(reason)`
+// hears why, in words for the person who made the edit.
 async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, options = {}) {
     beginApplyIndicator();
     try {
@@ -753,11 +748,10 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, o
         );
     } catch (error) {
         console.warn('[updateLocalCorridorGeometry] road edit failed', error);
-        if (typeof updateStatus === 'function') {
-            updateStatus(translateRoadText(
-                'panel.road.editRevertedStatus',
-                'Could not complete that road change — reverted.'
-            ));
+        const reverted = translateRoadText('panel.road.editRevertedStatus', 'Could not complete that road change — reverted.');
+        if (typeof updateStatus === 'function') updateStatus(reverted);
+        if (typeof options.onFailure === 'function') {
+            try { options.onFailure(error?.userMessage || reverted); } catch (_) { }
         }
         return false;
     } finally {
@@ -770,7 +764,12 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     const store = mutation?.proposals;
     const sourceProposal = store?.findProposalByIdOrHash?.(proposalIdOrHash)
         || store?.getProposal?.(String(proposalIdOrHash));
-    if (!sourceProposal?.roadProposal?.definition || !store) return false;
+    if (!sourceProposal?.roadProposal?.definition || !store) {
+        throw Object.assign(new Error(`Road ${proposalIdOrHash} is not in this city's proposals`), {
+            userMessage: translateRoadText('panel.road.editNotFound',
+                'This road is not among the proposals of the city on the map. Switch to the city it was created in, then try again.')
+        });
+    }
 
     const sourceKey = String(
         (typeof getProposalKey === 'function' ? getProposalKey(sourceProposal) : null)
@@ -909,19 +908,48 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         : [workingDefinition];
     if (!componentDefinitions.length) return false;
 
-    // The edited road is edited IN PLACE. It used to be cloned into a brand-new record with its
-    // identity deleted — proposalId, hash, serverProposalId, chainProposalId, tokenId, onchain —
-    // so that "the published source stays immutable". Nothing local is immutable: the server and
-    // the chain hold their own copies and those are the immutable ones, so there was never a local
-    // record needing protection. What the fork actually bought was a new proposal id on every node
-    // drag, a chain of replaced records per drag, and an editor that reasoned about provenance at all.
-    //
-    // The published POINTERS do go, on the first edit that changes the geometry: once this record's
-    // shape differs from what was uploaded or minted under that id, it is no longer that thing, and
-    // keeping the pointer would have it claim an identity it no longer has.
-    detachPublishedIdentity(sourceProposal);
     const wasSelected = typeof window.ProposalSelection?.is === 'function'
         && window.ProposalSelection.is(sourceKey);
+
+    // A published or minted road is immutable (proposals/lineage.js editsInPlace): the edit is saved
+    // as a counterproposal carrying the edited land, through the same atomic transaction as a newly
+    // drawn road, and the published road stays as it is. The counterproposal is selected, so the
+    // next edit lands on it, in place.
+    if (window.ProposalLineage?.isPublished?.(sourceProposal)) {
+        const forkIds = [];
+        for (const [index, definition] of componentDefinitions.entries()) {
+            const fork = makeFreshRoadSnapshot(sourceProposal, definition, { sourceProposalId: sourceKey });
+            if (index > 0) {
+                fork.title = `${fork.title || fork.name || 'Road'} (${index + 1})`;
+                if (fork.name) fork.name = fork.title;
+            }
+            const created = await ProposalManager.createCorridorProposalAtomically(fork, { _parcelMutation: mutation });
+            if (!created?.ok || !created.proposalId) {
+                throw Object.assign(new Error(created?.reason || 'Could not save the counterproposal.'), {
+                    userMessage: created?.reason || null
+                });
+            }
+            forkIds.push(String(created.proposalId));
+        }
+        mutation.afterCommit(() => {
+            forkIds.forEach(id => ProposalManager._refreshUIAfterProposalChange?.(
+                typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal?.(id) : null
+            ));
+            if (typeof updateStatus === 'function') {
+                updateStatus(translateRoadText('panel.road.savedAsCounterproposal',
+                    'The published road stays as it is; your edit was saved as a counterproposal.'));
+            }
+            if (wasSelected && typeof selectAndHighlightProposal === 'function') {
+                try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
+                selectAndHighlightProposal(forkIds[0], null, false, true);
+            }
+        });
+        return forkIds[0];
+    }
+
+    // One's own local road is edited IN PLACE: the same record, the same id. Nothing local needs
+    // protecting from its own author; an edit that minted a new id on every node drag also made a
+    // chain of replaced records per drag and an editor that reasoned about provenance at all.
     writeRoadDefinition(sourceProposal, componentDefinitions[0]);
     // The land may now reach parcels it did not when the road was drawn — a widening, a
     // transition zone, the corner land of a new junction. The rebuild cuts only the parcels the
