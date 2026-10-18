@@ -17,7 +17,11 @@
     // with `overrides.timeoutMs` (ProposalManager: `options.mutationTimeoutMs`) or globally with
     // `window.PARCEL_MUTATION_TIMEOUT_MS`.
     const PARCEL_MUTATION_TIMEOUT_MS = 120000;
+    // A mutation that reports its progress (`overrides.progressTimeoutMs`: the boot replay) has no
+    // total limit instead: it is rolled back only when `context.progress()` has not been called for
+    // that long. A slow phone finishing a long replay is not a stall; a hung ground fetch is.
     let mutationSequence = 1;
+    const workSlicer = (root && root.__workSlicer) || (typeof require === 'function' ? require('../../work-slicer.js') : null);
     let mutationTail = Promise.resolve();
 
     function positiveMs(value) {
@@ -28,6 +32,12 @@
         return positiveMs(overrides?.timeoutMs)
             ?? positiveMs(runtime?.PARCEL_MUTATION_TIMEOUT_MS)
             ?? PARCEL_MUTATION_TIMEOUT_MS;
+    }
+
+    function clock() {
+        return typeof performance !== 'undefined' && performance && typeof performance.now === 'function'
+            ? performance.now()
+            : Date.now();
     }
 
     function clone(value) {
@@ -80,8 +90,15 @@
         return draft;
     }
 
-    function serializeStore(store, draft) {
-        if (!store || !draft || typeof store.serializeMutationDraft !== 'function') return null;
+    // A store with many records serializes in steps (proposals/data.js): in slices when the
+    // mutation carries a slicer (the boot replay), in one go otherwise.
+    async function serializeStore(store, draft, slicer) {
+        if (!store || !draft) return null;
+        if (typeof store.serializeMutationDraftSteps === 'function') {
+            const steps = store.serializeMutationDraftSteps(draft);
+            return slicer ? workSlicer.runSliced(steps, slicer) : workSlicer.runToCompletion(steps);
+        }
+        if (typeof store.serializeMutationDraft !== 'function') return null;
         return store.serializeMutationDraft(draft);
     }
 
@@ -237,22 +254,36 @@
         // rolled back (its writes then throw `live-fabric-mutation-inactive`), `signal` aborts,
         // afterCommit refuses, and execute() has already rejected — so a body that resolves late
         // has nothing left that could publish or persist its drafts.
-        const timeoutMs = resolveTimeoutMs(overrides, dependencies.runtime);
+        const progressTimeoutMs = positiveMs(overrides?.progressTimeoutMs);
+        const timeoutMs = progressTimeoutMs ?? resolveTimeoutMs(overrides, dependencies.runtime);
+        // The boot replay's slicer (work-slicer.js): every step of the mutation, the fabric's
+        // prepare and the serialization below run in its clock-checked, background-priority slices.
+        const slicer = overrides?.slicer || null;
         const abortController = typeof AbortController === 'function' ? new AbortController() : null;
         let timeoutError = null;
         let deadlineTimer = null;
+        let lastProgressAt = clock();
         const deadline = new Promise((_, reject) => {
-            deadlineTimer = setTimeout(() => {
+            const expire = () => {
+                // Progress since the timer was armed moves the deadline instead of firing it.
+                const idleMs = clock() - lastProgressAt;
+                if (progressTimeoutMs && idleMs < progressTimeoutMs) {
+                    deadlineTimer = setTimeout(expire, progressTimeoutMs - idleMs);
+                    return;
+                }
                 const kind = meta?.kind || 'unknown';
-                timeoutError = new Error(`Parcel mutation "${kind}" did not settle within ${timeoutMs} ms; it was rolled back and the mutation queue moved on.`);
-                timeoutError.code = 'parcel-mutation-timeout';
+                timeoutError = new Error(progressTimeoutMs
+                    ? `Parcel mutation "${kind}" made no progress for ${timeoutMs} ms; it was rolled back and the mutation queue moved on.`
+                    : `Parcel mutation "${kind}" did not settle within ${timeoutMs} ms; it was rolled back and the mutation queue moved on.`);
+                timeoutError.code = progressTimeoutMs ? 'parcel-mutation-stalled' : 'parcel-mutation-timeout';
                 timeoutError.timeoutMs = timeoutMs;
                 timeoutError.meta = { ...(meta || {}) };
                 console.error(`[${new Date().toISOString()}] [ParcelMutation] ${timeoutError.message}`, timeoutError.meta);
                 try { fabricMutation?.rollback?.(); } catch (_) { /* the rejection below is the failure */ }
                 try { abortController?.abort(timeoutError); } catch (_) { /* best-effort signal */ }
                 reject(timeoutError);
-            }, timeoutMs);
+            };
+            deadlineTimer = setTimeout(expire, timeoutMs);
         });
         const withinDeadline = work => Promise.race([work, deadline]);
         const stopDeadline = () => {
@@ -269,6 +300,9 @@
             collections: collectionDraft.draft,
             signal: abortController ? abortController.signal : null,
             get cancelled() { return timeoutError !== null; },
+            slicer,
+            // Moves a progress deadline (`progressTimeoutMs`); a total deadline ignores it.
+            progress() { lastProgressAt = clock(); },
             afterCommit(callback) {
                 if (typeof callback !== 'function') throw new TypeError('afterCommit requires a function.');
                 if (timeoutError) throw timeoutError;
@@ -285,7 +319,7 @@
             }
 
             if (fabricMutation) {
-                await withinDeadline(fabricMutation.prepare());
+                await withinDeadline(fabricMutation.prepare({ slicer }));
                 preparedFabric = true;
             }
             // Past this point the change is durable-bound. An IndexedDB write cannot be withdrawn,
@@ -293,8 +327,8 @@
             stopDeadline();
             if (timeoutError) throw timeoutError;
 
-            addSerializedChange(serializeStore(dependencies.proposalStore, proposalDraft), storageDraft);
-            addSerializedChange(serializeStore(dependencies.agentStore, agentDraft), storageDraft);
+            addSerializedChange(await serializeStore(dependencies.proposalStore, proposalDraft, slicer), storageDraft);
+            addSerializedChange(await serializeStore(dependencies.agentStore, agentDraft, slicer), storageDraft);
             const durableChange = {
                 puts: storageDraft._change.puts,
                 deletes: Array.from(storageDraft._change.deletes)
@@ -345,6 +379,10 @@
             for (const callback of afterCommitCallbacks) {
                 try { await callback(result); }
                 catch (error) { console.error('[ParcelMutation] after-commit callback failed', error); }
+                // Committed: a cancelled slicer no longer stops anything, the presentation finishes.
+                if (slicer && slicer.due() && !slicer.cancelled) {
+                    try { await slicer.pause(); } catch (_) { /* cancelled while yielding */ }
+                }
             }
             return result;
         } catch (error) {

@@ -77,6 +77,8 @@ function environment(options = {}) {
     };
     context.window = context;
     context.globalThis = context;
+    // presenter.js slices its prepare with work-slicer.js, loaded before it in the browser.
+    context.__workSlicer = require('../../frontend/js/work-slicer.js');
     // Post-commit notices need a timer and an event target; the atomic-projection tests run
     // without either, which keeps their commits observable synchronously.
     const timers = [];

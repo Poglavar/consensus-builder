@@ -55,6 +55,8 @@ function environment() {
     };
     context.window = context;
     context.globalThis = context;
+    // presenter.js slices its prepare with work-slicer.js, loaded before it in the browser.
+    context.__workSlicer = require('../../frontend/js/work-slicer.js');
     vm.runInNewContext(presenterSource, context);
     return { fabric, presenter: context.ParcelPresenter };
 }

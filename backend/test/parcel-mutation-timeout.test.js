@@ -1,6 +1,7 @@
 // Parcel-mutation FIFO liveness: a body that never settles is rejected at its deadline, rolled
-// back, and cannot commit if it resolves late; the queue moves on. Also locks the foreign-index
-// allocator to an indexed per-cadastre read instead of a full fabric clone per key.
+// back, and cannot commit if it resolves late; the queue moves on. A body with a progress deadline
+// (the boot replay) is rolled back only when it stops making progress. Also locks the
+// foreign-index allocator to an indexed per-cadastre read instead of a full fabric clone per key.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -122,6 +123,85 @@ describe('ParcelMutation deadline', () => {
         await new Promise(resolve => setTimeout(resolve, 40));
         expect(errors).not.toHaveBeenCalled();
         errors.mockRestore();
+    });
+});
+
+// The boot replay's deadline (progressTimeoutMs): no total limit, only "no progress for N ms".
+describe('ParcelMutation progress deadline', () => {
+    const tick = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    it('lets a body that keeps reporting progress run well past the deadline and commit', async () => {
+        const fabric = await seededFabric();
+        const storage = memoryStorage();
+        const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const result = await ParcelMutation.run({ kind: 'rebuild-applied-fabric' }, async context => {
+            context.fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#p-1', { cadastreParcelIds: ['HR-A'] })]);
+            // 12 × 15 ms ≈ 180 ms of work against a 60 ms no-progress deadline.
+            for (let i = 0; i < 12; i += 1) { await tick(15); context.progress(); }
+            return 'replayed';
+        }, { runtime: {}, storage, fabric, proposalStore: null, agentStore: null, progressTimeoutMs: 60, timeoutMs: 30 });
+        expect(result).toBe('replayed');
+        expect(fabric.snapshot()).toMatchObject({ revision: 2, parcelIds: ['HR-A#p-1'] });
+        expect(errors).not.toHaveBeenCalled();
+        errors.mockRestore();
+    });
+
+    it('rolls back a body that stops making progress, with its own code', async () => {
+        const fabric = await seededFabric();
+        const storage = memoryStorage();
+        const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+        let signal = null;
+        const stalled = ParcelMutation.run({ kind: 'rebuild-applied-fabric' }, async context => {
+            signal = context.signal;
+            context.fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#p-1', { cadastreParcelIds: ['HR-A'] })]);
+            await tick(10); context.progress();
+            await tick(10); context.progress();
+            return new Promise(() => {}); // a hung ground fetch: no progress from here on
+        }, { runtime: {}, storage, fabric, proposalStore: null, agentStore: null, progressTimeoutMs: 40 });
+        await expect(stalled).rejects.toMatchObject({ code: 'parcel-mutation-stalled', timeoutMs: 40 });
+        expect(signal.aborted).toBe(true);
+        expect(fabric.snapshot()).toMatchObject({ revision: 1, parcelIds: ['HR-A'] });
+        expect(storage.writes).toHaveLength(0);
+        expect(errors).toHaveBeenCalledWith(expect.stringMatching(/made no progress for 40 ms/), expect.anything());
+        errors.mockRestore();
+    });
+
+    it('hands its slicer to the body and to the fabric prepare', async () => {
+        const fabric = await seededFabric();
+        const slicer = { due: () => false, pause: async () => {}, cancelled: false };
+        const seen = [];
+        fabric.addCommitParticipant({ prepare: (_delta, _view, options) => { seen.push(options.slicer); return null; } });
+        await ParcelMutation.run({ kind: 'rebuild-applied-fabric' }, context => {
+            seen.push(context.slicer);
+            context.fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#p-2', { cadastreParcelIds: ['HR-A'] })]);
+            return true;
+        }, { runtime: {}, storage: memoryStorage(), fabric, proposalStore: null, agentStore: null, slicer });
+        expect(seen).toEqual([slicer, slicer]);
+    });
+
+    it('serializes a store with steps in the slicer\'s slices, writing what one go writes', async () => {
+        const workSlicer = require('../../frontend/js/work-slicer.js');
+        const store = () => ({
+            proposals: new Map([['1', { id: 1 }], ['2', { id: 2 }], ['3', { id: 3 }]]),
+            *serializeMutationDraftSteps(draft) {
+                const entries = [];
+                for (const [id, record] of draft.proposals) { entries.push({ key: `proposal:${id}`, value: JSON.stringify(record) }); yield; }
+                return entries;
+            }
+        });
+        const run = async slicer => {
+            const storage = memoryStorage();
+            await ParcelMutation.run({ kind: 'rebuild-applied-fabric' }, () => true, {
+                runtime: {}, storage, fabric: null, proposalStore: store(), agentStore: null, ...(slicer ? { slicer } : {})
+            });
+            return storage.writes;
+        };
+        let t = 0;
+        const slicer = workSlicer.createSlicer({ budgetMs: 1, now: () => (t += 1), yieldNow: async () => {} });
+        const oneGo = await run(null);
+        expect(oneGo[0].puts.size).toBe(3);
+        expect(await run(slicer)).toEqual(oneGo);
+        expect(slicer.pauses).toBeGreaterThanOrEqual(3);
     });
 });
 

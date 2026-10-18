@@ -173,28 +173,27 @@
     // single task was the 500-800 ms frame on every pan into new cadastre; slicing it on the
     // clock keeps the swap itself synchronous and atomic.
     const PREPARE_SLICE_MS = 12;
-    const clock = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
     function yieldToBrowser() {
         if (typeof global.yieldToBrowser === 'function') return global.yieldToBrowser();
         if (typeof setTimeout !== 'function') return Promise.resolve();
         return new Promise(resolve => setTimeout(resolve, 0));
     }
 
-    async function prepare(change, draftView) {
+    // `options.slicer`: the boot replay's (work-slicer.js, background priority); otherwise the
+    // presenter's own 12 ms slices that yield with yieldToBrowser.
+    async function prepare(change, draftView, options = {}) {
         ensureGroup();
         const replacements = new Map();
         const replacementIds = [...(change.addedIds || []), ...(change.updatedIds || [])];
-        let sliceStarted = clock();
+        const slicer = options.slicer
+            || global.__workSlicer.createSlicer({ budgetMs: PREPARE_SLICE_MS, yieldNow: yieldToBrowser });
         for (const requestedId of replacementIds) {
             // buildLayer makes the presenter's owned copy; reading the frozen draft avoids a second copy.
             const feature = draftView.peek(requestedId);
             if (!feature) throw new Error(`Fabric draft has no feature for presenter replacement ${requestedId}.`);
             const id = featureId(feature);
             replacements.set(id, buildLayer(feature));
-            if (clock() - sliceStarted >= PREPARE_SLICE_MS) {
-                await yieldToBrowser();
-                sliceStarted = clock();
-            }
+            if (slicer.due()) await slicer.pause();
         }
         const touched = new Set([
             ...(change.removedIds || []).map(String),

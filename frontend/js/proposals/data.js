@@ -304,7 +304,9 @@ const proposalStorage = {
     // peekAllProposals leaves touched empty; adds, edits, deletes and clears all mark it), so it
     // returns null and the coordinator opens no IndexedDB transaction. The coordinator accepts an
     // array of {key, value} / {key, delete: true} entries and writes them in one transaction.
-    serializeMutationDraft(draft) {
+    // A step function, one record per step: the coordinator runs it in one go, or in the boot
+    // replay's slices (proposals/apply/transaction.js serializeStore).
+    *serializeMutationDraftSteps(draft) {
         const isDraft = draft.proposals instanceof DraftRecordMap;
         const touched = isDraft ? draft.proposals.touched : null;
         const rawEntries = () => (isDraft ? draft.proposals.rawEntries() : draft.proposals.entries());
@@ -316,6 +318,7 @@ const proposalStorage = {
             const fragment = JSON.stringify(proposalRecordForPersistence(record));
             if (draft._fragments) draft._fragments.set(id, fragment);
             entries.push({ key: proposalRowKey(id), value: fragment });
+            yield;
         }
         this.proposals.forEach((_record, id) => {
             if (!nextIds.has(id)) entries.push({ key: proposalRowKey(id), delete: true });
