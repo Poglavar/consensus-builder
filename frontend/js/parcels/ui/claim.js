@@ -22,12 +22,6 @@
         production: 'https://attestify.network/'
     });
 
-    const PARCEL_CLAIM_RPC_FALLBACKS = Object.freeze({
-        '31337': 'http://127.0.0.1:8545',
-        '11155111': 'https://ethereum-sepolia-rpc.publicnode.com',
-        '84532': 'https://sepolia.base.org'
-    });
-
     const PARCEL_NFT_ABI_FRAGMENT = [
         'function tokenIdForParcelId(string parcelId) view returns (uint256)'
     ];

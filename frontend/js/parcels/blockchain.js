@@ -1,9 +1,9 @@
 (function (global) {
     'use strict';
 
-    // Public, keyless RPC defaults so read-only checks (parcel NFT status, lens) work on prod without
-    // any page-level override. Same endpoints as wallet-connection.js DEFAULT_RPC_MAP and
-    // chain-data-loader.js; CLAIM_RPC_URLS / PARCEL_NFT_RPC_URLS globals still take precedence.
+    // Public, keyless RPC defaults so read-only checks (parcel NFT status, lens) work without any
+    // configuration. Same endpoints as chain-data-loader.js; a provider set in .env as
+    // EVM_BROWSER_RPC_URL_<chainId> reaches the page as EVM_RPC_URLS (generated rpc-config.js) and wins.
     const PARCEL_CLAIM_RPC_FALLBACKS = {
         '1': null,
         '5': null,
@@ -179,26 +179,8 @@
         const normalized = normalizeChainIdValue(chainIdInput);
         if (!normalized) return null;
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-        if (globalScope) {
-            if (typeof globalScope.CLAIM_RPC_URL === 'string' && globalScope.CLAIM_RPC_URL.trim()) {
-                return globalScope.CLAIM_RPC_URL.trim();
-            }
-            if (globalScope.CLAIM_RPC_URLS && typeof globalScope.CLAIM_RPC_URLS === 'object') {
-                const custom = globalScope.CLAIM_RPC_URLS[normalized];
-                if (typeof custom === 'string' && custom.trim()) {
-                    return custom.trim();
-                }
-            }
-            if (typeof globalScope.PARCEL_NFT_RPC_URL === 'string' && globalScope.PARCEL_NFT_RPC_URL.trim()) {
-                return globalScope.PARCEL_NFT_RPC_URL.trim();
-            }
-            if (globalScope.PARCEL_NFT_RPC_URLS && typeof globalScope.PARCEL_NFT_RPC_URLS === 'object') {
-                const customParcel = globalScope.PARCEL_NFT_RPC_URLS[normalized];
-                if (typeof customParcel === 'string' && customParcel.trim()) {
-                    return customParcel.trim();
-                }
-            }
-        }
+        const configured = globalScope && globalScope.EVM_RPC_URLS && globalScope.EVM_RPC_URLS[normalized];
+        if (typeof configured === 'string' && configured.trim()) return configured.trim();
         return PARCEL_CLAIM_RPC_FALLBACKS[normalized] || null;
     }
 

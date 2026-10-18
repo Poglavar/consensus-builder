@@ -141,7 +141,10 @@
             }
         }
 
-        // Simple fallback map
+        // The configured provider (EVM_RPC_URLS from rpc-config.js), else the public defaults
+        // parcels/blockchain.js also falls back to.
+        const configured = globalScope.EVM_RPC_URLS && globalScope.EVM_RPC_URLS[normalized];
+        if (typeof configured === 'string' && configured.trim()) return configured.trim();
         const rpcMap = {
             '31337': 'http://localhost:8545',
             '11155111': 'https://ethereum-sepolia-rpc.publicnode.com',

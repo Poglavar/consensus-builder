@@ -23,14 +23,15 @@ describe('parcel claim RPC defaults', () => {
         expect(globalThis.resolveRpcUrlForChain('base-sepolia')).toBe('https://sepolia.base.org');
     });
 
-    it('still lets a page-level override win', () => {
-        // The resolver reads overrides from window/self, which node lacks.
+    it('lets the configured provider (EVM_RPC_URLS from rpc-config.js) win', () => {
+        // The resolver reads the configuration from window/self, which node lacks.
         globalThis.self = globalThis;
-        globalThis.CLAIM_RPC_URLS = { '84532': 'https://rpc.example.test' };
+        globalThis.EVM_RPC_URLS = { '84532': 'https://rpc.example.test' };
         try {
             expect(globalThis.resolveRpcUrlForChain('84532')).toBe('https://rpc.example.test');
+            expect(globalThis.resolveRpcUrlForChain('11155111')).toBe('https://ethereum-sepolia-rpc.publicnode.com');
         } finally {
-            delete globalThis.CLAIM_RPC_URLS;
+            delete globalThis.EVM_RPC_URLS;
             delete globalThis.self;
         }
     });

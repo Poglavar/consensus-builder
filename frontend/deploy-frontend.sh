@@ -40,7 +40,7 @@ if [ -f "$SCRIPT_DIR/.deploy-build-counter" ] && grep -Eq '^[0-9]+$' "$SCRIPT_DI
 fi
 
 python3 "$SCRIPT_DIR/../scripts/build-carto-config.py" --env "${CARTO_ENV_FILE:-$SCRIPT_DIR/../.env}" --out "$SCRIPT_DIR/carto-config.js"
-python3 "$SCRIPT_DIR/../scripts/build-solana-rpc-config.py" --env "${SOLANA_ENV_FILE:-$SCRIPT_DIR/../backend/.env}" --out "$SCRIPT_DIR/rpc-config.js"
+python3 "$SCRIPT_DIR/../scripts/build-rpc-config.py" --env "${SOLANA_ENV_FILE:-$SCRIPT_DIR/../backend/.env}" --out "$SCRIPT_DIR/rpc-config.js"
 
 # ---- SSH connectivity ----
 echo -e "${YELLOW}🔍 Testing SSH connection...${NC}"

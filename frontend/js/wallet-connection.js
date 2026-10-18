@@ -19,13 +19,6 @@
         lastConnector: `${STORAGE_NAMESPACE}:lastConnector`
     };
 
-    const DEFAULT_RPC_MAP = Object.freeze({
-        '31337': 'http://127.0.0.1:8545',
-        '11155111': 'https://ethereum-sepolia-rpc.publicnode.com',
-        '84532': 'https://sepolia.base.org',
-        '8453': 'https://mainnet.base.org'
-    });
-
     const state = {
         status: 'idle',
         accounts: [],
