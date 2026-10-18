@@ -252,12 +252,19 @@ condition on three fitted seeds and 12 blocks, without multiple-comparison adjus
 remains the default, both final splits are unscored for this round, and the rental is destroyed.
 Full guard metrics, seed ranges, validation evidence and spend are in [PLAN.md](PLAN.md#learned-newest-first).
 
-The next isolated preprocessing trial is frozen in `gpu/plans/selection-v4-normalization.json`.
+The isolated preprocessing trial completed on 2026-10-19 under `gpu/plans/selection-v4-normalization.json`.
 `--rgb-normalization pretrained` applies the encoder's recorded RGB mean/std at the model boundary;
 OSM channels and raw cached arrays stay unchanged. Checkpoints, recipes, results and evaluation
 summaries record the exact definition, and evaluation refuses conflicting metadata or overrides.
-The default remains raw RGB. Three fresh fits will be compared with the saved raw controls using
-source-only selection and the existing development guards; final splits remain reserved.
+Three fresh 30-epoch fits failed advancement against the saved raw controls. Mean Split transfer F1
+changes 0.1561 → 0.1528 (95% paired block difference −0.0127 to +0.0080), and precision falls
+0.3701 → 0.3338 (−0.0599 to −0.0132). Zagreb own-city F1 changes 0.2927 → 0.2944
+(−0.0098 to +0.0167), also failing advancement. Keep raw RGB as the default. These intervals
+condition on three fitted seeds and reused selection geography. All six checkpoints and the complete
+902-file backup were verified; six selection rows were recorded, and the rental is closed. Observed
+account debit was about $0.41, within the $1 cap. Final splits remain reserved. Full guards, seed
+choices and diagnostics are in [PLAN.md](PLAN.md#learned-newest-first) and
+`output/runs/selection-v4-normalization-comparison/report.json`.
 
 The longer-schedule trial also completed on 2026-10-14 (`gpu/plans/selection-v2-longer.json`): three
 fresh 60-epoch Zagreb fits versus those saved 30-epoch baselines, with identical data, seeds, runtime

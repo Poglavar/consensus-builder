@@ -4,9 +4,9 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (RGB normalization trial frozen and ready for rented GPU execution; defaults unchanged). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (three-seed RGB normalization trial complete; advancement failed; raw RGB retained; GPU closed). Status values: todo · running · done · dropped (with the reason).
 
-## Where we stand (2026-10-14)
+## Where we stand (2026-10-19)
 
 | Benchmark | OSM rules baseline | Best model | Best model's split |
 |---|---:|---:|---|
@@ -28,15 +28,17 @@ selection tiles appeared in prior full-pool training. Those old checkpoints cann
 support but does not measure a recoverability ceiling. More data, image quality, training and reconstruction
 remain hypotheses to compare; a nonsignificant gain does not identify which one limits performance.
 
-The next isolated trial is frozen in `gpu/plans/selection-v4-normalization.json` (SHA-256
-`fe834629bdf2f4367ea25c0655dbb1a30241db6a1605e3830b9ea64d68ad1700`). It compares three fresh
+The isolated RGB trial is complete under `gpu/plans/selection-v4-normalization.json` (SHA-256
+`fe834629bdf2f4367ea25c0655dbb1a30241db6a1605e3830b9ea64d68ad1700`). It compared three fresh
 30-epoch Zagreb fits using the actual pretrained ConvNeXt RGB mean/std against the immutable raw-RGB
 controls. OSM channels, margin-2 targets, initialization, source-only checkpoint/configuration selection,
-and schedule stay matched. Primary evidence is Zagreb-to-Split selection transfer, with the existing
-F1 and precision/interior/area-recall guards; Zagreb selection is secondary. The $1 rental cap includes
-setup and recovery, with a one-hour training timeout. No final split or untouched city is scored.
-`gpu/normalization_preflight.py` proves the actual 512 px encoder input transformation on CUDA;
-`layered/normalization_analysis.py` checks the recovered artifacts and paired block comparison.
+and schedule stayed matched. Primary evidence is Zagreb-to-Split selection transfer, with the existing
+F1 and precision/interior/area-recall guards; Zagreb selection is secondary. Transfer F1 changed
+0.1561 → 0.1528 and precision 0.3701 → 0.3338, failing advancement and the precision guard.
+Keep raw RGB. All artifacts passed recovery verification, the rental is closed, and observed spend
+was about $0.41 against the $1 cap. No final split or untouched city was scored.
+`gpu/normalization_preflight.py` verifies the actual 512 px encoder transformation on CUDA;
+`layered/normalization_analysis.py` verifies the recovered artifacts and paired block comparison.
 
 Croatia is the best case for imagery: low-altitude aircraft orthophotos at 0.15–0.5 m. Most of the world has
 only satellite imagery (0.3–0.5 m commercial at best, 1–10 m free, haze, off-nadir lean, older dates), so every
@@ -70,7 +72,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
 | 4 | Per-city reconstruction settings and seed connectivity | laptop | bounded saved-map diagnostic complete; Split-specific candidate passes development guards |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
-| 6 | Zagreb model levers, one at a time | GPU | 60-epoch and margin-0 trials done; neither adopted |
+| 6 | Zagreb model levers, one at a time | GPU | 60-epoch, margin-0 and RGB normalization trials done; none adopted |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
@@ -94,7 +96,8 @@ separation remain fixed. The review changes the next experiments from colour/lon
 2. A fresh three-seed target-margin-zero arm is the presumptive first training treatment. A strong
    marker/surface diagnosis may move one targeted treatment ahead of it. Change one factor, keep
    target metadata and cache identities explicit, and verify the generated targets. RGB normalization
-   remains a separate fresh-training experiment, using the actual pretrained configuration.
+   was tested separately with three fresh fits using the actual pretrained configuration; the
+   normalization trial failed advancement on 2026-10-19 (results below).
 3. Compare a nearby donor with a nested Zagreb subset under matched recipe, label count and budget,
    with configuration selection on source data only. Zadar is the provisional donor and Šibenik the
    provisional untouched target. Freeze roles after imagery/density/exposure eligibility checks and
@@ -233,6 +236,8 @@ The longer schedule and first resolution trial are complete and were not adopted
 three-seed 30-epoch controls. The 2026-10-15 sequence above replaces the queued colour augmentation,
 test-time averaging and larger-encoder trials with bounded reconstruction/target work and nearby-donor
 transfer. A failed treatment closes that recipe; it does not establish a universal data or model limit.
+The separate RGB normalization comparison is also complete and failed its advancement and precision
+guards; raw RGB remains the default. This does not establish equivalence or rule out other model/data changes.
 
 The first schedule comparison completed on 2026-10-14, frozen in `gpu/plans/selection-v2-longer.json`: three fresh Zagreb
 fits at 60 epochs versus the saved 30-epoch baselines, seeds 1–3, 1,623 training tiles and the same
@@ -343,6 +348,64 @@ was met. The delay added no training, selection opportunities or final scoring. 
 retain partial files, retry failed connections and use a separate recovery reserve.
 
 ## Learned (newest first)
+
+- 2026-10-19, step 6, RGB normalization: three fresh 30-epoch fits (seeds 1–3, 1,623 Zagreb
+  training tiles, recipe `29c8f10720f75e57`) versus the immutable raw-RGB controls
+  (`48de5c48dab295de`). RGB alone uses the pinned pretrained mean/std; OSM, margin-2 targets,
+  initialization, schedule and source-only checkpoint/configuration selection stay matched.
+  Both cities use 48 selection tiles in 12 geographic blocks. Differences are normalized minus raw,
+  with 2,000 paired whole-block bootstrap replicates and the same draws across all three fitted seeds.
+
+  | Selection set | Raw mean F1 | Normalized mean F1 | Difference (95% block interval) |
+  |---|---:|---:|---|
+  | Split transfer, primary | 0.1561 | 0.1528 | −0.0033 [−0.0127, +0.0080] |
+  | Zagreb own-city, secondary | 0.2927 | 0.2944 | +0.0017 [−0.0098, +0.0167] |
+
+  The primary gate fails: seed F1 changes are −0.0097 / +0.0288 / −0.0290, median −0.0097,
+  and mean after dropping the best seed −0.0194. Split precision falls 0.3701 → 0.3338,
+  difference −0.0364 [−0.0599, −0.0132], failing the −0.02 lower-interval guard. Interior recall
+  changes −0.0026 [−0.0199, +0.0086], failing its −0.01 guard; area-weighted recall changes
+  +0.0405 [−0.0025, +0.1035], passing its guard. Boundary F1 changes −0.0142
+  [−0.0254, +0.0002]. The small own-city F1 change also fails advancement; Zagreb precision
+  falls 0.5128 → 0.4651, difference −0.0477 [−0.0813, −0.0206]. Retain raw RGB.
+
+  | Seed | Raw selected epoch/config | Normalized selected epoch/config | Raw Split F1 | Normalized Split F1 |
+  |---|---|---|---:|---:|
+  | 1 | 22 / t0.3-seeds0-hard0 | 30 / t0.3-seeds0-hard0 | 0.1432 | 0.1335 |
+  | 2 | 12 / t0.3-seeds0-hard0 | 18 / t0.3-seeds1-hard0 | 0.1564 | 0.1852 |
+  | 3 | 22 / t0.3-seeds0-hard0 | 28 / t0.3-seeds0-hard0 | 0.1687 | 0.1397 |
+
+  These are complete source-selected policies: seed 2 selected interior seeds ON; the chooser was
+  unchanged and never used Split scores. Split interior matches (763 references) change
+  72/83/87 → 67/97/72, and clipped matches (1,033 references) 91/95/105 → 84/132/86.
+  Its high/dense-bin mean F1 changes −0.0119/−0.0073. Low-density F1 rises 0 → 0.1714, but
+  that stratum has only one block and no interior references; its interior recall stays missing.
+  Density summaries are descriptive. The intervals condition on these fitted seeds and repeatedly
+  used selection geography; they do not include model-selection adjustment, new-fit uncertainty or
+  new-city uncertainty. This failed recipe does not establish a recoverability ceiling.
+
+  Verification: four targeted headless unit runs passed (15, 4, 19 and 5 tests; 20 distinct cases;
+  none stopped). The 15-test run selected `test_rgb_normalization`, `test_train.ModelTests`,
+  `test_train.SubsetTests` and `test_target_config`; the 19-test run added `test_normalization_analysis`.
+  The other two runs selected only the four- then five-case analysis test file, with assistance from
+  GPT-6 Luna at low reasoning. No full unit or browser suite was run. A two-tile CUDA smoke check covered
+  training, resume, evaluation and conflicting-override rejection. The actual 512 px GPU input proof
+  has zero measured RGB-transform error, unchanged OSM/cache arrays and identical initial learned
+  parameters. All six actual best/last checkpoints were read back and checked. Every fit completed
+  8,130 updates and 15 source-selection evaluations; all 576 candidate/control tile scores were
+  repooled. The 902-file backup (2,275,550,799 bytes) passed SHA-256 verification before rental
+  closure. Six selection rows were appended to `results.jsonl`; no final split was scored.
+
+  Queue time was about 31 minutes with two lanes, following cache preparation. The rental was
+  closed at about 20:56 UTC on 2026-10-18 (2026-10-19 locally), within the one-hour training and
+  1.75-hour rental bounds. The observed account debit was about $0.41, including setup, GPU,
+  storage and transfers, against the $1 cap; this is a balance change rather than an itemized invoice.
+  No account top-up was made, and the post-closure inventory was empty.
+
+  Artifacts: `output/runs/selection-v4-normalization/`, `output/runs/selection-v4-normalization-runtime/`,
+  `output/runs/selection-v4-normalization-comparison/report.{json,md}`, and receipts under
+  `output/normalization-study-20261018/gpu-support/`. Create the comparison output directory before
+  running `layered/normalization_analysis.py --run --plan-sha256` with the frozen SHA above.
 
 - 2026-10-14, step 6, longer schedule: three fresh 60-epoch Zagreb fits versus the saved 30-epoch
   baselines, seeds 1–3, 1,623 training tiles, the same 48 selection tiles and recipe `48de5c48dab295de`.
