@@ -439,6 +439,44 @@ test.describe('Building-family placement @features', () => {
     expect(freeform.geometry.buildings[0].properties.height).toBe(ruleBefore.rule?.maxHeightM ?? ruleBefore.height);
   });
 
+  // The Row stays a rule on its parcels while it is shaped: Width regenerates the houses, Edit shape
+  // manually locks the generated sliders (height stays), its undo asks before discarding, and Done
+  // saves the hand-shaped Row on the block's parcels.
+  test('row-house Width regenerates the row, and Edit shape manually is saved as a manual Row on its parcels', async ({ mockApi: page }) => {
+    await openRowHouseEditor(page);
+    const width = page.locator('#rowhouse-width-slider');
+    const widthLabel = page.locator('#rowhouse-width-value');
+    const labelBefore = await widthLabel.textContent();
+    const beforeWidth = JSON.parse(await previewGeometry(page)).canonical;
+    await width.focus();
+    await width.press('ArrowRight');
+    await expect(widthLabel).not.toHaveText(labelBefore || '');
+    await expect.poll(async () => JSON.stringify(JSON.parse(await previewGeometry(page)).canonical)).not.toBe(JSON.stringify(beforeWidth));
+
+    const manual = page.locator('#rowhouse-manual-toggle');
+    await manual.click();
+    await expect(manual).toHaveAttribute('aria-pressed', 'true');
+    for (const id of ['#rowhouse-width-slider', '#rowhouse-length-slider', '#rowhouse-chamfer-slider']) await expect(page.locator(id)).toBeDisabled();
+    await expect(page.locator('#rowhouse-height-slider')).toBeEnabled();
+
+    await manual.click();
+    const discard = page.getByRole('alertdialog').getByRole('button', { name: 'Discard', exact: true });
+    await expect(discard).toBeVisible();
+    await discard.click();
+    await expect(manual).toHaveAttribute('aria-pressed', 'false');
+    await expect(width).toBeEnabled();
+
+    await manual.click();
+    await expect(manual).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('#btn-rowhouse-done').click();
+    await proceedIfAsked(page);
+    const saved = await savedBuildingProposal(page, 'row');
+    expect(saved.buildingProposal.parameters.manualMode).toBe(true);
+    expect(saved.freePlacement).not.toBe(true);
+    expect(saved.cadastreParcelIds.length).toBeGreaterThan(0);
+    for (const id of saved.cadastreParcelIds) expect(BLOCK_PARCEL_IDS).toContain(String(id));
+  });
+
   test('row-house rotation stays generated, and a row dragged off its parcels converts to one Freeform building kept where it was dropped', async ({ mockApi: page }) => {
     await openRowHouseEditor(page);
     await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
