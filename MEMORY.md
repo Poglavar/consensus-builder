@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-19: Initial parcel qualification prioritizes availability: qualify a city when a real parcel source returns usable polygons through working, repeatable reads. Projection/native-CRS uncertainty, detailed geometry, completeness, absence and binding findings are recorded follow-ups for a second pass, rather than initial qualification blockers. Keep all real check results and source geometry; do not claim uncertain checks passed.
+
 - 2026-10-18: Resume parcel research and qualification on Valhalla toward 1,000 supported cities, continuing from the latest saved evidence; this lifts the October 12 worldwide-research pause.
 
 - 2026-10-15: For the on-map production cutover, preserve built capabilities without maintaining legacy implementation compatibility. The user accepts switching between 2D and model views instead of simultaneous previews, and intentionally removes the parcel/ground View in 3D shortcut.
