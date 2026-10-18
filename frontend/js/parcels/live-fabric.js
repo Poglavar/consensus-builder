@@ -28,6 +28,13 @@
     const RETIRED_PROVENANCE_FIELDS = Object.freeze([
         'baseParcelIds', 'parentParcelId', 'parentParcelIds', 'ancestorProposal', 'proposalId'
     ]);
+    // Step functions (generators) below are driven to completion synchronously by the one-shot
+    // mutation methods, and in clock-checked slices by the boot replay (mutation.*Steps).
+    const workSlicer = (root && root.__workSlicer)
+        || (typeof require === 'function' ? require('../work-slicer.js') : null);
+    // One collator for every delta sort: localeCompare with options builds a collator per call,
+    // which made sorting a whole-cadastre delta (~6,000 ids) a 185 ms task.
+    const ID_COLLATOR = new Intl.Collator(undefined, { numeric: true });
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -474,7 +481,9 @@
             return false;
         }
 
-        function validateReplacement(draft, scope, replacements) {
+        // Yields after each piece and each vertex tested, so a sliced replacement checks its pieces
+        // in short slices; `replaceCadastreScope` runs it to completion in one go.
+        function* validateReplacementSteps(draft, scope, replacements) {
             if (!geometry?.area || !geometry?.booleanPointInPolygon) {
                 const error = new Error('Geometry operations are required to validate a cadastral replacement.');
                 error.code = 'live-fabric-geometry-unavailable';
@@ -538,7 +547,7 @@
                 const group = find(id);
                 factAreaByGroup.set(group, (factAreaByGroup.get(group) || 0) + measuredArea(facts.get(id)));
             });
-            replacements.forEach(feature => {
+            for (const feature of replacements) {
                 const provenance = explicitCadastreIds(feature);
                 const group = find(provenance[0]);
                 const areaM2 = measuredArea(feature);
@@ -548,17 +557,20 @@
                 const hosts = provenance.map(id => facts.get(id));
                 if (hosts.length === 1 && isIdentityOfFact(feature, hosts[0])) {
                     metrics.identityReplacements += 1;
-                    return;
+                    yield;
+                    continue;
                 }
                 for (const vertex of verticesOf(feature)) {
-                    if (hosts.some(fact => vertexInsideFact(vertex, fact, boundaryCache))) continue;
-                    const error = new Error(`Replacement parcel ${featureId(feature)} lies outside immutable cadastral ground at [${vertex[0]}, ${vertex[1]}].`);
-                    error.code = 'live-fabric-replacement-outside';
-                    error.parcelId = featureId(feature);
-                    error.vertex = vertex.slice(0, 2);
-                    throw error;
+                    if (!hosts.some(fact => vertexInsideFact(vertex, fact, boundaryCache))) {
+                        const error = new Error(`Replacement parcel ${featureId(feature)} lies outside immutable cadastral ground at [${vertex[0]}, ${vertex[1]}].`);
+                        error.code = 'live-fabric-replacement-outside';
+                        error.parcelId = featureId(feature);
+                        error.vertex = vertex.slice(0, 2);
+                        throw error;
+                    }
+                    yield;
                 }
-            });
+            }
 
             // Members of each group, built once: filtering the whole scope per group was quadratic
             // (a full-cadastre reset of ~6,000 parcels spent ~0.4 s here).
@@ -733,7 +745,7 @@
                 else if (before && !after) removedIds.push(id);
                 else if (before !== after) updatedIds.push(id);
             });
-            const sort = values => Object.freeze(values.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })));
+            const sort = values => Object.freeze(values.sort(ID_COLLATOR.compare));
             return Object.freeze({
                 revision: committed.revision + 1,
                 fromRevision: committed.revision,
@@ -778,27 +790,91 @@
             };
             active = draft;
 
-            const mutation = {
-                seedCadastre(features) {
-                    assertActive(draft);
-                    for (const raw of Array.isArray(features) ? features : []) {
-                        const fact = normalizeCadastreFact(raw);
-                        const cadastralId = featureId(fact);
-                        const existingFact = draft.data.cadastreFacts.get(cadastralId);
-                        if (existingFact && JSON.stringify(existingFact.geometry) !== JSON.stringify(fact.geometry)) {
+            // One parcel per step. A fact already registered is compared, not normalized again:
+            // a replay's reset re-seeds every fact its ground load already seeded.
+            function* seedCadastreSteps(features) {
+                assertActive(draft);
+                for (const raw of Array.isArray(features) ? features : []) {
+                    const cadastralId = raw && raw.type === 'Feature' && raw.geometry ? featureId(raw) : '';
+                    const existingFact = cadastralId ? draft.data.cadastreFacts.get(cadastralId) : null;
+                    let fact = existingFact;
+                    if (existingFact) {
+                        assertNoRetiredProvenance(raw.properties || {}, cadastralId);
+                        if (JSON.stringify(existingFact.geometry) !== JSON.stringify(raw.geometry)) {
                             const error = new Error(`Conflicting immutable cadastral geometry for ${cadastralId}.`);
                             error.code = 'cadastral-geometry-conflict';
                             throw error;
                         }
-                        if (!existingFact) draft.data.cadastreFacts.set(cadastralId, fact);
-                        if (draft.data.byCadastreId.get(cadastralId)?.size) continue;
-                        // Polygon facts are already normalized, frozen, and trusted, so the live
-                        // entry reuses that exact object. MultiPolygons retain one immutable union
-                        // fact and derive one normalized live object per connected component.
+                    } else {
+                        fact = normalizeCadastreFact(raw);
+                        draft.data.cadastreFacts.set(featureId(fact), fact);
+                    }
+                    // Polygon facts are already normalized, frozen, and trusted, so the live
+                    // entry reuses that exact object. MultiPolygons retain one immutable union
+                    // fact and derive one normalized live object per connected component.
+                    if (!draft.data.byCadastreId.get(featureId(fact))?.size) {
                         connectedFeatures(fact, { cadastreSeed: true }).forEach(feature => putOne(draft, feature));
                     }
-                    return Array.from(draft.changedIds);
+                    yield;
+                    assertActive(draft);
+                }
+                return Array.from(draft.changedIds);
+            }
+
+            function* replaceCadastreScopeSteps(cadastreIds, features) {
+                assertActive(draft);
+                const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
+                for (const feature of draft.data.byId.values()) {
+                    const occupied = explicitCadastreIds(feature);
+                    if (occupied.some(id => scope.has(id))) {
+                        const escaped = occupied.filter(id => !scope.has(id));
+                        if (escaped.length) {
+                            const error = new Error(`Cadastral replacement scope is not closed: ${featureId(feature)} also occupies ${escaped.join(', ')}`);
+                            error.code = 'live-fabric-scope-not-closed';
+                            error.parcelId = featureId(feature);
+                            error.requestedCadastreIds = Array.from(scope);
+                            error.requiredCadastreIds = occupied;
+                            throw error;
+                        }
+                    }
+                }
+                yield;
+                assertActive(draft);
+                const replacements = [];
+                for (const raw of Array.isArray(features) ? features : []) {
+                    replacements.push(...connectedFeatures(raw));
+                    yield;
+                }
+                assertActive(draft);
+                yield* validateReplacementSteps(draft, scope, replacements);
+                assertActive(draft);
+                for (const [id, feature] of Array.from(draft.data.byId.entries())) {
+                    if (!explicitCadastreIds(feature).some(value => scope.has(value))) continue;
+                    removeOne(draft, id);
+                    yield;
+                    assertActive(draft);
+                }
+                for (const feature of replacements) {
+                    const existing = draft.data.byId.get(featureId(feature));
+                    if (existing) {
+                        const error = new Error(`Replacement id ${featureId(feature)} already exists outside its cadastral scope.`);
+                        error.code = 'duplicate-live-parcel-id';
+                        throw error;
+                    }
+                    putOne(draft, feature);
+                    yield;
+                    assertActive(draft);
+                }
+                return Array.from(draft.changedIds);
+            }
+
+            const mutation = {
+                // `*Steps` hand out the step function itself, for a caller that runs it in slices
+                // (work-slicer.js runSliced) or folds it into its own steps (`yield*`).
+                seedCadastre(features) {
+                    return workSlicer.runToCompletion(seedCadastreSteps(features));
                 },
+                seedCadastreSteps,
                 upsertFeatures(features, config = {}) {
                     assertActive(draft);
                     for (const raw of Array.isArray(features) ? features : []) {
@@ -811,36 +887,9 @@
                     return Array.from(ids || []).map(normalizeId).filter(id => !!removeOne(draft, id));
                 },
                 replaceCadastreScope(cadastreIds, features) {
-                    assertActive(draft);
-                    const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
-                    draft.data.byId.forEach(feature => {
-                        const occupied = explicitCadastreIds(feature);
-                        if (!occupied.some(id => scope.has(id))) return;
-                        const escaped = occupied.filter(id => !scope.has(id));
-                        if (!escaped.length) return;
-                        const error = new Error(`Cadastral replacement scope is not closed: ${featureId(feature)} also occupies ${escaped.join(', ')}`);
-                        error.code = 'live-fabric-scope-not-closed';
-                        error.parcelId = featureId(feature);
-                        error.requestedCadastreIds = Array.from(scope);
-                        error.requiredCadastreIds = occupied;
-                        throw error;
-                    });
-                    const replacements = (Array.isArray(features) ? features : []).flatMap(raw => connectedFeatures(raw));
-                    validateReplacement(draft, scope, replacements);
-                    Array.from(draft.data.byId.entries()).forEach(([id, feature]) => {
-                        if (explicitCadastreIds(feature).some(value => scope.has(value))) removeOne(draft, id);
-                    });
-                    replacements.forEach(feature => {
-                        const existing = draft.data.byId.get(featureId(feature));
-                        if (existing) {
-                            const error = new Error(`Replacement id ${featureId(feature)} already exists outside its cadastral scope.`);
-                            error.code = 'duplicate-live-parcel-id';
-                            throw error;
-                        }
-                        putOne(draft, feature);
-                    });
-                    return Array.from(draft.changedIds);
+                    return workSlicer.runToCompletion(replaceCadastreScopeSteps(cadastreIds, features));
                 },
+                replaceCadastreScopeSteps,
                 releaseCadastreScope(cadastreIds, reason, config = {}) {
                     assertActive(draft);
                     const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
@@ -864,6 +913,8 @@
                 get: id => (assertActive(draft), readFrom(draft.data, id)),
                 getMany: (ids, query) => (assertActive(draft), getManyFrom(draft.data, ids, query)),
                 list: () => (assertActive(draft), Array.from(draft.data.byId.values(), clone)),
+                // The draft's pieces themselves (deep-frozen), for readers that copy nothing.
+                peekList: () => (assertActive(draft), Array.from(draft.data.byId.values())),
                 entriesForCadastre: (ids, query) => (assertActive(draft), entriesForCadastreFrom(draft.data, ids, query)),
                 hasCadastreEntries: (ids, query) => (assertActive(draft), hasCadastreEntriesFrom(draft.data, ids, query)),
                 absentCadastreIds: (ids, query) => (assertActive(draft), absentCadastreIdsFrom(draft.data, ids, query)),
@@ -875,19 +926,22 @@
                 queryBounds: (bounds, query) => (assertActive(draft), queryBoundsFrom(draft.data, bounds, query)),
                 countBounds: (bounds, query) => (assertActive(draft), countBoundsFrom(draft.data, bounds, query)),
                 cadastreIdsForParcelIds: (ids, query) => (assertActive(draft), cadastreIdsForParcelIdsFrom(draft.data, ids, query)),
+                // Every cadastral id a live piece occupies (the index keys), without copying a piece.
+                occupiedCadastreIds: () => (assertActive(draft), Array.from(draft.data.byCadastreId.keys())),
                 snapshot: () => (assertActive(draft), {
                     revision: draft.data.revision,
                     featureCount: draft.data.byId.size,
                     parcelIds: Array.from(draft.data.byId.keys())
                 }),
-                async prepare() {
+                // `options.slicer` (the boot replay's) is handed to every participant's prepare.
+                async prepare(options = {}) {
                     assertActive(draft);
                     draft.delta = deltaFor(draft);
                     const view = participantView(draft);
                     try {
                         for (const participant of participants) {
                             const value = typeof participant.prepare === 'function'
-                                ? await participant.prepare(draft.delta, view)
+                                ? await participant.prepare(draft.delta, view, options)
                                 : draft.delta;
                             draft.prepared.push({ participant, value });
                         }
