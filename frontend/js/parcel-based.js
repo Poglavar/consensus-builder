@@ -33,6 +33,7 @@
     let parcelBasedBuildOut = [];
     let parcelBasedBlockNameOverride = null;
     let parcelBasedBlock = null;
+    let parcelBasedDragState = null;
     let pendingParcelBasedProposalContext = null;
 
     // Default parameter values
@@ -380,10 +381,12 @@
             if (!envelope || !envelope.geometry) return;
             const color = envelope.properties?.color || colorForParcel(envelope.properties?.parcelId, index);
 
-            parcelBasedEnvelopeLayers.push(L.geoJSON(envelope, {
+            const envelopeLayer = L.geoJSON(envelope, {
                 pane: parcelBasedModal?.pane,
                 style: { fillColor: color, fillOpacity: 0.08, color, weight: 1, dashArray: '4, 4' }
-            }).addTo(parcelBasedMap));
+            }).addTo(parcelBasedMap);
+            envelopeLayer.on('mousedown touchstart', startParcelBasedDrag);
+            parcelBasedEnvelopeLayers.push(envelopeLayer);
 
             const house = houses[index];
             if (!house || !house.geometry) return;
@@ -391,6 +394,7 @@
                 pane: parcelBasedModal?.pane,
                 style: { fillColor: color, fillOpacity: 0.6, color, weight: 2 }
             }).addTo(parcelBasedMap);
+            layer.on('mousedown touchstart', startParcelBasedDrag);
 
             const floors = house.properties?.floors || 1;
             const permitted = envelope.properties?.floors || floors;
@@ -527,6 +531,8 @@
             parcelBasedBuildOut = buildOutFor(buildings);
             displayBuildingsInModal(buildings, parcelBasedBuildOut, excluded);
             autosaveParcelBasedDraft();
+            const freeformButton = document.getElementById('btn-parcelbased-freeform');
+            if (freeformButton) freeformButton.hidden = !parcelBasedConvertsToFreeform();
 
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = false;
@@ -554,6 +560,129 @@
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = true;
         }
+    }
+
+    // ---- Dragging: a Detached rule stays on its parcels ----
+    // Dragging the houses previews them at the drop, and the drop asks (proposal-editor-shell.js
+    // chooseRuleDrop): run the same rule on the parcels mostly inside the dropped outline, or cancel.
+    // Separate houses on separate parcels are not one building, so converting to Freeform is offered
+    // only when the rule covers exactly one parcel: one house.
+
+    function parcelBasedLatLng(event) {
+        const nativeEvent = event?.originalEvent || event;
+        const touch = nativeEvent?.changedTouches?.[0] || nativeEvent?.touches?.[0];
+        const pointer = touch ? { clientX: touch.clientX, clientY: touch.clientY } : nativeEvent;
+        return event?.latlng || parcelBasedMap.containerPointToLatLng(parcelBasedMap.mouseEventToContainerPoint(pointer));
+    }
+
+    function movedParcelBasedFeature(feature, from, to) {
+        if (!feature?.geometry) return feature;
+        const geometry = window.SingleBuildingGeometry?.moveGeometry?.(feature.geometry, from, to);
+        return geometry ? { ...feature, geometry } : feature;
+    }
+
+    function startParcelBasedDrag(event) {
+        if (!parcelBasedMap || parcelBasedDragState || !generatedParcelBasedFeatures?.length) return;
+        L.DomEvent?.stopPropagation?.(event);
+        event?.originalEvent?.preventDefault?.();
+        parcelBasedDragState = {
+            start: event.latlng,
+            end: event.latlng,
+            mapWasDraggable: parcelBasedMap.dragging?.enabled?.() !== false
+        };
+        parcelBasedMap.dragging?.disable?.();
+        document.addEventListener('mousemove', moveParcelBasedDrag);
+        document.addEventListener('mouseup', finishParcelBasedDrag);
+        document.addEventListener('touchmove', moveParcelBasedDrag, { passive: false });
+        document.addEventListener('touchend', finishParcelBasedDrag);
+        document.addEventListener('touchcancel', finishParcelBasedDrag);
+    }
+
+    function moveParcelBasedDrag(event) {
+        if (!parcelBasedDragState || !parcelBasedMap) return;
+        if (event?.cancelable) event.preventDefault();
+        const drag = parcelBasedDragState;
+        drag.end = parcelBasedLatLng(event);
+        displayBuildingsInModal(
+            generatedParcelBasedFeatures.map(feature => movedParcelBasedFeature(feature, drag.start, drag.end)),
+            parcelBasedBuildOut.map(feature => movedParcelBasedFeature(feature, drag.start, drag.end)),
+            []
+        );
+    }
+
+    function parcelBasedParcelsUnderOutline(outline) {
+        const fabric = window.LiveParcelFabric;
+        const conversion = window.__freeformConversion;
+        const order = window.__planOrder;
+        if (!outline?.geometry || !fabric?.queryBounds || !conversion || !order?.intersectionArea) return [];
+        const candidates = fabric.queryBounds(turf.bbox(outline), { includeCorridors: false })
+            .filter(feature => !(typeof window.isRoadParcel === 'function' && window.isRoadParcel(fabric.featureId(feature))))
+            .map(feature => ({ id: fabric.featureId(feature), feature }));
+        return conversion.parcelsMostlyInside(outline, candidates, {
+            intersectionArea: order.intersectionArea,
+            area: feature => turf.area(feature)
+        });
+    }
+
+    // Run the Detached rule, with its current parameters, on the parcels under the dropped outline.
+    function parcelBasedRuleAtOutline(outline) {
+        const ids = parcelBasedParcelsUnderOutline(outline);
+        if (!ids.length) {
+            return { ok: false, reason: translateParcelBasedText('proposalDrafts.freeform.noParcelsHere', 'No parcel lies mostly inside the dropped outline.') };
+        }
+        const parcels = parcelBasedParcelsForIds(ids);
+        const nextBlock = { parcels, parcelIds: ids, site: null, valid: true, polygon: null };
+        const generated = parcels.length === ids.length
+            ? generateBuildingsForBlock(nextBlock, currentParcelRule(), currentVariationSeed)
+            : { buildings: [] };
+        if (!generated.buildings.length) {
+            return { ok: false, reason: translateParcelBasedText('proposalDrafts.freeform.ruleFailedHere', 'The {{rule}} rule cannot build a building on the parcels here.', { rule: window.ruleDropLabel?.('parcelBased') || 'Detached' }) };
+        }
+        parcelBasedBlock = nextBlock;
+        parcelBasedBlockNameOverride = describeParcelBasedParcelSelection(ids);
+        displayParcelsOnMap(nextBlock);
+        generateBuildingsInModal();
+        return { ok: true };
+    }
+
+    // A Detached rule on exactly one parcel is one house: it converts like a Freeform building.
+    function parcelBasedConvertsToFreeform() {
+        return (getActiveParcelBasedBlock()?.parcels?.length || 0) === 1 && (generatedParcelBasedFeatures?.length || 0) === 1;
+    }
+
+    async function convertParcelBasedToFreeform(features, site, confirm) {
+        const result = await window.convertActiveDesignToFreeform?.({ features, site, typology: 'parcelBased', confirm });
+        if (result?.ok) closeParcelBasedModal({ preservePending: true });
+        return result || { ok: false };
+    }
+
+    async function finishParcelBasedDrag() {
+        if (!parcelBasedDragState) return;
+        const drag = parcelBasedDragState;
+        parcelBasedDragState = null;
+        if (drag.mapWasDraggable) parcelBasedMap?.dragging?.enable?.();
+        document.removeEventListener('mousemove', moveParcelBasedDrag);
+        document.removeEventListener('mouseup', finishParcelBasedDrag);
+        document.removeEventListener('touchmove', moveParcelBasedDrag);
+        document.removeEventListener('touchend', finishParcelBasedDrag);
+        document.removeEventListener('touchcancel', finishParcelBasedDrag);
+        const putBack = () => generateBuildingsInModal();
+        if (!drag.end || (drag.end.lat === drag.start.lat && drag.end.lng === drag.start.lng)) {
+            putBack();
+            return;
+        }
+        const outline = parcelBasedBoundary?.geometry ? movedParcelBasedFeature(parcelBasedBoundary, drag.start, drag.end) : null;
+        const movedEnvelopes = generatedParcelBasedFeatures.map(feature => movedParcelBasedFeature(feature, drag.start, drag.end));
+        const answer = typeof window.chooseRuleDrop === 'function'
+            ? await window.chooseRuleDrop({
+                typology: 'parcelBased',
+                tryConvert: parcelBasedConvertsToFreeform()
+                    ? async () => convertParcelBasedToFreeform(movedEnvelopes, window.__siteDraft?.siteFromFeatures?.([outline || movedEnvelopes[0]]), false)
+                    : null,
+                tryRule: async () => parcelBasedRuleAtOutline(outline)
+            })
+            : 'cancel';
+        if (answer === 'cancel' && parcelBasedModal) putBack();
     }
 
     // --- Modal management ---
@@ -657,6 +786,7 @@
                     <div id="parcelbased-buttons">
                         <button type="button" class="btn btn-quiet" id="btn-parcelbased-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
                         <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn" id="btn-parcelbased-freeform" hidden data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-parcelbased-done" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
@@ -707,6 +837,13 @@
             if (regenerateButton) {
                 regenerateButton.addEventListener('click', rerollParcelBasedBuildOut);
             }
+            // One house on one parcel converts like a Freeform building (proposal-editor-shell.js).
+            document.getElementById('btn-parcelbased-freeform')?.addEventListener('click', async () => {
+                if (!parcelBasedConvertsToFreeform()) return;
+                const result = await convertParcelBasedToFreeform(generatedParcelBasedFeatures,
+                    window.__siteDraft?.siteFromFeatures?.([parcelBasedBoundary?.geometry ? parcelBasedBoundary : generatedParcelBasedFeatures[0]]), true);
+                if (!result.ok && !result.cancelled) setParcelBasedInfo('', result.reason || '');
+            });
 
             const ruleTypeSelect = document.getElementById('parcelbased-ruletype-select');
             if (ruleTypeSelect) {

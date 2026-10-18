@@ -610,7 +610,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </div>
         ${mapActionFailureHtml}
     `;
-    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + compareButtonHtml + buyButtonHtml + driveButtonHtml;
+    // A Block or Row proposal is a rule on its parcels; leaving them is a conversion to one Freeform
+    // building (proposals/freeform-conversion.js, proposal-editor-shell.js).
+    const convertsToFreeform = proposalKey
+        && typeof convertProposalToFreeform === 'function'
+        && window.__freeformConversion?.convertsToFreeform(fullProposal || proposal) === true;
+    const convertToFreeformButtonHtml = convertsToFreeform
+        ? `
+        <button type="button" class="btn btn-convert-freeform"
+            onclick="convertProposalToFreeform(${inlineJsArg(proposalKey)})"
+            title="${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the buildings as they are now and edit them directly. The rule\'s parameters no longer apply afterwards.'))}">
+            <i class="fas fa-shapes" aria-hidden="true"></i> ${tProposal('proposalDrafts.freeform.title', 'Convert to freeform building')}
+        </button>
+    `
+        : '';
+    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + buyButtonHtml + driveButtonHtml;
 
     const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayDescription)

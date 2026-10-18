@@ -1,4 +1,8 @@
 // Exercise the family editors' real placement, mode, history, and save functions without a browser.
+// Block and Row are rules on their parcels (user decision 2026-10-18, MEMORY.md): they are never a
+// free placement. A move inside the parcels is the rule's own offset; a drop off them asks whether
+// to convert to one Freeform building kept there, run the same rule on the parcels there, or put it
+// back (proposal-editor-shell.js chooseRuleDrop).
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -8,6 +12,7 @@ import { parse } from '@babel/parser';
 const require = createRequire(import.meta.url);
 globalThis.proj4 ||= require('proj4');
 const turf = require('@turf/turf');
+globalThis.turf ||= turf;
 const geometry = require('../../frontend/js/single-building-geometry.js');
 const localFrame = require('../../frontend/js/local-frame.js');
 const History = require('../../frontend/js/geometry-edit/history.js');
@@ -78,12 +83,7 @@ function rowHarness() {
         window, document, documentHandlers, turf, CbFormat: { formatNumber: value => String(value) },
         L: { DomEvent: { stopPropagation() {} } },
         translateRowHouseText: (_key, fallback) => fallback,
-        rowHouseModal: { placement: {
-            locked: false,
-            accepts: () => true,
-            update: vi.fn(value => movedFeatures.push(clone(value))),
-            moveGeometry: vi.fn((value, from, to, event) => geometry.moveGeometry(value, from, to, event))
-        }, handlePane: 'handles', setPreview() {} },
+        rowHouseModal: { handlePane: 'handles', setPreview() {} },
         rowHouseMap: {
             dragging: { disable() {}, enable() {} },
             mouseEventToContainerPoint: event => event,
@@ -119,7 +119,7 @@ function rowHarness() {
         let currentOffsetX=this.currentOffsetX, currentOffsetY=this.currentOffsetY, currentRotation=this.currentRotation;
         let baseRotation=this.baseRotation, cachedCentroid=this.cachedCentroid, cachedSuperparcel=this.rowHouseBlock.site, rowVariationSeed=1;
         let cachedMetersPerDegLng=this.cachedMetersPerDegLng, cachedMetersPerDegLat=this.cachedMetersPerDegLat;
-        let dragStartLatLng=null, dragStartOffset=null, dragStartFeature=null, dragLastValidFeature=null, isDragging=false;
+        let dragStartLatLng=null, dragEndLatLng=null, dragStartOffset=null, dragStartFeature=null, dragLastValidFeature=null, isDragging=false;
         const DEFAULT_BUILDING_LENGTH=40, DEFAULT_BUILDING_WIDTH=10, DEFAULT_BUILDING_HEIGHT=12;
         const DEFAULT_CHAMFER=0;
         const cloneRowHouseFeature=${functions.get('cloneRowHouseFeature')};
@@ -127,7 +127,10 @@ function rowHarness() {
         const rowHouseFeatureWithRing=${functions.get('rowHouseFeatureWithRing')};
         const rowHouseFeatureValid=${functions.get('rowHouseFeatureValid')};
         const rowHousePointerEvent=${functions.get('rowHousePointerEvent')};
-        const rowHousePlacementLocked=${functions.get('rowHousePlacementLocked')};
+        const rowHouseSiteBoundary=${functions.get('rowHouseSiteBoundary')};
+        const rowHouseFitsSite=${functions.get('rowHouseFitsSite')};
+        const resolveRowHouseDrop=${functions.get('resolveRowHouseDrop')};
+        const closeRowHouseModal=(...args)=>this.closed.push(args);
         const rowHouseGeometrySnapshot=${functions.get('rowHouseGeometrySnapshot')};
         const restoreRowHouseGeometrySnapshot=${functions.get('restoreRowHouseGeometrySnapshot')};
         const syncRowHouseGeometryControls=${functions.get('syncRowHouseGeometryControls')};
@@ -148,8 +151,8 @@ function rowHarness() {
         rowHouseHistory=rowHouseHistoryFactory.create({capture:rowHouseGeometrySnapshot,restore:restoreRowHouseGeometrySnapshot});
         this.state=()=>({feature:generatedRowHouseFeature,manual:rowHouseManualMode,offsetX:currentOffsetX,offsetY:currentOffsetY,rotation:currentRotation});
         this.useFeature=feature=>{ generatedRowHouseFeature=cloneRowHouseFeature(feature); };
-        this.move=(start,to)=>{ startDrag({latlng:start,originalEvent:{target:null}}); onDragMove(to); onDragEnd(); };
-        this.touchDrag=(start,coord)=>{ const native={target:null,touches:[coord],changedTouches:[coord],preventDefault(){this.prevented=true;}}; startDrag({latlng:start,originalEvent:native}); documentHandlers.get('touchmove')(native); documentHandlers.get('touchend')({}); return {prevented:native.prevented,feature:generatedRowHouseFeature}; };
+        this.move=(start,to)=>{ startDrag({latlng:start,originalEvent:{target:null}}); onDragMove(to); return onDragEnd(); };
+        this.touchDrag=async (start,coord)=>{ const native={target:null,touches:[coord],changedTouches:[coord],preventDefault(){this.prevented=true;}}; startDrag({latlng:start,originalEvent:native}); documentHandlers.get('touchmove')(native); await documentHandlers.get('touchend')({}); return {prevented:native.prevented,feature:generatedRowHouseFeature}; };
         this.rotate=delta=>rotateRowHouseFootprint(delta);
         this.edit=ring=>{ renderRowHousePolygonEditor(); window.__polygonOptions.onDragStart(); return window.__polygonOptions.onCommit({ring,reason:'move',vertexIndex:1}); };
         this.undo=()=>rowHouseHistory.undo();
@@ -163,6 +166,9 @@ function rowHarness() {
         const toSingleLargestPolygonLocal=${functions.get('toSingleLargestPolygonLocal')};
         const generateRowHousePolygon=${functions.get('generateRowHousePolygon')};
     `;
+    context.closed = [];
+    context.window.UrbanRuleVariation = { massingWithRule: value => clone(value) };
+    context.window.__siteDraft = require('../../frontend/js/proposals/site-draft.js');
     vm.runInNewContext(source + dependencies, context);
     return context;
 }
@@ -185,12 +191,11 @@ function openBlockHarness() {
     };
     const source = `
         let window=this.window, blockifySeedState=null, blockifyAuthoredSite=null, blockifyGenerationSite=null;
-        let blockifyPlacementSite=null, blockifyBlock=null, blockifyBlockNameOverride=null;
+        let blockifyBlock=null, blockifyBlockNameOverride=null;
         const updateStatus=this.updateStatus, translateBuildingText=this.translateBuildingText;
         const robustUnion=this.robustUnion, describeParcelSelection=this.describeParcelSelection;
         const showBlockifyModal=this.showBlockifyModal, deepCloneBuildingFeature=this.deepCloneBuildingFeature;
         const normalizeBlockifySite=${functions.get('normalizeBlockifySite')};
-        const blockifyGenerationBaseSite=${functions.get('blockifyGenerationBaseSite')};
         const openUrbanRuleForParcels=${functions.get('openUrbanRuleForParcels')};
         this.open=options=>openUrbanRuleForParcels(options);
         this.block=()=>blockifyBlock;
@@ -200,126 +205,87 @@ function openBlockHarness() {
     return context;
 }
 
-function blockTouchHarness() {
+// The Block editor's massing drag and drop, with the shell's choice and conversion stubbed.
+function blockDropHarness(answer) {
     const functions = functionSources('../../frontend/js/building-blocks.js');
     const documentHandlers = new Map();
     const feature = rect(15.9999, 44.99995, 16.0001, 45.00005, { height: 18 });
+    const site = rect(15.9998, 44.9999, 16.0002, 45.0001, { id: 'site' });
     const dragging = { active: true, enabled() { return this.active; }, disable() { this.active = false; }, enable() { this.active = true; } };
-    const moveGeometry = vi.fn((value, from, to) => geometry.moveGeometry(value, from, to));
+    const chooseRuleDrop = vi.fn(async options => {
+        if (answer === 'convert') await options.tryConvert();
+        return answer;
+    });
+    const convertActiveDesignToFreeform = vi.fn(() => ({ ok: true }));
     const context = {
         turf, console,
-        window: { SingleBuildingGeometry: geometry, LocalFrame: localFrame },
-        generatedBuildingFeature: clone(feature), blockifyDragState: null,
-        blockifyModal: { placement: { moveGeometry, accepts: () => true, update: vi.fn() } },
+        window: {
+            SingleBuildingGeometry: geometry, LocalFrame: localFrame, chooseRuleDrop, convertActiveDesignToFreeform,
+            UrbanRuleVariation: { massingWithRule: value => clone(value) },
+            __siteDraft: require('../../frontend/js/proposals/site-draft.js')
+        },
+        generatedBuildingFeature: clone(feature), blockifyDragState: null, blockifyGenerationSite: site,
+        blockifyModal: {},
         blockifyMap: {
             dragging,
             mouseEventToContainerPoint: event => event,
             containerPointToLatLng: point => ({ lat: 45 + point.clientY * 0.00001, lng: 16 + point.clientX * 0.00001 })
         },
-        blockifyHistory: { record: vi.fn(), discardLast: vi.fn() },
-        blockifyPlacementTransform: { translationMeters: [0, 0], rotationDegrees: 0 },
-        blockifyMode: 'parametric', manualOuterRing: [],
+        blockifyMode: 'parametric',
         blockifyPolygonEditor: null,
-        blockifyBuildingLayer: { eachLayer: () => {} },
-        blockifyPointerEvent: null,
         document: {
             addEventListener(name, fn) { documentHandlers.set(name, fn); },
             removeEventListener(name, fn) { if (documentHandlers.get(name) === fn) documentHandlers.delete(name); }
         },
         L: { DomEvent: { stopPropagation() {} } },
-        clearGapWingHandles() {}, displayBuildingInModal() {}, renderManualPolygonEditor() {}, renderGapWingHandles() {}, autosaveBlockifyDraft() {}
+        closed: [],
+        clearGapWingHandles() {}, displayBuildingInModal() {}, renderManualPolygonEditor() {}, renderGapWingHandles() {}
     };
     const source = `
         let window=this.window, turf=this.turf, console=this.console, document=this.document, L=this.L;
+        const documentHandlers=this.documentHandlers;
         let generatedBuildingFeature=this.generatedBuildingFeature, blockifyDragState=this.blockifyDragState;
-        let blockifyModal=this.blockifyModal, blockifyMap=this.blockifyMap, blockifyHistory=this.blockifyHistory;
-        let blockifyPlacementTransform=this.blockifyPlacementTransform, blockifyMode=this.blockifyMode;
-        let manualOuterRing=this.manualOuterRing, blockifyPolygonEditor=this.blockifyPolygonEditor;
-        let blockifyBuildingLayer=this.blockifyBuildingLayer;
+        let blockifyModal=this.blockifyModal, blockifyMap=this.blockifyMap, blockifyMode=this.blockifyMode;
+        let blockifyPolygonEditor=this.blockifyPolygonEditor, blockifyGenerationSite=this.blockifyGenerationSite;
+        let blockifyAuthoredSite=null, lastSuperparcel=null, blockVariationSeed=3;
         const clearGapWingHandles=this.clearGapWingHandles, displayBuildingInModal=this.displayBuildingInModal;
         const renderManualPolygonEditor=this.renderManualPolygonEditor, renderGapWingHandles=this.renderGapWingHandles;
-        const autosaveBlockifyDraft=this.autosaveBlockifyDraft;
+        const currentBlockRule=()=>({ kind: 'exact', maxHeightM: 18 });
+        const closeBlockifyModal=(...args)=>this.closed.push(args);
+        const blockifyRuleAtOutline=outline=>({ ok: true, outline });
         const blockifyClone=${functions.get('blockifyClone')};
-        const blockifyOuterRing=${functions.get('blockifyOuterRing')};
+        const blockifyDesignBoundary=${functions.get('blockifyDesignBoundary')};
         const blockifyPointerEvent=${functions.get('blockifyPointerEvent')};
         const startBlockifyMassMove=${functions.get('startBlockifyMassMove')};
         const moveBlockifyMass=${functions.get('moveBlockifyMass')};
+        const blockifyStopMassMoveListeners=${functions.get('blockifyStopMassMoveListeners')};
         const finishBlockifyMassMove=${functions.get('finishBlockifyMassMove')};
-        this.touchDrag=(start,coordinate)=>{
+        this.touchDrag=async (start,coordinate)=>{
             const native={target:null,touches:[coordinate],changedTouches:[coordinate],preventDefault(){this.prevented=true;}};
             startBlockifyMassMove({latlng:start,originalEvent:native});
             documentHandlers.get('touchmove')(native);
-            documentHandlers.get('touchend')({});
+            await documentHandlers.get('touchend')({});
             return {prevented:native.prevented,feature:generatedBuildingFeature,dragging:this.blockifyMap.dragging.active};
         };
-        this.moveGeometry=this.blockifyModal.placement.moveGeometry;
     `;
     context.documentHandlers = documentHandlers;
     vm.runInNewContext(source, context);
     return context;
 }
 
-function blockHarness() {
-    const functions = functionSources('../../frontend/js/building-blocks.js');
-    const copyFunctions = functionSources('../../frontend/js/proposals/copy.js');
-    const moveGeometry = vi.fn((value, from, to) => geometry.moveGeometry(value, from, to));
-    const placementMove = vi.fn(() => { throw new Error('Regeneration must not invoke snapping'); });
-    const context = {
-        turf,
-        window: { SingleBuildingGeometry: geometry, LocalFrame: localFrame },
-        blockifyClone: clone,
-        normalizeBlockifySite: site => site?.type === 'Feature' ? clone(site) : null,
-        blockifyModal: { placement: { moveGeometry: placementMove } },
-        blockifyPlacementTransform: { translationMeters: [38, -12], rotationDegrees: 5 },
-        blockifyGenerationSite: null,
-        geometryMove: moveGeometry
-    };
-    const source = `
-        let window=this.window, turf=this.turf;
-        let blockifyClone=this.blockifyClone, normalizeBlockifySite=this.normalizeBlockifySite;
-        let blockifyModal=this.blockifyModal;
-        let blockifyPlacementTransform=this.blockifyPlacementTransform;
-        let blockifyGenerationSite=null, blockifyMode='parametric';
-        let currentSetback=2, currentBuildingWidth=15, currentBuildingHeight=17.5, currentChamferM=0, currentSimplifyM=0;
-        let gapPositions=[], wingPositions=[], blockRuleKind='exact', blockMinHeightM=0, blockMinDepthM=0, blockMinPlotAreaM2=50, blockVariationSeed=1;
-        let existingRule='exact', currentProposedHeightFloors=5, currentAdditionalFloors=0, currentFloorHeightM=3.5, manualOuterRing=[];
-        const document={getElementById:()=>null};
-        const syncBlockifyControlsFromState=()=>{}, setFootprintSlidersEnabled=()=>{}, updateManualToggleLabel=()=>{};
-        const blockifyGenerationBaseSite=${functions.get('blockifyGenerationBaseSite')};
-        const applyBlockifySeedState=${functions.get('applyBlockifySeedState')};
-        const buildBlockifySeed=${copyFunctions.get('buildBlockifySeed')};
-        const applyBlockifyPlacementTransform=${functions.get('applyBlockifyPlacementTransform')};
-        this.reopen=(parameters,currentSite)=>{
-            const seed=buildBlockifySeed({parameters,buildingFeature:currentSite});
-            blockifyGenerationSite=blockifyGenerationBaseSite(seed.placementBaseSite,currentSite,currentSite);
-            applyBlockifySeedState(seed);
-            return blockifyClone(blockifyGenerationSite);
-        };
-        this.regenerate=(width=currentBuildingWidth)=>{
-            const [lng,lat]=turf.centroid(blockifyGenerationSite).geometry.coordinates;
-            const frame=window.LocalFrame.makeLocalFrame(lng,lat);
-            const halfX=width/(2*frame.metersPerDegLng), halfY=8/(2*frame.metersPerDegLat);
-            const feature={type:'Feature',properties:{width},geometry:{type:'Polygon',coordinates:[[[lng-halfX,lat-halfY],[lng+halfX,lat-halfY],[lng+halfX,lat+halfY],[lng-halfX,lat+halfY],[lng-halfX,lat-halfY]]]}};
-            return applyBlockifyPlacementTransform(feature);
-        };
-        this.sliderRegenerate=(width)=>{ currentBuildingWidth=width; return this.regenerate(); };
-        this.snappedMove=blockifyModal.placement.moveGeometry;
-    `;
-    vm.runInNewContext(source, context);
-    return context;
-}
-
-describe('building-family free placement', () => {
-    it('stores block typology on both draft autosaves and completed non-existing designs', () => {
+describe('building-family rules stay on their parcels', () => {
+    it('stores block typology and never a free placement on draft autosaves and completed designs', () => {
         const source = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
         const autosave = source.slice(source.indexOf('function autosaveBlockifyDraft('), source.indexOf('// Function to display the building in the modal'));
         const save = source.slice(source.indexOf('async function saveBlockifyDesignForProposal()'));
         expect(autosave.match(/typology: 'block'/g)).toHaveLength(2);
         expect(save.match(/typology: 'block'/g)).toHaveLength(2);
-        expect(autosave).toContain("...(blockifyMode !== 'existing' ? { placement:");
-        expect(save).toContain("...(blockifyMode !== 'existing' ? { placement:");
-        expect(autosave).toContain('free: true');
-        expect(save).toContain('free: true');
+        [autosave, save].forEach(text => {
+            expect(text).toContain('placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }');
+            expect(text).not.toContain('free: true');
+            expect(text).not.toContain('placementBaseSite');
+            expect(text).not.toContain('placementTransform');
+        });
     });
 
     it('opens the block editor with an authored site and no parcel IDs', () => {
@@ -331,39 +297,29 @@ describe('building-family free placement', () => {
         expect(h.block().parcelIds).toEqual([]);
     });
 
-    it('autosaves the current moved row as a fresh free site even while the optional lock is enabled', () => {
+    it('autosaves a row on its own site, never as a free placement', () => {
         const functions = functionSources('../../frontend/js/row-house.js');
         const site = rect(15.999, 44.999, 16.001, 45.001);
         const feature = rect(16.0003, 45, 16.0004, 45.00005, { type: 'proposedRowHouse' });
         const sync = vi.fn();
-        const rule = { kind: 'exact' };
         const context = {
             window: {
                 getActiveProposalDesignDraft: () => ({ adapterKey: 'row' }),
                 syncActiveProposalDraftFromEditor: sync,
-                UrbanRuleVariation: {
-                    massingWithRule: (value, urbanRule, seed) => ({
-                        ...value,
-                        properties: {
-                            ...(value.properties || {}),
-                            massing: true,
-                            urbanRule,
-                            variationSeed: seed
-                        }
-                    })
-                }
+                UrbanRuleVariation: { massingWithRule: (value, urbanRule, seed) => ({ ...value, properties: { ...(value.properties || {}), massing: true, urbanRule, variationSeed: seed } }) }
             },
             turf,
-            feature, block: { parcels: [{ feature: site }], syntheticSite: true, site, generatorSite: site }
+            feature, block: { parcels: [{ feature: site }], syntheticSite: true, site }
         };
         const source = `
             let window=this.window, turf=this.turf, generatedRowHouseFeature=this.feature, rowHouseBlock=this.block;
             let currentBuildingLength=16, currentBuildingWidth=13, currentBuildingHeight=12, currentChamfer=0;
             let currentOffsetX=31, currentOffsetY=4, currentRotation=0, rowVariationSeed=9, rowHouseManualMode=false;
-            let cachedSuperparcel=this.block.generatorSite;
+            let cachedSuperparcel=null;
             const getActiveRowHouseBlock=()=>rowHouseBlock, getRowHouseDisplayName=()=> 'test row';
-            const rowHousePlacementLocked=()=>true, currentRowRule=()=>({kind:'exact'});
+            const currentRowRule=()=>({kind:'exact'});
             const cloneRowHouseFeature=${functions.get('cloneRowHouseFeature')};
+            const rowHouseSiteBoundary=${functions.get('rowHouseSiteBoundary')};
             const autosaveRowHouseDraft=${functions.get('autosaveRowHouseDraft')};
             this.save=()=>autosaveRowHouseDraft();
         `;
@@ -371,116 +327,75 @@ describe('building-family free placement', () => {
         context.save();
         expect(sync).toHaveBeenCalledOnce();
         const payload = sync.mock.calls[0][1];
-        expect(payload.placement.free).toBe(true);
-        expect(payload.placement.site.geometry).toEqual(feature.geometry);
-        expect(payload.placement.site.properties.massing).toBe(true);
-        expect(payload.placement.site.properties.urbanRule).toEqual(rule);
-        expect(payload.placement.site.properties.variationSeed).toBe(9);
-        expect(payload.buildingFeature.geometry).toEqual(feature.geometry);
-        expect(payload.buildingFeature.properties.urbanRule).toEqual(rule);
-        expect(payload.parameters.placementBaseSite).toEqual(site);
+        expect(payload.placement).toEqual({ free: false, site });
+        expect(payload.parameters).not.toHaveProperty('placementBaseSite');
+        expect(payload.parameters).toMatchObject({ offsetX: 31, offsetY: 4 });
+        expect(payload.buildingFeature.properties.variationSeed).toBe(9);
     });
 
-    it('reopens a serialized moved generated row from its base site and width changes preserve its center', () => {
+    it('a row moved inside its parcels keeps that offset through a width change, with no dialog', async () => {
         const h = rowHarness();
-        const baseSite = rect(15.999, 44.999, 16.001, 45.001);
-        const original = h.generate({ site: baseSite, generatorSite: baseSite, parcels: [{ feature: baseSite }] }, 16, 13, 0, 0, 0, 0);
+        const site = h.rowHouseBlock.site;
+        const original = h.generate({ site, parcels: [{ feature: site }] }, 16, 13, 0, 0, 0, 0);
         h.useFeature(original);
-        const originalCenter = center(original);
-        h.move({ lat: originalCenter.lat, lng: originalCenter.lng }, { lat: originalCenter.lat, lng: originalCenter.lng + 0.0005 });
+        const start = center(original);
+        h.window.chooseRuleDrop = vi.fn();
+        await h.move(start, { lat: start.lat, lng: start.lng + 0.0002 });
+        expect(h.window.chooseRuleDrop).not.toHaveBeenCalled();
         const moved = h.state().feature;
-        const context = {
-            parameters: { length: 16, width: 13, height: 12, offsetX: h.state().offsetX, offsetY: h.state().offsetY,
-                rotation: h.state().rotation, manualMode: false, placementBaseSite: baseSite },
-            placement: { site: moved, free: true },
-            buildings: [moved]
-        };
-        const reopenedBlock = {
-            site: context.placement.site,
-            generatorSite: context.parameters.placementBaseSite,
-            parcels: [{ feature: context.placement.site }]
-        };
-        const resized = h.generate(reopenedBlock, context.parameters.length, 15, 0,
-            context.parameters.offsetX, context.parameters.offsetY, context.parameters.rotation);
+        expect(h.state().offsetX).toBeGreaterThan(0);
+        const resized = h.generate({ site, parcels: [{ feature: site }] }, 16, 15, 0, h.state().offsetX, h.state().offsetY, h.state().rotation);
         expect(center(resized).lng).toBeCloseTo(center(moved).lng, 6);
         expect(center(resized).lat).toBeCloseTo(center(moved).lat, 6);
         expect(resized.properties.width).toBe(15);
-        expect(context.parameters.manualMode).toBe(false);
-
-        const source = readFileSync(new URL('../../frontend/js/row-house.js', import.meta.url), 'utf8');
-        expect(source).toContain('placementBaseSite: cloneRowHouseFeature(block.generatorSite || block.site || cachedSuperparcel)');
     });
 
-    it('stores accepted snapped row movement in offsets and preserves its center after width regeneration', () => {
+    it('a row dropped off its parcels asks, and Put it back restores the footprint and offset', async () => {
         const h = rowHarness();
-        const baseSite = rect(15.999, 44.999, 16.001, 45.001);
-        const original = h.generate({ site: baseSite, generatorSite: baseSite, parcels: [{ feature: baseSite }] }, 16, 13, 0, 0, 0, 0);
-        h.useFeature(original);
-        const originalCentroid = center(original);
-        const snap = { lng: 0.00011, lat: 0.00007 };
-        h.rowHouseModal.placement.moveGeometry.mockImplementation((geometryValue, from) => geometry.moveGeometry(
-            geometryValue,
-            from,
-            { lng: from.lng + snap.lng, lat: from.lat + snap.lat }
-        ));
-
-        // The raw gesture is deliberately farther than the accepted snapped placement.
-        h.move(
-            originalCentroid,
-            { lng: originalCentroid.lng + 0.00042, lat: originalCentroid.lat + 0.00031 }
-        );
-        const moved = h.state().feature;
-        const movedCentroid = center(moved);
-        const frame = localFrame.makeLocalFrame(
-            turf.centroid(baseSite).geometry.coordinates[0],
-            turf.centroid(baseSite).geometry.coordinates[1]
-        );
-        const acceptedOffsetX = (movedCentroid.lng - originalCentroid.lng) * frame.metersPerDegLng;
-        const acceptedOffsetY = (movedCentroid.lat - originalCentroid.lat) * frame.metersPerDegLat;
-        expect(h.state().offsetX).toBeCloseTo(acceptedOffsetX, 6);
-        expect(h.state().offsetY).toBeCloseTo(acceptedOffsetY, 6);
-
-        const saved = {
-            parameters: { length: 16, width: 13, offsetX: h.state().offsetX, offsetY: h.state().offsetY, rotation: h.state().rotation },
-            placement: { site: moved, free: true },
-            buildings: [moved]
-        };
-        const reopened = rowHarness();
-        const resized = reopened.generate({
-            site: saved.placement.site,
-            generatorSite: baseSite,
-            parcels: [{ feature: saved.placement.site }]
-        }, saved.parameters.length, 15, 0, saved.parameters.offsetX, saved.parameters.offsetY, saved.parameters.rotation);
-        expect(boundsCenter(resized).lng).toBeCloseTo(boundsCenter(moved).lng, 10);
-        expect(boundsCenter(resized).lat).toBeCloseTo(boundsCenter(moved).lat, 10);
+        const before = clone(h.state().feature);
+        h.window.chooseRuleDrop = vi.fn(async () => 'cancel');
+        await h.move(center(before), { lat: center(before).lat, lng: center(before).lng + 0.01 });
+        expect(h.window.chooseRuleDrop).toHaveBeenCalledOnce();
+        expect(h.window.chooseRuleDrop.mock.calls[0][0].typology).toBe('row');
+        expect(h.state().feature.geometry).toEqual(before.geometry);
+        expect(h.state().offsetX).toBe(0);
+        expect(h.closed).toEqual([]);
     });
 
-    it('moves and rotates a generated row without entering manual mode and regenerates at its moved frame', () => {
+    it('a row dropped off its parcels converts to Freeform at the drop and closes as Done', async () => {
+        const h = rowHarness();
+        const before = clone(h.state().feature);
+        const convert = vi.fn(() => ({ ok: true }));
+        h.window.convertActiveDesignToFreeform = convert;
+        h.window.chooseRuleDrop = vi.fn(async options => { await options.tryConvert(); return 'convert'; });
+        await h.move(center(before), { lat: center(before).lat, lng: center(before).lng + 0.01 });
+        expect(convert).toHaveBeenCalledOnce();
+        const { features, site } = convert.mock.calls[0][0];
+        expect(center(features[0]).lng).toBeCloseTo(center(before).lng + 0.01, 6);
+        expect(site.type).toBe('MultiPolygon');
+        expect(h.closed).toEqual([[{ preservePending: true }]]);
+    });
+
+    it('moves and rotates a generated row inside its parcels without entering manual mode', async () => {
         const h = rowHarness();
         const before = center(h.state().feature);
-        h.move({ lat: before.lat, lng: before.lng }, { lat: before.lat + 0.0004, lng: before.lng + 0.0005 });
+        await h.move({ lat: before.lat, lng: before.lng }, { lat: before.lat + 0.0002, lng: before.lng + 0.0003 });
         expect(h.state().manual).toBe(false);
         expect(h.state().offsetX).not.toBe(0);
         const moved = h.state().feature;
-        const site = rect(15.999, 44.999, 16.001, 45.001);
-        const regenerated = h.generate({ site, parcels: [{ feature: site }] },
-            16, 8, 0, h.state().offsetX, h.state().offsetY, h.state().rotation);
-        expect(center(regenerated).lng).toBeCloseTo(center(moved).lng, 6);
-        expect(center(regenerated).lat).toBeCloseTo(center(moved).lat, 6);
         h.rotate(5);
         expect(h.state().manual).toBe(false);
         expect(h.state().rotation).toBeCloseTo(5 * Math.PI / 180);
         expect(h.state().feature.geometry).not.toEqual(moved.geometry);
     });
 
-    it('moves a row from document touch events and restores map dragging at touchend', () => {
+    it('moves a row from document touch events and restores map dragging at touchend', async () => {
         const h = rowHarness();
         const before = center(h.state().feature);
-        const result = h.touchDrag({ lat: before.lat, lng: before.lng }, { clientX: 30, clientY: 10 });
+        const result = await h.touchDrag({ lat: before.lat, lng: before.lng }, { clientX: 30, clientY: 10 });
         expect(result.prevented).toBe(true);
         expect(h.state().manual).toBe(false);
         expect(center(result.feature).lng).toBeGreaterThan(before.lng);
-        expect(h.rowHouseModal.placement.moveGeometry).toHaveBeenCalled();
         expect(h.control('rowhouse-length-slider').disabled).toBe(false);
     });
 
@@ -503,37 +418,27 @@ describe('building-family free placement', () => {
         expect(h.history().depth()).toBe(0);
     });
 
-
-    it('moves block massing from document touch events and restores map dragging at touchend', () => {
-        const h = blockTouchHarness();
-        const before = center(h.generatedBuildingFeature);
-        const result = h.touchDrag({ lat: before.lat, lng: before.lng }, { clientX: 30, clientY: 10 });
+    it('a block massing dropped anywhere asks; Put it back restores it and map dragging', async () => {
+        const h = blockDropHarness('cancel');
+        const before = clone(h.generatedBuildingFeature);
+        const result = await h.touchDrag(center(before), { clientX: 30, clientY: 10 });
         expect(result.prevented).toBe(true);
-        expect(center(result.feature).lng).toBeGreaterThan(before.lng);
-        expect(h.moveGeometry).toHaveBeenCalled();
+        expect(h.window.chooseRuleDrop).toHaveBeenCalledOnce();
+        expect(h.window.chooseRuleDrop.mock.calls[0][0].typology).toBe('block');
+        expect(result.feature.geometry).toEqual(before.geometry);
         expect(result.dragging).toBe(true);
+        expect(h.closed).toEqual([]);
     });
 
-    it('reopens a moved block from its saved generator site and slider regeneration preserves the moved frame', () => {
-        const baseSite = rect(15.999, 44.999, 16.001, 45.001);
-        const first = blockHarness();
-        const savedParameters = { placementBaseSite: baseSite, placementTransform: { translationMeters: [38, -12], rotationDegrees: 5 }, width: 16, mode: 'parametric' };
-        first.reopen(savedParameters, baseSite);
-        const savedMovedFootprint = first.regenerate();
-
-        // A relocated draft reopens with the moved massing as its visible site and the original
-        // generator site/transform retained in parameters.
-        const reopened = blockHarness();
-        const reopenSite = reopened.reopen(savedParameters, savedMovedFootprint);
-        expect(center(reopenSite).lng).toBeCloseTo(center(baseSite).lng, 6);
-        const afterSlider = reopened.sliderRegenerate(22);
-        expect(center(afterSlider).lng).toBeCloseTo(center(savedMovedFootprint).lng, 6);
-        expect(center(afterSlider).lat).toBeCloseTo(center(savedMovedFootprint).lat, 6);
-        expect(afterSlider.properties.width).toBe(22);
-        expect(afterSlider.geometry).not.toEqual(savedMovedFootprint.geometry);
-        expect(reopened.snappedMove).not.toHaveBeenCalled();
-        const source = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
-        const save = source.slice(source.indexOf('async function saveBlockifyDesignForProposal()'));
-        expect(save).toContain('placementBaseSite: blockifyClone(blockifyGenerationSite || blockifyDesignBoundary())');
+    it('a block massing dropped and converted becomes a Freeform at the drop, and the editor closes as Done', async () => {
+        const h = blockDropHarness('convert');
+        const before = clone(h.generatedBuildingFeature);
+        await h.touchDrag(center(before), { clientX: 30, clientY: 10 });
+        expect(h.window.convertActiveDesignToFreeform).toHaveBeenCalledOnce();
+        const { features, site } = h.window.convertActiveDesignToFreeform.mock.calls[0][0];
+        expect(center(features[0]).lng).toBeGreaterThan(center(before).lng);
+        // The site moved with it: the old site's outline, translated to the drop.
+        expect(turf.area(turf.feature(site))).toBeCloseTo(turf.area(h.blockifyGenerationSite), 0);
+        expect(h.closed).toEqual([[{ preservePending: true }]]);
     });
 });

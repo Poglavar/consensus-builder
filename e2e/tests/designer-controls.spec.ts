@@ -168,9 +168,10 @@ test.describe('Designer controls persist their edits @features', () => {
     while (Number(await minPlot.inputValue()) < 100) await minPlot.press('ArrowRight');
     await expect(page.locator('#blockify-minplot-value')).toHaveText('100');
 
-    // The slider still decides which cadastral plots can host a building. The editor exposes
-    // those exclusions in its live preview, while the free authored proposal remains one whole
-    // massing geometry rather than being split into one saved building per eligible parcel.
+    // The slider decides which cadastral plots can host a building. The editor exposes those
+    // exclusions in its live preview and the saved Block keeps them (a Block always stands on its
+    // parcels, MEMORY.md 2026-10-18), while its massing stays one whole geometry rather than being
+    // split into one saved building per eligible parcel.
     const livePreview = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).OnMapEditor.getPreview())));
     expect(livePreview.excluded).toHaveLength(3);
     const excludedParcelIds = await page.evaluate(([excluded, ids]) => {
@@ -200,15 +201,16 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(proposal.geometry.buildings).toHaveLength(1);
     expect(proposal.geometry.blockMassing.geometry).toEqual(authoredGeometry);
     expect(proposal.geometry.buildings[0].geometry).toEqual(authoredGeometry);
-    expect(proposal.buildingProposal.ineligibleParcels).toEqual([]);
+    expect(proposal.buildingProposal.ineligibleParcels).toHaveLength(3);
     const relevantParcelIds = await page.evaluate(([site, ids]) => {
       const turf = (window as any).turf;
       const feature = { type: 'Feature', properties: {}, geometry: site };
       return (ids as string[]).filter(id => turf.booleanIntersects(feature, (window as any).CadastralParcelRepository.get(id)));
     }, [proposal.site, BLOCK_PARCEL_IDS]);
-    const boundParcelIds = proposal.binding.parcels.map((entry: any) => entry.parcelId);
+    // Not a free placement: the Block is declared on its parcels rather than bound to a moved site.
+    expect(proposal.freePlacement ?? false).toBe(false);
     expect(relevantParcelIds.length).toBeGreaterThan(0);
-    expect(boundParcelIds).toEqual(expect.arrayContaining(relevantParcelIds));
+    expect(proposal.cadastreParcelIds).toEqual(expect.arrayContaining(relevantParcelIds));
 
     await page.locator('#mode-3d-toggle').click();
     await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });

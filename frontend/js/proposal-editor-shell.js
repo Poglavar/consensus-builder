@@ -1146,6 +1146,157 @@
         return opened;
     }
 
+    // ---- Leaving a rule's parcels: conversion to a Freeform building (proposals/freeform-conversion.js) ----
+
+    // The rule names the Build palette uses.
+    const RULE_LABELS = {
+        block: ['panel.parcel.build.block', 'Block'],
+        row: ['panel.parcel.build.row', 'Row houses'],
+        parcelBased: ['panel.parcel.build.parcelBased', 'Detached']
+    };
+
+    function ruleLabel(typology) {
+        const entry = RULE_LABELS[typology] || RULE_LABELS.block;
+        return tDraft(entry[0], entry[1]);
+    }
+
+    // The build-out a stored rule massing stands for (urban-rule-variation.js), frozen as is.
+    function realizeRuleFeature(feature) {
+        try {
+            return global.UrbanRuleVariation?.realizeFeature?.(feature, { turf: global.turf }) || feature;
+        } catch (error) {
+            console.warn('[ProposalEditor] could not realise a rule massing; keeping the envelope', error);
+            return feature;
+        }
+    }
+
+    // The one Freeform building a Block or Row becomes, or the reason it cannot become one.
+    const MERGE_REFUSALS = {
+        'not-contiguous': ['proposalDrafts.freeform.notContiguous', 'Its buildings do not touch each other, so they cannot become one Freeform building.'],
+        'different-heights': ['proposalDrafts.freeform.differentHeights', 'Its buildings have different heights, and a Freeform building has one height.'],
+        'no-buildings': ['proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.']
+    };
+
+    function mergeRuleBuildings(features) {
+        const conversion = global.__freeformConversion;
+        const result = conversion.mergedBuilding(features || [], {
+            union: (a, b) => global.turf.union(a, b)
+        }, { realize: realizeRuleFeature });
+        if (result.ok) return result;
+        const refusal = MERGE_REFUSALS[result.code] || MERGE_REFUSALS['no-buildings'];
+        return { ...result, reason: tDraft(refusal[0], refusal[1]) };
+    }
+
+    // Where a converted record stands: its stored site, else the building's own footprint. Never
+    // the live parcels: after a cadastre swap the old parcels are gone, and the stored massing the
+    // building is frozen from does not need them. The server binds the site to today's parcels.
+    function ruleRecordSite(proposal, building) {
+        const siteApi = global.__siteDraft;
+        if (siteApi?.isPolygonal?.(proposal.site)) return JSON.parse(JSON.stringify(proposal.site));
+        return siteApi?.siteFromFeatures?.([building]) || null;
+    }
+
+    // The Freeform design REPLACES the rule's: a merge would keep the rule's parameters (setback,
+    // gaps, rule kind …) inside the Freeform record, where they no longer mean anything.
+    function replaceWithFreeform(store, draft, patch) {
+        return store.updateDraft(draft.id, current => ({
+            ...current,
+            ...patch,
+            fields: { ...(current.fields || {}), ...(patch.fields || {}) }
+        }), { recordHistory: false, force: true });
+    }
+
+    // Says plainly what converting does: one building, frozen, and the rule's parameters gone. `record`
+    // is the saved proposal (or the design's source) the edit rule is judged on.
+    async function confirmFreeformConversion(record, typology) {
+        const inPlace = !record?.proposalId || global.ProposalLineage?.editsInPlace?.(record) === true;
+        const params = { name: record?.title || record?.name || record?.proposalId || ruleLabel(typology), rule: ruleLabel(typology) };
+        return global.CbDialog.confirm(inPlace
+            ? tDraft('proposalDrafts.freeform.confirmLocal', '“{{name}}” becomes one Freeform building with the footprint and height its {{rule}} rule produces now. The rule\'s parameters no longer apply afterwards: you edit the building directly.', params)
+            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform counterproposal is made: one building with the footprint and height its {{rule}} rule produces now. The rule\'s parameters do not apply to it: you edit the building directly. The published proposal stays as it is.', params), {
+            title: tDraft('proposalDrafts.freeform.title', 'Convert to freeform building'),
+            okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
+            cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
+        });
+    }
+
+    // "Convert to Freeform building" on a Block or Row proposal, or a Detached one on a single parcel:
+    // the buildings its rule produces now merge into one Freeform building and the rule's parameters
+    // stop applying. One's own local record is converted in place; a published or minted one gets a
+    // Freeform counterproposal.
+    async function convertProposalToFreeform(proposalIdOrHash) {
+        const conversion = global.__freeformConversion;
+        const proposal = proposalById(proposalIdOrHash);
+        if (!proposal || !conversion?.convertsToFreeform(proposal)) return null;
+        const typology = conversion.ruleTypologyOf(proposal);
+        const merged = mergeRuleBuildings(proposal.geometry?.buildings);
+        if (!merged.ok) {
+            reportGeometryEditFailure(merged.reason, proposal.proposalId);
+            return null;
+        }
+        if (!(await confirmFreeformConversion(proposal, typology))) return null;
+        const site = ruleRecordSite(proposal, merged.building);
+        const store = global.proposalDraftStore;
+        let draft = null;
+        try {
+            draft = store.createDraftFromProposal(proposal, { activate: false, forceNew: true });
+            replaceWithFreeform(store, draft, conversion.freeformDraftPatch(draft, { building: merged.building, site }));
+        } catch (error) {
+            if (draft) store.deleteDraft(draft.id);
+            return reportGeometryEditFailure(error?.message || String(error), proposal.proposalId);
+        }
+        return instantCreateProposalFromDraft(draft.id);
+    }
+
+    // A rule editor's conversion of the design it holds now (unmoved, or dropped off its parcels):
+    // the active design draft becomes one Freeform building standing on `site`. Resolves { ok, reason }
+    // ({ ok: false, cancelled: true } when the user keeps the rule). On success the editor closes as
+    // Done does, which saves the draft by the ordinary edit rule. `confirm: false` when the user has
+    // just chosen the conversion in the drop dialog, which already says what it means.
+    async function convertActiveDesignToFreeform({ features, site, typology = 'block', confirm = true } = {}) {
+        const conversion = global.__freeformConversion;
+        const store = global.proposalDraftStore;
+        const draft = getActiveProposalDesignDraft();
+        if (!conversion || !store || !draft) {
+            return { ok: false, reason: tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.') };
+        }
+        const merged = mergeRuleBuildings(features);
+        if (!merged.ok) return merged;
+        const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
+        if (confirm && !(await confirmFreeformConversion(source || { title: draft.fields?.name }, typology))) {
+            return { ok: false, cancelled: true };
+        }
+        replaceWithFreeform(store, draft, conversion.freeformDraftPatch(draft, { building: merged.building, site }));
+        return { ok: true };
+    }
+
+    // The choice a rule editor offers when its design is dropped off its parcels. Resolves 'convert',
+    // 'rule' or 'cancel'. `tryConvert()` and `tryRule()` carry the choice out and resolve
+    // { ok, reason }; a refusal is said in the same dialog, which stays open. Without `tryConvert`
+    // (a Detached rule on several parcels) only the rule and Cancel are offered.
+    async function chooseRuleDrop({ typology, tryConvert = null, tryRule } = {}) {
+        let reason = '';
+        for (;;) {
+            const rule = ruleLabel(typology);
+            const intro = tDraft('proposalDrafts.freeform.dropMessage', 'The {{rule}} rule builds on its own parcels, so the design cannot simply move. What should happen here?', { rule })
+                + (typeof tryConvert === 'function'
+                    ? `\n\n${tDraft('proposalDrafts.freeform.dropConvertMeaning', 'Converting keeps the building as it is now; the rule\'s parameters no longer apply to it.')}`
+                    : '');
+            const answer = await global.CbDialog.choice(reason ? `${reason}\n\n${intro}` : intro, [
+                ...(typeof tryConvert === 'function'
+                    ? [{ value: 'convert', label: tDraft('proposalDrafts.freeform.dropConvert', 'Convert to Freeform and keep it here'), primary: true }]
+                    : []),
+                { value: 'rule', label: tDraft('proposalDrafts.freeform.dropRule', 'Apply the same rule to the parcels here'), primary: typeof tryConvert !== 'function' },
+                { value: 'cancel', label: tDraft('proposalDrafts.freeform.dropCancel', 'Cancel') }
+            ], { title: tDraft('proposalDrafts.freeform.dropTitle', 'Moved off its parcels') });
+            if (answer !== 'rule' && answer !== 'convert') return 'cancel';
+            let result = null;
+            try { result = await (answer === 'rule' ? tryRule() : tryConvert()); } catch (error) { result = { ok: false, reason: error?.message || String(error) }; }
+            if (result?.ok) return answer;
+            reason = result?.reason || tDraft('proposalDrafts.freeform.ruleFailed', 'The rule cannot build on the parcels here.');
+        }
+    }
+
     // Build-first creation from the parcel panel's Build palette: a fresh draft seeded with the
     // selection opens the type's design tool directly (no create dialog); closing the tool with a
     // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
@@ -2308,6 +2459,10 @@
     global.proposeExistingProposal = proposeExistingProposal;
     global.confirmProposalEditDependents = confirmEditDependents;
     global.editProposalGeometry = editProposalGeometry;
+    global.convertProposalToFreeform = convertProposalToFreeform;
+    global.convertActiveDesignToFreeform = convertActiveDesignToFreeform;
+    global.chooseRuleDrop = chooseRuleDrop;
+    global.ruleDropLabel = ruleLabel;
     global.canEditProposalGeometry = canEditProposalGeometry;
     global.startInstantProposalDesign = startInstantProposalDesign;
     global.instantCreateStructureFromSelection = instantCreateStructureFromSelection;

@@ -674,7 +674,6 @@
         },
         "placement": {
             "fixedSite": "Ova vrsta predloga vezana je za izvornu lokaciju i ne može da se premesti.",
-            "existingBuilding": "Predlozi za postojeće zgrade zadržavaju tlocrt vezan za izvornu zgradu i ne mogu slobodno da se premeštaju.",
             "invalidSite": "Za slobodno postavljanje potrebna je važeća poligonska lokacija.",
             "freshBinding": "Za slobodno postavljanje potrebno je novo, autoritativno povezivanje lokacije.",
             "unknownCoverage": "Server ne može da proveri ovu lokaciju prema podržanom katastru. Premestite je u podržano područje ili se obratite gradskom timu za podatke.",
@@ -683,8 +682,7 @@
             "bindingUnavailable": "Usluga za autoritativno povezivanje lokacije nije dostupna. Premešteni nacrt je sačuvan lokalno.",
             "geometryChanged": "Geometrija se promenila dok je lokacija bila u postupku povezivanja. Ponovo sačuvajte nacrt.",
             "buildingOutsideSite": "Geometrija premeštene zgrade mora u potpunosti da bude unutar nove lokacije.",
-            "surroundingsOutsideSite": "Uređenje terena mora u potpunosti da bude unutar nove lokacije. Premestite ceo predlog ili prilagodite granicu terena pre čuvanja.",
-            "massingOutsideSite": "Masa premeštene zgrade mora u potpunosti da bude unutar nove lokacije."
+            "surroundingsOutsideSite": "Uređenje terena mora u potpunosti da bude unutar nove lokacije. Premestite ceo predlog ili prilagodite granicu terena pre čuvanja."
         },
         "review": {
             "title": "Pregled promena",
@@ -804,6 +802,25 @@
             "one": "Zasad je previše slanja. Ostatak možete poslati u {{at}}, za otprilike {{minutes}} minut.",
             "few": "Zasad je previše slanja. Ostatak možete poslati u {{at}}, za otprilike {{minutes}} minuta.",
             "other": "Zasad je previše slanja. Ostatak možete poslati u {{at}}, za otprilike {{minutes}} minuta."
+        },
+        "freeform": {
+            "title": "Pretvori u slobodnu zgradu",
+            "convert": "Pretvori",
+            "keepRule": "Zadrži pravilo",
+            "confirmLocal": "„{{name}}” postaje jedna slobodna zgrada sa osnovom i visinom koje njeno pravilo {{rule}} sada daje. Posle toga parametri pravila više ne važe: zgradu uređujete direktno.",
+            "confirmPublished": "„{{name}}” je objavljen, pa nastaje protivpredlog slobodne zgrade: jedna zgrada sa osnovom i visinom koje njegovo pravilo {{rule}} sada daje. Parametri pravila se na nju ne primenjuju: zgradu uređujete direktno. Objavljeni predlog ostaje kakav jeste.",
+            "noBuildings": "Ovaj predlog nema zgrada koje bi se zadržale.",
+            "notContiguous": "Njegove zgrade se ne dodiruju, pa ne mogu postati jedna slobodna zgrada.",
+            "differentHeights": "Njegove zgrade imaju različite visine, a slobodna zgrada ima jednu visinu.",
+            "dropTitle": "Pomereno sa svojih parcela",
+            "dropMessage": "Pravilo {{rule}} gradi na svojim parcelama, pa se dizajn ne može samo pomeriti. Šta da se ovde desi?",
+            "dropConvert": "Pretvori u slobodnu zgradu i ostavi je ovde",
+            "dropRule": "Primeni isto pravilo na parcele ovde",
+            "dropCancel": "Vrati nazad",
+            "ruleFailed": "Pravilo ne može da gradi na parcelama ovde.",
+            "ruleFailedHere": "Pravilo {{rule}} ne može da izgradi zgradu na parcelama ovde.",
+            "noParcelsHere": "Nijedna parcela ne leži većim delom unutar spuštenog obrisa.",
+            "dropConvertMeaning": "Pretvaranje zadržava zgradu kakva je sada; parametri pravila na nju više ne važe."
         }
     },
     "languages": {
@@ -1658,7 +1675,8 @@
                 "unapplyFailedUnknown": "Ovaj predlog nije moguće ukloniti sa mape. Pokušajte ponovo.",
                 "unapplyUnavailable": "Ovaj predlog nije moguće ukloniti sa mape.",
                 "betOutcome": "Kladi se na ishod",
-                "editApprovalHintCounterproposal": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi protivpredlog; prihvatanja ovog predloga se ne prenose."
+                "editApprovalHintCounterproposal": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi protivpredlog; prihvatanja ovog predloga se ne prenose.",
+                "convertToFreeformHint": "Zadržava zgrade kakve su sada i uređuje ih direktno kao jednu zgradu. Posle toga parametri pravila više ne važe."
             },
             "expiry": {
                 "expired": "Predlog je istekao",

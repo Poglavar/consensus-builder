@@ -72,7 +72,7 @@ describe('floating building-family editors', () => {
         expect(rowHouse).toContain('site: authoredSite');
         expect(rowHouse).toContain('function rowHouseGeneratorSite(block)');
         expect(rowHouse.match(/let superparcel = rowHouseGeneratorSite\(block\) \|\| robustUnionLocal\(parcelFeatures\);/g)).toHaveLength(2);
-        expect(rowHouse).toContain('generatorSite: initialParameters?.placementBaseSite?.geometry');
+        expect(rowHouse).not.toContain('placementBaseSite');
         expect(rowHouse).toContain('fitFeature(block.site?.geometry ? block.site : featureCollection');
 
         expect(parcelBased).toContain('initialParameters = null, site = null');
@@ -110,12 +110,12 @@ describe('floating building-family editors', () => {
         expect(parcelBased).toContain("addEventListener('click', requestCloseParcelBasedModal)");
     });
 
-    it('saves the canonical full row bar and block massing for free placement', () => {
+    it('saves the canonical full row bar and block massing on their own site, never as a free placement', () => {
         expect(rowHouse).toContain('buildings: [feature]');
-        expect(rowHouse).toContain('placement: { site: cloneRowHouseFeature(generatedRowHouseFeature), free: true }');
-        expect(rowHouse).toContain('site: block.site || cachedSuperparcel,');
+        expect(rowHouse).toContain('placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }');
+        expect(rowHouse).not.toContain('free: true');
         expect(rowHouse).toContain("manualMode: rowHouseManualMode");
-        expect(rowHouse).toContain('if (!rowHousePlacementLocked() && (rowHouseBlock?.syntheticSite || !fitsParcelUnion))');
+        expect(rowHouse).toContain('if (rowHouseBlock?.syntheticSite || !fitsParcelUnion)');
 
         const blockEditor = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
         const saveStart = blockEditor.indexOf('async function saveBlockifyDesignForProposal()');
@@ -148,7 +148,6 @@ describe('floating building-family editors', () => {
             manualOuterRing: null,
             blockExcludedParcels: [],
             blockVariationSeed: 7,
-            blockifyPlacementTransform: { translationMeters: [0, 0], rotationDegrees: 0 },
             blockifyGenerationSite: feature,
             turf: {},
             multiParcelSelection: { selectedParcels: new Set(), updateUI() {}, clearSelection() {} },
@@ -172,7 +171,7 @@ describe('floating building-family editors', () => {
             expect(savedContext.buildings[0].geometry).toEqual(feature.geometry);
             expect(savedContext.blockMassing.geometry).toEqual(feature.geometry);
             expect(savedContext.placement.site.geometry).toEqual(feature.geometry);
-            expect(savedContext.placement.free).toBe(true);
+            expect(savedContext.placement.free).toBe(false);
         });
     });
 

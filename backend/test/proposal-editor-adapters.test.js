@@ -26,6 +26,7 @@ const {
     reparcellizationAdapter,
     buildStructureAdapter,
     freePlacementPatch,
+    isFreePlacementDraft,
     markFreePlacementBound
 } = require('../../frontend/js/proposal-editor-adapters.js');
 
@@ -623,7 +624,7 @@ describe('saved single-building geometry edits', () => {
         expect(savedPatch.editorPayload.typology).toBe('block');
     });
 
-    it('switches generated and existing-building snapshots without retaining the other placement mode', () => {
+    it('switches generated and existing-building snapshots, both on the block\'s own site', () => {
         const siteApi = require('../../frontend/js/proposals/site-draft.js');
         const site = turf.polygon([[[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]]);
         const footprint = turf.polygon([[[0.5, 0.5], [1.5, 0.5], [1.5, 1.5], [0.5, 1.5], [0.5, 0.5]]]);
@@ -654,15 +655,16 @@ describe('saved single-building geometry edits', () => {
         expect(draft.fields.cadastreParcelIds).toEqual([]);
         expect(draft.fields.binding).toBeNull();
 
-        // Validation must use the incoming generated snapshot, not the outgoing existing mode.
+        // A Block is never a free placement (proposals/freeform-conversion.js): the generated mode
+        // stays on the same site and parcels as the existing-building mode.
         sync('building', {
             parcelIds: ['source-parcel'], parameters: { mode: 'parametric', typology: 'block' },
-            buildings: [footprint], placement: { free: true, site: footprint }
+            buildings: [footprint], placement: { free: false, site }
         });
         expect(draft.editorPayload.context.parameters.mode).toBe('parametric');
-        expect(draft.editorPayload.placement).toMatchObject({ free: true, bindingStatus: 'pending' });
-        expect(draft.fields.site).toEqual(siteApi.toMultiPolygon(footprint));
-        expect(draft.fields.selectedParcelIds).toEqual([]);
+        expect(draft.editorPayload.placement).toBeNull();
+        expect(draft.fields.site).toEqual(siteApi.toMultiPolygon(site));
+        expect(draft.fields.selectedParcelIds).toEqual(['source-parcel']);
     });
 
     it('does not replace source selection anchors with transient live child parcels', () => {
@@ -1224,16 +1226,19 @@ describe('site-first drafts', () => {
         });
     });
 
-    it('keeps source-aware existing buildings and parcel-only designs out of free placement', () => {
-        const buildingAdapter = buildBuildingAdapter('single');
-        const existing = draftFor(buildingAdapter, {
-            proposalId: 'existing-source', goal: 'single', title: 'Existing building',
-            site: SITE, cadastreParcelIds: ['source-parcel'],
-            buildingProposal: { typologyType: 'single', parameters: { mode: 'existing' } },
-            geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: POLYGON }] }
-        });
-        expect(() => freePlacementPatch(existing, { free: true, site: SITE }))
-            .toThrow(/existing-building proposals/i);
+    // User decision 2026-10-18: Block, Row and Detached are rules on their parcels; leaving them is a
+    // conversion to Freeform or a re-run of the rule there, never a free placement.
+    it('keeps the building rules (Block, Row, Detached) out of free placement', () => {
+        for (const [key, typologyType] of [['buildings', 'block'], ['row', 'row']]) {
+            const rule = draftFor(registry.get(key), {
+                proposalId: `${typologyType}-source`, goal: 'buildings', typologyType, title: 'Rule design',
+                site: SITE, cadastreParcelIds: ['source-parcel'],
+                buildingProposal: { typologyType },
+                geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: POLYGON }] }
+            });
+            expect(() => freePlacementPatch(rule, { free: true, site: SITE })).toThrow(/fixed site/i);
+            expect(isFreePlacementDraft({ ...rule, editorPayload: { ...rule.editorPayload, placement: { free: true, site: SITE } } })).toBe(false);
+        }
 
         const parcelBased = draftFor(registry.get('parcelBased'), {
             proposalId: 'parcel-source', goal: 'parcelBased', title: 'Parcel design',
@@ -1306,113 +1311,57 @@ describe('site-first drafts', () => {
         }
     });
 
-    it('saves disconnected building parts inside their bound site and still rejects an outside part', () => {
-        const adapter = buildBuildingAdapter('buildings');
+    it('saves a moved Freeform building inside its bound site and still rejects a part outside it', () => {
+        const adapter = buildBuildingAdapter('single');
         const part = (west, east) => [[[west, 45.8001], [east, 45.8001], [east, 45.8003], [west, 45.8003], [west, 45.8001]]];
-        const massing = {
-            type: 'Feature', properties: { height: 18 },
-            geometry: { type: 'MultiPolygon', coordinates: [part(15.97005, 15.9702), part(15.9703, 15.97045)] }
-        };
+        const building = { type: 'Feature', properties: { height: 18 }, geometry: { type: 'Polygon', coordinates: part(15.97005, 15.9702) } };
         const source = {
-            proposalId: 'split-block', goal: 'buildings', typologyType: 'block', title: 'Block with gap',
-            site: SITE, cadastreParcelIds: [], geometry: { buildings: [massing], blockMassing: massing },
-            buildingProposal: { typologyType: 'block', parameters: { mode: 'manual' } }
+            proposalId: 'moved-single', goal: 'single', typologyType: 'single', title: 'Freeform',
+            site: SITE, cadastreParcelIds: [], geometry: { buildings: [building] },
+            buildingProposal: { typologyType: 'single', parameters: { typology: 'single' } }
         };
         const draft = draftFor(adapter, source);
         const placement = freePlacementPatch(draft, { free: true, site: SITE });
         draft.fields = { ...draft.fields, ...placement.fields, binding: { source: 'server:live-cadastre', coverage: 'none', parcels: [] } };
         draft.editorPayload.placement = { ...placement.placement, bindingStatus: 'bound' };
         const saved = adapter.serializeProposal(draft);
-        expect(saved.geometry.buildings).toEqual([massing]);
-        expect(saved.geometry.blockMassing).toEqual(massing);
+        expect(saved.geometry.buildings).toEqual([building]);
+        expect(saved.freePlacement).toBe(true);
 
-        draft.editorPayload.context.buildings[0].geometry.coordinates[1] = part(15.9704, 15.9706);
+        draft.editorPayload.context.buildings[0].geometry.coordinates = part(15.9704, 15.9706);
         expect(() => adapter.serializeProposal(draft)).toThrow(/building geometry must fit entirely/i);
     });
 
-    it('round-trips a relocated block massing Feature with its properties', async () => {
-        const adapter = buildBuildingAdapter('buildings');
-        const blockMassing = {
-            type: 'Feature',
-            properties: { manual: true, sourceShape: 'courtyard-block', height: 18 },
-            geometry: POLYGON
-        };
-        const source = {
-            proposalId: 'block-source', goal: 'buildings', typologyType: 'block', title: 'Block',
-            site: SITE, cadastreParcelIds: ['source-parcel'],
-            geometry: { buildings: [blockMassing], blockMassing },
-            buildingProposal: { typologyType: 'block', parameters: { mode: 'manual' } }
-        };
-        const draft = draftFor(adapter, source);
-        const placement = freePlacementPatch(draft, { free: true, site: SITE });
-        draft.fields = { ...draft.fields, ...placement.fields, binding: { source: 'server:live-cadastre', coverage: 'none', parcels: [] } };
-        draft.editorPayload = { ...draft.editorPayload, placement: { ...placement.placement, bindingStatus: 'bound' } };
-        const saved = adapter.serializeProposal(draft);
-        expect(saved.freePlacement).toBe(true);
-        expect(saved.geometry.blockMassing).toEqual(blockMassing);
-        expect(saved.geometry.buildings[0].properties).toEqual(blockMassing.properties);
-
-        const reopenedSeed = adapter.draftFromProposal(saved);
-        const reopened = {
-            id: 'reopened-block', sourceProposalId: saved.proposalId, sourceSnapshot: saved,
-            cityId: 'zagreb', adapterKey: 'buildings', goal: 'buildings', ...reopenedSeed
-        };
-        const previous = { open: globalThis.openUrbanRuleForParcels, seed: globalThis.buildBlockifySeed };
-        const open = vi.fn(async () => true);
-        globalThis.buildBlockifySeed = context => ({
-            mode: 'manual',
-            manualOuterRing: context.buildingFeature.geometry.coordinates[0].slice(0, -1),
-            blockMassingFeature: context.buildingFeature
-        });
-        globalThis.openUrbanRuleForParcels = open;
-        try {
-            await expect(adapter.openDesignEditor(reopened)).resolves.toBe(true);
-            expect(open).toHaveBeenCalledWith(expect.objectContaining({ parcelIds: [], placement: { free: true, site: SITE } }));
-            expect(open.mock.calls[0][0].initialState.blockMassingFeature).toEqual(blockMassing);
-            expect(open.mock.calls[0][0].initialState.blockMassing).toEqual(blockMassing);
-        } finally {
-            if (previous.open === undefined) delete globalThis.openUrbanRuleForParcels;
-            else globalThis.openUrbanRuleForParcels = previous.open;
-            if (previous.seed === undefined) delete globalThis.buildBlockifySeed;
-            else globalThis.buildBlockifySeed = previous.seed;
-        }
-    });
-
-    it('reopens a relocated row with the saved row feature rather than replacing it with its site', async () => {
-        const adapter = buildBuildingAdapter('row');
-        const row = {
-            type: 'Feature',
-            properties: { manual: true, rowShape: 'stepped' },
-            geometry: POLYGON
-        };
-        const source = {
-            proposalId: 'row-source', goal: 'buildings', typologyType: 'row', title: 'Row',
-            site: SITE, cadastreParcelIds: ['source-parcel'], geometry: { buildings: [row] },
-            buildingProposal: { typologyType: 'row', parameters: { floors: 2 } }
-        };
-        const draft = draftFor(adapter, source);
-        const placement = freePlacementPatch(draft, { free: true, site: SITE });
-        draft.fields = { ...draft.fields, ...placement.fields, binding: { source: 'server:live-cadastre', coverage: 'none', parcels: [] } };
-        draft.editorPayload = { ...draft.editorPayload, placement: { ...placement.placement, bindingStatus: 'bound' } };
-        const saved = adapter.serializeProposal(draft);
-        const reopenedSeed = adapter.draftFromProposal(saved);
-        const reopened = {
-            id: 'reopened-row', sourceProposalId: saved.proposalId, sourceSnapshot: saved,
-            cityId: 'zagreb', adapterKey: 'row', goal: 'row', ...reopenedSeed
-        };
-        const previous = globalThis.openRowHouseForParcels;
-        const open = vi.fn(async () => true);
-        globalThis.openRowHouseForParcels = open;
-        try {
-            await expect(adapter.openDesignEditor(reopened)).resolves.toBe(true);
-            expect(open).toHaveBeenCalledWith(expect.objectContaining({
-                parcelIds: [], site: expect.objectContaining({ type: 'Feature', geometry: SITE }),
-                initialFeature: row, placement: { free: true, site: SITE }
-            }));
-            expect(saved.geometry.buildings).toEqual([row]);
-        } finally {
-            if (previous === undefined) delete globalThis.openRowHouseForParcels;
-            else globalThis.openRowHouseForParcels = previous;
+    // Block and Row records saved as free placements before 2026-10-18 (two on the laptop database,
+    // none on production) reopen as the rule on their declared parcels: the rule is re-run there.
+    it('reopens an older moved Block or Row on its declared parcels, not as a free placement', async () => {
+        for (const [key, typologyType, opener] of [['buildings', 'block', 'openUrbanRuleForParcels'], ['row', 'row', 'openRowHouseForParcels']]) {
+            const adapter = buildBuildingAdapter(key);
+            const feature = { type: 'Feature', properties: { height: 18 }, geometry: POLYGON };
+            const saved = {
+                proposalId: `${typologyType}-moved`, goal: 'buildings', typologyType, title: 'Moved rule',
+                freePlacement: true, site: SITE, cadastreParcelIds: ['bound-parcel'],
+                binding: { source: 'server:live-cadastre', coverage: 'complete', parcels: [{ parcelId: 'bound-parcel' }] },
+                geometry: { buildings: [feature] },
+                buildingProposal: { typologyType, parameters: { mode: 'manual', typology: typologyType } }
+            };
+            const seed = adapter.draftFromProposal(saved);
+            expect(seed.editorPayload.placement).toBeUndefined();
+            const previous = { open: globalThis[opener], seed: globalThis.buildBlockifySeed, prepare: globalThis.prepareProposalDraftParcelSelection };
+            const open = vi.fn(async () => true);
+            globalThis[opener] = open;
+            globalThis.buildBlockifySeed = context => ({ ...(context.parameters || {}) });
+            try {
+                await expect(adapter.openDesignEditor({
+                    id: `${typologyType}-draft`, sourceProposalId: saved.proposalId, sourceSnapshot: saved,
+                    cityId: 'zagreb', adapterKey: key, goal: 'buildings', ...seed
+                })).resolves.toBe(true);
+                expect(open.mock.calls[0][0]).not.toHaveProperty('placement');
+            } finally {
+                for (const [name, value] of [[opener, previous.open], ['buildBlockifySeed', previous.seed]]) {
+                    if (value === undefined) delete globalThis[name]; else globalThis[name] = value;
+                }
+            }
         }
     });
 

@@ -66,6 +66,7 @@
     // Interaction state
     let isDragging = false;
     let dragStartLatLng = null;
+    let dragEndLatLng = null;
     let dragStartOffset = null;
     let dragStartFeature = null;
     let dragLastValidFeature = null;
@@ -148,7 +149,6 @@
     }
 
     function rowHouseGeneratorSite(block) {
-        if (block?.generatorSite?.geometry) return cloneRowHouseFeature(block.generatorSite);
         if (block?.site?.geometry) return cloneRowHouseFeature(block.site);
         return robustUnionLocal((block?.parcels || []).map(parcel => parcel?.feature).filter(Boolean));
     }
@@ -169,14 +169,23 @@
         try {
             if (!feature?.geometry || feature.geometry.type !== 'Polygon' || turf.area(feature) < 0.5) return false;
             if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
-            if (rowHouseModal?.placement?.locked) return rowHouseModal.placement.accepts(feature) === true;
-            return true;
+            return rowHouseFitsSite(feature);
         } catch (_) {
             return false;
         }
     }
 
-    function rowHousePlacementLocked() { return rowHouseModal?.placement?.locked === true; }
+    // A Row is built by its rule on its own parcels (proposals/freeform-conversion.js): its footprint
+    // stays inside them. Leaving them is a choice made on the drop (onDragEnd).
+    function rowHouseSiteBoundary() { return rowHouseBlock?.site || cachedSuperparcel; }
+
+    function rowHouseFitsSite(feature) {
+        const boundary = rowHouseSiteBoundary();
+        if (!boundary?.geometry) return true;
+        try {
+            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true;
+        } catch (_) { return false; }
+    }
 
     function rowHouseGeometrySnapshot() {
         return {
@@ -202,7 +211,6 @@
         rowVariationSeed = snapshot.seed ?? rowVariationSeed;
         syncRowHouseGeometryControls();
         if (generatedRowHouseFeature) {
-            rowHouseModal?.placement?.update?.(generatedRowHouseFeature);
             displayRowHouseBuildingInModal(generatedRowHouseFeature);
             autosaveRowHouseDraft();
         }
@@ -987,6 +995,7 @@
         isDragging = true;
         dragMapWasEnabled = rowHouseMap?.dragging?.enabled?.() !== false;
         dragStartLatLng = e.latlng;
+        dragEndLatLng = e.latlng;
         dragStartOffset = [currentOffsetX, currentOffsetY];
         dragStartFeature = cloneRowHouseFeature(generatedRowHouseFeature);
         dragLastValidFeature = cloneRowHouseFeature(generatedRowHouseFeature);
@@ -1011,17 +1020,15 @@
         const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
 
         if (!dragStartFeature?.geometry || !window.SingleBuildingGeometry?.moveGeometry) return;
-        // The footprint keeps its ground metres from the drag's start point, placed at the cursor.
-        const geometry = rowHouseModal?.placement?.moveGeometry?.(dragStartFeature.geometry, dragStartLatLng, latlng, pointer)
-            || window.SingleBuildingGeometry.moveGeometry(dragStartFeature.geometry, dragStartLatLng, latlng);
+        // The footprint keeps its ground metres from the drag's start point, placed at the cursor. It
+        // may leave its parcels while dragged; the drop decides what that means (onDragEnd).
+        const geometry = window.SingleBuildingGeometry.moveGeometry(dragStartFeature.geometry, dragStartLatLng, latlng);
         const candidate = cloneRowHouseFeature(dragStartFeature);
         if (!candidate || !geometry) return;
         candidate.geometry = geometry;
-        if (!rowHouseFeatureValid(candidate)) return;
-        rowHouseModal?.placement?.update?.(candidate);
+        dragEndLatLng = latlng;
 
-        // Snapping may place the accepted geometry away from the raw pointer. Persist the
-        // accepted displacement so later slider regeneration stays at the visible position.
+        // Persist the displacement so later slider regeneration stays at the visible position.
         const startCenter = turf.centroid(dragStartFeature).geometry.coordinates;
         const movedCenter = turf.centroid(candidate).geometry.coordinates;
         const startMeters = latLngToMeters({ lng: startCenter[0], lat: startCenter[1] });
@@ -1038,13 +1045,17 @@
         updateBuildingMetrics(candidate);
     }
 
-    // End drag interaction
-    function onDragEnd() {
+    // End drag interaction. Inside its parcels the move is the rule's offset; dropped off them, a Row
+    // asks (proposal-editor-shell.js chooseRuleDrop): convert to one Freeform building kept here, run
+    // the same rule on the parcels here, or cancel, which puts it back.
+    async function onDragEnd() {
         const finalFeature = dragLastValidFeature || dragStartFeature;
         const changed = !!(finalFeature?.geometry && dragStartFeature?.geometry
             && JSON.stringify(finalFeature.geometry) !== JSON.stringify(dragStartFeature.geometry));
+        const drag = { start: dragStartLatLng, end: dragEndLatLng, feature: dragStartFeature, offset: dragStartOffset };
         isDragging = false;
         dragStartLatLng = null;
+        dragEndLatLng = null;
         dragStartOffset = null;
         dragStartFeature = null;
         dragLastValidFeature = null;
@@ -1054,12 +1065,112 @@
         document.removeEventListener('touchmove', onDragMove);
         document.removeEventListener('touchend', onDragEnd);
         document.removeEventListener('touchcancel', onDragEnd);
-        if (finalFeature) {
-            generatedRowHouseFeature = finalFeature;
-            displayRowHouseBuildingInModal(finalFeature);
-            if (changed) autosaveRowHouseDraft();
-            else rowHouseHistory?.discardLast?.();
+        if (!finalFeature) return;
+        if (changed && !rowHouseFitsSite(finalFeature)) {
+            await resolveRowHouseDrop(finalFeature, drag);
+            return;
         }
+        generatedRowHouseFeature = finalFeature;
+        displayRowHouseBuildingInModal(finalFeature);
+        if (changed) autosaveRowHouseDraft();
+        else rowHouseHistory?.discardLast?.();
+    }
+
+    function rowHouseParcelsUnderOutline(outline) {
+        const fabric = window.LiveParcelFabric;
+        const conversion = window.__freeformConversion;
+        const order = window.__planOrder;
+        if (!outline?.geometry || !fabric?.queryBounds || !conversion || !order?.intersectionArea) return [];
+        const candidates = fabric.queryBounds(turf.bbox(outline), { includeCorridors: false })
+            .filter(feature => !(typeof window.isRoadParcel === 'function' && window.isRoadParcel(fabric.featureId(feature))))
+            .map(feature => ({ id: fabric.featureId(feature), feature }));
+        return conversion.parcelsMostlyInside(outline, candidates, {
+            intersectionArea: order.intersectionArea,
+            area: feature => turf.area(feature)
+        });
+    }
+
+    // Run the Row rule, with the current dimensions, on the parcels under the dropped outline. A rule
+    // that cannot build there is refused with the reason, and the editor stays where it was.
+    function rowHouseRuleAtOutline(outline) {
+        const ids = rowHouseParcelsUnderOutline(outline);
+        if (!ids.length) {
+            return { ok: false, reason: translateRowHouseText('proposalDrafts.freeform.noParcelsHere', 'No parcel lies mostly inside the dropped outline.') };
+        }
+        const parcels = rowHouseParcelsForIds(ids);
+        const failed = { ok: false, reason: translateRowHouseText('proposalDrafts.freeform.ruleFailedHere', 'The {{rule}} rule cannot build a building on the parcels here.', { rule: window.ruleDropLabel?.('row') || 'Row' }) };
+        if (parcels.length !== ids.length) return failed;
+        const site = robustUnionLocal(parcels.map(parcel => parcel.feature).filter(Boolean));
+        if (!site?.geometry) return failed;
+        const nextBlock = { parcels, parcelIds: ids, site, syntheticSite: false, valid: true, polygon: null };
+        const previousSuperparcel = cachedSuperparcel;
+        let feature = null;
+        try {
+            feature = generateRowHousePolygon(nextBlock, currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation);
+        } catch (_) { feature = null; }
+        if (!feature?.geometry || !window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, cachedSuperparcel, turf)) {
+            cachedSuperparcel = previousSuperparcel;
+            return failed;
+        }
+        rowHouseBlock = nextBlock;
+        rowHouseBlockNameOverride = describeRowHouseParcelSelection(ids);
+        currentOffsetX = 0;
+        currentOffsetY = 0;
+        rowHouseManualMode = false;
+        syncRowHouseGeometryControls();
+        generatedRowHouseFeature = feature;
+        displayBlockOnRowHouseMap(nextBlock);
+        displayRowHouseBuildingInModal(feature);
+        autosaveRowHouseDraft();
+        return { ok: true };
+    }
+
+    async function resolveRowHouseDrop(droppedFeature, drag) {
+        const putBack = () => {
+            if (Array.isArray(drag.offset)) [currentOffsetX, currentOffsetY] = drag.offset;
+            generatedRowHouseFeature = drag.feature;
+            displayRowHouseBuildingInModal(drag.feature);
+            rowHouseHistory?.discardLast?.();
+        };
+        const boundary = rowHouseSiteBoundary();
+        const movedOutline = boundary?.geometry && drag.start && drag.end
+            ? { type: 'Feature', properties: {}, geometry: window.SingleBuildingGeometry.moveGeometry(boundary.geometry, drag.start, drag.end) }
+            : null;
+        const answer = typeof window.chooseRuleDrop === 'function'
+            ? await window.chooseRuleDrop({
+                typology: 'row',
+                tryConvert: async () => {
+                    const result = await window.convertActiveDesignToFreeform({
+                        features: [window.UrbanRuleVariation.massingWithRule(droppedFeature, currentRowRule(), rowVariationSeed, { turf })],
+                        site: window.__siteDraft?.siteFromFeatures?.([movedOutline || droppedFeature]),
+                        typology: 'row',
+                        confirm: false
+                    });
+                    if (result?.ok) closeRowHouseModal({ preservePending: true });
+                    return result;
+                },
+                tryRule: async () => rowHouseRuleAtOutline(movedOutline)
+            })
+            : 'cancel';
+        if (answer === 'cancel' && rowHouseModal) putBack();
+    }
+
+    // "Convert to Freeform building" in the Row editor: the terrace as the rule produces it now becomes
+    // one Freeform building where it stands, and the editor closes as Done does, which saves it.
+    async function convertRowHouseToFreeform() {
+        if (!generatedRowHouseFeature?.geometry) return;
+        const boundary = rowHouseSiteBoundary();
+        const result = await window.convertActiveDesignToFreeform?.({
+            features: [window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf })],
+            site: window.__siteDraft?.siteFromFeatures?.([boundary?.geometry ? boundary : generatedRowHouseFeature]),
+            typology: 'row'
+        });
+        if (result?.ok) {
+            closeRowHouseModal({ preservePending: true });
+            return;
+        }
+        if (result?.cancelled) return;
+        setRowHouseInfo('', result?.reason || translateRowHouseText('proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.'));
     }
 
     function commitRowHousePolygonRing(ring) {
@@ -1074,9 +1185,7 @@
             height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
             footprintMode: 'polygon'
         };
-        if (!rowHouseModal?.placement?.accepts?.(candidate)) return false;
         generatedRowHouseFeature = candidate;
-        rowHouseModal?.placement?.update?.(candidate);
         displayRowHouseBuildingInModal(candidate);
         autosaveRowHouseDraft();
         return true;
@@ -1094,8 +1203,7 @@
             leaflet: L,
             turf,
             ring,
-            boundary: () => rowHousePlacementLocked() ? (rowHouseBlock?.site || cachedSuperparcel) : null,
-            snapCoordinate: (coordinate, event) => rowHouseModal?.placement?.snapCoordinate?.(coordinate, event) || coordinate,
+            boundary: () => rowHouseSiteBoundary(),
             undo: false,
             initialSelectedVertexIndex,
             showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
@@ -1136,7 +1244,6 @@
             footprintMode: 'polygon'
         };
         generatedRowHouseFeature = candidate;
-        rowHouseModal?.placement?.update?.(candidate);
         displayRowHouseBuildingInModal(candidate);
         autosaveRowHouseDraft();
     }
@@ -1156,9 +1263,7 @@
                 return;
             }
             rowHouseHistory?.record?.();
-            const constrained = rowHousePlacementLocked()
-                ? (window.PolygonGeometryEditor.constrainRingToBoundary(ring, rowHouseBlock?.site || cachedSuperparcel, turf) || ring)
-                : ring;
+            const constrained = window.PolygonGeometryEditor.constrainRingToBoundary(ring, rowHouseSiteBoundary(), turf) || ring;
             const candidate = rowHouseFeatureWithRing(generatedRowHouseFeature, constrained);
             if (!candidate || !rowHouseFeatureValid(candidate)) {
                 showRowHouseEditorAlert('uploadOutside', 'The uploaded polygon does not overlap these parcels in a usable way.');
@@ -1177,7 +1282,6 @@
             rowHouseManualMode = true;
             syncRowHouseGeometryControls();
             generatedRowHouseFeature = candidate;
-            rowHouseModal?.placement?.update?.(candidate);
             displayRowHouseBuildingInModal(candidate);
             autosaveRowHouseDraft();
         };
@@ -1223,7 +1327,8 @@
             fitsParcelUnion = !!parcelUnion?.geometry
                 && window.SingleBuildingGeometry?.footprintWithinBoundary?.(barFeature, parcelUnion, turf) === true;
         } catch (_) { fitsParcelUnion = false; }
-        if (!rowHousePlacementLocked() && (rowHouseBlock?.syntheticSite || !fitsParcelUnion)) {
+        // A design on a site without parcels (PARCEL-OPTIONAL.md) has no parcels to split by.
+        if (rowHouseBlock?.syntheticSite || !fitsParcelUnion) {
             const rule = currentRowRule();
             const massing = cloneRowHouseFeature(barFeature);
             massing.properties = {
@@ -1424,12 +1529,12 @@
                 typology: 'row',
                 rule: currentRowRule(),
                 seed: rowVariationSeed,
-                manualMode: rowHouseManualMode,
-                placementBaseSite: cloneRowHouseFeature(block.generatorSite || block.site || cachedSuperparcel)
+                manualMode: rowHouseManualMode
             },
             buildingFeature: feature,
             buildings: [feature],
-            placement: { site: cloneRowHouseFeature(feature), free: true }
+            // A Row stays on its parcels (proposals/freeform-conversion.js): never a free placement.
+            placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         }, { coalesceKey: 'row-house-live' });
     }
 
@@ -1444,7 +1549,7 @@
 
         try {
             // Check if current parameters fit, if not try to adjust offset
-            if (rowHousePlacementLocked() && !checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+            if (!checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
                 // Try resetting offset to center
                 if (checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation)) {
                     currentOffsetX = 0;
@@ -1474,7 +1579,6 @@
             }
 
             generatedRowHouseFeature = buildingFeature;
-            rowHouseModal?.placement?.update?.(buildingFeature);
             displayRowHouseBuildingInModal(buildingFeature);
             autosaveRowHouseDraft();
 
@@ -1510,9 +1614,6 @@
         rowHouseBlock = block;
         if (!block.site?.geometry) {
             block.site = robustUnionLocal(block.parcels.map(parcel => parcel.feature).filter(Boolean));
-        }
-        if (!block.generatorSite?.geometry) {
-            block.generatorSite = cloneRowHouseFeature(block.site);
         }
         const blockLabel = getRowHouseDisplayName();
 
@@ -1620,6 +1721,7 @@
                     <div id="rowhouse-buttons">
                         <button type="button" class="btn btn-quiet" id="btn-rowhouse-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
                         <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn" id="btn-rowhouse-freeform" data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-rowhouse-done" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
@@ -1638,15 +1740,6 @@
                 modes: ['2d', 'model'],
                 wide: false,
                 tools: rotationTools,
-                placement: {
-                    site: block.site || cachedSuperparcel,
-                    onLockChange: () => {
-                        if (generatedRowHouseFeature) {
-                            if (rowHouseFeatureValid(generatedRowHouseFeature)) displayRowHouseBuildingInModal(generatedRowHouseFeature);
-                            else setRowHouseInfo('', translateRowHouseText('onMapEditor.lockReject', 'The current footprint is outside the locked site. Move it back inside to use site lock.'));
-                        }
-                    }
-                },
                 hints: {
                     '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.'),
                     model: translateRowHouseText('rowHouses.modal.helper.dimensions', 'Length follows the longest parcel side; width is perpendicular.')
@@ -1689,7 +1782,7 @@
                 rowHouseHistory?.record?.();
                 const proposedLength = parseFloat(e.target.value);
                 // Check if proposed length fits (try to adjust position first)
-                if (!rowHousePlacementLocked() || checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+                if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
                     currentBuildingLength = proposedLength;
                 } else if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation)) {
                     // Reset position to center
@@ -1723,7 +1816,7 @@
                 rowHouseHistory?.record?.();
                 const proposedWidth = parseFloat(e.target.value);
                 // Check if proposed width fits (try to adjust position first)
-                if (!rowHousePlacementLocked() || checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+                if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
                     currentBuildingWidth = proposedWidth;
                 } else if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, 0, 0, currentRotation)) {
                     // Reset position to center
@@ -1785,6 +1878,8 @@
                 });
             }
 
+            // Leaving the rule: one Freeform building, kept where it stands (proposal-editor-shell.js).
+            document.getElementById('btn-rowhouse-freeform')?.addEventListener('click', convertRowHouseToFreeform);
             const rowRegenerate = document.getElementById('btn-rowhouse-regenerate');
             if (rowRegenerate) {
                 // Only the seed moves: the massing, and every number read off it, stay put.
@@ -2146,12 +2241,11 @@
                 // the same terrace rather than a different one under the same name.
                 rule: currentRowRule(),
                 seed: rowVariationSeed,
-                manualMode: rowHouseManualMode,
-                placementBaseSite: cloneRowHouseFeature(block.generatorSite || block.site || cachedSuperparcel)
+                manualMode: rowHouseManualMode
             },
             buildingFeature: clonedFeature,
             buildings: clonedUnits,
-            placement: { site: cloneRowHouseFeature(generatedRowHouseFeature), free: true }
+            placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         };
 
         window.pendingRowHouseFromModal = clonedFeature;
@@ -2212,9 +2306,6 @@
             parcels: liveParcels,
             parcelIds: ids,
             site: authoredSite,
-            generatorSite: initialParameters?.placementBaseSite?.geometry
-                ? cloneRowHouseFeature(initialParameters.placementBaseSite)
-                : cloneRowHouseFeature(authoredSite),
             syntheticSite: ids.length === 0,
             valid: true,
             polygon: null

@@ -52,21 +52,6 @@ async function openProfile(page: Page, username: string) {
 }
 
 test.describe('Remaining UI controls @features', () => {
-  test('block counterclockwise rotation changes the preview while keeping generated mode', async ({ mockApi: page }) => {
-    await openCity(page);
-    await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
-    await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    // Rotation and manual-shape controls are deliberately under the secondary-options disclosure.
-    const moreOptions = page.locator('#blockify-modal .on-map-editor__more-options > summary');
-    await moreOptions.click();
-    const before = await renderedOutline(page, 'rgb(0, 123, 255)');
-    expect(before).not.toBe('');
-    await page.locator('#blockify-rotate-counterclockwise').click();
-    await expect.poll(() => renderedOutline(page, 'rgb(0, 123, 255)')).not.toBe(before);
-    await expect(page.locator('#blockify-manual-toggle')).toHaveAttribute('aria-pressed', 'false');
-  });
-
   test('row-house Undo restores the prior generated preview after rotation', async ({ mockApi: page }) => {
     await openRowHouseEditor(page);
     const before = await renderedOutline(page, 'rgb(13, 110, 253)');

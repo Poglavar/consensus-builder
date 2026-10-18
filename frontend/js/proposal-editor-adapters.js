@@ -21,9 +21,11 @@
     ];
 
     // Physical, material drafts may be explicitly moved to a new site. Parcel acts and
-    // readjustments remain tied to their authored scope/deal.
+    // readjustments remain tied to their authored scope/deal, and the building rules (Block, Row,
+    // Detached) to their parcels: leaving them is a conversion to a Freeform building or a re-run of
+    // the rule on the parcels there (proposals/freeform-conversion.js), never a free placement.
     const FREE_PLACEMENT_GOALS = new Set([
-        'park', 'square', 'lake', 'station', 'single', 'buildings', 'row'
+        'park', 'square', 'lake', 'station', 'single'
     ]);
     const KNOWN_SITE_COVERAGE = new Set(['complete', 'partial', 'none']);
 
@@ -158,9 +160,6 @@
         if (!FREE_PLACEMENT_GOALS.has(goal)) {
             throw new Error(placementMessage('fixedSite', 'This proposal type has a fixed site and cannot be moved.'));
         }
-        if (String(draft?.editorPayload?.context?.parameters?.mode || '').toLowerCase() === 'existing') {
-            throw new Error(placementMessage('existingBuilding', 'Existing-building proposals keep their source-aware footprint and cannot use free placement.'));
-        }
         const site = siteDraftApi().toMultiPolygon(placement.site);
         if (!site) throw new Error(placementMessage('invalidSite', 'A free placement needs a valid polygon site.'));
         return {
@@ -177,8 +176,7 @@
 
     function restoredFreePlacement(proposal, goal) {
         const key = normalizeGoal(goal || sourceGoal(proposal));
-        if (proposal?.freePlacement !== true || !FREE_PLACEMENT_GOALS.has(key)
-            || String(proposal?.buildingProposal?.parameters?.mode || '').toLowerCase() === 'existing') {
+        if (proposal?.freePlacement !== true || !FREE_PLACEMENT_GOALS.has(key)) {
             return null;
         }
         const site = siteDraftApi().toMultiPolygon(proposal.site);
@@ -1170,19 +1168,13 @@
             async openDesignEditor(draft) {
                 const context = clone(draft.editorPayload?.context || {});
                 const typology = draft.editorPayload?.typology || key;
-                const relocated = isFreePlacementDraft(draft);
+                // Only a Freeform building moves freely; the rules stay on their parcels.
+                const relocated = typology === 'single' && isFreePlacementDraft(draft);
                 const placementSite = relocated ? clone(draft.editorPayload.placement.site) : null;
-                const placementFeature = relocated ? featureFromSite(placementSite) : null;
                 if (relocated) {
                     context.placement = { free: true, site: clone(placementSite) };
                     context.parcelIds = [];
-                    // The old per-cadastre pieces and exclusions describe the source parcels, not
-                    // the moved site. Reopen from the full current massing/bar as a synthetic host.
                     context.ineligibleParcels = [];
-                    if (typology === 'block' && featureGeometryValid(context.blockMassing)) {
-                        context.buildingFeature = clone(context.blockMassing);
-                        context.buildings = [clone(context.blockMassing)];
-                    }
                 }
                 const savedBuildingEdit = Boolean(draft.sourceProposalId);
                 const authoredSite = draft.fields?.site || null;
@@ -1217,22 +1209,20 @@
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
-                        site: placementFeature || authoredSite,
-                        initialFeature: features[0] || null,
-                        placement: relocated ? clone(context.placement) : null
+                        site: authoredSite,
+                        initialFeature: features[0] || null
                     });
                     return opened !== false;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: placementFeature || authoredSite, initialParameters: context.parameters || null, placement: relocated ? clone(context.placement) : null });
+                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null });
                     return opened !== false;
                 }
                 if (typeof global.openUrbanRuleForParcels === 'function') {
                     const seed = { ...(typeof global.buildBlockifySeed === 'function'
                         ? (global.buildBlockifySeed(context) || {})
                         : (context.parameters || {})) };
-                    if (relocated && featureGeometryValid(context.blockMassing)) seed.blockMassing = clone(context.blockMassing);
-                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: placementFeature || authoredSite, initialState: seed || null, placement: relocated ? clone(context.placement) : null });
+                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null });
                     return opened !== false;
                 }
                 return false;
@@ -1259,10 +1249,6 @@
                 const blockMassing = typology === 'block' && featureGeometryValid(context.blockMassing)
                         ? clone(context.blockMassing)
                         : null;
-                if (isFreePlacementDraft(draft) && typology === 'block'
-                    && (!blockMassing || !geometryWithinSite(blockMassing, draft.editorPayload.placement.site))) {
-                    throw new Error(placementMessage('massingOutsideSite', 'The moved block massing must fit entirely inside its new site.'));
-                }
                 if (blockMassing) output.geometry.blockMassing = blockMassing;
                 else delete output.geometry.blockMassing;
                 // Only the freeform editor offers a surroundings treatment; every other typology

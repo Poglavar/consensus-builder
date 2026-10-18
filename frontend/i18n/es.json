@@ -674,7 +674,6 @@
         },
         "placement": {
             "fixedSite": "Este tipo de propuesta tiene un emplazamiento fijo y no se puede mover.",
-            "existingBuilding": "Las propuestas de edificios existentes conservan su huella vinculada al edificio y no admiten ubicación libre.",
             "invalidSite": "La ubicación libre necesita un emplazamiento poligonal válido.",
             "freshBinding": "La ubicación libre necesita una nueva vinculación del emplazamiento calculada por el servidor.",
             "unknownCoverage": "El servidor no puede verificar este emplazamiento con un catastro compatible. Muévelo a una zona compatible o contacta con el equipo de datos municipales.",
@@ -683,8 +682,7 @@
             "bindingUnavailable": "El servicio de vinculación autoritativa del emplazamiento no está disponible. El borrador movido se guardó localmente.",
             "geometryChanged": "La geometría cambió mientras se vinculaba el emplazamiento. Vuelve a guardar.",
             "buildingOutsideSite": "La geometría del edificio movido debe quedar completamente dentro del nuevo emplazamiento.",
-            "surroundingsOutsideSite": "El entorno movido debe quedar completamente dentro del nuevo emplazamiento. Mueve toda la propuesta o ajusta el límite del terreno antes de guardar.",
-            "massingOutsideSite": "La masa edificada movida debe quedar completamente dentro del nuevo emplazamiento."
+            "surroundingsOutsideSite": "El entorno movido debe quedar completamente dentro del nuevo emplazamiento. Mueve toda la propuesta o ajusta el límite del terreno antes de guardar."
         },
         "review": {
             "title": "Revisar cambios",
@@ -804,6 +802,25 @@
             "one": "Demasiadas subidas por ahora. Puedes subir el resto a las {{at}}, en aproximadamente {{minutes}} minuto.",
             "few": "Demasiadas subidas por ahora. Puedes subir el resto a las {{at}}, en aproximadamente {{minutes}} minutos.",
             "other": "Demasiadas subidas por ahora. Puedes subir el resto a las {{at}}, en aproximadamente {{minutes}} minutos."
+        },
+        "freeform": {
+            "title": "Convertir en edificio libre",
+            "convert": "Convertir",
+            "keepRule": "Mantener la regla",
+            "confirmLocal": "«{{name}}» pasa a ser un solo edificio libre con la huella y la altura que su regla {{rule}} produce ahora. Después, los parámetros de la regla ya no se aplican: editas el edificio directamente.",
+            "confirmPublished": "«{{name}}» está publicada, así que se crea una contrapropuesta de edificio libre: un edificio con la huella y la altura que su regla {{rule}} produce ahora. Los parámetros de la regla no se le aplican: editas el edificio directamente. La propuesta publicada queda como está.",
+            "noBuildings": "Esta propuesta no tiene edificios que conservar.",
+            "notContiguous": "Sus edificios no se tocan entre sí, así que no pueden convertirse en un solo edificio libre.",
+            "differentHeights": "Sus edificios tienen alturas distintas, y un edificio libre tiene una sola altura.",
+            "dropTitle": "Fuera de sus parcelas",
+            "dropMessage": "La regla {{rule}} construye sobre sus propias parcelas, así que el diseño no puede moverse sin más. ¿Qué debe pasar aquí?",
+            "dropConvert": "Convertir en edificio libre y dejarlo aquí",
+            "dropRule": "Aplicar la misma regla a las parcelas de aquí",
+            "dropCancel": "Devolverlo",
+            "ruleFailed": "La regla no puede construir sobre las parcelas de aquí.",
+            "ruleFailedHere": "La regla {{rule}} no puede construir un edificio sobre las parcelas de aquí.",
+            "noParcelsHere": "Ninguna parcela queda mayormente dentro del contorno soltado.",
+            "dropConvertMeaning": "Convertir conserva el edificio tal como está ahora; los parámetros de la regla ya no se le aplican."
         }
     },
     "languages": {
@@ -1671,7 +1688,8 @@
                 "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
                 "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
                 "betOutcome": "Apostar al resultado",
-                "editApprovalHintCounterproposal": "Abre el editor en la pestaña Aprobación. Al guardar se crea una contrapropuesta; las aceptaciones de esta no se trasladan."
+                "editApprovalHintCounterproposal": "Abre el editor en la pestaña Aprobación. Al guardar se crea una contrapropuesta; las aceptaciones de esta no se trasladan.",
+                "convertToFreeformHint": "Conserva los edificios tal como están ahora y edítalos directamente como un solo edificio. Después, los parámetros de la regla ya no se aplican."
             },
             "expiry": {
                 "expired": "Propuesta caducada",

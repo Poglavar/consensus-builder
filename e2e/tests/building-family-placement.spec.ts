@@ -1,5 +1,7 @@
-// Headed, user-gesture coverage for movable block and row-house massing. Geometry is inspected
-// read-only from the rendered Leaflet outline and the public proposal context after Done.
+// Headed, user-gesture coverage for Block and Row massing: a rule builds on its own parcels, so a
+// drag off them asks what to do (put it back, re-run the rule there, or convert to Freeform;
+// MEMORY.md 2026-10-18). Geometry is inspected read-only from the rendered Leaflet outline and the
+// public proposal context after Done.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, showProposal } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
@@ -40,13 +42,19 @@ async function primaryOutline(page: Page, stroke: string) {
   }, stroke);
 }
 
-async function dragLargestOutline(page: Page, stroke: string): Promise<void> {
+// Drags the outline well clear of its parcels, so the drop dialog has to answer.
+async function dragLargestOutlineAway(page: Page, stroke: string): Promise<void> {
   const outline = await primaryOutline(page, stroke);
   if (!outline) throw new Error(`No visible building outline with stroke ${stroke}`);
+  const dx = Math.max(160, outline.width * 1.6);
   await page.mouse.move(outline.x, outline.y);
   await page.mouse.down();
-  await page.mouse.move(outline.x + 34, outline.y - 21, { steps: 8 });
+  await page.mouse.move(outline.x - dx, outline.y + 24, { steps: 12 });
   await page.mouse.up();
+}
+
+function dropDialog(page: Page) {
+  return page.locator('.cb-dialog-overlay--confirm').filter({ hasText: 'Moved off its parcels' });
 }
 
 async function previewGeometry(page: Page): Promise<string> {
@@ -56,30 +64,6 @@ async function previewGeometry(page: Page): Promise<string> {
     const context = windowRef.getActiveProposalDesignDraft?.()?.editorPayload?.context || {};
     const canonical = context.buildingFeature || context.blockMassing || context.buildings?.[0] || null;
     return JSON.stringify({ preview, canonical: canonical?.geometry || null });
-  });
-}
-
-function expectSameTranslation(before: any, after: any): void {
-  expect(before?.type).toBe(after?.type);
-  const collect = (value: any, pairs: number[][]) => {
-    if (!Array.isArray(value)) return;
-    if (value.length >= 2 && Number.isFinite(value[0]) && Number.isFinite(value[1])) {
-      pairs.push(value);
-      return;
-    }
-    value.forEach((child: any) => collect(child, pairs));
-  };
-  const left: number[][] = [];
-  const right: number[][] = [];
-  collect(before.coordinates, left);
-  collect(after.coordinates, right);
-  expect(right).toHaveLength(left.length);
-  expect(left.length).toBeGreaterThan(3);
-  const delta: [number, number] = [right[0][0] - left[0][0], right[0][1] - left[0][1]];
-  expect(Math.abs(delta[0]) + Math.abs(delta[1])).toBeGreaterThan(0.000001);
-  left.forEach((point, index) => {
-    expect(right[index][0] - point[0]).toBeCloseTo(delta[0], 7);
-    expect(right[index][1] - point[1]).toBeCloseTo(delta[1], 7);
   });
 }
 
@@ -100,11 +84,6 @@ async function reopenGeometryEditor(page: Page, proposalId: string, editorRoot: 
   await expect(page.locator(editorRoot).locator('.on-map-editor__panel')).toBeVisible({ timeout: 20_000 });
 }
 
-async function boundsCenter(page: Page, feature: any): Promise<[number, number]> {
-  if (!feature?.geometry) throw new Error('Building geometry is missing');
-  return page.evaluate(value => (window as any).turf.center(value).geometry.coordinates, feature);
-}
-
 async function openRowHouseEditor(page: Page): Promise<void> {
   await installLayerDatasets(page);
   await openCity(page);
@@ -120,24 +99,23 @@ async function openRowHouseEditor(page: Page): Promise<void> {
 }
 
 test.describe('Building-family placement @features', () => {
-  test('block translation and rotation keep generated mode; manual vertex edits disable footprint sliders and Undo restores the prior mode', async ({ mockApi: page }) => {
+  test('a block dragged off its parcels can be put back; manual vertex edits disable footprint sliders and Undo restores the prior mode', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--buildings').click();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
 
-    const beforeMove = await previewGeometry(page);
+    const beforeMove = JSON.parse(await previewGeometry(page)).canonical;
     await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
-    const beforeMoveOutline = await primaryOutline(page, 'rgb(0, 123, 255)');
-    expect(beforeMoveOutline).toBeTruthy();
-    await dragLargestOutline(page, 'rgb(0, 123, 255)');
-    await expect.poll(() => previewGeometry(page)).not.toBe(beforeMove);
-    expectSameTranslation(JSON.parse(beforeMove).canonical, JSON.parse(await previewGeometry(page)).canonical);
-    await expect(page.locator('#blockify-manual-toggle')).toHaveAttribute('aria-pressed', 'false');
-
-    const beforeRotate = await previewGeometry(page);
-    await page.locator('#blockify-rotate-clockwise').click();
-    await expect.poll(() => previewGeometry(page)).not.toBe(beforeRotate);
+    // A rule is never placed freely: no rotate buttons, and a drop off the parcels asks.
+    await expect(page.locator('#blockify-rotate-clockwise')).toHaveCount(0);
+    await dragLargestOutlineAway(page, 'rgb(0, 123, 255)');
+    const dialog = dropDialog(page);
+    await expect(dialog).toBeVisible({ timeout: 20_000 });
+    await expect(dialog.getByRole('button')).toContainText(['Convert to Freeform and keep it here', 'Apply the same rule to the parcels here', 'Put it back']);
+    await dialog.getByRole('button', { name: 'Put it back' }).click();
+    await expect(dialog).toBeHidden();
+    await expect.poll(async () => JSON.stringify(JSON.parse(await previewGeometry(page)).canonical)).toBe(JSON.stringify(beforeMove));
     await expect(page.locator('#blockify-manual-toggle')).toHaveAttribute('aria-pressed', 'false');
 
     await page.locator('#blockify-manual-toggle').click();
@@ -175,87 +153,41 @@ test.describe('Building-family placement @features', () => {
     expect(reopened.parameters.mode).not.toBe('manual');
   });
 
-  test('row-house translation and rotation remain generated, and Done keeps one complete movable footprint', async ({ mockApi: page }) => {
+  test('row-house rotation stays generated, and a row dragged off its parcels converts to one Freeform building kept where it was dropped', async ({ mockApi: page }) => {
     await openRowHouseEditor(page);
-    const beforeMove = await previewGeometry(page);
     await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
-    expect(await primaryOutline(page, 'rgb(13, 110, 253)')).toBeTruthy();
-    await dragLargestOutline(page, 'rgb(13, 110, 253)');
-    await expect.poll(() => previewGeometry(page)).not.toBe(beforeMove);
-    expectSameTranslation(JSON.parse(beforeMove).canonical, JSON.parse(await previewGeometry(page)).canonical);
-    await expect(page.locator('#rowhouse-manual-toggle')).toHaveAttribute('aria-pressed', 'false');
-
     const beforeRotate = await previewGeometry(page);
     await page.locator('#rowhouse-rotate-clockwise').click();
     await expect.poll(() => previewGeometry(page)).not.toBe(beforeRotate);
     await expect(page.locator('#rowhouse-manual-toggle')).toHaveAttribute('aria-pressed', 'false');
 
-    await page.locator('#rowhouse-manual-toggle').click();
-    await expect(page.locator('#rowhouse-width-slider')).toBeDisabled();
-    await expect(page.locator('#rowhouse-length-slider')).toBeDisabled();
-    await expect(page.locator('#rowhouse-height-slider')).toBeEnabled();
-    await page.locator('#btn-rowhouse-done').click();
+    const beforeMove = JSON.parse(await previewGeometry(page)).canonical;
+    await dragLargestOutlineAway(page, 'rgb(13, 110, 253)');
+    const dialog = dropDialog(page);
+    await expect(dialog).toBeVisible({ timeout: 20_000 });
+    await dialog.getByRole('button', { name: 'Convert to Freeform and keep it here' }).click();
+    await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeHidden({ timeout: 20_000 });
     const proceed = page.getByRole('button', { name: 'Proceed anyway' });
     if (await proceed.isVisible().catch(() => false)) await proceed.click();
 
-    const saved = await savedBuildingProposal(page, 'row');
-    expect(saved.buildingProposal.parameters.manualMode).toBe(true);
-    expect(saved.geometry.buildings).toHaveLength(1);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.goal === 'single' && proposal.geometry?.buildings?.length === 1)), { timeout: 30_000 }).toBe(true);
+    const saved = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalStorage.getAllProposals()
+      .find((proposal: any) => proposal.goal === 'single' && proposal.geometry?.buildings?.length === 1))));
+    // One Freeform building of the row's footprint, standing where it was dropped; the rule's
+    // parameters are gone.
+    const shape = await page.evaluate(([before, after]) => {
+      const turf = (window as any).turf;
+      const a = { type: 'Feature', properties: {}, geometry: before };
+      const b = { type: 'Feature', properties: {}, geometry: after };
+      return { areaRatio: turf.area(b) / turf.area(a), movedM: turf.distance(turf.centroid(a), turf.centroid(b)) * 1000 };
+    }, [beforeMove, saved.geometry.buildings[0].geometry]);
+    expect(shape.areaRatio).toBeGreaterThan(0.98);
+    expect(shape.areaRatio).toBeLessThan(1.02);
+    expect(shape.movedM).toBeGreaterThan(5);
+    expect(saved.buildingProposal.parameters).toMatchObject({ typology: 'single' });
+    expect(saved.buildingProposal.parameters).not.toHaveProperty('manualMode');
+    expect(saved.buildingProposal.parameters).not.toHaveProperty('width');
     expect(saved.freePlacement).toBe(true);
-    expect(['Polygon', 'MultiPolygon']).toContain(saved.site.type);
-    const placementArea = await page.evaluate(geometry => (window as any).turf.area({ type: 'Feature', properties: {}, geometry }), saved.site);
-    const buildingArea = await page.evaluate(feature => (window as any).turf.area(feature), saved.geometry.buildings[0]);
-    expect(placementArea).toBeCloseTo(buildingArea, 4);
-    const savedGeometry = JSON.stringify(saved.geometry.buildings[0].geometry);
-    await reopenGeometryEditor(page, saved.proposalId, '#rowhouse');
-    const reopened = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).getActiveProposalDesignDraft()?.editorPayload?.context)));
-    expect(JSON.stringify(reopened.buildingFeature.geometry)).toBe(savedGeometry);
-    expect(reopened.parameters.manualMode).toBe(true);
-  });
-
-  test('a saved free row with no cadastral IDs opens from its site; changing width preserves its center after reload', async ({ mockApi: page }) => {
-    await openRowHouseEditor(page);
-    const beforeMove = await previewGeometry(page);
-    await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
-    await dragLargestOutline(page, 'rgb(13, 110, 253)');
-    await expect.poll(() => previewGeometry(page)).not.toBe(beforeMove);
-    await page.locator('#btn-rowhouse-done').click();
-    const proceed = page.getByRole('button', { name: 'Proceed anyway' });
-    if (await proceed.isVisible().catch(() => false)) await proceed.click();
-    const saved = await savedBuildingProposal(page, 'row');
-    const fixture = await page.evaluate(proposalId => {
-      const w = window as any;
-      const proposal = w.proposalStorage.getProposal(proposalId);
-      const geometry = proposal.geometry.buildings[0].geometry;
-      const site = geometry.type === 'Polygon'
-        ? { type: 'MultiPolygon', coordinates: [geometry.coordinates] }
-        : geometry;
-      // Keep the real generated/moved row and its parameters, but model its new authoritative
-      // binding as an empty site. This is fixture setup only; editor opening remains a real click.
-      proposal.freePlacement = true;
-      proposal.site = site;
-      proposal.cadastreParcelIds = [];
-      proposal.binding = { source: 'server:e2e-fixture-cadastre', coverage: 'none', parcels: [], openGround: site };
-      w.proposalStorage._indexProposal(proposal);
-      w.proposalStorage.save();
-      return { geometry: JSON.parse(JSON.stringify(geometry)), site };
-    }, saved.proposalId);
-    await reopenGeometryEditor(page, saved.proposalId, '#rowhouse');
-    const draft = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).getActiveProposalDesignDraft())));
-    expect(draft.editorPayload.context.parcelIds).toEqual([]);
-    expect(draft.editorPayload.context.buildingFeature.geometry).toEqual(fixture.geometry);
-    const beforeCenter = await boundsCenter(page, draft.editorPayload.context.buildingFeature);
-    const width = page.locator('#rowhouse-width-slider');
-    await expect(width).toBeEnabled();
-    await width.focus();
-    await width.press('ArrowRight');
-    await expect.poll(async () => page.evaluate(() => {
-      const geometry = (window as any).getActiveProposalDesignDraft()?.editorPayload?.context?.buildingFeature?.geometry;
-      return geometry ? JSON.stringify(geometry) : null;
-    })).not.toBe(JSON.stringify(fixture.geometry));
-    const afterGeometry = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).getActiveProposalDesignDraft()?.editorPayload?.context?.buildingFeature?.geometry)));
-    const afterCenter = await boundsCenter(page, { type: 'Feature', properties: {}, geometry: afterGeometry });
-    expect(Math.abs(afterCenter[0] - beforeCenter[0])).toBeLessThan(1e-8);
-    expect(Math.abs(afterCenter[1] - beforeCenter[1])).toBeLessThan(1e-8);
   });
 });
