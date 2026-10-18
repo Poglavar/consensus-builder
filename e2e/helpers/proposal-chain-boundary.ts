@@ -115,6 +115,7 @@ export async function installProposalEvmBoundary(page: Page, options: ProposalEv
       if (args.method === 'eth_gasPrice' || args.method === 'eth_maxPriorityFeePerGas') return '0x1';
       if (args.method === 'eth_blockNumber') return '0x2';
       if (args.method === 'eth_sendTransaction') {
+        w.__proposalEvmSubmitted = args.params?.[0] || {};
         if (settings.failProposalMint) {
           const error = new Error('insufficient funds for gas * price + value') as Error & { code?: number };
           error.code = -32000;

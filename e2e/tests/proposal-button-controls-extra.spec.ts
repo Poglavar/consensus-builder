@@ -112,6 +112,8 @@ async function prepareProposalCreationMint(page: import('@playwright/test').Page
 async function expectProposalMintRpc(page: import('@playwright/test').Page): Promise<void> {
   await expect.poll(() => page.evaluate(() => (window as any).__proposalEvmBoundary
     .filter((method: string) => method === 'eth_sendTransaction').length)).toBeGreaterThan(0);
+  // The mint asks for 25% over the boundary's 21000-gas estimate (wallet wrappers spend gas too).
+  expect(BigInt(await page.evaluate(() => (window as any).__proposalEvmSubmitted.gas))).toBe(26250n);
 }
 
 test.describe('proposal button controls: modal and alternate states @features', () => {

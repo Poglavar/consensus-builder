@@ -332,6 +332,16 @@
     // Resolve a vote proposal's expiry as a unix-seconds BigInt. Accepts an explicit
     // options.expiryTimestamp (unix seconds) or options.expiryDays; defaults to and caps at
     // ~1 year, matching the create dialog. The contract independently requires expiry > now.
+    // A mint asks for 25% more gas than the estimate. Wallets that wrap the call in their own
+    // contract (MetaMask's optional "Added protection" goes through its delegation manager) spend
+    // gas on the wrapper, and an exact estimate then runs the inner mint out of gas (2026-10-18:
+    // a Sepolia vote mint estimated at 2.16M failed that way, the plain retry used 2.14M).
+    const MINT_GAS_HEADROOM_PERCENT = 125n;
+    async function mintGasLimit(method, args, overrides = {}) {
+        const estimate = await method.estimateGas(...args, overrides);
+        return (estimate * MINT_GAS_HEADROOM_PERCENT) / 100n;
+    }
+
     const VOTE_MAX_DAYS = 365;
     function resolveVoteExpiry(options) {
         const nowSec = Math.floor(Date.now() / 1000);
@@ -445,7 +455,8 @@
                     : 'On-chain vote mint simulation failed: the ProposalNFT contract reverted. Check contract address and lens list.');
             }
             try {
-                tx = await contract.mintVote(...voteArgs);
+                const gasLimit = await mintGasLimit(contract.mintVote, voteArgs);
+                tx = await contract.mintVote(...voteArgs, { gasLimit });
                 if (typeof options.onSubmitted === 'function') {
                     try { options.onSubmitted(tx); } catch (_) { /* Non-fatal; continue to wait for receipt */ }
                 }
@@ -478,9 +489,10 @@
             }
 
             try {
+                const gasLimit = await mintGasLimit(contract.mintAndFund, args, { value: ethAmountWei });
                 tx = await contract.mintAndFund(
                     ...args,
-                    { value: ethAmountWei }
+                    { value: ethAmountWei, gasLimit }
                 );
                 if (typeof options.onSubmitted === 'function') {
                     try {
