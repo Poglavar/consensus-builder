@@ -155,7 +155,7 @@
         const trusted = new WeakSet();
         const subscribers = new Set();
         const participants = new Set();
-        const metrics = { normalized: 0, indexUpdates: 0, coverageChecks: 0, worstCoverageDeltaM2: 0 };
+        const metrics = { normalized: 0, indexUpdates: 0, coverageChecks: 0, worstCoverageDeltaM2: 0, identityReplacements: 0 };
         let active = null;
         let committed = {
             revision: 0,
@@ -403,7 +403,59 @@
             return lines;
         }
 
+        // A fact's bounding box widened by twice the vertex tolerance (metres → degrees at the
+        // fact's latitude). A vertex outside it cannot be inside the fact nor within tolerance of
+        // its boundary, so the point-in-polygon and distance tests are skipped for it.
+        const toleranceBoxByFact = new WeakMap();
+        function toleranceBoxOf(fact) {
+            if (toleranceBoxByFact.has(fact)) return toleranceBoxByFact.get(fact);
+            const box = bboxOf(fact);
+            let widened = null;
+            if (box) {
+                const marginLat = (2 * VERTEX_TOLERANCE_M) / 111320;
+                const cosLat = Math.cos(((box[1] + box[3]) / 2) * Math.PI / 180);
+                const marginLon = marginLat / Math.max(0.01, Math.abs(cosLat));
+                widened = [box[0] - marginLon, box[1] - marginLat, box[2] + marginLon, box[3] + marginLat];
+            }
+            toleranceBoxByFact.set(fact, widened);
+            return widened;
+        }
+
+        // Exact coordinate equality of two rings lists (no tolerance: an identity replacement hands
+        // back the fact's own coordinates).
+        function sameRings(left, right) {
+            if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+            for (let r = 0; r < left.length; r += 1) {
+                const a = left[r];
+                const b = right[r];
+                if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+                for (let i = 0; i < a.length; i += 1) {
+                    if (a[i]?.[0] !== b[i]?.[0] || a[i]?.[1] !== b[i]?.[1]) return false;
+                }
+            }
+            return true;
+        }
+
+        // A replacement that IS its single host fact, or one connected component of a
+        // MultiPolygon fact, lies inside that fact by construction. Keyed on the geometry itself,
+        // not on who asked for the replacement: any piece with different coordinates is checked.
+        function isIdentityOfFact(feature, fact) {
+            const piece = feature?.geometry;
+            const ground = fact?.geometry;
+            if (!piece || !ground || piece.type !== 'Polygon') return false;
+            if (piece.coordinates === ground.coordinates) return true;
+            if (ground.type === 'Polygon') return sameRings(piece.coordinates, ground.coordinates);
+            if (ground.type === 'MultiPolygon' && Array.isArray(ground.coordinates)) {
+                return ground.coordinates.some(component => sameRings(piece.coordinates, component));
+            }
+            return false;
+        }
+
         function vertexInsideFact(vertex, fact, cache) {
+            const box = toleranceBoxOf(fact);
+            if (box && !(vertex[0] >= box[0] && vertex[0] <= box[2] && vertex[1] >= box[1] && vertex[1] <= box[3])) {
+                return false;
+            }
             try {
                 if (geometry.booleanPointInPolygon(vertex, fact)) return true;
             } catch (_) { /* fall through to the distance check */ }
@@ -494,6 +546,10 @@
                 // A vertex beyond every declared parcel's boundary is ground the replacement does
                 // not own. Shared edges and clipper drift sit within VERTEX_TOLERANCE_M.
                 const hosts = provenance.map(id => facts.get(id));
+                if (hosts.length === 1 && isIdentityOfFact(feature, hosts[0])) {
+                    metrics.identityReplacements += 1;
+                    return;
+                }
                 for (const vertex of verticesOf(feature)) {
                     if (hosts.some(fact => vertexInsideFact(vertex, fact, boundaryCache))) continue;
                     const error = new Error(`Replacement parcel ${featureId(feature)} lies outside immutable cadastral ground at [${vertex[0]}, ${vertex[1]}].`);
@@ -504,13 +560,21 @@
                 }
             });
 
+            // Members of each group, built once: filtering the whole scope per group was quadratic
+            // (a full-cadastre reset of ~6,000 parcels spent ~0.4 s here).
+            const membersByGroup = new Map();
+            scopeIds.forEach(id => {
+                const group = find(id);
+                if (!membersByGroup.has(group)) membersByGroup.set(group, []);
+                membersByGroup.get(group).push(id);
+            });
             factAreaByGroup.forEach((factM2, group) => {
                 const pieceM2 = pieceAreaByGroup.get(group) || 0;
                 const toleranceM2 = COVERAGE_TOLERANCE_M2 + factM2 * RELATIVE_AREA_TOLERANCE;
                 const deltaM2 = pieceM2 - factM2;
                 metrics.coverageChecks += 1;
                 if (Math.abs(deltaM2) > metrics.worstCoverageDeltaM2) metrics.worstCoverageDeltaM2 = Math.abs(deltaM2);
-                const members = scopeIds.filter(id => find(id) === group);
+                const members = membersByGroup.get(group) || [];
                 if (deltaM2 > toleranceM2) {
                     // Nothing lies outside (checked per vertex above), so excess area is overlap.
                     const error = new Error(`Replacement parcels overlap by ${deltaM2.toFixed(3)} m² over ${members.join(', ')}.`);
