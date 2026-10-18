@@ -124,6 +124,8 @@ describe('chain metadata gateway reads', () => {
     it('constructs gateway URLs only from immutable content identifiers', () => {
         expect(metadataReadUrl(`ipfs://${CID}/proposal.json`, { IPFS_READ_GATEWAY: 'https://gateway.example/ipfs/' }))
             .toBe(`https://gateway.example/ipfs/${CID}/proposal.json`);
+        // Unset, it reads from the pinning service's gateway, the one the API is deployed with.
+        expect(metadataReadUrl(`ipfs://${CID}`, {})).toBe(`https://gateway.pinata.cloud/ipfs/${CID}`);
         expect(metadataReadUrl(`walrus://${'a'.repeat(43)}`, { WALRUS_AGGREGATOR_URL: 'https://walrus.example/' }))
             .toBe(`https://walrus.example/v1/blobs/${'a'.repeat(43)}`);
         for (const uri of ['https://evil.example/x', `ipfs://${CID}/../secret`, `ipfs://${CID}?redirect=https://evil.example`]) {

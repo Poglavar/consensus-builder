@@ -38,7 +38,9 @@ export function metadataReadUrl(uri, env = process.env) {
         if (suffix.split('/').some(part => !/^[A-Za-z0-9._-]*$/.test(part) || part === '.' || part === '..')) {
             throw chainProofError('Invalid IPFS metadata path.');
         }
-        const base = (env.IPFS_READ_GATEWAY || 'https://ipfs.io/ipfs').replace(/\/$/, '');
+        // The pinning service's own gateway by default (as the ecosystem file sets it): the public
+        // ipfs.io gateway rate-limits (429), so a mirror right after a mint failed with it.
+        const base = (env.IPFS_READ_GATEWAY || 'https://gateway.pinata.cloud/ipfs').replace(/\/$/, '');
         return `${base}/${ipfs[1]}${suffix}`;
     }
     const walrus = /^walrus:\/\/([A-Za-z0-9_-]{43})$/.exec(String(uri));
