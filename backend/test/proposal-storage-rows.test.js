@@ -1,6 +1,7 @@
 // Durable proposal storage is one row per record plus a manifest. A mutation writes only the rows
-// it touched; a whole-store save writes only rows whose projection changed; a legacy envelope is
-// migrated into rows once, at load, on the primary tab only; a corrupt row costs itself, not the log.
+// it touched; a whole-store save writes only rows whose projection changed; a corrupt row costs
+// itself, not the log. The pre-row single-blob layout ('cadastre_proposals') is abandoned: never
+// read, converted or deleted (user decision 2026-10-18).
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -116,12 +117,15 @@ describe('proposal rows: mutations', () => {
         expect(blocked).toHaveBeenCalledOnce();
     });
 
-    it('deletes a legacy envelope still visible during a boot migration', async () => {
-        const storage = fakeStorage({ cadastre_proposals: '{"version":2,"nextProposalId":0,"records":[]}' });
+    it('leaves an abandoned single-blob store alone when a mutation writes', async () => {
+        const blob = JSON.stringify({ version: 2, nextProposalId: 0, records: [] });
+        const storage = fakeStorage({ cadastre_proposals: blob });
         const store = bootStore(storage);
         store.proposals.set('a', record('a'));
         await run(store, storage, async context => { context.proposals.getProposal('a').title = 'x'; return true; });
-        expect(storage.writes[0].deletes).toEqual(['cadastre_proposals']);
+        expect(storage.writes).toHaveLength(1);
+        expect(storage.writes[0].deletes).toEqual([]);
+        expect(storage.values.get('cadastre_proposals')).toBe(blob);
     });
 });
 
@@ -190,34 +194,44 @@ describe('proposal rows: load', () => {
         consoleError.mockRestore();
     });
 
-    it('migrates a legacy envelope into rows in exactly one write and deletes the envelope', () => {
+    it('boots empty from an empty store and writes nothing', () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals()).toEqual([]);
+        expect(store.nextProposalId).toBe(0);
+        expect(storage.writes).toHaveLength(0);
+    });
+
+    it('ignores an abandoned single-blob store: never read, converted or deleted', () => {
+        const blob = JSON.stringify({ version: 2, nextProposalId: 3, records: [record('a'), record('b')] });
+        const storage = fakeStorage({ cadastre_proposals: blob });
+        const read = vi.spyOn(storage, 'getItem');
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals()).toEqual([]);
+        expect(store.nextProposalId).toBe(0);
+        expect(read.mock.calls.map(call => call[0])).not.toContain('cadastre_proposals');
+        expect(storage.writes).toHaveLength(0);
+        expect(storage.values.get('cadastre_proposals')).toBe(blob);
+    });
+
+    it('loads rows and ignores an abandoned blob beside them', () => {
+        const blob = JSON.stringify({ version: 2, nextProposalId: 9, records: [record('old')] });
         const storage = fakeStorage({
-            cadastre_proposals: JSON.stringify({ version: 2, nextProposalId: 3, records: [record('a'), record('b')] })
+            cadastre_proposals: blob,
+            cadastre_proposals_manifest: JSON.stringify({ manifestVersion: 1, nextProposalId: 2 }),
+            'proposal:a': JSON.stringify(record('a'))
         });
         const store = bootStore(storage);
         store.load();
-        expect(store.getAllProposals().map(p => p.proposalId).sort()).toEqual(['a', 'b']);
-        expect(storage.writes).toHaveLength(1);
-        expect(storage.writes[0].deletes).toEqual(['cadastre_proposals']);
-        expect([...storage.writes[0].puts.keys()].sort()).toEqual(['cadastre_proposals_manifest', 'proposal:a', 'proposal:b']);
-        expect(storage.values.has('cadastre_proposals')).toBe(false);
-        expect(JSON.parse(storage.values.get('cadastre_proposals_manifest')).nextProposalId).toBe(3);
-        // A reload now takes the row path and finds the same log.
-        const again = bootStore(storage);
-        again.load();
-        expect(again.getAllProposals().map(p => p.proposalId).sort()).toEqual(['a', 'b']);
-        expect(again.nextProposalId).toBe(3);
-    });
-
-    it('does not migrate from a read-only tab', () => {
-        const storage = fakeStorage({
-            cadastre_proposals: JSON.stringify({ version: 2, nextProposalId: 3, records: [record('a')] })
-        });
-        const store = bootStore(storage, { secondaryTab: true });
-        store.load();
         expect(store.getAllProposals().map(p => p.proposalId)).toEqual(['a']);
-        expect(storage.writes).toHaveLength(0);
-        expect(storage.values.has('cadastre_proposals')).toBe(true);
+        expect(store.nextProposalId).toBe(2);
+        store.getProposal('a').title = 'changed';
+        store._persist();
+        expect(storage.writes).toHaveLength(1);
+        expect(storage.writes[0].deletes).toEqual([]);
+        expect(storage.values.get('cadastre_proposals')).toBe(blob);
     });
 });
 
@@ -243,8 +257,10 @@ describe('proposal rows: whole-store save and clear', () => {
         expect(rowKeys(storage)).toEqual(['proposal:a', 'proposal:b']);
     });
 
-    it('clear removes every row, the manifest and the recovery blob in one write', () => {
+    it('clear removes every row, the manifest and the recovery blob in one write, and nothing else', () => {
+        const blob = '{"version":2,"nextProposalId":0,"records":[]}';
         const storage = fakeStorage({
+            cadastre_proposals: blob,
             cadastre_proposals_manifest: '{"manifestVersion":1,"nextProposalId":1}',
             'proposal:a': JSON.stringify(record('a')),
             cadastre_proposals_recovery: '{}',
@@ -254,8 +270,8 @@ describe('proposal rows: whole-store save and clear', () => {
         store.load();
         store.clear();
         expect(storage.writes).toHaveLength(1);
-        expect(storage.writes[0].deletes.sort()).toEqual(['cadastre_proposals', 'cadastre_proposals_manifest', 'cadastre_proposals_recovery', 'proposal:a']);
-        expect(Array.from(storage.values.keys())).toEqual(['parcel_HR-1_owner']);
+        expect(storage.writes[0].deletes.sort()).toEqual(['cadastre_proposals_manifest', 'cadastre_proposals_recovery', 'proposal:a']);
+        expect(Array.from(storage.values.keys()).sort()).toEqual(['cadastre_proposals', 'parcel_HR-1_owner']);
         expect(store.getAllProposals()).toEqual([]);
     });
 });

@@ -297,9 +297,9 @@
   among bbox neighbours. Z-order is by PANES (strips 655 < junctions 656 < markings 657 < rails 658 <
   hit 659), never by build order. ~610 ms per refresh → ~30 ms.
 - **One IndexedDB row per proposal record.** `proposal:<id>` rows + `cadastre_proposals_manifest`; a
-  mutation writes only its touched rows/deletes in the coordinator's single transaction. The legacy
-  `cadastre_proposals` envelope is migrated into rows once at load (primary tab only) and deleted in
-  the same write; `PROPOSALS_STATE_VERSION` still gates the legacy read. Plan apply: 601 MB → 3.6 MB.
+  mutation writes only its touched rows/deletes in the coordinator's single transaction. The older
+  `cadastre_proposals` single-blob envelope is abandoned, not migrated (2026-10-18, below). Plan
+  apply: 601 MB → 3.6 MB.
 - **Stored file URLs never come from the request Host** (2026-09-04). The API bakes in
   `PUBLIC_API_BASE_URL` when pinned (prod) and otherwise returns/stores the served PATH
   (`/uploads/images/<file>`); the client resolves paths — and re-anchors stale `localhost:<port>`
@@ -733,3 +733,4 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-18: Converting a rule to Freeform freezes the rule's stored massing (the envelope) at the maximum height the rule allows, never the example build-out the map varies inside it; parts of different heights take the highest (no height refusal), the user lowers it in the Freeform editor. A Detached dropped off its parcels converts to one Freeform proposal per house (each parcel's envelope on its own moved parcel; local: the first keeps the id, the others are new; published: all counterproposals); a saved Detached converts without a drag only on one parcel. Rationale: the user — the varied heights are only an example of building less than allowed.
 - 2026-10-18: A converted or dropped proposal that lands on an applied one goes through the same apply/conflict step as any apply (claims.js appliedRivals via ProposalManager.applyProposal; in-place saves stand rivals down too): no separate path or road rule for conversions.
 - 2026-10-18: The system validates proposals for correctness only, never for plausibility, and treats agent and human proposers the same; making sensible proposals is the proposing agent's job (user decision; the audit idea of a plausibility gate for agent proposals is dropped).
+- 2026-10-18: Old `cadastre_proposals` envelope blobs are abandoned, no migration: nothing reads, converts, validates or deletes them, so a browser that still holds one boots with no local proposals and keeps the blob untouched (user decision: no backwards compatibility).

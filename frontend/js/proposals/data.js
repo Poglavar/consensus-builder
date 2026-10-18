@@ -3,17 +3,13 @@
 // multiParcelSelection (selection controller) + caches. Extracted from proposals.js; loaded before
 // the proposals.js bootstrap so its load-time init can reference these.
 
-// The pre-2026-09 durable layout: ONE envelope holding every record. It is read once at boot,
-// split into rows (below) and deleted in the same write; nothing writes it any more. The version
-// gate stays: an envelope of any other shape is refused, never converted at runtime.
-const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
-const PROPOSALS_STATE_VERSION = 2;
-
 // Durable layout: one row per record under PROPOSAL_ROW_PREFIX + id, plus a small manifest. A
 // mutation writes only the rows it touched (and a delete per record it removed), inside the one
 // IndexedDB transaction the coordinator already opens, so atomicity is unchanged and the write is
-// tens of kilobytes instead of the whole log. Writing the envelope per mutation moved ~3.6 MB
-// through IndexedDB for every one of a plan's members: 601 MB for a 7 MB change on Šibenik.
+// tens of kilobytes instead of the whole log. Writing one whole-log blob per mutation moved ~3.6 MB
+// through IndexedDB for every one of a plan's members: 601 MB for a 7 MB change on Šibenik. That
+// older single-blob layout is abandoned (user decision 2026-10-18): browsers that still hold one
+// keep it, unread and untouched; nothing here reads, converts or deletes it.
 const PROPOSAL_ROW_PREFIX = 'proposal:';
 const PROPOSALS_MANIFEST_KEY = 'cadastre_proposals_manifest';
 const PROPOSALS_MANIFEST_VERSION = 1;
@@ -27,11 +23,12 @@ function proposalManifest(nextProposalId) {
     });
 }
 
-// Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared key above.
-// Separate key on purpose: the primary tab's blob stays untouched, so nothing can be clobbered, and
+// Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared rows above.
+// Separate key on purpose: the primary tab's rows stay untouched, so nothing can be clobbered, and
 // the work survives the reload that used to destroy it. Per-city already, since PersistentStorage
 // opens one database per city.
 const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
+const PROPOSALS_RECOVERY_VERSION = 2;
 
 // Copy-on-read view of the authored log for one mutation. Untouched records stay shared with the
 // store (no clone); a record is cloned the first time the mutation reads it; only touched ids are
@@ -65,9 +62,10 @@ class DraftRecordMap extends Map {
     rawEntries() { return Map.prototype.entries.call(this); }
 }
 
-function proposalStateEnvelope(nextProposalId, records) {
+// The parked recovery blob: every record of a read-only tab, with its id counter.
+function proposalRecoveryState(nextProposalId, records) {
     return {
-        version: PROPOSALS_STATE_VERSION,
+        version: PROPOSALS_RECOVERY_VERSION,
         nextProposalId: Number.isFinite(Number(nextProposalId)) && Number(nextProposalId) >= 0
             ? Math.floor(Number(nextProposalId))
             : 0,
@@ -325,11 +323,6 @@ const proposalStorage = {
         });
         if (!entries.length && draft.nextProposalId === this.nextProposalId) return null;
         entries.push({ key: PROPOSALS_MANIFEST_KEY, value: proposalManifest(draft.nextProposalId) });
-        // A boot migration still in flight leaves the envelope visible until its transaction
-        // completes; deleting it again here is harmless and keeps the two layouts from coexisting.
-        if (typeof PersistentStorage !== 'undefined' && PersistentStorage.getItem(PROPOSALS_STORAGE_KEY) != null) {
-            entries.push({ key: PROPOSALS_STORAGE_KEY, delete: true });
-        }
         return entries;
     },
 
@@ -895,55 +888,8 @@ const proposalStorage = {
             this._loadRows(manifestRaw);
             return;
         }
-        let parsed = null;
-        let hasValidEnvelope = false;
-        try {
-            const raw = PersistentStorage.getItem(PROPOSALS_STORAGE_KEY);
-            if (!raw) {
-                this.proposals.clear();
-                this.nextProposalId = 0;
-                return;
-            }
-            parsed = JSON.parse(raw);
-            hasValidEnvelope = !!(parsed && !Array.isArray(parsed)
-                && parsed.version === PROPOSALS_STATE_VERSION
-                && Array.isArray(parsed.records));
-            if (!hasValidEnvelope) {
-                throw new Error(`Unsupported proposal state; expected envelope version ${PROPOSALS_STATE_VERSION}.`);
-            }
-            this.proposals.clear();
-            parsed.records.forEach((entry, index) => {
-                if (!entry) return;
-                try {
-                    const normalized = this._normalizeProposal({ ...entry });
-                    if (!normalized.proposalId) {
-                        const serverHintRaw = normalized.serverProposalId || normalized.id;
-                        const serverHint = serverHintRaw && !isLocalProposalId(serverHintRaw)
-                            ? String(serverHintRaw)
-                            : null;
-                        normalized.proposalId = serverHint || this._allocateProposalId();
-                    }
-                    this._indexProposal(normalized);
-                } catch (error) {
-                    const identity = entry.proposalId || entry.serverProposalId || entry.id || `record ${index + 1}`;
-                    // One malformed authored record cannot erase every other local proposal. It is
-                    // rejected at the record boundary and never enters replay or the proposal UI.
-                    console.error(`[proposalStorage] Rejected invalid stored proposal ${identity}`, error);
-                }
-            });
-
-            const storedNext = Number(parsed.nextProposalId);
-            this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0
-                ? Math.floor(storedNext)
-                : 0;
-        } catch (error) {
-            console.error('proposalStorage.load: Failed to read the proposal-state envelope', error);
-            this._ensureIndexes();
-            this.proposals.clear();
-            this.nextProposalId = 0;
-            return;
-        }
-        this._migrateEnvelopeToRows();
+        this.proposals.clear();
+        this.nextProposalId = 0;
     },
 
     // The row layout: every `proposal:<id>` key in the store plus the manifest. The raw rows seed
@@ -976,39 +922,6 @@ const proposalStorage = {
         this._persistFragments = fragments;
     },
 
-    // One-time: split the legacy envelope into rows plus the manifest and delete it, in ONE
-    // write. Issued at boot before any mutation can run; IndexedDB commits readwrite transactions
-    // in creation order, so a later mutation cannot overtake it, and a tab that dies first simply
-    // migrates again at its next boot. A read-only tab must not write shared rows.
-    _migrateEnvelopeToRows() {
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return null;
-        if (typeof PersistentStorage.atomicWrite !== 'function') {
-            console.error('proposalStorage.load: PersistentStorage.atomicWrite is required to migrate the proposal envelope into rows.');
-            return null;
-        }
-        const puts = new Map();
-        const fragments = new Map();
-        this.proposals.forEach((record, id) => {
-            try {
-                const fragment = JSON.stringify(proposalRecordForPersistence(record));
-                puts.set(proposalRowKey(id), fragment);
-                fragments.set(id, fragment);
-            } catch (error) {
-                // A record that loaded but cannot be projected stays in memory for this session
-                // and is gone after the next reload; say so, do not lose every other record over it.
-                console.error(`[proposalStorage] Proposal ${id} could not be migrated into a row and will not survive a reload`, error);
-            }
-        });
-        puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
-        this._persistFragments = fragments;
-        const write = Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes: [PROPOSALS_STORAGE_KEY] }));
-        write.then(
-            () => console.log(`[${new Date().toISOString()}] [proposalStorage] Migrated ${puts.size - 1} proposal record(s) from the envelope into rows.`),
-            error => console.error('[proposalStorage] Migrating the proposal envelope into rows failed; the envelope stays until the next load.', error)
-        );
-        return write;
-    },
-
     _allocateProposalId() {
         const id = `local-${this.nextProposalId}`;
         this.nextProposalId += 1;
@@ -1026,7 +939,7 @@ const proposalStorage = {
     _persist() {
         if (typeof PersistentStorage === 'undefined') return;
         // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
-        // tab's data. All tabs share one blob with no cross-tab merge — see multi-tab-guard.js.
+        // tab's data. All tabs share one store with no cross-tab merge — see multi-tab-guard.js.
         // Say so every time: this used to return in complete silence, so a read-only tab looked
         // like a working one — proposals could be created, applied and rendered, and then simply
         // were not there after a reload, with nothing in the console to explain it. The guard's
@@ -1034,7 +947,7 @@ const proposalStorage = {
         if (typeof window !== 'undefined' && window.__cbSecondaryTab) {
             this._blockedWriteCount = (this._blockedWriteCount || 0) + 1;
             // Warning the user that work MIGHT be lost was never a licence to throw it away. The
-            // reason a secondary tab must not write is that all tabs share ONE proposals blob with
+            // reason a secondary tab must not write is that all tabs share ONE proposals store with
             // no cross-tab merge, so saving here would clobber the primary tab's work. That argument
             // only covers the SHARED key — writing our own is harmless (PersistentStorage is a
             // key/value store; each key is its own record), so the work is parked under a private
@@ -1067,7 +980,6 @@ const proposalStorage = {
                 const name = String(key);
                 if (name.startsWith(PROPOSAL_ROW_PREFIX) && !this.proposals.has(name.slice(PROPOSAL_ROW_PREFIX.length))) deletes.push(name);
             });
-            if (PersistentStorage.getItem(PROPOSALS_STORAGE_KEY) != null) deletes.push(PROPOSALS_STORAGE_KEY);
             puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
             this._persistFragments = fragments;
             Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes })).catch(error => {
@@ -1080,7 +992,7 @@ const proposalStorage = {
     },
 
     // Park this read-only tab's proposals under its own key so a reload cannot destroy them. Safe
-    // against the primary: a different key is a different record, so the shared blob is untouched.
+    // against the primary: a different key is a different record, so the shared rows are untouched.
     // Best-effort by construction — a rescue that throws must never break the edit the user is
     // making, and it is only ever a second chance at work the tab could not save anyway.
     _persistRecovery() {
@@ -1088,7 +1000,7 @@ const proposalStorage = {
         try {
             const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
             if (!serialisable.length) return;
-            const state = proposalStateEnvelope(this.nextProposalId, serialisable);
+            const state = proposalRecoveryState(this.nextProposalId, serialisable);
             PersistentStorage.setItem(PROPOSALS_RECOVERY_KEY, JSON.stringify({
                 ...state,
                 savedAt: new Date().toISOString()
@@ -1366,8 +1278,8 @@ const proposalStorage = {
         this.proposals.clear();
         this._persistFragments = new Map();
         if (typeof PersistentStorage === 'undefined') return;
-        // Every row, the manifest, the legacy envelope and the parked recovery blob, in one write.
-        const deletes = [PROPOSALS_MANIFEST_KEY, PROPOSALS_STORAGE_KEY, PROPOSALS_RECOVERY_KEY];
+        // Every row, the manifest and the parked recovery blob, in one write.
+        const deletes = [PROPOSALS_MANIFEST_KEY, PROPOSALS_RECOVERY_KEY];
         PersistentStorage.forEach((_value, key) => {
             if (String(key).startsWith(PROPOSAL_ROW_PREFIX)) deletes.push(String(key));
         });

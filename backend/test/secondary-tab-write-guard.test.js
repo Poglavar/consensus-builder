@@ -75,7 +75,7 @@ describe('proposalStorage._persist in a read-only tab', () => {
         // Scoped to the SHARED key on purpose: a bare `written === []` passed only because the store
         // happened to be empty, and would have quietly forbidden the recovery write that now keeps
         // the user's work.
-        expect(written.filter(entry => entry.key.startsWith('proposal:') || entry.key === 'cadastre_proposals_manifest' || entry.key === 'cadastre_proposals')).toEqual([]);
+        expect(written.filter(entry => entry.key.startsWith('proposal:') || entry.key === 'cadastre_proposals_manifest')).toEqual([]);
         expect(written.map(entry => entry.key)).toContain('cadastre_proposals_recovery');
         storage.proposals.clear();
         errors.mockRestore();

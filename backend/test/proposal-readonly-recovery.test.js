@@ -63,7 +63,7 @@ describe('read-only tab keeps work instead of dropping it', () => {
         ctx = withProposal(bootStore({ secondaryTab: true }), ROAD);
         ctx.proposalStorage._persist();
         // The reason the guard exists at all: the primary tab's rows must be untouched.
-        expect(Array.from(ctx.store.keys()).filter(key => key.startsWith('proposal:') || key === 'cadastre_proposals_manifest' || key === 'cadastre_proposals')).toEqual([]);
+        expect(Array.from(ctx.store.keys()).filter(key => key.startsWith('proposal:') || key === 'cadastre_proposals_manifest')).toEqual([]);
     });
 
     it('parks the work under its own key rather than discarding it', () => {
