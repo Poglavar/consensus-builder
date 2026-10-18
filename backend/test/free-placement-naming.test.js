@@ -1,5 +1,7 @@
 // A free-placed building's generated name and description follow the parcels it is finally bound
 // to, not the selection it started from (instantCreateProposalFromDraft, proposal-editor-shell.js).
+// Freeform buildings are the free-placed buildings: Block, Row and Detached stay on their parcels
+// (FREE_PLACEMENT_GOALS, proposal-editor-adapters.js).
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,16 +19,16 @@ function browser(extra = {}) {
 }
 const load = (context, file) => vm.runInContext(fs.readFileSync(path.join(FRONTEND, file), 'utf8'), context, { filename: file });
 
-async function saveRowHouses({ boundParcels }) {
+async function saveFreeformBuilding({ boundParcels }) {
     const c = browser({ CbFormat: { formatDateTime: () => 'today' } });
     for (const file of ['proposals/site-draft.js', 'proposal-editor-adapters.js', 'proposal-drafts.js', 'proposals/create.js', 'proposal-editor-shell.js']) load(c, file);
     const store = c.createProposalDraftStore({
-        idFactory: () => 'row-draft',
+        idFactory: () => 'single-draft',
         adapterRegistry: { get: () => ({ validate: () => ({ valid: true, errors: [], warnings: [] }) }) }
     });
     c.proposalDraftStore = store;
     store.createDraft({
-        goal: 'row', adapterKey: 'row', proposalType: 'Row houses',
+        goal: 'single', adapterKey: 'single', proposalType: 'Freeform building',
         fields: { name: '', description: '', selectedParcelIds: ['HR-339164-2951', 'HR-339164-2972'], site, offer: 0 },
         editorPayload: { placement: { free: true, site, bindingStatus: 'pending' } }
     });
@@ -40,26 +42,26 @@ async function saveRowHouses({ boundParcels }) {
         const d = store.getDraft(id);
         return { title: d.fields.name, description: d.fields.description, offer: d.fields.offer, offerCurrency: 'EUR', site };
     };
-    c.proposalStorage = { addProposal: p => { saved = { ...p, proposalId: 'row-saved' }; return 'row-saved'; }, getProposal: () => saved };
+    c.proposalStorage = { addProposal: p => { saved = { ...p, proposalId: 'single-saved' }; return 'single-saved'; }, getProposal: () => saved };
     c.ProposalManager = { applyProposal: async () => { saved.applied = true; return true; } };
     c.isProposalApplied = p => p.applied;
-    const id = await c.instantCreateProposalFromDraft('row-draft');
+    const id = await c.instantCreateProposalFromDraft('single-draft');
     return { id, saved };
 }
 
 describe('free-placement naming', () => {
     it('names the saved object after the parcel it was finally bound to', async () => {
-        const { id, saved } = await saveRowHouses({ boundParcels: ['HR-339164-2972'] });
-        expect(id).toBe('row-saved');
-        expect(saved.title).toBe('Row houses · parcel 2972');
-        expect(saved.description).toBe('Row houses: Row houses · parcel 2972');
+        const { id, saved } = await saveFreeformBuilding({ boundParcels: ['HR-339164-2972'] });
+        expect(id).toBe('single-saved');
+        expect(saved.title).toBe('Freeform building · parcel 2972');
+        expect(saved.description).toBe('Freeform building: Freeform building · parcel 2972');
         // No placeholder offer: terms are chosen when the proposal is published (proposal-kinds.md).
         expect(saved.offer).toBe(0);
     });
 
     it('keeps the generated name when the binding names no parcel', async () => {
-        const { saved } = await saveRowHouses({ boundParcels: [] });
-        expect(saved.title).toMatch(/^Row houses · /);
-        expect(saved.title).not.toBe('Row houses · parcel 2972');
+        const { saved } = await saveFreeformBuilding({ boundParcels: [] });
+        expect(saved.title).toMatch(/^Freeform building · /);
+        expect(saved.title).not.toBe('Freeform building · parcel 2972');
     });
 });
