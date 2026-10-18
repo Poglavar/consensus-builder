@@ -104,13 +104,13 @@ def validate_receipt(root: Path, receipt: dict) -> list[str]:
         if not isinstance(coverage, dict):
             errors.append("candidate requires coverage evidence")
         else:
-            if coverage.get("scope") not in {"citywide", "substantial-city"} or not str(coverage.get("basis", "")).strip() or not evidence_urls(coverage.get("evidenceUrls")):
-                errors.append("candidate must establish a systematic city parcel dataset, not isolated offerings")
+            if coverage.get("scope") not in {"citywide", "substantial-city", "partial-city", "bounded-sample"} or not str(coverage.get("basis", "")).strip() or not evidence_urls(coverage.get("evidenceUrls")):
+                errors.append("candidate requires an honest parcel-coverage scope, basis and evidence")
             probes = coverage.get("probes")
-            if not isinstance(probes, list) or not 3 <= len(probes) <= 20:
-                errors.append("candidate requires three to twenty distributed city probes")
+            if not isinstance(probes, list) or not 1 <= len(probes) <= 20:
+                errors.append("candidate requires one to twenty bounded city probes")
             else:
-                boxes, positives, identities = [], [], set()
+                positives, identities = [], set()
                 for probe in probes:
                     if not isinstance(probe, dict):
                         errors.append("coverage probe must be an object")
@@ -121,7 +121,6 @@ def validate_receipt(root: Path, receipt: dict) -> list[str]:
                             not (-180 <= box[0] < box[2] <= 180 and -90 <= box[1] < box[3] <= 90)):
                         errors.append("coverage probe requires a valid WGS84 bbox")
                         continue
-                    boxes.append(box)
                     count = probe.get("featureCount")
                     if not isinstance(count, int) or isinstance(count, bool) or count < 0:
                         errors.append("coverage probe requires an observed feature count")
@@ -141,14 +140,15 @@ def validate_receipt(root: Path, receipt: dict) -> list[str]:
                             errors.append("coverage probe evidence hash differs")
                     except (OSError, ValueError, TypeError):
                         errors.append("coverage probe evidence is missing or unsafe")
-                # Adjacent micro-cells around one parcel are not evidence across a city.
-                separate = lambda a, b: a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1]
-                if len(boxes) != len(probes) or not any(all(separate(a, b) for a, b in ((boxes[i], boxes[j]), (boxes[i], boxes[k]), (boxes[j], boxes[k]))) for i in range(len(boxes)) for j in range(i + 1, len(boxes)) for k in range(j + 1, len(boxes))):
-                    errors.append("coverage needs three distinct non-overlapping probe areas")
-                if len(positives) < 2 or len(identities) < 4:
-                    errors.append("coverage needs multiple parcels in at least two city areas")
-                if coverage.get("distributedAcrossCity") is not True or not str(coverage.get("distributionBasis", "")).strip():
-                    errors.append("coverage must explain how probes span the actual city")
+                if not positives or not identities:
+                    errors.append("candidate requires at least one positive probe with safe parcel IDs")
+                distribution_basis = str(coverage.get("distributionBasis", "")).strip()
+                if not distribution_basis:
+                    errors.append("coverage must explain the observed probe locations and scope limits")
+                if not isinstance(coverage.get("distributedAcrossCity"), bool):
+                    errors.append("coverage must state whether the probes span the city")
+                if coverage.get("scope") in {"citywide", "substantial-city"} and coverage.get("distributedAcrossCity") is not True:
+                    errors.append("citywide coverage claims require an evidenced citywide probe distribution")
     return errors
 
 

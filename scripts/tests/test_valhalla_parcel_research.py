@@ -284,6 +284,23 @@ class FailureClassificationAndPromptTests(unittest.TestCase):
             self.assertIn("Do not repeat web searches, network/API requests, or source investigation", prompt)
             self.assertIn("do not drop, simplify, transform, or reconstruct polygon coordinates", prompt)
 
+    def test_discovery_prompts_allow_bounded_candidates_and_preserve_followups(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            args = SimpleNamespace(repo_root=root, state_dir=Path("state"), queue=Path("queue.json"),
+                                   job_name="test", codex="codex", max_retries=3, discovery_only=True)
+            instance = runner.Runner(args)
+            city = {"cityCode": 42, "name": "Example City", "rank": 1, "country": "Example", "iso2": "EX",
+                    "point": [1.25, 2.5], "pop2025k": 123.45}
+            research = instance._build_research_prompt(city, (root / "cohort").resolve(), 1)
+            review = instance._build_review_prompt([{"cityCode": 42, "name": "Example City", "rank": 1}], [])
+            for prompt in (research, review):
+                self.assertRegex(prompt, r"at least one (?:bounded city probe that returns a positive|positive bounded)")
+                self.assertIn("follow-up", prompt)
+                self.assertNotIn("all nine live gates", prompt)
+                self.assertNotIn("13 bounded cells", prompt)
+                self.assertNotIn("headed details-panel verification", prompt)
+
 
 class FiniteDiscoveryTests(unittest.TestCase):
     def test_finite_queue_never_generates_a_global_range(self):

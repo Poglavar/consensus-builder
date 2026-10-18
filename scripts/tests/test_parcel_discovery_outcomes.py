@@ -59,16 +59,36 @@ class DiscoveryOutcomeTests(unittest.TestCase):
         self.receipt["coverage"]["probes"] = self.receipt["coverage"]["probes"][:1]
         errors = outcomes.validate_receipt(self.root, self.receipt)
         self.assertTrue(any("cadastral" in e for e in errors))
-        self.assertTrue(any("isolated" in e for e in errors))
-        self.assertTrue(any("three" in e for e in errors))
+        self.assertTrue(any("scope" in e for e in errors))
 
-    def test_same_area_or_repeated_feature_ids_do_not_establish_coverage(self):
+    def test_partial_scope_needs_one_positive_probe_not_a_distribution_quota(self):
+        self.receipt["coverage"].update(scope="bounded-sample", distributedAcrossCity=False,
+                                        distributionBasis="One bounded window was probed; wider city coverage is unknown.")
+        self.receipt["coverage"]["probes"] = self.receipt["coverage"]["probes"][:1]
+        self.receipt["coverage"]["probes"][0]["featureCount"] = 1
+        self.receipt["coverage"]["probes"][0]["sampleIds"] = ["one-safe-id"]
+        self.receipt["evidenceFiles"] = [self.receipt["coverage"]["probes"][0]["evidenceFile"]]
+        self.assertEqual(outcomes.validate_receipt(self.root, self.receipt), [])
+
+    def test_candidate_without_positive_probe_is_rejected(self):
+        for probe in self.receipt["coverage"]["probes"]:
+            probe["featureCount"] = 0
+            probe["sampleIds"] = []
+        errors = outcomes.validate_receipt(self.root, self.receipt)
+        self.assertTrue(any("at least one positive probe" in e for e in errors))
+
+    def test_partial_coverage_does_not_require_disjoint_areas_or_four_ids(self):
+        self.receipt["coverage"].update(scope="partial-city", distributedAcrossCity=False,
+                                        distributionBasis="The observed probes overlap within a limited district; coverage elsewhere is unknown.")
         for probe in self.receipt["coverage"]["probes"]:
             probe["bbox"] = [0, 0, .1, .1]
-            probe["sampleIds"] = ["one", "two"]
+            probe["sampleIds"] = ["one"]
         errors = outcomes.validate_receipt(self.root, self.receipt)
-        self.assertTrue(any("non-overlapping" in e for e in errors))
-        self.assertTrue(any("multiple parcels" in e for e in errors))
+        self.assertEqual(errors, [])
+
+    def test_citywide_claim_requires_evidenced_spread(self):
+        self.receipt["coverage"]["distributedAcrossCity"] = False
+        self.assertTrue(any("citywide probe distribution" in e for e in outcomes.validate_receipt(self.root, self.receipt)))
 
     def test_malformed_ids_urls_and_unlisted_probe_are_rejected(self):
         self.receipt["coverage"]["probes"][0]["sampleIds"] = "many-ids"
