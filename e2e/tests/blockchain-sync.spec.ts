@@ -58,6 +58,7 @@ test.describe('Blockchain sync @features', () => {
         refreshCount: 0,
         showButtonCount: 0,
         totalSupplyCalls: 0,
+        totalSupplyAddresses: [] as string[],
         tokenByIndexCalls: 0,
         getProposalCalls: 0,
         ownerOfCalls: 0,
@@ -92,6 +93,11 @@ test.describe('Blockchain sync @features', () => {
             {
               chainId: '31337',
               contractAddress: '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318',
+            },
+            // On a chain the wallet is not on: skipped, never read through the wallet.
+            {
+              chainId: '84532',
+              contractAddress: '0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709',
             },
           ],
         },
@@ -139,6 +145,7 @@ test.describe('Blockchain sync @features', () => {
 
         async totalSupply() {
           metrics.totalSupplyCalls += 1;
+          metrics.totalSupplyAddresses.push(this.address);
           return 1n;
         }
 
@@ -214,6 +221,7 @@ test.describe('Blockchain sync @features', () => {
 
     expect(result.listenerEvents).toEqual(expect.arrayContaining(['accountsChanged', 'chainChanged']));
     expect(result.metrics.totalSupplyCalls).toBeGreaterThanOrEqual(3);
+    expect(result.metrics.totalSupplyAddresses).not.toContain('0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709');
     // Accounts/chain changes trigger incremental syncs. The supply is checked each time, while
     // the already imported token is deliberately not fetched or inserted again.
     expect(result.metrics.tokenByIndexCalls).toBe(1);

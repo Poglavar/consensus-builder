@@ -319,6 +319,8 @@
      * Get wallet provider for blockchain operations
      */
     async function getWalletProvider() {
+        // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+        if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
         if (!global.ethers) {
             throw new Error('Ethers library not available');
         }
@@ -349,6 +351,8 @@
                 throw new Error('Wallet not connected - cannot sync blockchain data');
             }
 
+            // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+            if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
             if (!global.ethers) {
                 throw new Error('Ethers library not available');
             }
@@ -444,6 +448,8 @@
                 throw new Error('Wallet not connected - cannot sync blockchain data');
             }
 
+            // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+            if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
             if (!global.ethers) {
                 throw new Error('Ethers library not available');
             }
@@ -452,6 +458,13 @@
             const provider = await getWalletProvider();
             if (!provider) {
                 throw new Error(`No provider available`);
+            }
+            // The wallet reads only the chain it is on: a city's contract on another chain is
+            // skipped, not read at an address that holds nothing there.
+            const walletChainId = String((await provider.getNetwork()).chainId);
+            if (walletChainId !== String(chainId)) {
+                console.log(`[${new Date().toISOString()}] [blockchain-sync] skipping ${contractAddress} on chain ${chainId}: the wallet is on chain ${walletChainId}`);
+                return { synced: 0, total: 0, skipped: true };
             }
 
             // Create contract instance
@@ -690,6 +703,8 @@
                 return;
             }
 
+            // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+            if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
             if (!global.ethers) {
                 throw new Error('Ethers library not available');
             }
@@ -708,6 +723,12 @@
             const provider = await getWalletProvider();
             if (!provider) {
                 console.warn(`No provider available, skipping event listeners`);
+                return;
+            }
+            // As in syncContract: the wallet only hears the chain it is on.
+            const walletChainId = String((await provider.getNetwork()).chainId);
+            if (walletChainId !== String(chainId)) {
+                console.log(`[${new Date().toISOString()}] [blockchain-sync] no listeners for ${contractAddress} on chain ${chainId}: the wallet is on chain ${walletChainId}`);
                 return;
             }
 
