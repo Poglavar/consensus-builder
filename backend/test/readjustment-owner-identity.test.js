@@ -2,78 +2,41 @@
 //
 // Explicit provider IDs define identity; display names remain labels and unknown owners stay parcel-scoped.
 //
-// The editor's identity is lifted out of reparcellization.js and run for real, so it fails if the
-// key goes back to the slot.
+// The editor's identity is run for real: a fresh editor from createReparcellizationEditor() in
+// helpers/reparcellization-env.js, so it fails if the key goes back to the slot.
 
-import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { createRequire } from 'node:module';
+import { describe, it, expect, afterEach } from 'vitest';
+import { makeEditor } from './helpers/reparcellization-env.js';
 
-const require = createRequire(import.meta.url);
-const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
-const source = read('../../frontend/js/reparcellization.js');
-const { normalizeOwnerSlots } = require('../../frontend/js/reparcellization-shares.js');
-const { resolveOwnerLabel, readjustmentInputFeatures } = require('../../frontend/js/reparcellization-ui-state.js');
-const contributions = require('../../frontend/js/proposals/readjustment-contributions.js');
+let env = null;
+afterEach(() => { env?.dispose(); env = null; });
 
-// English strings with {{param}} interpolation — enough for the two keys these functions read.
-function t(key, fallback, params = {}) {
-    let out = String(fallback ?? key);
-    Object.keys(params || {}).forEach(name => {
-        out = out.replace(new RegExp(`{{\\s*${name}\\s*}}`, 'g'), String(params[name]));
-    });
-    return out;
-}
-
+// A test states its cadastre inline rather than going through the live ownership cache: the maps
+// below are what the editor's live fabric, cadastre repository and owner lookup answer.
 function loadEditorOwnerIdentity() {
-    const start = source.indexOf('    function ownerIdentityForSlot(');
-    expect(start, 'ownerIdentityForSlot not found').toBeGreaterThan(-1);
-    const end = source.indexOf('    function safeIntersect(', start);
-    expect(end, 'end of buildOwnerShares not found').toBeGreaterThan(start);
-    const body = source.slice(start, end);
-
-    const state = { savedOwnerShares: [], savedLedgerMetadata: null, parcelOwnerIndex: new Map(), cadastreIdsByLiveParcel: new Map(), initialPolygons: [], amendInputs: [], approvalConfig: null, algorithm: 'sweep-line' };
-    // eslint-disable-next-line no-new-func
-    const factory = new Function(
-        't', 'resolveOwnerLabel', 'window', 'computeFeatureArea', 'getParcelLandValue',
-        'ensureParcelOwnerSlots', 'normalizeOwnerSlots', 'state', 'pickOwnerColor',
-        'liveSelectionFeatures', 'PUBLIC_LAND_KEY',
-        `${body} return { ownerIdentityForSlot, buildOwnerShares, labelAbstractOwners, replaceSavedInputOwnersFromRights, restoreSavedLedgerMetadata };`
-    );
-
-    // A test states its cadastre inline rather than going through the live ownership cache.
     const slotsById = new Map();
     const featuresById = new Map();
     const cadastreFeaturesById = new Map();
     const provenance = new Map();
-    const ensureParcelOwnerSlots = async (parcelId) => slotsById.get(String(parcelId)) || [];
-
-    const editorWindow = {
-        __readjustmentContributions: contributions,
-        ProposalApproval: { ownerLabel: (id, ids) => `Owner ${String.fromCharCode(65 + ids.indexOf(id))}` },
-        CadastralParcelRepository: cadastreFeaturesById,
-        LiveParcelFabric: {
-            cadastreIdsForParcelIds: ids => ids.flatMap(id => provenance.get(String(id)) || [String(id)]),
-            get: id => featuresById.get(String(id)) || null
+    env?.dispose();
+    env = makeEditor({
+        draft: null,
+        globals: {
+            ensureParcelOwnerSlots: async parcelId => slotsById.get(String(parcelId)) || [],
+            CadastralParcelRepository: cadastreFeaturesById,
+            LiveParcelFabric: {
+                cadastreIdsForParcelIds: ids => ids.flatMap(id => provenance.get(String(id)) || [String(id)]),
+                get: id => featuresById.get(String(id)) || null
+            }
         }
+    });
+    const { editor } = env;
+    return {
+        ownerIdentityForSlot: editor.ownerIdentityForSlot,
+        buildOwnerShares: editor.buildOwnerShares,
+        state: editor.state,
+        slotsById, featuresById, cadastreFeaturesById, provenance
     };
-    const api = factory(
-        t,
-        resolveOwnerLabel,
-        editorWindow,
-        feature => Number(feature?.properties?.calculatedArea) || 0,
-        (feature, area) => Number(feature?.properties?.estimatedMarketPrice) || (Number(area) || 0) * 100,
-        ensureParcelOwnerSlots,
-        normalizeOwnerSlots,
-        state,
-        (ownerKey, index) => `color:${ownerKey || index}`,
-        selection => readjustmentInputFeatures(selection, {
-            live: editorWindow.LiveParcelFabric, cadastre: cadastreFeaturesById
-        }).features,
-        'public-land'
-    );
-    return { ...api, state, slotsById, featuresById, cadastreFeaturesById, provenance };
 }
 
 it('builds the saved plan owner ledger from immutable facts after its live inputs were consumed', async () => {
@@ -112,7 +75,8 @@ const realSlot = (name, shareText = '1/1', extra = {}) => ({
 });
 
 describe('who an owner is, in a readjustment', () => {
-    const { ownerIdentityForSlot } = loadEditorOwnerIdentity();
+    // A fresh editor per call, so no test sees another's state.
+    const ownerIdentityForSlot = (...args) => loadEditorOwnerIdentity().ownerIdentityForSlot(...args);
 
     it('merges slots with the same explicit ID across parcels', () => {
         const a = ownerIdentityForSlot(realSlot('GRAD ŠIBENIK', '1/1', { ownerId: 'city:si:001' }), 'HR-1-100', 'Owner of 100');

@@ -9,26 +9,57 @@
 // Both halves are pinned here. A gate that is stricter than apply is a bug of the same kind as one
 // that is looser: it just fails earlier and looks like a rule.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { makeEditor, box } from './helpers/reparcellization-env.js';
 
+const turf = createRequire(import.meta.url)('@turf/turf');
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
-const reparcellization = read('../../frontend/js/reparcellization.js');
 const applyParcels = read('../../frontend/js/proposals/apply/parcels.js');
 const editorShell = read('../../frontend/js/proposal-editor-shell.js');
 const dictOf = locale => JSON.parse(read(`../../frontend/i18n/${locale}.json`));
 const locales = ['en', 'hr', 'sr', 'es'];
 
-// The authoring gate, lifted so it can be run against real selections.
-function loadAuthoringTest() {
-    const start = reparcellization.indexOf('            const takenInputs = ');
-    expect(start, 'authoring gate not found').toBeGreaterThan(-1);
-    const end = reparcellization.indexOf('            if (takenInputs.length) {', start);
-    const body = reparcellization.slice(start, end);
-    // eslint-disable-next-line no-new-func
-    const evaluate = new Function('selection', 'liveSelectionFeatures', `${body} return takenInputs;`);
-    return selection => evaluate(selection, value => value?.features || []);
+// The authoring gate, run in a real editor (helpers/reparcellization-env.js): the selection's live
+// pieces carry the given properties, and the editor either opens on them or refuses with the list of
+// pieces another proposal holds.
+let env = null;
+afterEach(() => { env?.dispose(); env = null; vi.restoreAllMocks(); });
+
+async function takenInputs(input) {
+    const ids = Array.isArray(input?.ids) ? input.ids : [];
+    const featuresById = new Map((input?.features || []).map((entry, index) => [String(entry.properties.parcelId), {
+        ...entry,
+        geometry: box(index * 20, 0, index * 20 + 20, 20)
+    }]));
+    env = makeEditor({
+        selection: ids.length || input?.features ? input : null,
+        owners: Object.fromEntries(ids.map(id => [id, [{ key: `o-${id}`, ownerId: `owner:${id}`, shareText: '1/1' }]])),
+        globals: {
+            LiveParcelFabric: { get: id => featuresById.get(String(id)) || null, cadastreIdsForParcelIds: list => list.map(String) },
+            buildGeometryFromParcels: list => {
+                const parts = list.map(id => featuresById.get(String(id))).filter(Boolean);
+                return parts.length ? parts.reduce((a, b) => turfUnion(a, b)).geometry : null;
+            }
+        }
+    });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const opened = await env.editor.openReparcellizationModal();
+    const refusal = warn.mock.calls.find(call => String(call[0]).includes('ground already taken'));
+    if (refusal) {
+        expect(opened).toBe(false);
+        expect(globalThis.showEphemeralMessage.calls[0][0]).toBe('A land readjustment cannot take ground another proposal already holds. Deselect it, or unapply that proposal first.');
+        return refusal[1];
+    }
+    // Allowed means the editor really opens on that ground.
+    if (ids.length) expect(opened).toBe(true);
+    return [];
+}
+
+function turfUnion(a, b) {
+    return turf.union(a, b);
 }
 
 const feature = properties => ({ type: 'Feature', properties, geometry: null });
@@ -38,47 +69,46 @@ const selection = (...features) => ({
 });
 
 describe('what authoring refuses', () => {
-    const takenInputs = loadAuthoringTest();
 
-    it('allows a remainder a road left behind — the block workflow', () => {
+    it('allows a remainder a road left behind — the block workflow', async () => {
         const input = selection(
             feature({ parcelId: 'HR-1-100#p1a2b3c', formedByProposalIds: [] }),
             feature({ parcelId: 'HR-1-101#p9z8y7x', formedByProposalIds: [] })
         );
-        expect(takenInputs(input)).toEqual([]);
+        expect(await takenInputs(input)).toEqual([]);
     });
 
-    it('allows a plain cadastral parcel', () => {
-        expect(takenInputs(selection(feature({ parcelId: 'HR-1-100' })))).toEqual([]);
+    it('allows a plain cadastral parcel', async () => {
+        expect(await takenInputs(selection(feature({ parcelId: 'HR-1-100' })))).toEqual([]);
     });
 
-    it('refuses a corridor piece — that ground belongs to the road', () => {
+    it('refuses a corridor piece — that ground belongs to the road', async () => {
         const input = selection(feature({ parcelId: 'HR-1-100#r4d5e6f', isCorridor: true, formedByProposalIds: ['p-road'] }));
-        expect(takenInputs(input)).toEqual(['HR-1-100#r4d5e6f']);
+        expect(await takenInputs(input)).toEqual(['HR-1-100#r4d5e6f']);
     });
 
-    it('refuses a track piece too', () => {
+    it('refuses a track piece too', async () => {
         const input = selection(feature({ parcelId: 'HR-1-100#r1', isTrack: true }));
-        expect(takenInputs(input)).toHaveLength(1);
+        expect(await takenInputs(input)).toHaveLength(1);
     });
 
-    it('refuses anything with a taker, flagged or not', () => {
+    it('refuses anything with a taker, flagged or not', async () => {
         const input = selection(feature({ parcelId: 'HR-1-100#r2', formedByProposalIds: ['p-road'] }));
-        expect(takenInputs(input)).toHaveLength(1);
+        expect(await takenInputs(input)).toHaveLength(1);
     });
 
-    it('reports only the offending pieces, not the whole selection', () => {
+    it('reports only the offending pieces, not the whole selection', async () => {
         const input = selection(
             feature({ parcelId: 'HR-1-100#pfree', formedByProposalIds: [] }),
             feature({ parcelId: 'HR-1-100#rtaken', isCorridor: true }),
             feature({ parcelId: 'HR-1-101' })
         );
-        expect(takenInputs(input)).toEqual(['HR-1-100#rtaken']);
+        expect(await takenInputs(input)).toEqual(['HR-1-100#rtaken']);
     });
 
-    it('says nothing about an empty selection', () => {
-        expect(takenInputs({ ids: [], features: [] })).toEqual([]);
-        expect(takenInputs({})).toEqual([]);
+    it('says nothing about an empty selection', async () => {
+        expect(await takenInputs({ ids: [], features: [] })).toEqual([]);
+        expect(await takenInputs({})).toEqual([]);
     });
 });
 
@@ -86,12 +116,11 @@ describe('authoring and apply ask the same question', () => {
     it('both test taken-ness, not derived-ness', () => {
         // The old rule keyed on the id containing '#'. Every block a road forms is made of those,
         // so that test blocked the main use of the feature.
-        expect(reparcellization).not.toMatch(/derivedInputs/);
+        // The editor's side is driven above: a '#' remainder opens, a corridor, a track or any
+        // taker is refused. Apply must ask the same question.
         expect(applyParcels).not.toMatch(/readjustment-derived-ground/);
-        [reparcellization, applyParcels].forEach(source => {
-            expect(source).toMatch(/isCorridor === true/);
-            expect(source).toMatch(/formedByProposalIds/);
-        });
+        expect(applyParcels).toMatch(/isCorridor === true/);
+        expect(applyParcels).toMatch(/formedByProposalIds/);
     });
 
     it('the apply gate is the authoritative one and still exists', () => {

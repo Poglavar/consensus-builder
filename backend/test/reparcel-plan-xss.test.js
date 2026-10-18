@@ -1,8 +1,11 @@
 // Stored-XSS guard for shared land-readjustment plans: owner names, keys and colours restored from
-// a saved plan are rendered into the legend tables, so crafted values must come out inert.
-import { describe, expect, it } from 'vitest';
+// a saved plan are rendered into the legend tables, so crafted values must come out inert. The
+// editor itself is opened on a crafted plan (helpers/reparcellization-env.js), whose DOM parses
+// every innerHTML it is given, so a live tag would show up as an element.
+import { describe, expect, it, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
+import { makeEditor, box } from './helpers/reparcellization-env.js';
 
 const require = createRequire(import.meta.url);
 const {
@@ -70,26 +73,63 @@ describe('legend HTML from a crafted plan', () => {
 });
 
 describe('reparcellization.js wiring', () => {
-    it('never interpolates plan-derived owner fields raw into markup', () => {
+    let env = null;
+    afterEach(() => { env?.dispose(); env = null; });
+
+    // A shared plan whose every owner field is hostile, reopened the way the design draft reopens it.
+    async function openCraftedPlan() {
+        const plan = {
+            algorithm: 'manual',
+            parcelIds: ['P1'],
+            poolGeometry: box(0, 0, 40, 50),
+            polygons: [
+                { ownerKey: ATTR_BREAKOUT, displayName: PAYLOAD, color: CSS_BREAKOUT, geometry: box(0, 0, 20, 50) },
+                // Public land keeps the name the plan gives it (owner ids are relabelled Owner A, B…).
+                { ownerKey: 'public-land', displayName: PAYLOAD, color: '#123456', geometry: box(20, 0, 40, 50),
+                    owners: [{ ownerKey: 'public-land', displayName: PAYLOAD, color: 'red;background:url(x)', share: 1 }] }
+            ],
+            ownerShares: [{ ownerKey: ATTR_BREAKOUT, displayName: PAYLOAD, color: CSS_BREAKOUT, contributedArea: 2000, contributedValue: 1 }]
+        };
+        env = makeEditor({
+            parcels: [{ id: 'P1', geometry: box(0, 0, 40, 50), properties: { calculatedArea: 2000 } }],
+            selection: null,
+            pendingPlan: plan
+        });
+        expect(await env.editor.openReparcellizationModal({
+            algorithm: plan.algorithm, initialPolygons: plan.polygons, poolGeometry: plan.poolGeometry
+        })).toBe(true);
+        return env;
+    }
+
+    it('never interpolates plan-derived owner fields raw into markup', async () => {
         const rawInMarkup = source.split('\n')
             .filter(line => line.includes('<') && /\$\{\s*(entry|o|owner|slice)\.(displayName|ownerKey|color)/.test(line));
         expect(rawInMarkup).toEqual([]);
-        expect(source).toContain('ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)');
-        expect(source).toContain('cashOfferInputHtml(entry.ownerKey, cashOffer)');
-        expect(source).toContain("newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) + (owners.length > 1 ? ` (${formatPercent(o.share)})` : '') },");
+        // And what the editor actually renders from a crafted plan: no element came from a payload.
+        const w = await openCraftedPlan();
+        expect(w.state.modal.querySelectorAll('img')).toEqual([]);
+        expect(w.state.newPlotsListEl.textContent).toContain(PAYLOAD);   // shown as text, not markup
+        const cash = w.state.legendListEl.querySelector('.cash-offer-input');
+        expect(cash.getAttribute('data-owner-key')).toBe(ATTR_BREAKOUT);
+        w.state.modal.querySelectorAll('.legend-color').forEach(swatch => {
+            expect(swatch.getAttribute('style')).toMatch(/^background:#[0-9a-f]{3,8}(;border:1px solid #9ca3af)?$/i);
+        });
     });
 
-    it('escapes Leaflet string tooltips (Leaflet renders them as HTML)', () => {
-        const tooltips = source.split('\n').filter(line => line.includes('.bindTooltip('));
-        expect(tooltips.length).toBeGreaterThan(0);
-        tooltips
-            .filter(call => !call.includes('eraseTooltipFor'))
-            .forEach(call => expect(call).toMatch(/\.bindTooltip\(escapeHtml\(/));
+    it('escapes Leaflet string tooltips (Leaflet renders them as HTML)', async () => {
+        const w = await openCraftedPlan();
+        const tips = w.plotLayers().map(layer => layer.tooltip);
+        expect(tips).toHaveLength(2);
+        tips.forEach(expectInert);
+        expect(tips[1]).toBe('&lt;img src=x onerror=alert(1)&gt;');
     });
 
-    it('sanitises colours when hydrating a saved plan', () => {
-        const hydrate = source.slice(source.indexOf('function hydrateSlicesFromPolygons'), source.indexOf('function carvePlotIntoPlan'));
-        expect(hydrate).toContain("safePlanColor(polygon.color, '#cccccc')");
-        expect(hydrate).toContain('safePlanColor(owner.color, color)');
+    it('sanitises colours when hydrating a saved plan', async () => {
+        const w = await openCraftedPlan();
+        expect(w.state.slices[0].color).toBe('#cccccc');
+        expect(w.state.slices[0].owners[0].color).toBe('#cccccc');
+        // An owner's own hostile colour falls back to its plot's colour.
+        expect(w.state.slices[1].color).toBe('#123456');
+        expect(w.state.slices[1].owners[0].color).toBe('#123456');
     });
 });

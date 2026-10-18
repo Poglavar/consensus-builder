@@ -1,8 +1,10 @@
 // Unit and wiring tests for land-readjustment draw shortcuts and the distinction between an
-// unassigned output plot and an unnamed original owner in the accounting ledger.
-import { describe, expect, it } from 'vitest';
+// unassigned output plot and an unnamed original owner in the accounting ledger. The wiring is
+// checked on a real editor opened in helpers/reparcellization-env.js.
+import { describe, expect, it, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
+import { makeEditor, box } from './helpers/reparcellization-env.js';
 
 const require = createRequire(import.meta.url);
 const {
@@ -14,7 +16,6 @@ const {
     plotIsAssigned,
     readjustmentInputFeatures
 } = require('../../frontend/js/reparcellization-ui-state.js');
-const source = readFileSync(new URL('../../frontend/js/reparcellization.js', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../../frontend/css/on-map-reparcellization.css', import.meta.url), 'utf8');
 const locale = code => JSON.parse(readFileSync(new URL(`../../frontend/i18n/${code}.json`, import.meta.url), 'utf8'));
 
@@ -84,40 +85,67 @@ describe('land-readjustment UI state', () => {
         expect(genericOwnerKind('Republika Hrvatska')).toBeNull();
     });
 
-    it('wires the pure decisions into icon-free shortcut-labelled controls and the owner ledger', () => {
-        expect(source).toContain('data-reparcel-undo>${t(\'reparcellization.modal.drawUndo\', \'Undo point\')} (U)</button>');
-        expect(source).toContain('data-reparcel-finish>${t(\'reparcellization.modal.drawFinish\', \'Finish plot\')} (F)</button>');
-        expect(source).toContain('data-reparcel-cancel-draw>${t(\'reparcellization.modal.drawCancel\', \'Cancel\')} (C)</button>');
-        expect(source).toContain('const action = resolveDrawShortcut({');
+    // A real editor on one 40 × 50 m parcel, opened and torn down per test.
+    let env = null;
+    afterEach(() => { env?.dispose(); env = null; });
+    async function openEditor(beforeOpen = () => {}) {
+        env = makeEditor({
+            parcels: [{ id: 'P1', geometry: box(0, 0, 40, 50), properties: { calculatedArea: 2000 } }],
+            owners: { P1: [{ key: 'o-ana', ownerId: 'ana', displayName: 'Ana', shareText: '1/1' }] },
+            selection: { ids: ['P1'] }
+        });
+        beforeOpen();
+        expect(await env.editor.openReparcellizationModal()).toBe(true);
+        return env;
+    }
+
+    it('wires the pure decisions into icon-free shortcut-labelled controls and the owner ledger', async () => {
+        const w = await openEditor();
+        expect(w.$('[data-reparcel-undo]').textContent).toBe('Undo point (U)');
+        expect(w.$('[data-reparcel-finish]').textContent).toBe('Finish plot (F)');
+        expect(w.$('[data-reparcel-cancel-draw]').textContent).toBe('Cancel (C)');
+        // The keys reach the draw tools through resolveDrawShortcut: C cancels a stroke under way.
+        w.$('[data-reparcel-draw]').click();
+        expect(w.state.drawing.active).toBe(true);
+        w.key('c');
+        expect(w.state.drawing.active).toBe(false);
     });
 
-    it('uses the shared map editor session and never destroys the app map on close', () => {
-        const bodyOf = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`function ${next}(`));
-        const open = bodyOf('buildModalStructure', 'initMap');
-        const init = bodyOf('initMap', 'formatArea');
-        const destroy = bodyOf('destroyMap', 'layoutSignature');
-        const close = bodyOf('closeModal', 'buildModalStructure');
-
-        expect(open).toContain('window.OnMapEditor?.open?.({');
-        expect(open).toContain("modes: ['2d']");
-        expect(open).toContain('handleEscape: false');
-        expect(init).toContain('state.session?.map || window.map');
-        expect(init).not.toMatch(/\bL\.map\s*\(/);
-        expect(destroy).not.toMatch(/(?:state\.)?map\.remove\s*\(/);
-        expect(close).toContain('state.session?.close?.()');
-        expect(source).not.toContain('L.tileLayer(\'https://{s}.tile.openstreetmap.org');
+    it('uses the shared map editor session and never destroys the app map on close', async () => {
+        const w = await openEditor(() => {
+            globalThis.L.tileLayer = () => { throw new Error('the editor added a tile layer'); };
+            globalThis.L.map = () => { throw new Error('the editor made its own Leaflet map'); };
+        });
+        const [options] = globalThis.OnMapEditor.open.calls[0];
+        expect(options).toMatchObject({ owner: 'reparcellization', modes: ['2d'], handleEscape: false });
+        const session = w.session();
+        expect(w.state.map).toBe(session.map);
+        expect(w.state.map).toBe(globalThis.map);
+        const removed = [];
+        globalThis.map.remove = () => removed.push('map');
+        w.$('[data-reparcel-cancel]').click();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(session.close.calls).toHaveLength(1);
+        expect(removed).toEqual([]);
+        // The overlays it added are gone from the map; the map itself stays.
+        expect(globalThis.map.getLayers().filter(layer => layer.kind === 'geojson')).toEqual([]);
     });
 
-    it('keeps layout undo and an active draw toolbar visible when secondary tools are collapsed', () => {
-        const controls = source.slice(source.indexOf('const algorithmControls = `'), source.indexOf('// Inputs and outputs are the two halves'));
-        expect(controls).toContain('class="reparcel-secondary-controls" data-reparcel-secondary-controls');
-        expect(controls).toMatch(/<span class="reparcel-tools-spacer"><\/span>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="reparcel-persistent-controls">/);
-        expect(controls.indexOf('class="reparcel-persistent-controls"')).toBeLessThan(controls.indexOf('data-reparcel-draw-toolbar'));
-        expect(source).toContain('class="reparcel-persistent-controls"');
-        expect(source).toContain('data-reparcel-undo-edit disabled');
-        expect(source).toContain('data-reparcel-draw-toolbar hidden');
-        expect(source).toContain('data-reparcel-active-mode');
-        expect(source).toContain('state.session?.setHint?.(active || null)');
+    it('keeps layout undo and an active draw toolbar visible when secondary tools are collapsed', async () => {
+        const w = await openEditor();
+        const group = w.$('[data-reparcel-alg-group]');
+        const persistent = w.$('.reparcel-persistent-controls');
+        const toolbar = w.$('[data-reparcel-draw-toolbar]');
+        // Undo/redo live outside the collapsible secondary controls, ahead of the draw toolbar.
+        expect(persistent.closest('[data-reparcel-secondary-controls]')).toBeNull();
+        expect(group.children.indexOf(persistent)).toBeGreaterThan(group.children.indexOf(w.$('[data-reparcel-secondary-controls]')));
+        expect(group.children.indexOf(persistent)).toBeLessThan(group.children.indexOf(toolbar));
+        expect(persistent.querySelector('[data-reparcel-undo-edit]').disabled).toBe(true);
+        expect(w.$('.reparcel-tools-spacer').parentNode.closest('[data-reparcel-secondary-controls]')).not.toBeNull();
+        expect(toolbar.hidden).toBe(true);
+        // The active mode is named in the panel and handed to the shared editor's hint.
+        expect(w.$('[data-reparcel-active-mode]').textContent).toBe('Edit boundaries (nodes) active');
+        expect(w.session().setHint.calls.at(-1)).toEqual(['Edit boundaries (nodes) active']);
         expect(styles).toContain('.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }');
         // Phones: edge to edge, the mode strip hangs from the top-left (css/map.css).
         expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*left: 12px;[^}]*width: calc\(100vw - 24px\);/);
