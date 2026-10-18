@@ -562,7 +562,7 @@ async function main() {
             qualification: { status: 'technical-qualified', evidenceOriginalSha256: q.original, evidenceExportSha256: q.exported,
                 gates: Object.fromEntries(CHECKS.map(g => [g, item.checks[g]?.passed === true])),
                 initialQualificationReview: item.initialQualificationReview, warnings: item.warnings,
-                ...(item.producerInitialReview ? { producerInitialReview: item.producerInitialReview } : {}),
+                ...(item.producerInitialReview ? { producerInitialReview: sanitize(item.producerInitialReview) } : {}),
                 featureCount: item.qualification.featureCount, sampleIds: item.candidate.sampleIds,
                 cellSizeDegrees: item.qualification.cellSizeDegrees, limitations: item.qualification.limitations },
             metric: { evidenceOriginalSha256: m.original, evidenceExportSha256: m.exported, ...metricSummary },
