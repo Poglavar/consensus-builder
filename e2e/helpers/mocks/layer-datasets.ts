@@ -19,8 +19,25 @@ const planArea = {
   geometry: { type: 'Polygon', coordinates: [[[15.9820,45.80015],[15.98255,45.80015],[15.98255,45.80055],[15.9820,45.80055],[15.9820,45.80015]]] },
 };
 
+// The street parcel north of the block: the curated road classification names it, so it bounds the
+// block instead of being one of its plots. It used to name 1234, the block's first plot, and Detect
+// block from 1234 then depended on whether that classification had arrived yet.
+export const FIXTURE_ROAD_PARCEL_ID = 'HR-335754-1239';
+const roadParcel = {
+  type: 'Feature' as const,
+  properties: {
+    parcelId: FIXTURE_ROAD_PARCEL_ID, parcel_number: '1239', parcel_id: FIXTURE_ROAD_PARCEL_ID, id: FIXTURE_ROAD_PARCEL_ID,
+    cadastral_municipality: 'Trnje', maticni_broj_ko: '335754', area: 165,
+    ownership_summary: { government: true, institution: false, company: false },
+    owners: [{ name: 'REPUBLIKA HRVATSKA', share: '1/1' }],
+    BROJ_CESTICE: '1239', ownershipList: [{ name: 'REPUBLIKA HRVATSKA', share: '1/1' }],
+  },
+  geometry: { type: 'Polygon' as const, coordinates: [[[15.98205,45.80055],[15.98235,45.80055],[15.98235,45.8006],[15.98205,45.8006],[15.98205,45.80055]]] },
+};
+
 export async function installLayerDatasets(page: Page): Promise<void> {
-  const parcelFixtures = (requested?: Set<string>) => sampleParcels.features
+  const parcelFixtures = (requested?: Set<string>) => [...plotFixtures(requested), ...(!requested || requested.has(FIXTURE_ROAD_PARCEL_ID) ? [roadParcel] : [])];
+  const plotFixtures = (requested?: Set<string>) => sampleParcels.features
     .filter(feature => !requested || requested.has(feature.properties.parcelId))
     .map(feature => {
       // Keep coordinates stable across the parcel-id batch request and later bbox refreshes.
@@ -125,7 +142,7 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   await page.route('**/road-parcels**', route => {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
     return route.fulfill({ json: { type: 'FeatureCollection', features: [
-      { type: 'Feature', properties: { parcelId: TEST_PARCEL_ID }, geometry: sampleParcels.features[0].geometry },
+      { type: 'Feature', properties: { parcelId: FIXTURE_ROAD_PARCEL_ID }, geometry: roadParcel.geometry },
     ] } });
   });
   await page.route('**/js/plan.json', route => route.fulfill({ json: [{

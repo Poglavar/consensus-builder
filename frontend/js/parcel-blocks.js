@@ -2063,6 +2063,10 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             return failBlockDetection(tBlock('alerts.messages.block_seed_unresolved', {},
                 'Could not read the selected parcel’s id, so there is nothing to grow a block from.'));
         }
+        // Roads bound blocks: without their classification the fill would run down them, and a road
+        // seed would be taken for a plot. The background refresh after each parcel load may still be
+        // in flight, so wait for it before judging the seed or flooding.
+        await window.fetchCuratedRoadParcels(map.getBounds());
         if (isCorridorParcel(startParcelId, seedParcel)) {
             return failBlockDetection(tBlock('alerts.messages.block_seed_is_corridor', {},
                 'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
@@ -2083,9 +2087,6 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             const parcels = [];
             return { parcels, result: floodfillBlock(seedParcel, parcels, liveBlockNeighborGraph(startParcelId)) };
         };
-        // Roads bound blocks: without their classification the fill would run down them. The
-        // background refresh after each parcel load may still be in flight, so wait for it here.
-        await window.fetchCuratedRoadParcels(map.getBounds());
         let attempt = flood();
         const repository = window.CadastralParcelRepository;
         let searchBounds = map.getBounds();

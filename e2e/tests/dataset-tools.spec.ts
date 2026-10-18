@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
-import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { openCity, openParcel } from '../helpers/runtime';
+import { installLayerDatasets, FIXTURE_ROAD_PARCEL_ID } from '../helpers/mocks/layer-datasets';
 
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
 
@@ -133,7 +133,8 @@ test.describe('Dataset road tools @features', () => {
     await openLayerActions(page, ROAD_DATA);
     await page.locator('#detectExistingRoadsButton').click();
     await expectStatusLogged(page, 'Existing roads loaded');
-    await expect.poll(() => page.evaluate(id => (window as any).isRoadParcel(id), PARCEL_ID)).toBe(true);
+    // The curated classification marks the fixture's street parcel, not one of the block's plots.
+    await expect.poll(() => page.evaluate(id => (window as any).isRoadParcel(id), FIXTURE_ROAD_PARCEL_ID)).toBe(true);
   });
 
   test('reform, list, and detect block operate on the loaded live parcel fabric', async ({ mockApi: page }) => {
