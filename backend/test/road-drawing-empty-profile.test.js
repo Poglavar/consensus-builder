@@ -1,13 +1,15 @@
 // Editing or cancelling a cross-section before placing an edge must leave the drawing usable.
-import { describe, expect, it, vi } from 'vitest';
+// Drives the real road-drawing.js in the fake browser world (helpers/road-drawing-env.js), with the
+// metric frame's frameFor watched; the cross-section editor's Cancel is lifted from
+// corridor-editor.js and calls the loaded tool's own setRoadDrawingProfile.
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
 const require = createRequire(import.meta.url);
-const RoadStrokeState = require('../../frontend/js/road-stroke-state.js');
-const CorridorProfile = require('../../frontend/js/corridor-profile.js');
-const roadSource = readFileSync(fileURLToPath(new URL('../../frontend/js/road-drawing.js', import.meta.url)), 'utf8');
+const metricFrame = require('../../frontend/js/metric-frame.js');
 const editorSource = readFileSync(fileURLToPath(new URL('../../frontend/js/corridor-editor.js', import.meta.url)), 'utf8');
 
 function lift(source, name) {
@@ -18,178 +20,91 @@ function lift(source, name) {
     return source.slice(start, end + 2);
 }
 
-function createHarness(segments = [], { withCancel = false, originalProfile = null } = {}) {
-    const points = segments;
-    const makeLayer = () => ({
-        setLatLngs: vi.fn(),
-        setStyle: vi.fn(),
-        addTo: vi.fn(function addTo() { return this; }),
-        removeFrom: vi.fn()
-    });
-    const removedLayers = [];
-    const frameFor = vi.fn(authoredPoints => ({ anchor: authoredPoints[0] }));
-    const buildRoadUnionPolygonWithWidths = vi.fn(centerline =>
-        centerline.some(segment => segment.length >= 2) ? ['footprint'] : null);
-    const closeEditor = vi.fn();
-    const deps = {
-        L: { polyline: vi.fn(makeLayer), polygon: vi.fn(makeLayer) },
-        map: { removeLayer: vi.fn(layer => removedLayers.push(layer)) },
-        buildRoadUnionPolygonWithWidths,
-        frameFor,
-        closeEditor,
-        removedLayers,
-        roadSegments: points,
-        originalProfile
-    };
+let env = null;
+afterEach(() => {
+    env?.dispose();
+    env = null;
+});
 
-    const cancel = withCancel ? lift(editorSource, 'corridorEditorCancel') : '';
-    const undo = lift(roadSource, 'undoLastRoadSegment');
-    const code = `
-        const { L, map, buildRoadUnionPolygonWithWidths, frameFor, closeEditor, removedLayers,
-            roadSegments: initialSegments, originalProfile } = deps;
-        let roadSegments = initialSegments;
-        let roadSegmentIds = roadSegments.map((_, index) => 'segment-' + index);
-        let roadHasStarted = false;
-        let roadPoints = [];
-        let roadStrokeBaseCount = 0;
-        let roadDrawingFrame = null;
-        let roadWidth = 2;
-        let roadProfile = null;
-        let roadSidewalkWidth = 0;
-        let roadLastValidatedWidth = 2;
-        let roadDrawingProfileValidationPending = false;
-        let roadCenterline = null;
-        let cachedCommittedPolygon = null;
-        let roadPolygon = null;
-        let roadPolygonLayer = null;
-        let roadPreviewLine = null;
-        let roadPreviewPolygonLayer = null;
-        let roadBuildingTunnels = [];
-        let roadGradeSeparations = [];
-        const roadSegmentProfiles = {};
-        const roadAffectedParcels = [];
-        const lockedStats = { parcelCount: 0, totalArea: 0, ownershipCounts: {}, marketPrice: 0, individualOwners: 0 };
-        const window = { RoadStrokeState, roadSidewalkWidth: 0 };
-        const document = { getElementById: () => null };
-        const PersistentStorage = { setItem: vi.fn() };
-        const metricFrameModule = () => ({ frameFor });
-        const normalizeCorridorProfile = CorridorProfile.normalizeCorridorProfile;
-        const corridorProfileWidth = CorridorProfile.corridorProfileWidth;
-        const corridorDrawingIsTrack = () => false;
-        const roadDrawingWidthForSegmentIndex = () => roadWidth;
-        const recomputeLockedParcelsFromPolygon = vi.fn();
-        const updateRoadInfoPanel = vi.fn();
-        const updateRoadCrossSectionButton = vi.fn();
-        const redrawRoadStrips = vi.fn();
-        const redrawRoadVertexMarkers = vi.fn();
-        const refreshRoadBuildingTunnelLayer = vi.fn();
-        const refreshRoadGradeSeparationLayer = vi.fn();
-        const removeBuildingTunnelEdge = (records) => records;
-        const retainLiveGradeSeparations = (_segments, records) => records;
-        const setRoadParcelStats = vi.fn();
-        const setRoadOwnershipCounts = vi.fn();
-        const formatParcelArea = () => '—';
-        const updateRoadAcquiringDifficulty = vi.fn();
-        const updateUndoButtonState = vi.fn();
-        // Undo drops the obstacles recorded against the edge it removes (none are recorded here) and
-        // says on the status line whether the pen is down or up afterwards.
-        const pruneRoadEdgeConflicts = vi.fn();
-        const clearPreviewAffectedParcels = vi.fn();
-        const updateStatus = vi.fn();
-        const roadPenDownStatusText = () => 'pen down';
-        const roadPenUpStatusText = () => 'pen up';
-        const translateRoadText = (_key, fallback) => fallback;
-        const roadDrawingMode = true;
-        let corridorEditorState = withCancel
-            ? { mode: 'drawing', originalProfile }
-            : null;
-        function corridorEditorClose() { closeEditor(); }
-        ${lift(roadSource, 'getAllRoadSegments')}
-        ${lift(roadSource, 'hasDrawableCorridor')}
-        ${lift(roadSource, 'roadSessionFrame')}
-        ${lift(roadSource, 'rebuildRoadGeometryFromSegments')}
-        ${lift(roadSource, 'setRoadDrawingProfile')}
-        ${lift(roadSource, 'clearRoadRubberBand')}
-        ${undo}
-        ${cancel}
-        return {
-            getAllRoadSegments,
-            hasDrawableCorridor,
-            roadSessionFrame,
-            rebuildRoadGeometryFromSegments,
-            setRoadDrawingProfile,
-            undoLastRoadSegment,
-            corridorEditorCancel: ${withCancel ? 'corridorEditorCancel' : 'null'},
-            state: () => ({ roadSegments, roadProfile, roadWidth, roadDrawingFrame,
-                roadCenterline, cachedCommittedPolygon, roadPolygon, roadPolygonLayer,
-                roadLastValidatedWidth, roadDrawingProfileValidationPending }),
-            deps,
-            removedLayers
-        };
-    `;
-    // eslint-disable-next-line no-new-func
-    return new Function('deps', 'RoadStrokeState', 'CorridorProfile', 'withCancel', 'vi', code)(
-        deps, RoadStrokeState, CorridorProfile, withCancel, vi
-    );
+// The tool open with `segments` already authored (and no frame made for them yet).
+async function createHarness(segments = []) {
+    const frameFor = vi.fn(points => metricFrame.frameFor(points));
+    env = loadRoadDrawing({ globals: { __metricFrame: { ...metricFrame, frameFor } } });
+    await env.api.requestCorridorDrawingTool('road');
+    env.session.roadSegments = segments;
+    env.session.roadSegmentIds = segments.map((_, index) => `s${index + 1}`);
+    frameFor.mockClear();
+    return { api: env.api, session: env.session, frameFor };
 }
 
 const PROFILE = { strips: [{ type: 'driving', width: 3 }] };
-const POINT_A = { lat: 45.8, lng: 15.97 };
-const POINT_B = { lat: 45.8001, lng: 15.9701 };
+const POINT_A = at(0, 0);
+const POINT_B = at(15, 10);
 
 describe('road drawing profile edits without a drawable corridor', () => {
-    it('accepts a profile with zero authored points without creating a metric frame', () => {
-        const harness = createHarness();
-        expect(harness.hasDrawableCorridor()).toBe(false);
-        expect(() => harness.setRoadDrawingProfile(PROFILE)).not.toThrow();
-        expect(harness.state().roadProfile).toEqual(PROFILE);
-        expect(harness.state().roadDrawingFrame).toBeNull();
-        expect(harness.state().cachedCommittedPolygon).toBeNull();
-        expect(harness.deps.frameFor).not.toHaveBeenCalled();
-        expect(harness.deps.buildRoadUnionPolygonWithWidths).not.toHaveBeenCalled();
+    it('accepts a profile with zero authored points without creating a metric frame', async () => {
+        const harness = await createHarness();
+        expect(harness.api.hasDrawableCorridor()).toBe(false);
+        expect(() => harness.api.setRoadDrawingProfile(PROFILE)).not.toThrow();
+        expect(harness.session.roadProfile).toEqual(PROFILE);
+        expect(harness.session.roadDrawingFrame).toBeNull();
+        expect(harness.session.cachedCommittedPolygon).toBeNull();
+        expect(harness.frameFor).not.toHaveBeenCalled();
+        expect(env.layersOfKind('polygon')).toHaveLength(0);
     });
 
-    it('keeps a one-point centerline but creates no footprint or frame', () => {
-        const harness = createHarness([[POINT_A]]);
-        expect(harness.hasDrawableCorridor()).toBe(false);
-        expect(() => harness.setRoadDrawingProfile(PROFILE)).not.toThrow();
-        expect(harness.state().roadCenterline).not.toBeNull();
-        expect(harness.state().roadDrawingFrame).toBeNull();
-        expect(harness.deps.frameFor).not.toHaveBeenCalled();
-        expect(harness.deps.buildRoadUnionPolygonWithWidths).not.toHaveBeenCalled();
+    it('keeps a one-point centerline but creates no footprint or frame', async () => {
+        const harness = await createHarness([[POINT_A]]);
+        expect(harness.api.hasDrawableCorridor()).toBe(false);
+        expect(() => harness.api.setRoadDrawingProfile(PROFILE)).not.toThrow();
+        expect(harness.session.roadCenterline).not.toBeNull();
+        expect(harness.session.roadDrawingFrame).toBeNull();
+        expect(harness.frameFor).not.toHaveBeenCalled();
+        expect(harness.session.cachedCommittedPolygon).toBeNull();
+        expect(env.layersOfKind('polygon')).toHaveLength(0);
     });
 
-    it('uses the metric frame and builds a footprint when the centerline is drawable', () => {
-        const harness = createHarness([[POINT_A, POINT_B]]);
-        expect(harness.hasDrawableCorridor()).toBe(true);
-        expect(harness.setRoadDrawingProfile(PROFILE)).toBe(true);
-        expect(harness.deps.frameFor).toHaveBeenCalledWith([POINT_A, POINT_B]);
-        expect(harness.deps.buildRoadUnionPolygonWithWidths).toHaveBeenCalledTimes(1);
-        expect(harness.deps.buildRoadUnionPolygonWithWidths.mock.calls[0][4]).toEqual({ anchor: POINT_A });
-        expect(harness.state().cachedCommittedPolygon).toEqual(['footprint']);
-        expect(harness.state().roadPolygon).toEqual(['footprint']);
+    it('uses the metric frame and builds a footprint when the centerline is drawable', async () => {
+        const harness = await createHarness([[POINT_A, POINT_B]]);
+        expect(harness.api.hasDrawableCorridor()).toBe(true);
+        expect(harness.api.setRoadDrawingProfile(PROFILE)).toBe(true);
+        expect(harness.frameFor).toHaveBeenCalledWith([POINT_A, POINT_B]);
+        expect(harness.session.roadDrawingFrame).toBe(harness.frameFor.mock.results[0].value);
+        // 18 m at the profile's 3 m.
+        const area = harness.api.calculatePolygonAreaMeters(harness.session.cachedCommittedPolygon);
+        expect(area).toBeGreaterThan(0.9 * 3 * Math.hypot(15, 10));
+        expect(area).toBeLessThan(1.1 * 3 * Math.hypot(15, 10));
+        expect(harness.session.roadPolygon).toBe(harness.session.cachedCommittedPolygon);
+        expect(harness.session.roadPolygonLayer.latlngs).toBe(harness.session.cachedCommittedPolygon);
     });
 
-    it('clears the footprint and centerline when undo removes the last authored points', () => {
-        const harness = createHarness([[POINT_A, POINT_B]]);
-        harness.setRoadDrawingProfile(PROFILE);
-        expect(harness.state().roadPolygonLayer).not.toBeNull();
-        harness.undoLastRoadSegment(); // one point remains: no footprint
-        expect(harness.hasDrawableCorridor()).toBe(false);
-        harness.undoLastRoadSegment(); // removes the last point and segment
-        expect(harness.getAllRoadSegments(true)).toEqual([]);
-        expect(harness.state().roadCenterline).toBeNull();
-        expect(harness.state().cachedCommittedPolygon).toBeNull();
-        expect(harness.state().roadPolygon).toBeNull();
-        expect(harness.state().roadPolygonLayer).toBeNull();
-        expect(harness.removedLayers.length).toBeGreaterThan(0);
-        expect(harness.deps.buildRoadUnionPolygonWithWidths).toHaveBeenCalledTimes(1);
+    it('clears the footprint and centerline when undo removes the last authored points', async () => {
+        const harness = await createHarness([[POINT_A, POINT_B]]);
+        harness.api.setRoadDrawingProfile(PROFILE);
+        const land = harness.session.roadPolygonLayer;
+        expect(land).not.toBeNull();
+        harness.api.undoLastRoadSegment(); // one point remains: no footprint
+        expect(harness.api.hasDrawableCorridor()).toBe(false);
+        harness.api.undoLastRoadSegment(); // removes the last point and segment
+        expect(harness.api.getAllRoadSegments(true)).toEqual([]);
+        expect(harness.session.roadCenterline).toBeNull();
+        expect(harness.session.cachedCommittedPolygon).toBeNull();
+        expect(harness.session.roadPolygon).toBeNull();
+        expect(harness.session.roadPolygonLayer).toBeNull();
+        expect(env.map.hasLayer(land)).toBe(false);
+        expect(env.map.layers.size).toBe(0);
     });
 
-    it('lets Cancel restore the original profile and close an empty drawing editor', () => {
-        const harness = createHarness([], { withCancel: true, originalProfile: PROFILE });
-        expect(() => harness.corridorEditorCancel()).not.toThrow();
-        expect(harness.state().roadProfile).toEqual(PROFILE);
-        expect(harness.deps.closeEditor).toHaveBeenCalledTimes(1);
+    it('lets Cancel restore the original profile and close an empty drawing editor', async () => {
+        const harness = await createHarness();
+        const closeEditor = vi.fn();
+        // eslint-disable-next-line no-new-func
+        const corridorEditorCancel = new Function('setRoadDrawingProfile', 'corridorEditorState', 'corridorEditorClose',
+            `${lift(editorSource, 'corridorEditorCancel')}; return corridorEditorCancel;`
+        )(harness.api.setRoadDrawingProfile, { mode: 'drawing', originalProfile: PROFILE }, closeEditor);
+        expect(() => corridorEditorCancel()).not.toThrow();
+        expect(harness.session.roadProfile).toEqual(PROFILE);
+        expect(harness.session.roadWidth).toBe(3);
+        expect(closeEditor).toHaveBeenCalledTimes(1);
     });
 });
