@@ -288,6 +288,15 @@ function publishTermsInPlace(proposalId, afterSave) {
         showProposalAlertMessage('owner_vote_not_on_solana', 'Owner votes cannot be minted on Solana yet. Choose another kind, or keep the proposal off-chain.');
         return;
     }
+    // As at create: a Solana mint needs a lens the proposer chose, so ask for it here rather than
+    // let the share dialog fail later.
+    if (typeof window.isSolanaLensPath === 'function' && window.isSolanaLensPath()
+        && !(Array.isArray(record.lens) && record.lens.length)
+        && !window.LensCore.validateSolanaLens(getLensEntries()).ok) {
+        showProposalAlertMessage('solana_lens_required', 'Choose at least one lens member (the lens button) before minting on Solana.');
+        if (typeof showLensModal === 'function') showLensModal();
+        return;
+    }
     const name = (document.getElementById('proposalName')?.value || '').trim() || record.title || record.name || '';
     let fields;
     try {

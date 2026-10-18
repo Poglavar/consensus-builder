@@ -205,6 +205,34 @@ test.describe('chain mint independence @features', () => {
     expect(requests.filter(call => call.path.endsWith('/proposals/mirror'))).toHaveLength(1);
   });
 
+  test('Share on a quick drawing with Phantom and no lens chosen asks for the lens before saving its terms', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#username-display').click();
+    await page.locator('#username-input').fill('Chain proposal author');
+    await page.locator('#welcome-submit-btn').click();
+    await expect(page.locator('#welcome-modal')).toBeHidden();
+    const drawingId = await createSpace(page, 'park');
+    await page.evaluate(author => {
+      const w = window as any;
+      w.solanaWalletManager.getState = () => ({ status: 'connected', accounts: [author], walletId: 'solana-phantom' });
+      w.solanaWalletManager.getCluster = () => 'devnet';
+      w.LensPicker.isActive = () => true;
+      w.LensPicker.getEntries = () => [];
+      w.__lensPickerShown = 0;
+      w.LensPicker.show = () => { w.__lensPickerShown += 1; };
+    }, SOLANA_AUTHOR);
+    await showProposal(page, drawingId);
+    await page.locator('.btn-share-proposal').click();
+    const form = page.locator('.create-proposal-modal:visible');
+    await expect(form).toBeVisible();
+    await form.locator('#createProposalSubmitButton').click();
+    // Stopped at the terms, with the lens picker opened, instead of failing later in the share dialog.
+    await expect.poll(() => page.evaluate(() => (window as any).__lensPickerShown)).toBe(1);
+    await expect(page.getByText('Choose at least one lens member', { exact: false })).toBeVisible();
+    await expect(page.locator('.share-modal-overlay')).toHaveCount(0);
+    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).termsConfirmed ?? null, drawingId)).toBe(null);
+  });
+
   test('Share on a quick drawing mints an owner deal of half an ETH on EVM, with its offer escrowed', async ({ mockApi: page }) => {
     // A drawing whose author set no approval carries no approval setup, so EVM mints it.
     test.setTimeout(90_000);
