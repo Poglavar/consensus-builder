@@ -144,7 +144,10 @@ let roadSegmentProfiles = {};
 // Finishing is a single user action even though proposal creation crosses several async boundaries.
 // Segment placement has its own lock because its footprint fetch and obstacle decision must complete
 // before either another click or F is allowed to consume the drawing state.
-const roadFinalizationGate = RoadFinalizationState.createSingleFlightGate();
+// The browser loads road-finalization-state.js first (a global); a node test require()s this file.
+const roadFinalizationGate = (typeof RoadFinalizationState !== 'undefined'
+    ? RoadFinalizationState
+    : require('./road-finalization-state.js')).createSingleFlightGate();
 let roadSegmentPlacementInProgress = false;
 // The placement under way, as a promise that settles when it is done: Escape, Undo and a double-
 // click's finish wait on it (afterRoadPlacement) rather than interleave with its async preload.
@@ -4215,7 +4218,9 @@ function toggleRoadInfoPanelMinimized() {
         btn.innerHTML = minimized ? '+' : '&#8722;';
     }
 }
-window.toggleRoadInfoPanelMinimized = toggleRoadInfoPanelMinimized;
+if (typeof window !== 'undefined') {
+    window.toggleRoadInfoPanelMinimized = toggleRoadInfoPanelMinimized;
+}
 
 function updateRoadInfoPanel() {
     const hasRoadSegments = getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 0);
@@ -5150,3 +5155,137 @@ function showAcquiringDifficultyDialog() {
 if (typeof window !== 'undefined') {
     window.showAcquiringDifficultyDialog = showAcquiringDifficultyDialog;
 }
+
+// One namespace for the whole tool: `session` is a live view of the drawing session's state and every
+// function above is listed by name. The state itself stays in this script's top-level bindings, which
+// the functions read by name; each binding is a read/write property of `session`, so a caller sees and
+// sets the same variable the tool does. The browser gets it as window.__roadDrawing (the console, e2e
+// specs); node tests require() this file and drive the real functions through it
+// (backend/test/helpers/road-drawing-env.js).
+(function exportRoadDrawing(root) {
+    const session = {};
+    const bind = (name, get, set) => Object.defineProperty(session, name, { get, set, enumerable: true });
+    bind('roadDrawingMode', () => roadDrawingMode, value => { roadDrawingMode = value; });
+    bind('corridorDrawKind', () => corridorDrawKind, value => { corridorDrawKind = value; });
+    bind('roadDrawingModeButtonState', () => roadDrawingModeButtonState, value => { roadDrawingModeButtonState = value; });
+    bind('roadSegments', () => roadSegments, value => { roadSegments = value; });
+    bind('roadPoints', () => roadPoints, value => { roadPoints = value; });
+    bind('roadSegmentIds', () => roadSegmentIds, value => { roadSegmentIds = value; });
+    bind('nextRoadSegmentId', () => nextRoadSegmentId, value => { nextRoadSegmentId = value; });
+    bind('roadWidth', () => roadWidth, value => { roadWidth = value; });
+    bind('roadSidewalkWidth', () => roadSidewalkWidth, value => { roadSidewalkWidth = value; });
+    bind('roadProfile', () => roadProfile, value => { roadProfile = value; });
+    bind('roadCenterline', () => roadCenterline, value => { roadCenterline = value; });
+    bind('roadPolygon', () => roadPolygon, value => { roadPolygon = value; });
+    bind('roadPreviewLine', () => roadPreviewLine, value => { roadPreviewLine = value; });
+    bind('roadStrokeBaseCount', () => roadStrokeBaseCount, value => { roadStrokeBaseCount = value; });
+    bind('roadAffectedParcels', () => roadAffectedParcels, value => { roadAffectedParcels = value; });
+    bind('roadMouseMarker', () => roadMouseMarker, value => { roadMouseMarker = value; });
+    bind('roadHasStarted', () => roadHasStarted, value => { roadHasStarted = value; });
+    bind('roadPreviewPolygonLayer', () => roadPreviewPolygonLayer, value => { roadPreviewPolygonLayer = value; });
+    bind('roadPendingSegmentLayer', () => roadPendingSegmentLayer, value => { roadPendingSegmentLayer = value; });
+    bind('roadCenterlineLayer', () => roadCenterlineLayer, value => { roadCenterlineLayer = value; });
+    bind('roadPolygonLayer', () => roadPolygonLayer, value => { roadPolygonLayer = value; });
+    bind('roadMarkers', () => roadMarkers, value => { roadMarkers = value; });
+    bind('roadBuildingTunnels', () => roadBuildingTunnels, value => { roadBuildingTunnels = value; });
+    bind('roadGradeSeparations', () => roadGradeSeparations, value => { roadGradeSeparations = value; });
+    bind('roadEdgeConflicts', () => roadEdgeConflicts, value => { roadEdgeConflicts = value; });
+    bind('roadConflictMarkerLayer', () => roadConflictMarkerLayer, value => { roadConflictMarkerLayer = value; });
+    bind('roadStreetConnections', () => roadStreetConnections, value => { roadStreetConnections = value; });
+    bind('roadSegmentProfiles', () => roadSegmentProfiles, value => { roadSegmentProfiles = value; });
+    bind('roadSegmentPlacementInProgress', () => roadSegmentPlacementInProgress, value => { roadSegmentPlacementInProgress = value; });
+    bind('roadSegmentPlacement', () => roadSegmentPlacement, value => { roadSegmentPlacement = value; });
+    bind('roadLastClickAt', () => roadLastClickAt, value => { roadLastClickAt = value; });
+    bind('roadDrawingProfileValidationPending', () => roadDrawingProfileValidationPending, value => { roadDrawingProfileValidationPending = value; });
+    bind('roadLastValidatedWidth', () => roadLastValidatedWidth, value => { roadLastValidatedWidth = value; });
+    bind('roadSurfaceBuildingIds', () => roadSurfaceBuildingIds, value => { roadSurfaceBuildingIds = value; });
+    bind('roadBuildingTunnelLayer', () => roadBuildingTunnelLayer, value => { roadBuildingTunnelLayer = value; });
+    bind('roadGradeSeparationLayer', () => roadGradeSeparationLayer, value => { roadGradeSeparationLayer = value; });
+    bind('roadPreviewAffectedParcels', () => roadPreviewAffectedParcels, value => { roadPreviewAffectedParcels = value; });
+    bind('lockedParcelIds', () => lockedParcelIds, value => { lockedParcelIds = value; });
+    bind('lockedStats', () => lockedStats, value => { lockedStats = value; });
+    bind('committedRoadMetrics', () => committedRoadMetrics, value => { committedRoadMetrics = value; });
+    bind('cachedCommittedPolygon', () => cachedCommittedPolygon, value => { cachedCommittedPolygon = value; });
+    bind('roadDrawingFrame', () => roadDrawingFrame, value => { roadDrawingFrame = value; });
+    bind('corridorApplyIndicatorCount', () => corridorApplyIndicatorCount, value => { corridorApplyIndicatorCount = value; });
+    bind('corridorApplyIndicatorTimer', () => corridorApplyIndicatorTimer, value => { corridorApplyIndicatorTimer = value; });
+    bind('corridorApplyIndicatorRelease', () => corridorApplyIndicatorRelease, value => { corridorApplyIndicatorRelease = value; });
+    bind('roadSnapMarker', () => roadSnapMarker, value => { roadSnapMarker = value; });
+    bind('roadStripLayer', () => roadStripLayer, value => { roadStripLayer = value; });
+    bind('roadOwnershipStatsRequestId', () => roadOwnershipStatsRequestId, value => { roadOwnershipStatsRequestId = value; });
+    bind('roadDrawingHeldDoubleClickZoom', () => roadDrawingHeldDoubleClickZoom, value => { roadDrawingHeldDoubleClickZoom = value; });
+    bind('roadDrawHotkeyAttached', () => roadDrawHotkeyAttached, value => { roadDrawHotkeyAttached = value; });
+    bind('roadDrawingAutoShowedBuildings', () => roadDrawingAutoShowedBuildings, value => { roadDrawingAutoShowedBuildings = value; });
+    bind('corridorFinishProfile', () => corridorFinishProfile, value => { corridorFinishProfile = value; });
+    bind('trackSpeed', () => trackSpeed, value => { trackSpeed = value; });
+    bind('trackMinCurvatureRadius', () => trackMinCurvatureRadius, value => { trackMinCurvatureRadius = value; });
+    bind('trackSegmentSound', () => trackSegmentSound, value => { trackSegmentSound = value; });
+    bind('trackSegmentSoundStopTimer', () => trackSegmentSoundStopTimer, value => { trackSegmentSoundStopTimer = value; });
+    bind('roadFinalizationGate', () => roadFinalizationGate);
+    bind('roadOpenGroundCrossed', () => roadOpenGroundCrossed);
+    bind('previewAffectedStyle', () => previewAffectedStyle);
+    bind('ROAD_SNAP_PIXELS', () => ROAD_SNAP_PIXELS);
+    bind('ROAD_DRAWING_MARKER_PANE', () => ROAD_DRAWING_MARKER_PANE);
+    bind('ROAD_OWNERSHIP_TYPE_IDS', () => ROAD_OWNERSHIP_TYPE_IDS);
+    bind('roadOwnershipTypeCache', () => roadOwnershipTypeCache);
+    const api = {
+        session,
+        hideRoadInfoPanel, setRoadDrawingModeButtonsDisabled, canStartRoadDrawingInCurrentMode,
+        corridorDrawingIsTrack, corridorDrawingKind, announceCorridorDrawingModeChange,
+        updateGlobalRoadDrawingMode, newRoadSegmentId, pushRoadSegment, roadDrawingSegmentOverride,
+        roadDrawingWidthForSegmentIndex, buildDrawingTunnelLayer, refreshRoadBuildingTunnelLayer,
+        refreshRoadGradeSeparationLayer, ensureBuildingFootprintsForRoadEdge,
+        ensureBuildingTunnelsForSegments, validateRoadDrawingProfileImpacts,
+        getLockedIndividualOwnersCount, corridorFootprintModule, metricFrameModule, roadSessionFrame,
+        roadPolygonFromGeoJSON, polylineLengthMeters, isParcelLockedForRoadDrawing, getAllRoadSegments,
+        calculateSegmentLengthMeters, calculatePolygonAreaMeters, buildRoadUnionPolygonWithWidths,
+        corridorProtectedSpanRecordsForDefinition, corridorProtectedEdgeKeySet,
+        corridorSurfaceFootprintForDefinition, buildCorridorAcquisitionPolygon,
+        collectParcelsIntersectingFootprint, beginApplyIndicator, endApplyIndicator,
+        isCorridorApplyInFlight, cloneRoadValue, baseRoadParentHints, writeRoadDefinition,
+        stripRoadDerivedFields, makeFreshRoadSnapshot, declareParcelsUnderRoadLand,
+        rekeyMovedTunnelRecords, rebuildRoadDefinitionFootprint, updateLocalCorridorGeometry,
+        runLocalCorridorGeometryUpdate, ensureRoadDrawingMarkerPane, appliedCorridorSnapSegments,
+        streetSnapLinesNear, roadSnapSuppressed, findRoadSnapTarget, clearRoadSnapMarker,
+        roadStreetSnapLabel, showRoadSnapMarker, createRoadVertexMarker, redrawRoadVertexMarkers,
+        clearRoadStripLayer, appliedArmsMeetingDrawing, appliedJunctionArmsForDrawing, redrawRoadStrips,
+        getRoadDrawingProfile, currentCorridorDraftCityId, draftLatLng, saveCurrentCorridorDrawingDraft,
+        setRoadDrawingProfile, updateRoadCrossSectionButton, rebuildRoadGeometryFromSegments,
+        normalizeSeedSegments, seedRoadDrawing, resumeRoadSegment, insertRoadNodeOnEdge,
+        getRoadDrawingParcelIdFromFeature, getRoadDrawingFabric, getRoadDrawingPresenterLayer,
+        getRoadDrawingLiveFeature, liveRoadDrawingParcelsIntersecting, roadDrawingParcelEntry,
+        getParcelIdFromAny, getRoadDrawingParcelProperties, setRoadParcelStats,
+        renderRoadOpenGroundStat, formatParcelArea, resetRoadMetricPlaceholders, formatRoadText,
+        translateRoadText, showRoadAlert, normalizeParcelOwnershipType, setRoadOwnershipCounts,
+        getMarketPrice, updateRoadMarketPrice, updateRoadAcquiringDifficulty,
+        collectOwnershipAndAcquisitionStats, updateRoadOwnershipCounts, clearMapSelectionsForDrawing,
+        disableMultiSelectForDrawing, setRoadPanelLabelsForMode, requestCorridorDrawingTool,
+        startSeededCorridorDrawing, corridorDrawButton, toggleRoadDrawTool, promptCloseDrawnCorridor,
+        discardRoadDrawing, handleRoadKeydown, handleRoadEscape, afterRoadPlacement,
+        handleRoadDoubleClick, holdRoadDoubleClickZoom, releaseRoadDoubleClickZoom,
+        handleRoadDrawingMoveEnd, isEditableTarget, isElementVisiblyRendered, isAnyModalOpen,
+        autoShowBuildingsForRoadDrawing, restoreBuildingsAfterRoadDrawing, ensureRoadOperationBuildings,
+        setBuildingReferenceLayers, toggleBuildingReferenceLayers, handleRoadDrawHotkey,
+        attachRoadDrawHotkey, updateUndoButtonState, clearRoadRubberBand, roadPenDownStatusText,
+        roadPenUpStatusText, liftRoadPen, detectRoadEdgeConflicts, roadConflictMarkerPoints,
+        recordRoadEdgeConflicts, pruneRoadEdgeConflicts, redrawRoadConflictMarkers,
+        roadConflictListText, roadConflictsStatusText, reviewRoadConflictsAtFinish,
+        applyRoadConflictReview, roadConflictAnswerDeps, undoLastRoadSegment, handleRoadClick,
+        rememberRoadStreetConnection, liveRoadStreetConnections, writeStreetConnectionsToDraft,
+        handleRoadMouseMove, showPendingRoadSegment, clearPendingRoadSegment, handleRoadMouseOut,
+        stopRoadPreviewTracking, suspendRoadDrawingInteractivity, exitRoadDrawingMode,
+        calculateRoadPolygon, isLatLngLike, isValidPolygonLatLngs, polygonLatLngsToTurfFeature,
+        ensurePolygonIsClosed, findAndHighlightAffectedParcels, findNewAffectedParcelsForSegment,
+        getOwnershipTypeFromParcel, recomputeLockedParcelsFromPolygon, lockParcelsFromSegment,
+        roadDrawingCurrencyCode, formatCurrency, findAffectedParcels, toggleRoadInfoPanelMinimized,
+        updateRoadInfoPanel, updatePreviewRoadInfo, finishRoadOrTrackDrawing,
+        undoLastRoadOrTrackSegment, cancelRoadOrTrackDrawing, finishRoadDrawing,
+        markCorridorFinishPhase, reportCorridorFinishProfile, hasDrawableCorridor,
+        corridorFinalizationLabel, detachDrawnCorridorAsGhost, corridorGhostDisposer,
+        finishRoadDrawingOnce, cancelRoadDrawing, resetRoadDrawing, clearAffectedParcels,
+        clearPreviewAffectedParcels, findPreviewAffectedParcels, playTrackSegmentSound,
+        showTrackSpeedPicker, showAcquiringDifficultyDialog, nowMs
+    };
+    if (root) root.__roadDrawing = api;
+    if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof window !== 'undefined' ? window : null);
