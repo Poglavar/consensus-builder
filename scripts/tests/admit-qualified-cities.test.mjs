@@ -136,7 +136,8 @@ describe('initial parcel availability admission policy', () => {
     it('imports hash-bound producer follow-up and independently restores missing alignment warnings', () => {
         const fixture = evidenceFixture({ checks: { explicitAbsence: { passed: true } } });
         const qualificationBytes = fs.readFileSync(fixture.evidence.qualification);
-        const review = { policy: 'parcel-availability-v1', passed: true, followUp: [{ check: 'explicitAbsence', reason: 'Producer marked this for the second pass.' }],
+        const review = { policy: 'parcel-availability-v1', passed: true, followUp: [{ check: 'explicitAbsence', reason: 'Producer marked this for the second pass.' },
+            { check: 'sourceCurrentness', reason: 'Saved source snapshot needs a second-pass freshness check.' }],
             candidateSha256: sha256(fs.readFileSync(fixture.evidence.candidate)),
             qualificationSha256: sha256(qualificationBytes), cacheSha256: fixture.qualification.cacheSha256 };
         fixture.evidence.initialReview = path.join(fixture.directory, 'initial-review.json');
@@ -145,6 +146,7 @@ describe('initial parcel availability admission policy', () => {
         const result = verifyAdmissionEvidence(fixture.evidence, fixture.source);
         expect(result.producerInitialReview).toEqual(review);
         expect(result.initialQualificationReview.followUp).toContainEqual({ check: 'explicitAbsence', reason: 'Producer marked this for the second pass.' });
+        expect(result.initialQualificationReview.followUp).toContainEqual({ check: 'sourceCurrentness', reason: 'Saved source snapshot needs a second-pass freshness check.' });
         expect(result.initialQualificationReview.followUp.some(item => item.check === 'alignment')).toBe(true);
 
         review.candidateSha256 = 'stale';
