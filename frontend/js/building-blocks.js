@@ -1336,6 +1336,8 @@ if (typeof window !== 'undefined') {
 //
 // Returns { outer, inner, widthAchieved, minSideLength } with `inner` null when the courtyard
 // collapsed; the caller decides what a solid block means (the modal falls back to one).
+// `minSideLength` is the narrow edge that stopped an inset, null when none did: it is copied into
+// the building's properties, and a stored record cannot hold Infinity (JSON writes it as null).
 function blockRingOutline(superparcel, clipTo, params = {}, hooks = {}) {
     const setback = Number(params.setback) || 0;
     const requestedWidth = Number(params.width) || 0;
@@ -1361,7 +1363,7 @@ function blockRingOutline(superparcel, clipTo, params = {}, hooks = {}) {
     // Incrementally inset the inner ring; keep the last valid geometry even if a step fails.
     let inner = null;
     let widthAchieved = requestedWidth;
-    let minSideLength = Infinity;
+    let minSideLength = null;
     let attempts = 0;
     const MAX_ATTEMPTS = 10;
     while (widthAchieved > 0 && attempts < MAX_ATTEMPTS) {

@@ -147,6 +147,15 @@ describe('block (building-blocks.js blockRingOutline + the per-parcel split)', (
         });
     }
 
+    // The narrow edge is copied into the building's properties and stored; a courtyard that fits at
+    // once measured none, and Infinity would turn into null only once saved.
+    it('a courtyard that fits at once reports no narrow edge as null, never Infinity', () => {
+        const sp = superparcel();
+        const ring = blockRingOutline(sp, sp, { setback: 0, width: 6, simplifyM: 0 });
+        expect(ring.inner).toBeTruthy();
+        expect(ring.minSideLength).toBeNull();
+    });
+
     it('each per-parcel piece binds exactly its own parcel', () => {
         const sp = superparcel();
         const massing = massingOf(blockRingOutline(sp, sp, { setback: 0, width: 6, simplifyM: 0 }));
