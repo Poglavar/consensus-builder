@@ -73,8 +73,12 @@ def validate_resume(previous, current):
     for key in ('recipe_hash', 'manifest_sha256', 'dataset_sha256', 'train_tiles', 'selection_tiles', 'exposure'):
         if previous.get(key) != current.get(key):
             raise ValueError(f'cannot resume with changed {key}; use a fresh output directory')
+    if previous.get('sampling') != current.get('sampling'):
+        raise ValueError('cannot resume with changed sampling definition; use a fresh output directory')
+    if previous.get('epoch_samples', 0) != current.get('epoch_samples', 0):
+        raise ValueError('cannot resume with changed epoch sample count; use a fresh output directory')
     mutable = {'epochs', 'resume', 'run', 'workers', 'eval_workers', 'device', 'log_every',
-               'output', 'dataset', 'manifest', 'pool'}
+               'output', 'dataset', 'manifest', 'pool', 'sampling_weights', 'epoch_samples'}
     before = {k: v for k, v in previous['args'].items() if k not in mutable}
     after = {k: v for k, v in current['args'].items() if k not in mutable}
     if before != after:

@@ -4,12 +4,14 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (suburban and village communities are the primary product target; normalization trial complete; GPU closed). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (existing-data settlement sampling pilot being frozen; high-growth Africa/Asia are the geographic priority). Status values: todo · running · done · dropped (with the reason).
 
 ## Product priority: suburban and village communities
 
 User decision, 2026-10-19: prioritize suburban and village communities, where the user expects most
-growth. Dense urban centres are a secondary comparison. Future sampling, training pools, headline
+growth. Dense urban centres are a secondary comparison. The geographic priority is high-growth areas in
+Africa and Asia; the user authorized training with the data already available while regional labels
+remain sparse. Future sampling, training pools, headline
 metrics and advancement decisions must reflect this use case.
 
 The target includes established low-rise suburbs, village and ribbon settlements, and their growth
@@ -48,6 +50,71 @@ the cutoff is established by current/contemporaneous exporter code and corrobora
 
 Existing manifests, scores, trial gates and decisions remain historical evidence under their original
 protocols. This priority does not retroactively promote a treatment that failed its frozen gate.
+
+## Existing-data settlement pilot (2026-10-19)
+
+Status: frozen before rental under `gpu/plans/selection-v5-settlement.json` (SHA-256
+`7c9c38987b3d3c34a82f78e28bc58d3cfd475836f352b3c7a23df603b83c4e25`; recipe `8d1993998759908e`).
+This executes the user's request to train on available data. The local labelled image datasets cover
+Croatia, not Africa or Asia. No regional transfer or confirmed-village performance can be inferred.
+
+The metadata audit uses the eligible IDs in the frozen manifests, rather than stale source-export
+split tags: 1,623 Zagreb, 395 Split and 681 Zadar training tiles, 2,699 total. It joins cached OSM
+building/road/water geometry with public [DGU RGI settlement boundaries](https://rgi.dgu.hr/geoserver/rgi/wfs).
+The three bounded WFS requests succeeded on 2026-10-18 UTC; their original responses and SHA receipts
+are retained under `output/settlement-study-20261019/context/`. Administrative names do not establish
+village/suburb type. Two bounded OSM place-node requests failed (HTTP 502/500); no type labels were
+inferred from those failed requests. The data-source catalogue and WFS capabilities were unavailable
+through the browsing tool; successful source feature downloads provide the actual coverage evidence.
+
+The prospectively frozen **lower-rise morphology proxy** requires at least three intersecting OSM
+building footprints, union footprint coverage at most 25%, median full footprint area at most 350 m²,
+at least 60% clipped footprints at most 250 m², and water coverage at most 10%. It describes footprint
+pattern, not measured height, residential use, village status or completeness of OSM. Compact
+communities can have many cadastral parcels. Sparse growth edges with fewer buildings are not covered
+by this proxy; the original export also screened out tiles with fewer than five parcel intersections.
+
+| Region | Eligible train | Proxy train | Proxy development tiles | Original blocks represented |
+|---|---:|---:|---:|---:|
+| Zagreb | 1,623 | 733 | 10 | 6 |
+| Split | 395 | 193 | 25 | 10 |
+| Zadar | 681 | 249 | 11 | 5 |
+| Total | 2,699 | 1,175 | 46 | 21 |
+
+The new cohort (`manifests/settlement-v1/`) filters existing selection geography by that rule before
+any new model outcomes. Its 2,383 reference intersections include 1,056 interior references. Every
+block has interior references, with small denominators reported explicitly. These remain development
+sites within the existing communities, not new-community or new-city confirmation. All six fits start
+from the pinned ImageNet initialization. The full candidate pool is rechecked against **all** original
+selection/final tiles for the 500 m buffer and shared source IDs. Original finals are retained as
+reserved metadata; Šibenik remains untouched.
+
+Each arm uses 30 epochs, 1,020 replacement draws per epoch, batch 6 and 170 optimizer updates per
+epoch. The uniform arm gives each eligible tile equal probability. The targeted arm allocates 75% to
+the proxy and 25% to other contexts, then equal region mass within context; administrative community
+mass is proportional to the square root of its tile count, then uniform within community, with a cap
+of five times the uniform tile probability within each context/region and rebalancing of the remaining
+mass. This bounds repetition of tiny communities. Both arms retain positive probability for every tile;
+actual draw counts and unique coverage are journalled, rather than assuming every candidate was used.
+Sampling probabilities are the only treatment factor. Raw RGB, margin-2 targets, architecture,
+augmentation, initialization, schedule and reconstruction search stay matched across paired seeds.
+
+Checkpoint/configuration selection uses equal weight per region and per original geographic block
+within that region, on proxy tiles only. Raw pooled counts/metrics remain separate. The same macro
+score is primary in the comparison, averaged over three fixed fitted seeds. A paired bootstrap samples
+whole blocks within each region (2,000 replicates, seed 0), retaining duplicate draws; precision,
+interior recall and area recall keep the existing non-inferiority guards. No region, dense centre or
+parcel-rich block dominates by having more references. Original 48-tile selection evaluations in all
+three regions are secondary and use the proxy-selected checkpoint/configuration. This is conditional
+on reused Croatian development geography, not selection-adjusted evidence or uncertainty over new
+regions, new communities, imagery sources or training seeds.
+
+Training runs only on the rented CUDA worker. Exact runtime, source, input and pretrained weight
+hashes are frozen before rental; two-tile production-size CUDA training/resume/evaluation checks precede
+the six fits. Existing credit only, no top-up; cap $1, quoted rate at most $0.50/h, maximum rental 105
+minutes, 65-minute main queue timeout and a 100-minute compute-stop guard. Copy completed fits while
+later fits run, verify every recovered output hash and checkpoint metadata, then close only this rental.
+No final scoring, production promotion, push or deployment is part of the pilot.
 
 ## Where we stand (2026-10-19)
 
@@ -122,7 +189,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
 | 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | zero-shot comparison done; advancement failed; untouched confirmation and target fine-tuning deferred |
-| 13 | Suburban/village coverage audit and settlement-focused development cohort | metadata + saved imagery | next; product priority recorded; cohort and weights not yet frozen |
+| 13 | Suburban/village coverage audit and settlement-focused development cohort | metadata + rented GPU | running; existing-data lower-rise proxy pilot frozen separately; village and Africa/Asia coverage remain gaps |
 
 ### Agreed reconstruction and transfer sequence (2026-10-15)
 

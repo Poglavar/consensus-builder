@@ -387,3 +387,12 @@ The living plan is `PLAN.md`, including actual spend and the recovery-related re
 Colour augmentation, target fine-tuning and larger encoders remain deferred.
 Broader selection, resolution augmentation and the longer-schedule trial are complete; the baseline
 default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa city remain pending.
+
+### Existing-data settlement pilot
+
+The product priority is suburban/village growth communities, especially Africa and Asia. The
+`selection-v5-settlement` pilot uses the Croatian labels already available: six fresh fits compare
+uniform versus context-weighted sampling at the same number of updates. Its lower-rise footprint
+proxy is separate from parcel density, confirmed village type and regional transfer. The primary
+score balances regions and geographic blocks; original final sets stay reserved. See the
+[prospective cohort, sampling policy and limits](PLAN.md#existing-data-settlement-pilot-2026-10-19).

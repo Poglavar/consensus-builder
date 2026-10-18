@@ -39,10 +39,12 @@ from reconstruct import RECON_DEFAULTS, reconstruct  # noqa: E402
 from targets import load_image, osm_channels, tile_targets  # noqa: E402
 from target_config import cache_namespace, from_args, recorded_targets, target_definition  # noqa: E402
 from rgb_normalization import definition as normalization_definition, recorded as recorded_normalization  # noqa: E402
+from settlement_sampling import draw_indices, exposure_record, load_definition, weighted_group_metrics  # noqa: E402
 
 DEFAULT_MANIFEST = HERE.parent / 'manifests' / 'zagreb-v1.json'
 RECIPE_FILES = [HERE / 'train.py', HERE / 'model.py', HERE / 'targets.py', HERE / 'reconstruct.py',
                 HERE / 'exposure.py', HERE / 'imagery.py', HERE / 'target_config.py', HERE / 'rgb_normalization.py',
+                HERE / 'settlement_sampling.py',
                 HERE.parent.parent / 'guess-spike' / 'guess.py']
 
 
@@ -248,13 +250,26 @@ def evaluate(model, index, cache, ids, configs, device, *, recon_size, workers, 
     for key, tile_id, result, collection in outcomes:
         by_config.setdefault(key, {})[tile_id] = (result, collection)
     pooled = {key: score.pool([by_config[key][tile_id][0] for tile_id in ids]) for key in by_config}
-    ranking = sorted(pooled, key=lambda key: (-(pooled[key]['metrics']['parcel_f1'] or 0),
-                                              -(pooled[key]['metrics']['area_weighted_recall'] or 0), key))
+    groups = index.manifest.get('selection_groups') if ids and all(index.tiles[t]['split'] == 'selection' for t in ids) else None
+    if groups is not None:
+        macro = {key: weighted_group_metrics(
+            {tile_id: by_config[key][tile_id][0] for tile_id in ids}, groups, ids, score.pool)
+                 for key in pooled}
+        ranked_metrics = {key: macro[key][0] for key in pooled}
+        aggregation = {'method': 'weighted_macro_mean_of_group_pools',
+                       'configs': {key: macro[key][1] for key in pooled}}
+    else:
+        ranked_metrics = {key: pooled[key]['metrics'] for key in pooled}
+        aggregation = {'method': 'pooled'}
+    ranking = sorted(pooled, key=lambda key: (-(ranked_metrics[key]['parcel_f1'] or 0),
+                                              -(ranked_metrics[key]['area_weighted_recall'] or 0), key))
     best = ranking[0]
     precision = pixel['tp'] / max(pixel['tp'] + pixel['fp'], 1)
     recall = pixel['tp'] / max(pixel['tp'] + pixel['fn'], 1)
     summary = {
-        'best_config': best, 'configs': {key: pooled[key]['metrics'] for key in pooled}, 'osm_mode': osm_mode,
+        'best_config': best, 'configs': ranked_metrics,
+        'pooled_configs': {key: {'counts': pooled[key]['counts'], 'metrics': pooled[key]['metrics']} for key in pooled},
+        'selection_aggregation': aggregation, 'osm_mode': osm_mode,
         'pixel': {'boundary_precision': precision, 'boundary_recall': recall,
                   'boundary_f1': 2 * precision * recall / max(precision + recall, 1e-9),
                   'distance_mae': pixel['distance_abs'] / max(pixel['pixels'], 1)},
@@ -270,6 +285,8 @@ def evaluate(model, index, cache, ids, configs, device, *, recon_size, workers, 
             (out_dir / f'{tile_id}.score.json').write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
             np.savez_compressed(out_dir / f'{tile_id}.probabilities.npz', **probabilities[tile_id])
         (out_dir / 'pooled.json').write_text(json.dumps(dict(pooled[best], config=best), indent=2, sort_keys=True) + '\n')
+        if groups is not None:
+            summary['selected_metrics'] = ranked_metrics[best]
         (out_dir / 'summary.json').write_text(json.dumps(summary, indent=2, sort_keys=True) + '\n')
     model.train()
     return summary
@@ -327,6 +344,11 @@ def train(args):
     index = TileIndex(args.manifest, args.dataset, args.pool)
     subset_seed = args.subset_seed if args.subset_seed is not None else args.seed
     train_ids = subset_ids(index.ids('train'), args.train_tiles, subset_seed)
+    sampling = load_definition(args.sampling_weights, train_ids) if args.sampling_weights else None
+    if args.epoch_samples and sampling is None:
+        raise ValueError('--epoch-samples requires --sampling-weights')
+    if sampling is not None and args.epoch_samples <= 0:
+        raise ValueError('--sampling-weights requires --epoch-samples > 0')
     selection_ids = index.ids('selection')[:args.selection_tiles] if args.selection_tiles else index.ids('selection')
     init_weights, init, ancestor, init_normalization = (load_init(args.init, args.encoder, args.size, index.manifest)
                                                         if args.init else (None, None, 'imagenet', None))
@@ -342,6 +364,7 @@ def train(args):
               'manifest_sha256': hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
               'dataset_sha256': hashlib.sha256((args.dataset / 'manifest.json').read_bytes()).hexdigest(),
               'pool': index.pool_name, 'n_train': len(train_ids), 'subset_seed': subset_seed, 'reconstruction': RECON_DEFAULTS,
+              'sampling': sampling, 'epoch_samples': args.epoch_samples,
               'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids, 'exposure': exposure,
               'target_definition': definition, 'rgb_normalization': normalization}
     resume_state = None
@@ -383,7 +406,8 @@ def train(args):
     dataset = TileDataset(cache, train_ids, augment=True, osm_dropout=args.osm_dropout, seed=args.seed,
                           resolution_aug_prob=args.resolution_aug_prob, resolution_aug_max_gsd=args.resolution_aug_max_gsd,
                           tile_size_m=index.manifest['tile_size_m'])
-    steps_per_epoch = min(math.ceil(len(dataset) / args.batch), args.max_steps or 10 ** 9)
+    sample_count = args.epoch_samples if sampling is not None else len(dataset)
+    steps_per_epoch = min(math.ceil(sample_count / args.batch), args.max_steps or 10 ** 9)
     scheduler = make_scheduler(optimizer, steps_per_epoch * args.epochs, warmup=min(50, steps_per_epoch))
     use_amp = device.type == 'cuda'
     amp_dtype = torch.bfloat16 if use_amp and torch.cuda.is_bf16_supported() else torch.float16
@@ -401,10 +425,16 @@ def train(args):
     global_step = start_epoch * steps_per_epoch
     for epoch in range(start_epoch, args.epochs):
         dataset.epoch = epoch
-        # The epoch determines shuffle order, including after a process restart and across paired arms.
-        generator = torch.Generator().manual_seed(args.seed * 1_000_003 + epoch)
-        loader = DataLoader(dataset, batch_size=args.batch, shuffle=True, num_workers=args.workers,
-                            drop_last=False, generator=generator)
+        if sampling is None:
+            # Preserve the original shuffle behavior exactly for existing recipes.
+            generator = torch.Generator().manual_seed(args.seed * 1_000_003 + epoch)
+            loader = DataLoader(dataset, batch_size=args.batch, shuffle=True, num_workers=args.workers,
+                                drop_last=False, generator=generator)
+            epoch_indices = None
+        else:
+            epoch_indices = draw_indices(sampling, train_ids, sample_count, args.seed, epoch)
+            loader = DataLoader(dataset, batch_size=args.batch, sampler=epoch_indices, shuffle=False,
+                                num_workers=args.workers, drop_last=False)
         model.train()
         epoch_start, running = time.time(), []
         for step, (x, y) in enumerate(loader):
@@ -431,6 +461,13 @@ def train(args):
                     f"(bce {terms['boundary_bce']:.3f} dice {terms['boundary_dice']:.3f} int {terms['interior']:.3f} "
                     f"dist {terms['distance']:.3f}) {rate:.1f} tiles/s ETA {eta:.0f}s")
         journal.flush()
+        if epoch_indices is not None:
+            consumed = min(len(epoch_indices), steps_per_epoch * args.batch)
+            if args.max_steps:
+                consumed = min(consumed, args.max_steps * args.batch)
+            journal.write(json.dumps(exposure_record(sampling, train_ids, epoch_indices[:consumed],
+                                                      epoch, sample_count)) + '\n')
+            journal.flush()
         state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
                  'scaler': scaler.state_dict(), 'epoch': epoch, 'best': best, 'encoder': args.encoder, 'in_chans': 6,
                  'size': args.size, 'recon_size': args.recon_size, 'exposure': exposure,
@@ -565,6 +602,8 @@ def main(argv=None):
                         help='evaluate-only: zero the OSM input channels (model-blank) or also withhold OSM seeds and barriers (none)')
     parser.add_argument('--selection-tiles', type=int, default=0, help='limit (0 = all)')
     parser.add_argument('--max-steps', type=int, default=0, help='steps per epoch limit (0 = all)')
+    parser.add_argument('--sampling-weights', type=Path, help='JSON format 1 tile-ID to positive weight mapping')
+    parser.add_argument('--epoch-samples', type=int, default=0, help='replacement draws per epoch; requires weights')
     parser.add_argument('--seed', type=int, default=1)
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--init', type=Path, help="fine-tune: start from this checkpoint's model weights instead of "
