@@ -681,6 +681,32 @@
         return buildingPolygon;
     }
 
+    // One placement rule for a Row bar on its parcels, used both when the editor generates it and
+    // when the rule is re-run on the parcels it was dropped on: the bar goes at the asked offset and
+    // rotation, else centred, else centred unrotated, whichever first fits inside the site with a
+    // margin; when none fits it goes where asked and may overhang (rebuildRowUnits then keeps it as
+    // one massing instead of cutting houses). Returns { feature, offsetX, offsetY, rotation } and
+    // leaves the site cache (cachedSuperparcel and its frame) on this block.
+    function placeRowHouseBar(block, { offsetX = 0, offsetY = 0, rotation = 0 } = {}) {
+        // Generating once caches this block's site and frame, which the fit check reads.
+        if (!generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation)) return null;
+        const asked = { offsetX, offsetY, rotation };
+        const fits = candidate => checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer,
+            candidate.offsetX, candidate.offsetY, candidate.rotation);
+        const chosen = [asked, { offsetX: 0, offsetY: 0, rotation }, { offsetX: 0, offsetY: 0, rotation: 0 }].find(fits) || asked;
+        const feature = generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer,
+            chosen.offsetX, chosen.offsetY, chosen.rotation);
+        return feature ? { feature, ...chosen } : null;
+    }
+
+    function rowHouseSiteCache() {
+        return { cachedSuperparcel, cachedSuperparcelMeters, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, baseRotation };
+    }
+
+    function restoreRowHouseSiteCache(cache) {
+        ({ cachedSuperparcel, cachedSuperparcelMeters, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, baseRotation } = cache);
+    }
+
     // Calculate the maximum building dimensions that fit within the superparcel with 1m margin
     // Also sets up cached values for consistent boundary checking
     function calculateMaxBuildingDimensions(block) {
@@ -1103,21 +1129,23 @@
         const site = robustUnionLocal(parcels.map(parcel => parcel.feature).filter(Boolean));
         if (!site?.geometry) return failed;
         const nextBlock = { parcels, parcelIds: ids, site, syntheticSite: false, valid: true, polygon: null };
-        const previousSuperparcel = cachedSuperparcel;
-        let feature = null;
+        // The same placement as the editor's own generation, centred on the new parcels: a bar the
+        // editor would draw there is accepted here, overhang included.
+        const previousSite = rowHouseSiteCache();
+        let placed = null;
         try {
-            feature = generateRowHousePolygon(nextBlock, currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation);
-        } catch (_) { feature = null; }
-        if (!feature?.geometry || !window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, cachedSuperparcel, turf)) {
-            cachedSuperparcel = previousSuperparcel;
+            placed = placeRowHouseBar(nextBlock, { offsetX: 0, offsetY: 0, rotation: currentRotation });
+        } catch (_) { placed = null; }
+        if (!placed?.feature?.geometry) {
+            restoreRowHouseSiteCache(previousSite);
             return failed;
         }
+        const feature = placed.feature;
         rowHouseBlock = nextBlock;
         rowHouseBlockNameOverride = describeRowHouseParcelSelection(ids);
         // The design's land moves with the rule (proposal-editor-shell.js moveActiveDesignToParcels).
         window.moveActiveDesignToParcels?.(ids);
-        currentOffsetX = 0;
-        currentOffsetY = 0;
+        ({ offsetX: currentOffsetX, offsetY: currentOffsetY, rotation: currentRotation } = placed);
         rowHouseManualMode = false;
         syncRowHouseGeometryControls();
         generatedRowHouseFeature = feature;
@@ -1550,31 +1578,9 @@
         setRowHouseInfo('rowHouses.modal.generating', 'Generating row houses...');
 
         try {
-            // Check if current parameters fit, if not try to adjust offset
-            if (!checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
-                // Try resetting offset to center
-                if (checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation)) {
-                    currentOffsetX = 0;
-                    currentOffsetY = 0;
-                } else if (checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, 0)) {
-                    // Also reset rotation
-                    currentOffsetX = 0;
-                    currentOffsetY = 0;
-                    currentRotation = 0;
-                }
-                // If still doesn't fit, the polygon generation will happen anyway
-                // but user will see it may be outside bounds
-            }
-
-            const buildingFeature = generateRowHousePolygon(
-                block,
-                currentBuildingLength,
-                currentBuildingWidth,
-                currentChamfer,
-                currentOffsetX,
-                currentOffsetY,
-                currentRotation
-            );
+            const placed = placeRowHouseBar(block, { offsetX: currentOffsetX, offsetY: currentOffsetY, rotation: currentRotation });
+            const buildingFeature = placed?.feature || null;
+            if (placed) ({ offsetX: currentOffsetX, offsetY: currentOffsetY, rotation: currentRotation } = placed);
 
             if (!buildingFeature) {
                 throw new Error('Failed to generate row house polygon');
