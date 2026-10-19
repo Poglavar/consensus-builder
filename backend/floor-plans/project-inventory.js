@@ -84,8 +84,16 @@ export function projectInventory(postings, plans, options = {}) {
             // Unreviewed region names are not public apartment identities when the offer names it.
             const generatedUnit = plan?.kind !== 'reviewed' && /^(?:plan|unit|apartment|region)[\s_-]/i.test(model.unitId || '');
             const establishedUnit = listingUnit || one(ownedPlans.filter(p => ['original', 'reviewed'].includes(p.kind)).map(p => p.model?.unitId));
-            const candidateUnit = (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
-                || one(ownedPlans.map(p => p.model?.unitId));
+            // A reader's sole generic region name does not rename an unnamed apartment offer.
+            // Retain the original's null unit and stable link when its geometry becomes available.
+            const unnamedOriginal = !establishedUnit && (generatedUnit || plan?.kind === 'original')
+                && ownedPlans.some(p => p.kind === 'original' && !p.model?.unitId && p.sha256 === plan.sha256
+                    && (p.model?.source?.page || 1) === (model.source?.page || 1))
+                && new Set(sameSourceUnits.filter(Boolean)).size === 1
+                && sameSourceUnits.filter(Boolean).every(unit => /^(?:plan|unit|apartment|region)[\s_-]/i.test(unit));
+            const candidateUnit = unnamedOriginal ? null
+                : (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
+                    || one(ownedPlans.map(p => p.model?.unitId));
             const equivalent = kind => ownedPlans.find(p => p.kind === kind && p.model?.unitId
                 && normalizeUnitId(p.model.unitId) === normalizeUnitId(candidateUnit))?.model.unitId;
             // Reviewed spelling wins; otherwise preserve an original's published ID across machine

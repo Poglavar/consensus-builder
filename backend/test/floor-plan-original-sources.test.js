@@ -208,6 +208,20 @@ describe('original and geometry inventory selection', () => {
             expect(apartments[0].originalSources).toEqual([{ url: sourceUrl, sha256: sha, page: 1, mediaType: 'image/png' }]);
         }
     });
+    it('keeps an unnamed offer link when the reader calls its only region plan-1', async () => {
+        const url='https://example.test/nekretnina/trosoban-stan/', offer={url,facts:posting.facts};
+        const input=source({listing_url:url,source_url:'https://example.test/drawing.png',
+            asset:{url:'https://example.test/drawing.png',listingOwned:true}});
+        const beforeSource=originalPlanSource(input), before=projectInventory([offer],[beforeSource]).apartments[0];
+        const model={...geometry({unitId:'plan-1'}),listing_url:url,source_sha256:sha,page:1};
+        const afterSource=(await currentOriginalPlans({query:async()=>({rows:[input]})},[url],{processedPlans:[model]}))[0];
+        expect(afterSource.model.unitId).toBeNull();
+        for(const plans of [[afterSource,model],[model,afterSource]]) {
+            const apartments=projectInventory([offer],plans).apartments;
+            expect(apartments).toHaveLength(1);
+            expect(apartments[0]).toMatchObject({id:before.id,unitId:null,hasGeometry:true});
+        }
+    });
     it('suppresses measured outside-slab walls and uses the independent confirmed drawing', () => {
         const unsafe = geometry({ architecture: { ...architecture, walls: [[[[2, 2], [3, 2], [3, 3], [2, 3]]]] } });
         expect(hasUsableGeometry(unsafe.model)).toBe(false);
