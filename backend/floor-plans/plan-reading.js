@@ -3,9 +3,9 @@ import {createRequire} from 'node:module';
 import {geometryIssues} from './geometry-quality.js';
 import {READING_SCHEMA} from './reading-schema.js';
 import {DEFAULT_MAX_TOKENS} from '../../../agents/lib/llm-cost/llm.mjs';
-import {wallCorners,candidateFrame,selectedCandidates} from './source-geometry.js';
+import {wallCorners,candidateFrame,selectedCandidates,sourceAnchor} from './source-geometry.js';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
-export const PROCESSOR='floor-plan-vision-v14';
+export const PROCESSOR='floor-plan-vision-v15';
 // The model and its reasoning effort come from the shared layer (agents/lib/llm-cost/defaults.json),
 // never from here. Its output cap also bounds the reasoning the model always does first, so a
 // reading is not paid for and then truncated; the daily budget reserves this full allowance.
@@ -23,6 +23,7 @@ export const READING_PROMPT=[
 'wallIds must select supplied W candidates that are SOLID WALLS of this unit/floor. Exclude furniture, appliances, glazing, railings, labels, page rules and adjacent apartments. Candidate strokes are evidence proposals, not confirmed architecture. Do not select a glazing stroke as a full-height wall.',
 'railingIds may select W or G candidates only for visible balcony railings; their height is an explicit application estimate. Preserve thin shafts and interior partitions when they are real walls.',
 'slabs is an array of {outer:[anchor IDs],holes:[[anchor IDs],...]}. Anchors F0,F1,F2,F3 refer to the supplied outlineCorners in that order; a wall corner is W14:2 for index 2 in candidate W14 corners. The F rectangle bounds ALL candidates and may include adjacent apartments or a shared core; use it only when it matches this unit and lies within the selected geometry. Otherwise use corners of selected walls/railings in perimeter order, including for a rectangular unit within a larger drawing. Do not zigzag around wall thickness or openings: the slab continues beneath walls and apertures. Do not include another apartment. Never return pixel coordinates for a slab. The application derives the frame.',
+'For a rectilinear perimeter corner interrupted by a door, window, or another wall, an anchor may be W14:2/W8:0: use the measured x of W14 corner 2 and measured y of W8 corner 0. Both wall IDs must be selected in wallIds or railingIds. Use these measured intersections to close L-shaped outlines across apertures. Every returned plan needs a nonempty slabs array; do not omit its slab merely because no single wall corner marks a junction.',
 'scale={candidateId,lengthM,quote}: select the supplied S candidate that is an actual PRINTED metric scale bar. Read its total length in metres from the printed labels, not from its detected interval count. The quote must identify the printed endpoints and units. A location-inset line, room dimension guessed from marketed area, or bare 1:N label is not a scale bar. If no scale bar is printed, set scale=null and still return the plan; the application then estimates scale from other evidence.',
 'dimensionHints: up to 6 PRINTED dimension labels (e.g. "5.40", "540" in cm, "3,85 m") that measure one supplied W or G candidate along its length: {candidateId,lengthM,quote}. Convert centimetres to metres. Only labels clearly attached to that stroke; never derive a length from room areas. Empty when there are none.',
 'openings is an array of {candidateId,kind,hinge,swing}. Select supplied G gap candidates (or a W glazing stroke if no gap exists). kind is door,window,glazedDoor or slidingDoor. Choose the gap endpoints that match the actual aperture. Candidate gaps can also be circulation space with no door; omit those. Never place an opening through a selected solid wall.',
@@ -79,7 +80,7 @@ export function metricScale({plan,evidence,anchors,openingSpans,task}) {
         issues:[`Scale estimated from ${doors.length} doors at a typical 0.90 m; no scale bar or printed dimensions.`]};
     const areaM2=Number(task.context?.facts?.areaM2);
     const slabPx=plan.slabs.reduce((sum,polygon)=>{
-        const ring=polygon.outer.map(id=>anchors.get(id));
+        const ring=polygon.outer.map(id=>sourceAnchor(id,anchors));
         return ring.every(point)?sum+ringAreaPx(ring):sum;
     },0);
     if(plan.scope==='unit'&&finite(areaM2)&&areaM2>10&&slabPx>100) return {scale:null,mPerPixel:Math.sqrt(areaM2*1.1/slabPx),basis:'listing-area',estimated:true,
@@ -121,7 +122,7 @@ export function parseReading(text,task,{width,height,evidence,model}={}) {
         const anchors=new Map(evidence.outlineCorners.map((p,i)=>['F'+i,p]));
         for(const wall of [...walls,...rails])wallCorners(wall).forEach((p,i)=>anchors.set(wall.id+':'+i,p));
         const slabPoint=id=>{
-            const p=anchors.get(id);
+            const p=sourceAnchor(id,anchors);
             if(!point(p))throw new Error('Slab boundary contains a point that is not a measured source anchor.');
             return uv(p);
         };

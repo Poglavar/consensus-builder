@@ -131,12 +131,34 @@ class FloorPlanEvidence(unittest.TestCase):
         self.assertEqual(evidence.hatched_candidates(gray), [])
         self.assertEqual(evidence.measured_candidates(gray), evidence.axis_candidates(gray))
         _, result, _ = self.run_image(image.convert('RGB'))
-        self.assertEqual(result['version'], 'floor-plan-evidence-v3')
+        self.assertEqual(result['version'], 'floor-plan-evidence-v4')
 
     def test_gray_room_fill_does_not_become_wall_candidate(self):
         image = Image.new('L', (320, 220), 255)
         ImageDraw.Draw(image).rectangle((40, 40, 280, 180), fill=190)
         self.assertEqual(evidence.axis_candidates(np.array(image)), [])
+
+    def test_grey_partition_is_added_after_stable_dark_candidates_without_duplicates(self):
+        image = Image.new('L', (420, 260), 255)
+        draw = ImageDraw.Draw(image)
+        draw.line((30, 40, 190, 40), fill=0, width=10)
+        draw.line((30, 40, 30, 180), fill=0, width=10)
+        draw.line((230, 100, 380, 100), fill=170, width=8)
+        draw.line((230, 150, 380, 150), fill=205, width=8)
+        image = np.asarray(image)
+
+        dark = evidence.axis_candidates(image)
+        candidates = evidence.measured_candidates(image)
+        self.assertEqual(candidates[:len(dark)], dark)
+        self.assertEqual(len(dark), 2)
+        grey = candidates[len(dark):]
+        self.assertEqual(len(grey), 1)
+        self.assertEqual(grey[0]['orientation'], 'H')
+        self.assertEqual(grey[0]['a'], [230, 100.5])
+        self.assertEqual(grey[0]['b'], [380, 100.5])
+        # The 190-threshold pass also sees the black strokes; none are appended twice.
+        self.assertEqual(len({(item['orientation'], tuple(item['a']), tuple(item['b']))
+                              for item in candidates}), len(candidates))
 
     def test_blank_photo_like_image_is_explicitly_inconclusive(self):
         image = Image.new('RGB', (320, 200), (120, 140, 160))

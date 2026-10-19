@@ -49,6 +49,14 @@ describe('source reading to vector architecture',()=>{
         expect(plan.verticalDimensionsBasis).toMatch(/Estimated/);
         expect(plan.building).toBeNull();
     });
+    it('closes slab corners using x/y intersections of selected measured wall corners',()=>{
+        const raw=drawing();
+        raw.plans[0].slabs[0].outer=['W1:0/W3:2','W2:2/W4:3','W2:2/W6:0','W1:0/W5:1'];
+        const plan=parse(raw).plans[0];
+        expect(plan.architecture.slabs[0][0]).toEqual([[0,0],[1,0],[1,1],[0,1]]);
+        raw.plans[0].wallIds=raw.plans[0].wallIds.filter(id=>id!=='W3');
+        expect(()=>parse(raw)).toThrow(/not a measured source anchor/);
+    });
     it.each(['scale','floor','unknown-wall','unknown-scale','invented-slab','unknown-opening','conflicting-opening','duplicate-opening'])('rejects invalid %s evidence',kind=>{
         const raw=drawing(),p=raw.plans[0];
         if(kind==='scale')p.scale.lengthM=null;
