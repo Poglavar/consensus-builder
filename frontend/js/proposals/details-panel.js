@@ -902,14 +902,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 }
             }
 
-            // Warning text only shown when no deposit
+            // This describes authored deposit terms, not an observed escrow balance.
             const noDepositWarningHtml = !hasDeposit ? `
-            <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit - proposal not backed by funds')}</div>` : '';
-            // Check if this is an ownership-transfer-from-me proposal
-            const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
-            const acceptTransferLabel = tProposal('panel.proposal.acceptTransfer.buttonLabel', 'Accept ownership transfer');
-            const acceptTransferButtonHtml = isFromMeProposal
-                ? `<button type="button" class="btn btn-sm btn-icon offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog(${inlineJsArg(proposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i></button>`
+            <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit specified')}</div>` : '';
+            // Seller intent has no funding transaction here; its boolean readiness flag is no amount.
+            const fundingAvailabilityHtml = window.ProposalKind?.isOwnerSaleOffer(proposal)
+                ? `<p class="proposal-offer-funding-note">${safeAgentText(tProposal('panel.proposal.offer.sellerFundingUnavailable', 'Funding this offer is not available here.'))}</p>`
                 : '';
 
             if (hasDecay) {
@@ -926,10 +924,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
                         <span class="offer-original">${originalAmountText}</span>
                     </div>
-                    ${acceptTransferButtonHtml}
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
-            </div>${noDepositWarningHtml}`;
+            </div>${noDepositWarningHtml}${fundingAvailabilityHtml}`;
             } else {
                 return `
             <div class="proposal-offer-bar${hasDeposit ? ' with-deposit' : ''}">
@@ -938,10 +935,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-label">${tProposal('panel.proposal.metrics.offer', 'Offer:')}</span>
                         <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
                     </div>
-                    ${acceptTransferButtonHtml}
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
-            </div>${noDepositWarningHtml}`;
+            </div>${noDepositWarningHtml}${fundingAvailabilityHtml}`;
             }
         })() : ''}`;
 

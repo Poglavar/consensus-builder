@@ -62,6 +62,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         __proposalDisplayState: displayState,
         ProposalPanelPresentation: { resolve: () => 'compact' },
         ProposalSupportView: supportView,
+        ProposalKind,
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
         SolanaPledgeBridge: { readSummary: vi.fn(() => Promise.resolve(summary || {})) },
         SolanaPledgeClient: { formatUsdc: value => String(value) },
@@ -133,6 +134,25 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it.each([
+        { goal: 'ownership-transfer-from-me', funded: false },
+        { goal: 'parcelBased', ownershipTransferProposal: { direction: 'from-me' }, funded: true },
+        { goal: 'ownership-transfer-from-me', funded: true, decayEnabled: true, decayPercent: 10, decayDurationMs: 60000 }
+    ])('shows seller funding availability without a synthetic remaining amount or payment action: %j', terms => {
+        const proposal = { proposalId: 'seller-1', title: 'Seller offer', cadastreParcelIds: [], offer: 100, offerCurrency: 'EUR', ...terms };
+        const $ = parse(render(proposal).content.innerHTML);
+        expect($('.proposal-offer-funding-note').text()).toBe('Funding this offer is not available here.');
+        expect($('.offer-amount').text()).toBe('€100');
+        expect($('.proposal-no-deposit-warning').text().trim()).toBe('⚠️ No deposit specified');
+        expect($('.proposal-offer-bar button').length).toBe(0);
+        expect($.text()).not.toContain('Amount still needed');
+    });
+
+    it('does not apply the seller funding note to a general proposal offer', () => {
+        const $ = parse(render({ proposalId: 'park-1', goal: 'park', cadastreParcelIds: [], offer: 100 }).content.innerHTML);
+        expect($('.proposal-offer-funding-note').length).toBe(0);
+    });
+
     it('keeps a failed map-application reason visible in the proposal panel', () => {
         const proposal = { proposalId: 'lake-1', title: 'Lake', cadastreParcelIds: [] };
         const result = render(proposal, { actionError: 'Geometry extends beyond this site.' });

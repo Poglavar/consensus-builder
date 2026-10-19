@@ -349,11 +349,11 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect.poll(() => page.evaluate(({ id, parcelId }) => (window as any).proposalStorage.getProposal(id)?.ownerAcceptances[parcelId]?.acceptedOwnerKeys?.length, { id: proposalId, parcelId: PARCEL_ID })).toBe(0);
   });
 
-  test('Accept ownership transfer Fund submits and dismisses its confirmation dialog', async ({ mockApi: page }) => {
+  test('a seller funding flag does not create a payment amount or action', async ({ mockApi: page }) => {
     await openCity(page);
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       proposalId: 'accept-transfer-submit-control', title: 'Accept transfer submission', goal: 'ownership-transfer-from-me',
-      lifecycleStatus: 'Active', offer: 100, cadastreParcelIds: [parcelId], geometry,
+      lifecycleStatus: 'Active', offer: 100, offerCurrency: 'EUR', funded: true, cadastreParcelIds: [parcelId], geometry,
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await showProposal(page, proposalId);
@@ -362,11 +362,14 @@ test.describe('proposal button controls sixth pass @features', () => {
     if (await expand.isVisible()) await expand.click();
     const funding = page.locator('#proposal-details-content details[data-proposal-section="funding"]');
     if (!(await funding.evaluate(element => (element as HTMLDetailsElement).open))) await funding.locator(':scope > summary').click();
-    await funding.locator('.offer-boost-button[aria-label="Accept ownership transfer"]').click();
-    const dialog = page.locator('#acceptOwnershipTransferOverlay');
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'Fund', exact: true }).click();
-    await expect(dialog).toBeHidden();
+    await expect(funding.locator('.proposal-offer-funding-note')).toHaveText('Funding this offer is not available here.');
+    await expect(funding.locator('.offer-amount')).toHaveText('€100');
+    await expect(funding.getByRole('button', { name: /^(Fund|Accept ownership transfer)$/ })).toHaveCount(0);
+    await expect(funding).not.toContainText('Amount still needed');
+    expect(await page.evaluate(id => {
+      const p = (window as any).proposalStorage.getProposal(id);
+      return { offer: p.offer, funded: p.funded, lifecycle: p.lifecycleStatus };
+    }, proposalId)).toEqual({ offer: 100, funded: true, lifecycle: 'Active' });
   });
 
   test('Open bet from the proposal market opens the transaction-backed bet dialog', async ({ mockApi: page }) => {
