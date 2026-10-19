@@ -7,12 +7,13 @@ import * as cheerio from 'cheerio';
 import { BASE_PATH, PUBLIC_ORIGIN, projectId, readPublicCatalogue, readPublicProject } from '../floor-plan-archive/public-catalogue.js';
 import { readBlobRow } from '../floor-plans/blob-store.js';
 import { buildingThumbnailSvg } from '../floor-plan-archive/building-thumbnail.js';
+import { readBuildingContext } from '../floor-plan-archive/building-context.js';
 
 const require = createRequire(import.meta.url);
 const { filterProjects, decodeFilters } = require('../../frontend/novogradnje/catalogue.js');
 const directory = fileURLToPath(new URL('../../frontend/novogradnje/', import.meta.url));
 const shared = fileURLToPath(new URL('../../frontend/js/', import.meta.url));
-const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 'floor-plan-review-geometry.js', 'floor-plan-review-renderer.js', 'site-model-geometry.js']);
+const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 'floor-plan-review-geometry.js', 'floor-plan-review-renderer.js', 'site-model-geometry.js', 'three-context-buildings.js']);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
 const kindLabel = kind => ({ new_build: 'Novogradnja', existing: 'Starogradnja', unknown: 'Vrsta nije utvrđena' })[kind] || 'Vrsta nije utvrđena';
@@ -101,6 +102,11 @@ export function setupNovogradnjeRoute(app, pool) {
     get('/novogradnje/api/projects/:id', async (req, res) => {
         const project = await readPublicProject(pool, req.params.id);
         return project ? res.json(project) : res.status(404).json({ error: 'Projekt nije pronađen.' });
+    });
+    get('/novogradnje/api/projects/:id/context', async (req, res) => {
+        const project = await readPublicProject(pool, req.params.id);
+        const context = project && await readBuildingContext(pool, project);
+        return context ? res.json(context) : res.status(404).json({ error: 'Okolica projekta nije dostupna.' });
     });
     get('/novogradnje/api/projects/:id/thumbnail.svg', async (req, res) => {
         const project = await readPublicProject(pool, req.params.id);

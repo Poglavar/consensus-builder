@@ -131,6 +131,11 @@
         } else if(C.hasEnvelope(project.model)) {
             const envelope=node('section','viewer-panel'),title=node('h3','', 'Obris i katovi zgrade'),canvas=node('div','viewer-canvas');envelope.append(title,canvas,node('p','viewer-copy','Model prikazuje dostupni obris zgrade i katove; visine mogu biti procijenjene iz izvora.'));viewers.push(V.mountEnvelope(canvas,project.model,null));card.append(envelope);
         }
+        if(C.hasEnvelope(project.model)) {
+            const context=node('section','viewer-panel context-panel'),title=node('h3','','Zgrada u susjedstvu'),canvas=node('div','viewer-canvas');
+            context.append(title,canvas,node('p','viewer-copy','Projekt je označen zlatnom bojom. Okolica: gradska 3D snimka iz 2022.; novije promjene možda nisu prikazane. Povuci za zakretanje i nagib.'));
+            viewers.push(V.mountContext(canvas,project));card.append(context);
+        }
         host.append(card);if(detailError)host.append(node('p','confidence-note',detailError));if(apartmentId&&!selected)host.append(node('p','confidence-note','Traženi stan nije dostupan u trenutnom katalogu.'));
     }
     async function load(){

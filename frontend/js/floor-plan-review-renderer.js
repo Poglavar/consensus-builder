@@ -1,13 +1,14 @@
 // Demand-rendered Three.js previews; each host owns and disposes its WebGL resources.
 (function(global){
 'use strict';
-async function preview(host,build,isCurrent){
+async function preview(host,build,isCurrent,options={}){
  const [THREE,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
  if(!isCurrent())return null;
  const group=build(THREE);if(!group)throw new Error('No building geometry available');
  const scene=new THREE.Scene();scene.background=new THREE.Color('#f1f5f6');scene.add(group);
  const box=new THREE.Box3().setFromObject(group);if(box.isEmpty())throw new Error('Empty geometry');
  const centre=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),extent=Math.max(size.x,size.y,size.z,1);
+ if(options.focusName){const focus=group.getObjectByName(options.focusName);if(focus)new THREE.Box3().setFromObject(focus).getCenter(centre);}
  const camera=new THREE.PerspectiveCamera(40,1,.05,extent*30);camera.up.set(0,0,1);camera.position.copy(centre).add(new THREE.Vector3(extent*.85,-extent*1.3,extent*1.05));
  const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(global.devicePixelRatio,2));
  host.replaceChildren(renderer.domElement);
@@ -20,11 +21,19 @@ async function preview(host,build,isCurrent){
   distance=Math.max(distance,Math.abs(point.dot(right))/(tan*aspect)+depth,Math.abs(point.dot(up))/tan+depth);
  }
  camera.position.copy(centre).addScaledVector(back,distance*1.12);
- const controls=new OrbitControls(camera,renderer.domElement);controls.target.copy(centre);controls.enableDamping=false;controls.update();
+ const controls=new OrbitControls(camera,renderer.domElement);controls.target.copy(centre);controls.enableDamping=false;
+ controls.enablePan=options.enablePan??true;controls.enableZoom=options.enableZoom??true;
+ if(Number.isFinite(options.minPolarAngle))controls.minPolarAngle=options.minPolarAngle;
+ if(Number.isFinite(options.maxPolarAngle))controls.maxPolarAngle=options.maxPolarAngle;
+ controls.autoRotate=Boolean(options.autoRotate)&&!global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;if(Number.isFinite(options.autoRotateSpeed))controls.autoRotateSpeed=options.autoRotateSpeed;controls.update();
  const render=()=>renderer.render(scene,camera);controls.addEventListener('change',render);
+ let animationFrame=0,lastFrame=null;
+ const animate=time=>{if(!controls.autoRotate)return;controls.update(lastFrame===null?0:Math.min((time-lastFrame)/1000,.1));lastFrame=time;animationFrame=requestAnimationFrame(animate);};
+ const stopAutoRotate=()=>{options.onInteraction?.();if(!controls.autoRotate)return;controls.autoRotate=false;if(animationFrame)cancelAnimationFrame(animationFrame);animationFrame=0;render();};
+ if(controls.autoRotate){renderer.domElement.addEventListener('pointerdown',stopAutoRotate,{once:true});animationFrame=requestAnimationFrame(animate);}
  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();render();};
  const observer=new ResizeObserver(resize);observer.observe(host);resize();
- return ()=>{observer.disconnect();controls.dispose();global.__threeFloorPlans.disposeGroup(group);renderer.dispose();renderer.forceContextLoss();};
+ return ()=>{observer.disconnect();if(animationFrame)cancelAnimationFrame(animationFrame);renderer.domElement.removeEventListener('pointerdown',stopAutoRotate);controls.removeEventListener('change',render);controls.dispose();global.__threeFloorPlans.disposeGroup(group);renderer.dispose();renderer.forceContextLoss();};
 }
 function landmark(THREE,data,location){
  const group=new THREE.Group();group.userData.cbFloorPlan=true;
