@@ -423,8 +423,8 @@
             "cash": "Dinero que se te ofrece",
             "openUntil": "Abierta hasta el {{date}}",
             "noDeadline": "Sin plazo",
-            "funded": "El dinero está financiado.",
-            "unfunded": "El dinero aún no está financiado; la propuesta no puede ejecutarse hasta que lo esté.",
+            "funded": "La financiación figura como lista en este registro; el pago no está verificado.",
+            "unfunded": "La financiación no figura como lista en este registro.",
             "attestedBy": "La propiedad y tu autoridad las certifica: {{members}}",
             "signNote": "Tu billetera firma exactamente estas condiciones. Si cambian, tu aceptación deja de contar.",
             "progressOwners": "{{accepted}} de {{total}} propietarios",
@@ -1648,10 +1648,10 @@
                 "includedIn": "Incluida en {{name}}"
             },
             "disbursement": {
-                "conditional": "Condicional",
-                "partial": "Pagos parciales",
-                "conditionalHint": "Todos los propietarios deben aceptar antes del pago",
-                "partialHint": "El pago se libera conforme cada propietario acepta"
+                "conditional": "Condiciones de pago: todos los propietarios",
+                "partial": "Condiciones de pago: parcial",
+                "conditionalHint": "Las condiciones establecidas exigen la aceptación de todos los propietarios antes del pago. Esto no confirma la financiación ni el pago.",
+                "partialHint": "Las condiciones establecidas permiten pagos parciales. La aceptación por sí sola no confirma el pago."
             },
             "parcelSet": {
                 "eyebrow": "Referencias catastrales declaradas",

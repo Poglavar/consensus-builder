@@ -667,10 +667,11 @@
             const check = regimeCheck(review.proposal);
             if (check) lines.push(...words().checkLines(check, t, id => labels(review.proposal)(id)));
         }
-        if (c.cashOffered) {
-            lines.push(c.isConditional
-                ? t('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
-                : t('panel.proposal.disbursement.partialHint', 'Payout released as each owner accepts'));
+        const payoutMode = root.ProposalPublishTerms.payoutMode(review.proposal);
+        if (payoutMode) {
+            lines.push(payoutMode === 'conditional'
+                ? t('panel.proposal.disbursement.conditionalHint', 'Authored terms require every owner to accept before payout. This does not confirm funding or payment.')
+                : t('panel.proposal.disbursement.partialHint', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.'));
         }
         lines.push(...moneyLines(c.money));
         lines.push(c.expiresAt
@@ -680,8 +681,8 @@
         const sponsorFunding = c.money ? c.money.sponsorFundingCents : c.totalCashCents;
         if (sponsorFunding > 0) {
             lines.push(c.fundingConfirmed
-                ? t('proposalApproval.review.funded', 'The cash is funded.')
-                : t('proposalApproval.review.unfunded', 'The cash is not funded yet; the proposal cannot execute until it is.'));
+                ? t('proposalApproval.review.funded', 'Funding is marked ready in this record; payment is not verified.')
+                : t('proposalApproval.review.unfunded', 'Funding is not marked ready in this record.'));
         }
         lines.push(voice.attestedBy(list(c.lens.map(key => root.LensCore.memberLabel(key, members)))));
         return `<ul class="approval-review__conditions">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>

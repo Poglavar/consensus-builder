@@ -8,6 +8,20 @@ const { publishFields, voteDays } = require('../../frontend/js/proposals/publish
 const NOW = Date.UTC(2026, 9, 17);
 
 describe('publishFields', () => {
+    it('displays only explicit, consistent payout terms for a positive binding offer', () => {
+        const { payoutMode } = require('../../frontend/js/proposals/publish-terms.js');
+        for (const record of [{}, { offer: null, isConditional: false }, { offer: true, isConditional: true },
+            { kind: 'other', offer: 100, isConditional: true }, { offer: 0, disbursementMode: 'partial' },
+            { offer: 100 }, { offer: 100, isConditional: 'true' }, { offer: 100, disbursementMode: 'other' },
+            { offer: 100, disbursementMode: 'partial', isConditional: true },
+            { kind: 'owner-vote', offer: 100, isConditional: true },
+            { kind: 'community-vote', offer: 100, isConditional: false }]) expect(payoutMode(record)).toBeNull();
+        expect(payoutMode({ offer: 100, isConditional: true })).toBe('conditional');
+        expect(payoutMode({ offer: '100', disbursementMode: 'partial' })).toBe('partial');
+        expect(payoutMode({ offer: 100, isConditional: false })).toBe('partial');
+        expect(payoutMode({ offer: 100, isConditional: true, disbursementMode: 'conditional' })).toBe('conditional');
+    });
+
     it('gives a vote no money and a deadline in whole days', () => {
         for (const kind of ['owner-vote', 'community-vote']) {
             const fields = publishFields({ kind, offer: 5000, depositEnabled: true, decayEnabled: true, isConditional: true, voteExpiryDays: 30 }, { now: NOW });

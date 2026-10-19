@@ -444,6 +444,18 @@ The result survives local save/load, appears separately from lifecycle in the li
 
 `funded` is used as a local readiness flag, not a currency amount. Seller offers explicitly start with `false`. Local acceptance no longer uses this flag to trigger execution: neither `true`, `false` nor absence changes the consent-only contract. Neither `true` nor absence establishes an escrow balance, payment receipt or verified funding sufficiency. [Creation](frontend/js/proposals/create.js), [local consent](frontend/js/proposals/execution.js).
 
+**Presentation correction, 2026-10-20:** details and owner review describe `isConditional` /
+`disbursementMode` as declared payout terms, not payment events. A badge requires a positive
+offer and an explicit, recognized mode or boolean; conflicting modes, cash-free drafts and votes
+have no payout badge. This display rule does not change authored terms or chain state. The owner
+review labels `funded` as readiness marked in this record, without claiming verified funding or
+that acceptance releases money. Local acceptance transfers no value; Solana distribution is a
+separate transaction after Executed, while the EVM contract can distribute during its completing
+acceptance transaction. Neither authored mode nor a local flag proves any of those payments.
+[Shared terms display](frontend/js/proposals/publish-terms.js): `payoutMode`,
+[review](frontend/js/proposals/approval-panel.js),
+[Solana distribution](blockchain/solana/programs/proposal_nft/src/lib.rs): `distribute_funds`.
+
 **Presentation correction, 2026-10-19:** the seller offer bar shows a funding-availability note. The former Accept ownership transfer / Fund dialog and its no-op submission are removed: it made no transaction and falsely computed a currency shortfall as `offer - Number(funded)`, turning `true` into one currency unit. No replacement funding action or synthetic balance is introduced. The deposit label now says “No deposit specified”; it describes authored settings and no longer asserts the absence of financial backing. The existing offer display and browser-local purchase simulation remain separate. [Offer bar](frontend/js/proposals/details-panel.js).
 
 The Solana support flow reads proposal-account donation escrow totals separately; a pledge is a revocable commitment whose USDC has not yet moved, while a donation is deposited into escrow. Those records are not the seller offer's `funded` flag and cannot supply a universal seller-purchase shortfall. This correction does not change support transactions. [Support bridge](frontend/js/solana/pledge-bridge.js), [escrow reader](frontend/js/solana/pledge-client.js), [support presentation](frontend/js/proposals/support-view.js).

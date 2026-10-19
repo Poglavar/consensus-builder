@@ -394,15 +394,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const mapStatusBadgeLabel = appliedState
         ? tProposal('panel.proposal.mapStatus.applied', 'Applied')
         : tProposal('panel.proposal.mapStatus.notApplied', 'Not Applied');
-    const disbursementModeRaw = (fullProposal.disbursementMode || proposal.disbursementMode || '').toLowerCase();
-    const isConditional = fullProposal.isConditional === true || proposal.isConditional === true || disbursementModeRaw === 'conditional';
-    const conditionalBadgeClass = isConditional ? 'conditional' : 'partial';
-    const conditionalBadgeLabel = isConditional
-        ? tProposal('panel.proposal.disbursement.conditional', 'Conditional')
-        : tProposal('panel.proposal.disbursement.partial', 'Partial payouts');
-    const conditionalBadgeTitle = isConditional
-        ? tProposal('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
-        : tProposal('panel.proposal.disbursement.partialHint', 'Payout released as each owner accepts');
+    const payoutMode = window.ProposalPublishTerms.payoutMode(fullProposal);
+    const payoutLabel = payoutMode === 'conditional'
+        ? tProposal('panel.proposal.disbursement.conditional', 'Payout terms: all owners')
+        : tProposal('panel.proposal.disbursement.partial', 'Payout terms: partial');
+    const payoutHint = payoutMode === 'conditional'
+        ? tProposal('panel.proposal.disbursement.conditionalHint', 'Authored terms require every owner to accept before payout. This does not confirm funding or payment.')
+        : tProposal('panel.proposal.disbursement.partialHint', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.');
 
     const nftInfo = getProposalNftInfo(fullProposal);
     const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
@@ -960,8 +958,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${(() => {
             // One lifecycle badge from the ladder (docs/design-language.md), the same as the list
             // rows: Draft → Published → Minted → Executed; "Applied" when it is on this map; a
-            // modifier for cancelled / expired / concluded / unfunded; the payout mode as a neutral
-            // badge. All of it is displayState (proposals/display-state.js).
+            // modifier for cancelled / expired / concluded / unfunded, from displayState
+            // (proposals/display-state.js). Authored payout terms are a separate neutral badge.
             const ladder = displayState.rung;
             const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
             const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
@@ -974,9 +972,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
                 : '';
-            // A vote pays nothing, so it has no payout mode to show.
-            const payout = isNonBindingProposal(fullProposal) ? ''
-                : `<span class="cb-badge" title="${conditionalBadgeTitle}">${conditionalBadgeLabel}</span>`;
+            // Votes, cash-free records and records without a declared mode have no payout badge.
+            const payout = payoutMode
+                ? `<span class="cb-badge" data-proposal-payout-terms="${payoutMode}" title="${payoutHint}">${payoutLabel}</span>` : '';
             return ladderBadge + proposalKindBadgeHtml(fullProposal, ladder !== 'draft') + applied + modifier + payout;
         })()}
                 ${agentBadgeHtml}

@@ -75,6 +75,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         __siteDraft: { siteAreaM2: site => siteDraft.siteAreaM2(site, { turf }) },
         ProposalSupportView: supportView,
         ProposalKind,
+        ProposalPublishTerms: require('../../frontend/js/proposals/publish-terms.js'),
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
         SolanaPledgeBridge: { readSummary: vi.fn(() => Promise.resolve(summary || {})) },
         SolanaPledgeClient: { formatUsdc: value => String(value) },
@@ -148,6 +149,18 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('shows authored payout terms without promising that acceptance releases money', () => {
+        const base = { proposalId: 'payout-terms', cadastreParcelIds: [] };
+        const badge = terms => parse(render({ ...base, ...terms }).content.innerHTML)('[data-proposal-payout-terms]');
+        expect(badge({}).length).toBe(0);
+        expect(badge({ offer: 0, isConditional: false }).length).toBe(0);
+        expect(badge({ kind: 'owner-vote', offer: 100, isConditional: true }).length).toBe(0);
+        expect(badge({ offer: 100, isConditional: true }).text()).toBe('Payout terms: all owners');
+        expect(badge({ offer: 100, isConditional: true }).attr('title')).toContain('does not confirm funding or payment');
+        expect(badge({ offer: 100, isConditional: false }).text()).toBe('Payout terms: partial');
+        expect(badge({ offer: 100, isConditional: false }).attr('title')).toContain('Acceptance alone does not confirm payment');
+    });
+
     it('shows unknown source areas as an em dash and gives partial sums their actual coverage', () => {
         const proposal = { proposalId: 'areas', cadastreParcelIds: ['source-1', 'source-2'] };
         let content = parse(render(proposal).content.innerHTML);

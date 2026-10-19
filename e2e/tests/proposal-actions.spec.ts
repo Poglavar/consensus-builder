@@ -124,6 +124,43 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('payout terms describe the record without asserting funding or payment', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] };
+      const approvalConfig = { schema: 'proposal-approval/v1', policy: { type: 'unanimous' }, rights: {
+        schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'payment-terms-fixture' },
+        parcels: [{ parcelId, complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/1' }] }]
+      } };
+      return {
+        draft: w.proposalStorage.addProposal({ ...base, title: 'Drawing without money terms' }),
+        partial: w.proposalStorage.addProposal({ ...base, title: 'Partial payout terms', kind: 'owner-deal',
+          offer: 100, isConditional: false, disbursementMode: 'partial' }),
+        conditional: w.proposalStorage.addProposal({ ...base, title: 'All-owner payout terms', kind: 'owner-deal',
+          offer: 100, offerCurrency: 'EUR', isConditional: true, disbursementMode: 'conditional', funded: true, approvalConfig,
+          reparcellization: {
+            polygons: [{ geometry: w.CadastralParcelRepository.get(parcelId).geometry, owners: [{ ownerKey: 'owner-a', share: 1 }] }],
+            ownerShares: [{ ownerKey: 'owner-a', cashOffer: 100, contributedArea: 100 }]
+          } })
+      };
+    }, PARCEL_ID);
+    const badge = page.locator('[data-proposal-payout-terms]');
+    await showProposal(page, ids.draft);
+    await expect(badge).toHaveCount(0);
+    await showProposal(page, ids.partial);
+    await expect(badge).toHaveText('Payout terms: partial');
+    await expect(badge).toHaveAttribute('title', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.');
+    await showProposal(page, ids.conditional);
+    await expect(badge).toHaveText('Payout terms: all owners');
+    await page.evaluate(id => (window as any).ProposalApprovalPanel.openReview(id, 'owner-a', null, { inspect: true }), ids.conditional);
+    const conditions = page.locator('.approval-review__conditions');
+    await expect(conditions).toContainText('Authored terms require every owner to accept before payout. This does not confirm funding or payment.');
+    await expect(conditions).toContainText('Funding is marked ready in this record; payment is not verified.');
+    await expect(conditions).not.toContainText('The cash is funded.');
+  });
+
   test('area metrics distinguish site area, partial source sums and unknown measurements', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));

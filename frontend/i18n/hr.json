@@ -423,8 +423,8 @@
             "cash": "Novac koji vam se nudi",
             "openUntil": "Otvoreno do {{date}}",
             "noDeadline": "Bez roka",
-            "funded": "Novac je osiguran.",
-            "unfunded": "Novac još nije osiguran; prijedlog se ne može izvršiti dok ne bude.",
+            "funded": "U ovom je zapisu financiranje označeno kao spremno; plaćanje nije potvrđeno.",
+            "unfunded": "U ovom zapisu financiranje nije označeno kao spremno.",
             "attestedBy": "Vlasništvo i vaše ovlaštenje potvrđuje: {{members}}",
             "signNote": "Vaš novčanik potpisuje točno ove uvjete. Ako se promijene, vaše prihvaćanje prestaje vrijediti.",
             "progressOwners": "{{accepted}} od {{total}} vlasnika",
@@ -1635,10 +1635,10 @@
                 "includedIn": "Uključeno u {{name}}"
             },
             "disbursement": {
-                "conditional": "Uvjetno",
-                "partial": "Djelomične isplate",
-                "conditionalHint": "Svi vlasnici moraju prihvatiti prije isplate",
-                "partialHint": "Isplata se izvršava kako vlasnici prihvaćaju"
+                "conditional": "Uvjeti isplate: svi vlasnici",
+                "partial": "Uvjeti isplate: djelomično",
+                "conditionalHint": "Zadani uvjeti zahtijevaju prihvat svih vlasnika prije isplate. To ne potvrđuje financiranje ni plaćanje.",
+                "partialHint": "Zadani uvjeti dopuštaju djelomične isplate. Sam prihvat ne potvrđuje plaćanje."
             },
             "parcelSet": {
                 "eyebrow": "Deklarirane katastarske oznake",

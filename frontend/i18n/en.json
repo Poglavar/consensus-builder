@@ -423,8 +423,8 @@
             "cash": "Cash offered to you",
             "openUntil": "Open until {{date}}",
             "noDeadline": "No deadline",
-            "funded": "The cash is funded.",
-            "unfunded": "The cash is not funded yet; the proposal cannot execute until it is.",
+            "funded": "Funding is marked ready in this record; payment is not verified.",
+            "unfunded": "Funding is not marked ready in this record.",
             "attestedBy": "Ownership and your authority are attested by: {{members}}",
             "signNote": "Your wallet signs these exact terms. If they change, your acceptance stops counting.",
             "progressOwners": "{{accepted}} of {{total}} owners",
@@ -1601,10 +1601,10 @@
                 "includedIn": "Included in {{name}}"
             },
             "disbursement": {
-                "conditional": "Conditional",
-                "partial": "Partial payouts",
-                "conditionalHint": "All owners must accept before payout",
-                "partialHint": "Payout released as each owner accepts"
+                "conditional": "Payout terms: all owners",
+                "partial": "Payout terms: partial",
+                "conditionalHint": "Authored terms require every owner to accept before payout. This does not confirm funding or payment.",
+                "partialHint": "Authored terms allow partial payouts. Acceptance alone does not confirm payment."
             },
             "parcelSet": {
                 "eyebrow": "Declared cadastral references",

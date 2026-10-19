@@ -69,6 +69,19 @@
         return !!record && record.termsConfirmed !== true && !isPublished(record);
     }
 
+    /** Declared payout terms for a positive offer, never evidence of funding or payment. */
+    function payoutMode(record = {}) {
+        if (kinds().kindOf(record) !== kinds().OWNER_DEAL
+            || !['number', 'string'].includes(typeof record.offer)
+            || !finite(record.offer) || Number(record.offer) <= 0) return null;
+        const mode = record.disbursementMode;
+        const fromFlag = typeof record.isConditional === 'boolean'
+            ? (record.isConditional ? 'conditional' : 'partial') : null;
+        if (mode == null || mode === '') return fromFlag;
+        if (mode !== 'conditional' && mode !== 'partial') return null;
+        return fromFlag && fromFlag !== mode ? null : mode;
+    }
+
     /**
      * The kind a record's terms were chosen under, for a fork or edit to start from: its own kind,
      * an owner deal for a published record without one (ProposalKind.kindOf), and null for a local
@@ -118,5 +131,5 @@
         return { ...publishFields({ ...record, kind: saleOffer ? 'owner-deal' : kind }, { now, saleOffer }), termsConfirmed: true };
     }
 
-    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, chosenKind, approvalSetupFor, termsInPlace, confirmedRecordFields });
+    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, payoutMode, chosenKind, approvalSetupFor, termsInPlace, confirmedRecordFields });
 });
