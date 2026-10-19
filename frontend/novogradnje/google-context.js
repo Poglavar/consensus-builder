@@ -16,7 +16,9 @@ function targetGroup(THREE,model){
  const top=Math.max(3,...levels.map(s=>Number.isFinite(s.elevationM)&&Number.isFinite(s.heightM)?s.elevationM+s.heightM:0));
  for(const coordinates of polygons){
   const ring=coordinates[0].map(frame.toLocal),shape=new THREE.Shape(ring.map(([x,y])=>new THREE.Vector2(x,y)));
-  const solid=new THREE.ExtrudeGeometry(shape,{depth:top,bevelEnabled:false}),edges=new THREE.EdgesGeometry(solid);solid.dispose();
+  for(const hole of coordinates.slice(1))shape.holes.push(new THREE.Path(hole.map(frame.toLocal).map(([x,y])=>new THREE.Vector2(x,y))));
+  const solid=new THREE.ExtrudeGeometry(shape,{depth:top,bevelEnabled:false}),edges=new THREE.EdgesGeometry(solid);
+  const surface=new THREE.Mesh(solid,new THREE.MeshPhongMaterial({color:0xe2a434,transparent:true,opacity:.22,depthWrite:false,depthTest:false,side:THREE.DoubleSide,shininess:12}));surface.renderOrder=9;group.add(surface);
   const marker=new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color:0xe2a434,transparent:true,opacity:.85,depthTest:false}));marker.renderOrder=10;group.add(marker);
  }
  return group;
