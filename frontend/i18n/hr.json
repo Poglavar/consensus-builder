@@ -1739,13 +1739,14 @@
                 "expiredTooltip": "Prijedlog je istekao"
             },
             "metrics": {
+                "declaredOwnerParties": "Deklarirani vlasnički subjekti:",
+                "localOwnerEntries": "Lokalni zapisi vlasnika po česticama:",
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Opis:",
                 "offer": "Ponuda:",
                 "offerOriginal": "(bilo {{amount}})",
                 "parcels": "Čestice u prijedlogu:",
-                "owners": "Vlasnici u prijedlogu:",
                 "area": "Ukupna površina:",
                 "areaUnit": "m²",
                 "created": "Kreirano:"
@@ -1859,9 +1860,10 @@
                 "cadastralParcels": "Katastarske čestice:",
                 "generatedParcels": "Izvedene čestice:",
                 "proposalTypeFallback": "prijedlog",
-                "ownershipStats": "Statistika vlasništva i otkupa"
+                "ownershipStats": "Modelirano vlasništvo i stjecanje"
             },
             "parcels": {
+                "localModelOwner": "Vlasnik u lokalnom modelu: {{name}}",
                 "label": "Čestica {{id}}",
                 "tooltip": "Klikni za detalje o čestici",
                 "tooltipRemoved": "Klikni da fokusiraš gdje je ova čestica bila",
@@ -1911,14 +1913,15 @@
                 "done": "Kupnja je simulirana u ovom pregledniku. Plaćanje nije provedeno."
             },
             "stats": {
-                "individualOwners": "Pojedinačni vlasnici:",
-                "ownedByIndividuals": "U vlasništvu fizičkih osoba:",
-                "ownedByCompanies": "U vlasništvu tvrtki:",
-                "ownedByGovernment": "U državnom vlasništvu:",
-                "ownedByInstitution": "U vlasništvu institucija:",
-                "ownershipMixed": "Mješovito vlasništvo:",
-                "totalMarketPrice": "Ukupna tržišna cijena:",
-                "totalAcquiringDifficulty": "Ukupna težina otkupa:"
+                "summaryScope": "Procjene iz podataka prijedloga; zapisi vlasnika mogu se ponavljati po česticama i uključivati pretpostavljene vlasnike.",
+                "individualOwners": "Procijenjeni zapisi fizičkih osoba:",
+                "ownedByIndividuals": "Čestice razvrstane kao vlasništvo fizičkih osoba:",
+                "ownedByCompanies": "Čestice razvrstane kao vlasništvo tvrtki:",
+                "ownedByGovernment": "Čestice razvrstane kao javno vlasništvo:",
+                "ownedByInstitution": "Čestice razvrstane kao vlasništvo ustanova:",
+                "ownershipMixed": "Čestice razvrstane kao mješovito vlasništvo:",
+                "totalMarketPrice": "Procijenjena ukupna vrijednost:",
+                "totalAcquiringDifficulty": "Modelirana težina stjecanja:"
             },
             "support": {
                 "connect": "Poveži Solana novčanik",

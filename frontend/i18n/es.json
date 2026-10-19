@@ -1752,13 +1752,14 @@
                 "expiredTooltip": "La propuesta ha caducado"
             },
             "metrics": {
+                "declaredOwnerParties": "Partes propietarias declaradas:",
+                "localOwnerEntries": "Entradas locales de propietarios por parcela:",
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Descripción:",
                 "offer": "Oferta:",
                 "offerOriginal": "(era {{amount}})",
                 "parcels": "Parcelas en la propuesta:",
-                "owners": "Propietarios en la propuesta:",
                 "area": "Área total:",
                 "areaUnit": "m²",
                 "created": "Creada:"
@@ -1872,9 +1873,10 @@
                 "cadastralParcels": "Parcelas catastrales:",
                 "generatedParcels": "Parcelas generadas:",
                 "proposalTypeFallback": "propuesta",
-                "ownershipStats": "Estadísticas de propiedad y adquisición"
+                "ownershipStats": "Propiedad y adquisición modeladas"
             },
             "parcels": {
+                "localModelOwner": "Propietario en el modelo local: {{name}}",
                 "label": "Parcela {{id}}",
                 "tooltip": "Haz clic para ver los detalles de la parcela",
                 "tooltipRemoved": "Haz clic para enfocar donde estaba esta parcela",
@@ -1924,14 +1926,15 @@
                 "done": "Compra simulada en este navegador. No se ha realizado ningún pago."
             },
             "stats": {
-                "individualOwners": "Propietarios individuales:",
-                "ownedByIndividuals": "Propiedad de particulares:",
-                "ownedByCompanies": "Propiedad de empresas:",
-                "ownedByGovernment": "Propiedad del Estado:",
-                "ownedByInstitution": "Propiedad de instituciones:",
-                "ownershipMixed": "Propiedad mixta:",
-                "totalMarketPrice": "Precio de mercado total:",
-                "totalAcquiringDifficulty": "Dificultad total de adquisición:"
+                "summaryScope": "Estimaciones de los datos de la propuesta; las entradas de propietarios pueden repetirse entre parcelas e incluir propietarios supuestos.",
+                "individualOwners": "Entradas estimadas de propietarios particulares:",
+                "ownedByIndividuals": "Parcelas clasificadas como propiedad particular:",
+                "ownedByCompanies": "Parcelas clasificadas como propiedad de empresas:",
+                "ownedByGovernment": "Parcelas clasificadas como propiedad pública:",
+                "ownedByInstitution": "Parcelas clasificadas como propiedad de instituciones:",
+                "ownershipMixed": "Parcelas clasificadas como propiedad mixta:",
+                "totalMarketPrice": "Valor total estimado:",
+                "totalAcquiringDifficulty": "Dificultad de adquisición modelada:"
             },
             "support": {
                 "connect": "Conectar billetera de Solana",

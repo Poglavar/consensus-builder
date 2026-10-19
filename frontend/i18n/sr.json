@@ -1739,13 +1739,14 @@
                 "expiredTooltip": "Predlog je istekao"
             },
             "metrics": {
+                "declaredOwnerParties": "Deklarisani vlasnički subjekti:",
+                "localOwnerEntries": "Lokalni zapisi vlasnika po parcelama:",
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Opis:",
                 "offer": "Ponuda:",
                 "offerOriginal": "(bilo {{amount}})",
                 "parcels": "Parcele u predlogu:",
-                "owners": "Vlasnici u predlogu:",
                 "area": "Ukupna površina:",
                 "areaUnit": "m²",
                 "created": "Kreirano:"
@@ -1859,9 +1860,10 @@
                 "cadastralParcels": "Katastarske parcele:",
                 "generatedParcels": "Izvedene parcele:",
                 "proposalTypeFallback": "predlog",
-                "ownershipStats": "Statistika vlasništva i otkupa"
+                "ownershipStats": "Modelirano vlasništvo i sticanje"
             },
             "parcels": {
+                "localModelOwner": "Vlasnik u lokalnom modelu: {{name}}",
                 "label": "Parcela {{id}}",
                 "tooltip": "Klikni za detalje o parceli",
                 "tooltipRemoved": "Klikni da fokusiraš gde je ova parcela bila",
@@ -1911,14 +1913,15 @@
                 "done": "Kupovina je simulirana u ovom pregledaču. Plaćanje nije izvršeno."
             },
             "stats": {
-                "individualOwners": "Pojedinačni vlasnici:",
-                "ownedByIndividuals": "U vlasništvu fizičkih lica:",
-                "ownedByCompanies": "U vlasništvu preduzeća:",
-                "ownedByGovernment": "U državnom vlasništvu:",
-                "ownedByInstitution": "U vlasništvu institucija:",
-                "ownershipMixed": "Mešovito vlasništvo:",
-                "totalMarketPrice": "Ukupna tržišna cena:",
-                "totalAcquiringDifficulty": "Ukupna težina otkupa:"
+                "summaryScope": "Procene iz podataka predloga; zapisi vlasnika mogu se ponavljati po parcelama i uključivati pretpostavljene vlasnike.",
+                "individualOwners": "Procenjeni zapisi fizičkih lica:",
+                "ownedByIndividuals": "Parcele svrstane u vlasništvo fizičkih lica:",
+                "ownedByCompanies": "Parcele svrstane u vlasništvo kompanija:",
+                "ownedByGovernment": "Parcele svrstane u javno vlasništvo:",
+                "ownedByInstitution": "Parcele svrstane u vlasništvo ustanova:",
+                "ownershipMixed": "Parcele svrstane u mešovito vlasništvo:",
+                "totalMarketPrice": "Procenjena ukupna vrednost:",
+                "totalAcquiringDifficulty": "Modelirana težina sticanja:"
             },
             "support": {
                 "connect": "Poveži Solana novčanik",

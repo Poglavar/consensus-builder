@@ -124,6 +124,52 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('ownership counts distinguish declared parties, local entries and modeled road estimates', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const common = { title: 'Ownership count fixture', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
+        ownershipAndAcquisitionStats: { individualOwners: 99, ownershipCounts: { individual: 4 } } };
+      const source = { provider: 'upload', reference: 'declared-rights-fixture' };
+      const declared = w.proposalStorage.addProposal({ ...common, approvalConfig: { schema: 'proposal-approval/v1',
+        rights: { schema: 'parcel-rights/v1', source, parcels: [{ parcelId, complete: true, areaM2: 100,
+          owners: [{ ownerId: 'party-a', share: '1/2' }, { ownerId: 'party-b', share: '1/2' }] }] }, policy: { type: 'unanimous' }
+      } });
+      const unresolved = w.proposalStorage.addProposal({ ...common, approvalConfig: { schema: 'proposal-approval/v1',
+        rights: { schema: 'parcel-rights/v1', source, parcels: [] }, policy: { type: 'unanimous' }
+      } });
+      const local = w.proposalStorage.addProposal({ ...common });
+      return { declared, unresolved, local };
+    }, PARCEL_ID);
+
+    await showProposal(page, ids.declared);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    let metric = page.locator('[data-ownership-count]');
+    await expect(metric).toHaveAttribute('data-ownership-count', 'declared-parties');
+    await expect(metric).toContainText('Declared owner parties:');
+    await expect(metric.locator('.metric-value')).toHaveText('2');
+    await expect(page.locator('[data-ownership-estimates]')).toContainText('may repeat across parcels');
+    const estimates = page.locator('.metric-group').filter({ hasText: 'Estimated individual-owner entries:' });
+    await expect(estimates.locator('.metric-value')).toHaveText('99');
+
+    await showProposal(page, ids.unresolved);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    metric = page.locator('[data-ownership-count]');
+    await expect(metric).toContainText('Declared owner parties:');
+    await expect(metric.locator('.metric-value')).toHaveText('—');
+
+    await showProposal(page, ids.local);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    metric = page.locator('[data-ownership-count]');
+    await expect(metric).toHaveAttribute('data-ownership-count', 'local-parcel-entries');
+    await expect(metric).toContainText('Local parcel-owner entries:');
+    await expect(metric.locator('.metric-value')).not.toHaveText('99');
+  });
+
   test('unknown lifecycle stays visible after import and cannot grant owner consent', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);

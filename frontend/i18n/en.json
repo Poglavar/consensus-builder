@@ -1705,13 +1705,14 @@
                 "expiredTooltip": "Proposal has expired"
             },
             "metrics": {
+                "declaredOwnerParties": "Declared owner parties:",
+                "localOwnerEntries": "Local parcel-owner entries:",
                 "id": "ID:",
                 "author": "Author:",
                 "description": "Description:",
                 "offer": "Offer:",
                 "offerOriginal": "(was {{amount}})",
                 "parcels": "Parcels in proposal:",
-                "owners": "Owners in proposal:",
                 "area": "Total area:",
                 "areaUnit": "m²",
                 "created": "Created:"
@@ -1834,9 +1835,10 @@
                 "cadastralParcels": "Cadastral parcels:",
                 "generatedParcels": "Generated parcels:",
                 "proposalTypeFallback": "proposal",
-                "ownershipStats": "Ownership & acquisition stats"
+                "ownershipStats": "Modeled ownership and acquisition"
             },
             "parcels": {
+                "localModelOwner": "Local model owner: {{name}}",
                 "label": "Parcel {{id}}",
                 "tooltip": "Click to view parcel details",
                 "tooltipRemoved": "Click to focus on where this parcel was",
@@ -1886,14 +1888,15 @@
                 "done": "Purchase simulated in this browser. No payment was made."
             },
             "stats": {
-                "individualOwners": "Individual owners:",
-                "ownedByIndividuals": "Owned by individuals:",
-                "ownedByCompanies": "Owned by companies:",
-                "ownedByGovernment": "Owned by government:",
-                "ownedByInstitution": "Owned by institution:",
-                "ownershipMixed": "Ownership mixed:",
-                "totalMarketPrice": "Total market price:",
-                "totalAcquiringDifficulty": "Total acquiring difficulty:"
+                "summaryScope": "Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.",
+                "individualOwners": "Estimated individual-owner entries:",
+                "ownedByIndividuals": "Parcels classed as individually owned:",
+                "ownedByCompanies": "Parcels classed as company owned:",
+                "ownedByGovernment": "Parcels classed as publicly owned:",
+                "ownedByInstitution": "Parcels classed as institution owned:",
+                "ownershipMixed": "Parcels classed as mixed ownership:",
+                "totalMarketPrice": "Estimated total value:",
+                "totalAcquiringDifficulty": "Modeled acquisition difficulty:"
             },
             "lens": {
                 "eyebrow": "Trusted attesters",

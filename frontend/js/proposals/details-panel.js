@@ -178,14 +178,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const isRemoved = parentParcel.isRemoved;
         const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
-        // Get parcel owner information
+        // This avatar comes from a browser-local model assignment, not a rights register.
         const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
         let ownerAvatarHtml = '';
 
         if (ownerId && typeof agentStorage !== 'undefined') {
             const owner = agentStorage.getAgent(ownerId);
             if (owner && typeof getAvatarImagePath === 'function') {
-                ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" title="Owner: ${owner.name}">`;
+                const label = getProposalI18nHelper()('panel.proposal.parcels.localModelOwner', 'Local model owner: {{name}}', { name: owner.name });
+                ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" title="${safeAgentText(label)}">`;
             }
         }
 
@@ -309,7 +310,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Determine current parcel - try passed parameter first, then global selectedParcelId
     const tProposalUI = getProposalI18nHelper();
-    const ownerAcceptanceSummaryFast = buildProposalOwnerAcceptanceSummaryFast(proposal);
+    const ownerAcceptanceSummaryFast = buildProposalOwnerAcceptanceSummaryFast(fullProposal || proposal);
 
     const displayText = value => window.ProposalDisplayText.text(value, fullProposal);
     const proposalDisplayTitle = displayText(getProposalDisplayTitle(fullProposal, proposal));
@@ -1067,20 +1068,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in Proposal:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.owners', 'Owners in Proposal:')}</span> <span class="metric-value">${(() => {
-            // For road/track proposals, use individualOwners from ownershipAndAcquisitionStats if available
-            // This is more accurate than counting ownerAcceptance entries which may not be populated
-            const roadProposal = fullProposal.roadProposal || proposal.roadProposal;
-            const stats = roadProposal?.definition?.metadata?.ownershipAndAcquisitionStats ||
-                fullProposal.ownershipAndAcquisitionStats ||
-                proposal.ownershipAndAcquisitionStats;
-            if (stats && stats.individualOwners !== null && stats.individualOwners !== undefined) {
-                return stats.individualOwners;
-            }
-            // Fallback to owner acceptance count if stats not available
-            return ownerAcceptanceSummaryFast.totalOwners;
-        })()}</span>
+            <div class="metric-group" data-ownership-count="${hasApprovalSetup ? 'declared-parties' : 'local-parcel-entries'}">
+                <span class="metric-label">${hasApprovalSetup
+                    ? tProposal('panel.proposal.metrics.declaredOwnerParties', 'Declared owner parties:')
+                    : tProposal('panel.proposal.metrics.localOwnerEntries', 'Local parcel-owner entries:')}</span>
+                <span class="metric-value">${hasApprovalSetup && ownerAcceptanceSummaryFast.ownershipResolved !== true
+                    ? '—' : ownerAcceptanceSummaryFast.totalOwners}</span>
             </div>
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Total Area:')}</span> <span class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</span>
@@ -1144,7 +1137,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             if (stats.individualOwners !== null && stats.individualOwners !== undefined) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.individualOwners', 'Individual Owners:')}</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.individualOwners', 'Estimated individual-owner entries:')}</span>
                         <span class="metric-value">${stats.individualOwners}</span>
                     </div>
                 `);
@@ -1153,7 +1146,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.individual !== null && stats.ownershipCounts.individual !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByIndividuals', 'Owned by Individuals:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByIndividuals', 'Parcels classed as individually owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.individual}</span>
                         </div>
                     `);
@@ -1161,7 +1154,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.company !== null && stats.ownershipCounts.company !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByCompanies', 'Owned by Companies:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByCompanies', 'Parcels classed as company owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.company}</span>
                         </div>
                     `);
@@ -1169,7 +1162,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.government !== null && stats.ownershipCounts.government !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByGovernment', 'Owned by Government:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByGovernment', 'Parcels classed as publicly owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.government}</span>
                         </div>
                     `);
@@ -1177,7 +1170,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.institution !== null && stats.ownershipCounts.institution !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByInstitution', 'Owned by Institution:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByInstitution', 'Parcels classed as institution owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.institution}</span>
                         </div>
                     `);
@@ -1185,7 +1178,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.mixed !== null && stats.ownershipCounts.mixed !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownershipMixed', 'Ownership Mixed:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownershipMixed', 'Parcels classed as mixed ownership:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.mixed}</span>
                         </div>
                     `);
@@ -1194,7 +1187,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             if (stats.totalMarketPrice !== null && stats.totalMarketPrice !== undefined) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Total Market Price:')}</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Estimated total value:')}</span>
                         <span class="metric-value">${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</span>
                     </div>
                 `);
@@ -1202,7 +1195,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             if (stats.totalAcquiringDifficulty !== null && stats.totalAcquiringDifficulty !== undefined) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalAcquiringDifficulty', 'Total Acquiring Difficulty:')}</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.totalAcquiringDifficulty', 'Modeled acquisition difficulty:')}</span>
                         <span class="metric-value">${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</span>
                     </div>
                 `);
@@ -1215,8 +1208,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             return `
             <hr class="proposal-details-divider">
             <div class="metric-group">
-                <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Ownership & Acquisition Stats')}</div>
+                <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
             </div>
+            <p><small data-ownership-estimates>${tProposal('panel.proposal.stats.summaryScope', 'Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.')}</small></p>
             ${statsItems.join('')}
             `;
         })()}
