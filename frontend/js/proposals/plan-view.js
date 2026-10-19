@@ -52,10 +52,10 @@
     // ---- data ----
 
     async function fetchPlan(slug) {
-        const response = await fetch(`${win.resolveBackendBaseUrl()}/plans/${encodeURIComponent(slug)}`);
+        const response = await win.fetchSharedProposalResponse(`${win.resolveBackendBaseUrl()}/plans/${encodeURIComponent(slug)}`);
         if (response.status === 404) throw new Error(t('plans.view.notFound', 'There is no plan named {{name}}.', { name: slug }));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
+        return response.data;
     }
 
     // Each member as a proposal record: the copy this browser holds (it knows whether it stands on
@@ -99,7 +99,7 @@
             else parcelOnly.push(id);
         });
         const parcelIds = Array.from(new Set(parcelOnly.flatMap(id => (records.get(id).cadastreParcelIds || []).map(String))));
-        if (parcelIds.length) {
+        if (parcelIds.length && !win.ParcelGroundFallback?.isWithoutParcels?.()) {
             const repository = win.CadastralParcelRepository;
             await repository.ensureIds(parcelIds);
             parcelOnly.forEach(id => {
@@ -325,6 +325,8 @@
                     applied: state.applied.size, total: (plan.proposalRowIds || []).length
                 })
                 : t('plans.view.hint', 'Hatched on the map: what this plan would build. Nothing changes until you apply it.'))}</p>
+            ${win.ParcelGroundFallback?.isWithoutParcels?.() ? `<p class="plan-view-note plan-view-note--info">${escapeText(t(
+                'status.messages.without_parcels', 'Continuing without parcels. Designs use their own geometry.'))}</p>` : ''}
             ${newer}
             ${status}
             ${state.plan ? actionsHtml(plan) : ''}

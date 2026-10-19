@@ -489,6 +489,7 @@
         "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
         "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
         "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.",
+        "needsParcels": "This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.",
         "undeclared": "This proposal has no cadastral parcels or open-ground site. Define its site before applying.",
         "invalidGeometry": "The proposal geometry is missing or invalid. Edit its geometry before applying.",
         "applyFailed": "The proposal could not be placed on the map because its geometry could not be derived from the selected land.",
@@ -3073,6 +3074,7 @@
                     "materializing": "Starting proposal materialization…",
                     "applyingAllTitle": "Applying the shared plan",
                     "fetchingPlan": "Fetching plan…",
+                    "loadFailed": "The linked plan or proposal could not be loaded. Please try again.",
                     "fetchingPlanTitle": "Fetching proposal",
                     "rebuildingStatus": "Rebuilding the applied plan…",
                     "rebuildingStatusCount": "Rebuilding the applied plan {{done}}/{{total}}…",
@@ -4329,6 +4331,7 @@
             "parcels_read_from_dgu": "This site's server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.",
             "loaded_parcels_from_source": "Loaded {{count}} parcels from {{source}}.",
             "checking_cadastral_ground": "Checking cadastral ground…",
+            "without_parcels": "Continuing without parcels. Designs use their own geometry.",
             "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",
             "parcel_source_downloading": "Downloading {{authority}}… {{loaded}} / {{total}} MB",
             "parcel_source_decompressing": "Decompressing {{authority}}…",
@@ -7353,6 +7356,10 @@
         },
         "options": {
             "later": "Not now",
+            "withoutParcels": {
+                "title": "Continue without parcels",
+                "desc": "View and apply designs from their geometry. Parcel boundaries and ownership will not be available."
+            },
             "retry": {
                 "title": "Retry the official register",
                 "desc": "Ask the register again. Right for a network hiccup or a server that was briefly down."

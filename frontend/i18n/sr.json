@@ -489,6 +489,7 @@
         "outsideSite": "Geometrija predloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju pre primene.",
         "groundUnavailable": "Podaci katastarskih parcela nisu mogli da se učitaju. Proverite vezu i pokušajte ponovo.",
         "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Predlog ne može da se primeni dok se te parcele ne učitaju.",
+        "needsParcels": "Ovaj predlog se odnosi na katastarske parcele ili nema sopstvenu geometriju. Učitajte njegove parcele pre primene.",
         "undeclared": "Predlog nema katastarske parcele ni lokaciju na slobodnom zemljištu. Odredite lokaciju pre primene.",
         "invalidGeometry": "Geometrija predloga nedostaje ili nije ispravna. Uredite je pre primene.",
         "applyFailed": "Predlog nije mogao da se postavi na mapu jer geometrija nije mogla da se izvede iz izabranog zemljišta.",
@@ -3066,6 +3067,7 @@
                     "materializing": "Pokrećem primenu predloga…",
                     "applyingAllTitle": "Primena zajedničkog plana",
                     "fetchingPlan": "Preuzimanje plana…",
+                    "loadFailed": "Plan ili predlog sa linka nije moguće učitati. Pokušajte ponovo.",
                     "fetchingPlanTitle": "Preuzimanje predloga",
                     "rebuildingStatus": "Ponovna izgradnja primenjenog plana…",
                     "rebuildingStatusCount": "Ponovna izgradnja primenjenog plana {{done}}/{{total}}…",
@@ -4384,6 +4386,7 @@
             "parcels_read_from_dgu": "Server ovog sajta ne odgovara: parcele se čitaju direktno iz državnog katastra (DGU), bez podataka o vlasništvu.",
             "loaded_parcels_from_source": "Učitano {{count}} parcela iz izvora {{source}}.",
             "checking_cadastral_ground": "Provera katastarske podloge…",
+            "without_parcels": "Nastavak bez parcela. Projekti koriste sopstvenu geometriju.",
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
             "parcel_source_downloading": "Preuzimanje {{authority}}… {{loaded}} / {{total}} MB",
             "parcel_source_decompressing": "Raspakivanje {{authority}}…",
@@ -7416,6 +7419,10 @@
         },
         "options": {
             "later": "Ne sada",
+            "withoutParcels": {
+                "title": "Nastavi bez parcela",
+                "desc": "Pregledaj i primeni projekte prema njihovoj geometriji. Granice parcela i podaci o vlasništvu neće biti dostupni."
+            },
             "retry": {
                 "title": "Ponovo pokušaj zvanični registar",
                 "desc": "Ponovo upitajte registar. Pravi izbor za mrežni prekid ili server koji je kratko bio nedostupan."

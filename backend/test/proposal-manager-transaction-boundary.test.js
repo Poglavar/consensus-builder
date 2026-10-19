@@ -138,6 +138,7 @@ describe('ProposalManager mutation boundary', () => {
         };
         ProposalManager.rebuildAppliedFabric = async options => {
             rebuilt.push(options._parcelMutation.proposals.getAllProposals().map(record => [record.proposalId, record.applied]));
+            expect(options.resetProposalIds).toEqual(['conflict']);
             return { ok: true, failed: [] };
         };
         const result = await ProposalManager.applyProposalPlan(['target', 'second', 'target']);

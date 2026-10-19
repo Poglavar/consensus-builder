@@ -1122,9 +1122,10 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             if (slugMatch && !/^[0-9]+(-[0-9]+)*$/.test(slugMatch[1])) {
                 const slug = slugMatch[1].toLowerCase();
                 const base = (typeof resolveBackendBaseUrl === 'function') ? resolveBackendBaseUrl() : '';
-                const resp = await fetch(`${base}/plans/${encodeURIComponent(slug)}`);
+                if (typeof updateStatus === 'function') updateStatus(getShareI18nHelper()('plan.fetchingPlan', 'Fetching plan…'));
+                const resp = await fetchSharedProposalResponse(`${base}/plans/${encodeURIComponent(slug)}`);
                 if (resp.ok) {
-                    const plan = await resp.json();
+                    const plan = resp.data;
                     const ids = Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds.map(String).filter(Boolean) : [];
                     if (ids.length > 0) {
                         window.__currentNamedPlan = { ...plan, slug };
@@ -1167,6 +1168,11 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         await handleSharedPlanRoute(idParts);
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
+        releaseDeepLinkParcelFetch();
+        if (typeof updateStatus === 'function') updateStatus(getShareI18nHelper()(
+            'plan.loadFailed', 'The linked plan or proposal could not be loaded. Please try again.'));
+        if (typeof showEphemeralMessage === 'function') showEphemeralMessage(getShareI18nHelper()(
+            'plan.loadFailed', 'The linked plan or proposal could not be loaded. Please try again.'), 8000, 'error');
     }
 }
 

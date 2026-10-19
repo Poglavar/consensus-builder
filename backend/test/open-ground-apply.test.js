@@ -354,6 +354,87 @@ describe('formations on bare ground (empty binding)', () => {
     });
 });
 
+describe('explicit geometry-only local application', () => {
+    function chooseWithoutParcels() {
+        install('CityConfigManager', { getCurrentCityId: () => 'sibenik' });
+        install('ParcelGroundFallback', { isWithoutParcels: city => city === 'sibenik' });
+    }
+
+    it('applies own geometry with unavailable declared cadastre while keeping the authored record', async () => {
+        const park = structureRecord('park-offline', 'park', SITE_HALF, {
+            declared: ['HR-330264-9'],
+            binding: { parcels: [{ parcelId: 'HR-330264-9' }], coverage: 'complete', source: 'server' }
+        });
+        const original = structuredClone(park);
+        const { manager, fabric, store, repository } = await harness({ records: [park] });
+        chooseWithoutParcels();
+        await expect(manager.applyProposal('park-offline')).resolves.toBe(true);
+        expect(repository.calls).toEqual([]);
+        expect(store.getProposal('park-offline').cadastreParcelIds).toEqual(original.cadastreParcelIds);
+        expect(store.getProposal('park-offline').binding).toEqual(original.binding);
+        expect(store.getProposal('park-offline').site).toEqual(original.site);
+        expect(fabric.producedBy('park-offline')).toHaveLength(1);
+        expect(fabric.producedBy('park-offline')[0].properties.cadastreParcelIds).toEqual([]);
+        expect(openGround.groundIdsOf(fabric.producedBy('park-offline')[0])).toHaveLength(1);
+    });
+
+    it('refuses a parcel act without looking up its declared parcel', async () => {
+        const merge = { proposalId: 'merge-offline', goal: 'decide-later', applied: false,
+            site: SITE_HALF, cadastreParcelIds: ['HR-330264-9'] };
+        const { manager, repository } = await harness({ records: [merge] });
+        chooseWithoutParcels();
+        await expect(manager.applyProposal('merge-offline')).resolves.toBe(false);
+        expect(manager.getLastApplyFailureInfo('merge-offline').code).toBe('proposal-needs-parcels');
+        expect(repository.calls).toEqual([]);
+    });
+
+    it('replays a stored applied proposal without fetching its declared cadastre', async () => {
+        const park = structureRecord('park-replay-offline', 'park', SITE_HALF, {
+            declared: ['HR-330264-9'], applied: true,
+            binding: { parcels: [{ parcelId: 'HR-330264-9' }], coverage: 'complete', source: 'server' }
+        });
+        const original = structuredClone(park);
+        const { manager, fabric, store, repository } = await harness({ records: [park] });
+        chooseWithoutParcels();
+        await expect(manager.rebuildAppliedFabric()).resolves.toMatchObject({ ok: true });
+        expect(repository.calls).toEqual([]);
+        expect(store.getProposal('park-replay-offline').cadastreParcelIds).toEqual(original.cadastreParcelIds);
+        expect(store.getProposal('park-replay-offline').binding).toEqual(original.binding);
+        expect(fabric.producedBy('park-replay-offline')).toHaveLength(1);
+        expect(fabric.producedBy('park-replay-offline')[0].properties.cadastreParcelIds).toEqual([]);
+    });
+
+    it('applies an authored road ribbon without arranging an unavailable declared parcel', async () => {
+        const road = { proposalId: 'road-offline', title: 'Road', goal: 'road-track', applied: false,
+            cadastreParcelIds: ['HR-330264-9'],
+            binding: { parcels: [{ parcelId: 'HR-330264-9' }], coverage: 'complete', source: 'server' },
+            roadProposal: { definition: { polygon: rect(0, 4, 10, 6),
+                points: [[LAT, LON], [LAT, LON + 1e-3]], width: 6 } } };
+        const { manager, store, repository } = await harness({ records: [road] });
+        chooseWithoutParcels();
+        await expect(manager.applyProposal('road-offline')).resolves.toBe(true);
+        expect(store.getProposal('road-offline').cadastreParcelIds).toEqual(['HR-330264-9']);
+        expect(store.getProposal('road-offline').binding).toEqual(road.binding);
+        expect(repository.calls).toEqual([]);
+    });
+
+    it('renders a building design with its published parcel reference intact', async () => {
+        const block = { proposalId: 'block-offline', title: 'Block', goal: 'buildings', applied: false,
+            cadastreParcelIds: ['HR-330264-9'],
+            binding: { parcels: [{ parcelId: 'HR-330264-9' }], coverage: 'complete', source: 'server' },
+            site: { type: 'MultiPolygon', coordinates: [rect(0, 0, 20, 20).coordinates] },
+            buildingProposal: { type: 'block' },
+            geometry: { buildings: [turf.feature(rect(2, 2, 8, 8))] } };
+        const { manager, store, repository } = await harness({ records: [block] });
+        chooseWithoutParcels();
+        await expect(manager.applyProposal('block-offline')).resolves.toBe(true);
+        expect(globalThis.proposedBuildings).toHaveLength(1);
+        expect(store.getProposal('block-offline').cadastreParcelIds).toEqual(['HR-330264-9']);
+        expect(store.getProposal('block-offline').binding).toEqual(block.binding);
+        expect(repository.calls).toEqual([]);
+    });
+});
+
 describe('geometric interaction on open ground', () => {
     const proposalFamilies = [
         ['park', 'parks', 'updateParksLayer'],

@@ -108,6 +108,17 @@
         return !!(typeof sb.siteOf === 'function' && sb.siteOf(record, options));
     }
 
+    // A browser visitor may explicitly explore without a parcel source. This view is used only
+    // while deriving local geometry; the authored record and its cadastral declaration stay in
+    // storage unchanged. A parcel act (or a record with no site of its own) has no honest ground
+    // to project and must still refuse application.
+    function geometryOnlyGroundRecord(record, options) {
+        const sb = siteBindingApi(options);
+        if (!record || !sb || typeof sb.requiresParcels !== 'function'
+            || sb.requiresParcels(record) || !sb.siteOf(record, options)) return null;
+        return { ...record, cadastreParcelIds: [], binding: undefined };
+    }
+
     // A corridor with an empty declaration takes no cadastral parcel: its ribbon lies on open
     // ground (a road across unsurveyed land or an explore city). It is an undeclared CADASTRAL take
     // only when its binding names parcels the declaration lacks — that stays an error.
@@ -377,6 +388,7 @@
         bboxesIntersect,
         openGroundGeometry,
         openGroundHost,
+        geometryOnlyGroundRecord,
         createBboxIndex,
         geometricInteractions
     };

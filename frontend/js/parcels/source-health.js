@@ -102,6 +102,41 @@
         return safe;
     }
 
+    // A logical load deadline also bounds transports that ignore AbortSignal, response bodies,
+    // and repository consumers sharing in-flight work. Cancellation remains distinct from outage.
+    function withDeadline(operation, { timeoutMs = 30000, signal, code = 'parcel-source-unavailable' } = {}) {
+        const controller = new AbortController();
+        let timer;
+        let cancel;
+        const stopped = new Promise((_, reject) => {
+            cancel = () => {
+                const error = signal.reason || Object.assign(new Error('Load cancelled.'), { name: 'AbortError' });
+                controller.abort(error);
+                reject(error);
+            };
+            if (signal?.aborted) { cancel(); return; }
+            signal?.addEventListener('abort', cancel, { once: true });
+            timer = setTimeout(() => {
+                const error = Object.assign(new Error('The data source did not finish loading in time.'), {
+                    name: 'TimeoutError', status: 504, code
+                });
+                controller.abort(error);
+                reject(error);
+            }, timeoutMs);
+        });
+        let work;
+        try {
+            controller.signal.throwIfAborted();
+            work = Promise.resolve(operation(controller.signal));
+        } catch (error) {
+            work = Promise.reject(error);
+        }
+        return Promise.race([work, stopped]).finally(() => {
+            clearTimeout(timer);
+            signal?.removeEventListener('abort', cancel);
+        });
+    }
+
     function createRequester({ fetchImpl = (...args) => fetch(...args), now = Date.now, sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)) } = {}) {
         if (typeof fetchImpl !== 'function' || typeof now !== 'function' || typeof sleep !== 'function') {
             throw new TypeError('Parcel source requester requires fetch, clock, and sleep functions.');
@@ -251,5 +286,5 @@
         return `${message} ${loadedSentence(loaded, t)}`;
     }
 
-    return Object.freeze({ createRequester, errorFromResponse, describeFailure });
+    return Object.freeze({ createRequester, errorFromResponse, describeFailure, withDeadline });
 });

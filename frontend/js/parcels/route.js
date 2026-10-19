@@ -235,7 +235,10 @@
 
         try {
             console.log('[handleParcelRouteFromUrl] opening parcel', parcelId);
-            await ground.ensureIds([parcelId]);
+            const load = signal => ground.ensureIds([parcelId], { signal });
+            if (global.ParcelSourceHealth?.withDeadline) {
+                await global.ParcelSourceHealth.withDeadline(load, { timeoutMs: cityLookupTimeoutMs() });
+            } else await load();
             const layer = presenter.getLayer(parcelId)
                 || presenter.resolveLiveLayers([parcelId], { includeCorridors: true })[0]
                 || null;
@@ -245,6 +248,7 @@
             // parcels so the grid stays visible — see selection.js).
             selectParcel(resolvedId);
         } catch (error) {
+            global.ParcelGroundFallback?.onGroundUnavailable?.({ error, city: currentCityId });
             reportParcelRouteFailure(parcelId, (error && error.message) || String(error));
         }
     }

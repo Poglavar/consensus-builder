@@ -489,6 +489,7 @@
         "outsideSite": "La geometría de la propuesta se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
         "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Comprueba tu conexión e inténtalo de nuevo.",
         "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar esta propuesta hasta que se carguen esas parcelas.",
+        "needsParcels": "Esta propuesta actúa sobre parcelas catastrales o no tiene geometría propia. Carga sus parcelas antes de aplicarla.",
         "undeclared": "Esta propuesta no tiene parcelas catastrales ni un emplazamiento de terreno libre. Define su emplazamiento antes de aplicarla.",
         "invalidGeometry": "La geometría de la propuesta falta o no es válida. Edítala antes de aplicarla.",
         "applyFailed": "No se pudo colocar la propuesta en el mapa porque no fue posible derivar su geometría del terreno seleccionado.",
@@ -3095,6 +3096,7 @@
                     "materializing": "Iniciando la materialización de las propuestas…",
                     "applyingAllTitle": "Aplicando el plan compartido",
                     "fetchingPlan": "Obteniendo plan…",
+                    "loadFailed": "No se pudo cargar el plan o la propuesta del enlace. Inténtalo de nuevo.",
                     "fetchingPlanTitle": "Obteniendo propuesta",
                     "rebuildingStatus": "Reconstruyendo el plan aplicado…",
                     "rebuildingStatusCount": "Reconstruyendo el plan aplicado {{done}}/{{total}}…",
@@ -4380,6 +4382,7 @@
             "parcels_read_from_dgu": "El servidor de este sitio no responde: las parcelas se leen directamente del catastro estatal (DGU), sin titularidad.",
             "loaded_parcels_from_source": "Se cargaron {{count}} parcelas de {{source}}.",
             "checking_cadastral_ground": "Comprobando el catastro…",
+            "without_parcels": "Continuando sin parcelas. Los diseños usan su propia geometría.",
             "loading_cadastral_ground": "Cargando el catastro {{done}}/{{total}}…",
             "parcel_source_downloading": "Descargando {{authority}}… {{loaded}} / {{total}} MB",
             "parcel_source_decompressing": "Descomprimiendo {{authority}}…",
@@ -7404,6 +7407,10 @@
         },
         "options": {
             "later": "Ahora no",
+            "withoutParcels": {
+                "title": "Continuar sin parcelas",
+                "desc": "Visualiza y aplica los diseños a partir de su geometría. Los límites y la propiedad de las parcelas no estarán disponibles."
+            },
             "retry": {
                 "title": "Reintentar el registro oficial",
                 "desc": "Volver a consultar el registro. Adecuado para un corte de red o un servidor caído por poco tiempo."

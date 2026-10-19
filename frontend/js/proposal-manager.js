@@ -36,6 +36,18 @@ const openGroundApi = (typeof window !== 'undefined' && window.__openGround)
     ? window.__openGround
     : require('./proposals/open-ground.js');
 
+function _withoutParcelsSelected() {
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    const city = root.CityConfigManager?.getCurrentCityId?.();
+    return !!city && root.ParcelGroundFallback?.isWithoutParcels?.(city) === true;
+}
+
+// Only derivation sees this view. It is never put in proposalStorage: the published declaration,
+// binding, site and lifecycle on the original record retain their exact identity.
+function _groundRecord(record) {
+    return _withoutParcelsSelected() ? openGroundApi.geometryOnlyGroundRecord(record) : record;
+}
+
 const parcelMutationCoordinator = (typeof window !== 'undefined' && window.ParcelMutation)
     ? window.ParcelMutation
     : require('./proposals/apply/transaction.js').ParcelMutation;
@@ -629,6 +641,7 @@ const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-footprint-outside-site': ['outsideSite', 'The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.'],
     'cadastral-ground-unavailable': ['groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try applying again.'],
     'cadastral-ground-absent': ['groundMissing', 'Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.'],
+    'proposal-needs-parcels': ['needsParcels', 'This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.'],
     'proposal-ground-undeclared': ['undeclared', 'This proposal has no cadastral parcels or open-ground site. Define its site before applying.'],
     'proposal-footprint-invalid': ['invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.'],
     'proposal-apply-failed': ['applyFailed', 'The proposal could not be placed on the map because its geometry could not be derived from the selected land.'],
@@ -1269,24 +1282,29 @@ const ProposalManager = {
     // footprint, but may never discover a different relationship from whatever else is loaded.
     _resolveAndStampFlatCadastreAnchors(record) {
         if (!record || typeof record !== 'object') return { cadastreParcelIds: [], complete: true };
+        const groundRecord = _groundRecord(record);
+        if (!groundRecord) {
+            return { cadastreParcelIds: [], complete: false,
+                failure: _proposalApplyFailure('proposal-needs-parcels') };
+        }
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
         const repository = _cadastralParcelRepository();
         const order = browserRoot.__planOrder;
-        const declared = proposalClaims.cadastreParcelIdsOf(record);
+        const declared = proposalClaims.cadastreParcelIdsOf(groundRecord);
         let footprint = null;
         try {
             footprint = order && typeof order.footprintOf === 'function'
-                ? order.footprintOf(record)
+                ? order.footprintOf(groundRecord)
                 : null;
         } catch (_) { footprint = null; }
 
         let complete = true;
         let failure = null;
-        if (footprint && footprint.geometry && openGroundApi.hasOpenGround(record)) {
+        if (footprint && footprint.geometry && openGroundApi.hasOpenGround(groundRecord)) {
             // On open ground the host IS the rest of the site (site − bound parcels, apply time),
             // so the footprint is fully hosted exactly when it lies inside its site. The binding,
             // not what happens to be loaded, says where the parcels end.
-            complete = this._footprintInsideSite(record, footprint);
+            complete = this._footprintInsideSite(groundRecord, footprint);
             if (!complete) failure = _proposalApplyFailure('proposal-footprint-outside-site');
         } else if (footprint && footprint.geometry) {
             let resolved = null;
@@ -1353,7 +1371,8 @@ const ProposalManager = {
             if (options._parcelMutation) groundOptions._parcelMutation = options._parcelMutation;
             await this._loadReplayGround(members, groundOptions);
         }
-        const ids = new Set(proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
+        const ids = new Set(_withoutParcelsSelected() ? []
+            : proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
         const failed = [];
         members.forEach(record => {
             const resolution = this._resolveAndStampFlatCadastreAnchors(record);
@@ -1371,9 +1390,10 @@ const ProposalManager = {
     // ids are the complete mutation scope even when their layers are currently hidden or have not
     // been materialized. Geometry coverage remains an apply/edit validation concern in _flatScopeSeeds.
     _recordedCadastreScope(records, extraCadastreParcelIds = []) {
-        const ids = new Set(proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
+        const ids = new Set(_withoutParcelsSelected() ? []
+            : proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
         (Array.isArray(records) ? records : []).filter(Boolean).forEach(record => {
-            proposalClaims.cadastreParcelIdsOf(record).forEach(id => ids.add(String(id)));
+            proposalClaims.cadastreParcelIdsOf(_groundRecord(record)).forEach(id => ids.add(String(id)));
         });
         return { cadastreParcelIds: Array.from(ids), complete: true };
     },
@@ -1386,7 +1406,7 @@ const ProposalManager = {
         const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
         const seedIds = new Set(seeds.map(record => String(record?.proposalId || '')).filter(Boolean));
         const cadastreIds = new Set(Array.from(initialCadastreParcelIds || []).map(String).filter(Boolean));
-        seeds.forEach(record => proposalClaims.cadastreParcelIdsOf(record).forEach(id => cadastreIds.add(String(id))));
+        seeds.forEach(record => proposalClaims.cadastreParcelIdsOf(_groundRecord(record)).forEach(id => cadastreIds.add(String(id))));
 
         // Candidates are only filtered here; the records that end up replayed are fetched through
         // the draft by id (and so cloned and marked touched) by the caller, never edited in place.
@@ -1421,7 +1441,7 @@ const ProposalManager = {
             included.set(id, record);
             if (!spansSeveralParcels(record)) return false;
             let widened = false;
-            proposalClaims.cadastreParcelIdsOf(record).map(String).forEach(anchor => {
+            proposalClaims.cadastreParcelIdsOf(_groundRecord(record)).map(String).forEach(anchor => {
                 if (!cadastreIds.has(anchor)) {
                     cadastreIds.add(anchor);
                     widened = true;
@@ -1441,7 +1461,7 @@ const ProposalManager = {
             candidates.forEach(record => {
                 const id = String(record?.proposalId || '');
                 if (!id || included.has(id)) return;
-                const anchors = proposalClaims.cadastreParcelIdsOf(record).map(String);
+                const anchors = proposalClaims.cadastreParcelIdsOf(_groundRecord(record)).map(String);
                 if (!seedIds.has(id) && !anchors.some(anchor => cadastreIds.has(anchor))) return;
                 if (include(record)) changed = true;
             });
@@ -1474,15 +1494,16 @@ const ProposalManager = {
         if (!siteApi || !order || typeof order.intersectionArea !== 'function') return null;
         const seedList = (Array.isArray(seeds) ? seeds : []).filter(Boolean);
         const candidateList = (Array.isArray(candidates) ? candidates : []).filter(Boolean);
-        const anyOpen = seedList.some(record => openGroundApi.hasOpenGround(record))
-            || candidateList.some(record => openGroundApi.hasOpenGround(record));
+        const anyOpen = seedList.some(record => openGroundApi.hasOpenGround(_groundRecord(record)))
+            || candidateList.some(record => openGroundApi.hasOpenGround(_groundRecord(record)));
         if (!anyOpen) return null;
         const cache = this._groundEntryCache || (this._groundEntryCache = new WeakMap());
         const entryOf = record => {
             const goalKey = applyRoute?.normalizeGoalKey?.(record.goal) || String(record.goal || '');
             // Corridor definitions are edited in place by junction authoring; never cache them.
             const cacheable = goalKey !== 'road-track';
-            const stamp = String(record.updatedAt || '') + '|' + String(record.createdAt || '');
+            const stamp = String(record.updatedAt || '') + '|' + String(record.createdAt || '')
+                + '|' + String(_withoutParcelsSelected());
             const cached = cacheable ? cache.get(record) : null;
             if (cached && cached.stamp === stamp) return cached.entry;
             let geometry = null;
@@ -1491,7 +1512,7 @@ const ProposalManager = {
                 id: String(record.proposalId || ''),
                 bbox: openGroundApi.bboxOf(geometry),
                 geometry: { type: 'Feature', properties: {}, geometry },
-                openGround: openGroundApi.hasOpenGround(record),
+                openGround: openGroundApi.hasOpenGround(_groundRecord(record)),
                 record
             } : null;
             if (cacheable) cache.set(record, { stamp, entry });
@@ -1520,9 +1541,12 @@ const ProposalManager = {
             if (options._parcelMutation) groundOptions._parcelMutation = options._parcelMutation;
             await this._loadReplayGround(members, groundOptions);
         }
-        const ids = new Set(proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
+        const ids = new Set(_withoutParcelsSelected() ? []
+            : proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
         members.forEach(record => {
-            proposalClaims.cadastreParcelIdsOf(record).forEach(id => ids.add(String(id)));
+            const groundRecord = _groundRecord(record);
+            if (!groundRecord) throw Object.assign(new Error(_proposalApplyFailure('proposal-needs-parcels').message), { code: 'proposal-needs-parcels' });
+            proposalClaims.cadastreParcelIdsOf(groundRecord).forEach(id => ids.add(String(id)));
         });
 
         return { cadastreParcelIds: Array.from(ids), complete: true };
@@ -1590,7 +1614,7 @@ const ProposalManager = {
         // A proposal on open ground only has no cadastral anchor, yet its output must still be
         // removed and re-derived (and its geometric neighbours replayed).
         if (!seedResolution.cadastreParcelIds.length
-            && !seeds.some(record => openGroundApi.hasOpenGround(record))) {
+            && !seeds.some(record => openGroundApi.hasOpenGround(_groundRecord(record)))) {
             return { ok: true, applied: 0, failed: [], cadastreParcelIds: [], proposalIds: [] };
         }
 
@@ -1846,8 +1870,12 @@ const ProposalManager = {
     async _loadReplayGround(appliedList, options = {}) {
         // A record on open ground only needs no cadastral ground: its host is its site. Asking the
         // repository for "the parcels under its footprint" would be a second, client-side binding.
-        const members = (Array.isArray(appliedList) ? appliedList : []).filter(record => record
-            && (proposalClaims.cadastreParcelIdsOf(record).length || !openGroundApi.hasOpenGround(record)));
+        const members = (Array.isArray(appliedList) ? appliedList : []).filter(record => {
+            if (!record) return false;
+            const groundRecord = _groundRecord(record);
+            if (!groundRecord) return false;
+            return proposalClaims.cadastreParcelIdsOf(groundRecord).length || !openGroundApi.hasOpenGround(groundRecord);
+        });
         if (!members.length) {
             this._lastReplayGroundProfile = { members: 0, missingIds: [], unavailableMembers: 0, elapsed: 0 };
             return 0;
@@ -1905,6 +1933,8 @@ const ProposalManager = {
         const takes = [];
         source.forEach(record => {
             if (!record) return;
+            const groundRecord = _groundRecord(record);
+            if (!groundRecord) return;
             const goalKey = route && typeof route.normalizeGoalKey === 'function'
                 ? route.normalizeGoalKey(record.goal)
                 : String(record.goal || '');
@@ -1916,9 +1946,9 @@ const ProposalManager = {
             takes.push({
                 id: String(record.proposalId),
                 geometry: footprint.geometry,
-                cadastreParcelIds: proposalClaims.cadastreParcelIdsOf(record).map(String),
+                cadastreParcelIds: proposalClaims.cadastreParcelIdsOf(groundRecord).map(String),
                 // Ribbon on open ground only: no cadastral parcel to arrange (PARCEL-OPTIONAL.md).
-                openGroundOnly: openGroundApi.corridorOnOpenGroundOnly(record),
+                openGroundOnly: openGroundApi.corridorOnOpenGroundOnly(groundRecord),
                 isTrack: !!(definition && definition.metadata && definition.metadata.isTrack),
                 name: record.title || record.name || 'Road'
             });
@@ -2585,8 +2615,13 @@ const ProposalManager = {
         // map for the entire replay and making a failed request destructive.
         const resetStarted = _now();
         this._resetDerivedFabric(appliedList, {
-            cadastreParcelIds: passOptions.cadastreParcelIds,
-            proposalIds: passOptions.resetProposalIds,
+            cadastreParcelIds: _withoutParcelsSelected() ? [] : passOptions.cadastreParcelIds,
+            proposalIds: _withoutParcelsSelected()
+                ? Array.from(new Set([
+                    ...(Array.isArray(passOptions.resetProposalIds) ? passOptions.resetProposalIds : []),
+                    ...(appliedList || []).map(record => String(record.proposalId))
+                ]))
+                : passOptions.resetProposalIds,
             recordsToClear: passOptions.recordsToClear,
             _parcelMutation: passOptions._parcelMutation
         });
@@ -3012,6 +3047,10 @@ const ProposalManager = {
         });
         const summary = await this.rebuildAppliedFabric({
             ...options,
+            resetProposalIds: Array.from(new Set([
+                ...(Array.isArray(options.resetProposalIds) ? options.resetProposalIds : []),
+                ...released.keys()
+            ])),
             silent: true,
             statusMode: 'apply'
         });
@@ -3059,6 +3098,10 @@ const ProposalManager = {
             // state and avoid publishing an empty fabric/presenter revision merely because the
             // generic create flow asks every new record to apply itself.
             const committedProposal = _getProposalRecord(proposalId, applyOptions);
+            if (committedProposal && _withoutParcelsSelected() && !_groundRecord(committedProposal)) {
+                this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-needs-parcels'));
+                return false;
+            }
             if (committedProposal && applyRoute?.classifyApplyRoute?.(committedProposal)?.route === 'noop') {
                 return true;
             }
@@ -3086,6 +3129,10 @@ const ProposalManager = {
             return false;
         }
         if (appliedOf(proposal)) return true;
+        if (_withoutParcelsSelected() && !_groundRecord(proposal)) {
+            this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-needs-parcels'));
+            return false;
+        }
         // A withdrawn proposal cannot stand on a map (proposals/display-state.js).
         if (!proposalDisplayStateApi.isApplicable(proposal)) {
             this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-cancelled'));
@@ -3168,6 +3215,12 @@ const ProposalManager = {
         // Route decision lives in the pure proposals/apply/route.js (unit-tested); this method keeps
         // only the I/O around it.
         const { route, goalKey } = applyRoute.classifyApplyRoute(proposalData);
+        const groundRecord = _groundRecord(proposalData);
+        if (_withoutParcelsSelected() && (!groundRecord
+            || (route === 'reparcellization' && proposalClaims.cadastreParcelIdsOf(proposalData).length))) {
+            this._setLastApplyFailure(safeId, _proposalApplyFailure('proposal-needs-parcels'));
+            return false;
+        }
         let result = false;
 
         // Ownership-transfer proposals (generic "parcel", ownership-transfer-to-me/from-me, and the
@@ -3192,22 +3245,24 @@ const ProposalManager = {
         // parcels' pieces (apply/parcels.js). A decide-later merge is an act on parcels and never
         // stands on open ground (hasOpenGround is false for parcel acts); refused by name should a
         // record ever claim otherwise.
-        const onOpenGround = route !== 'road-track' && openGroundApi.hasOpenGround(proposalData);
+        const onOpenGround = route !== 'road-track' && openGroundApi.hasOpenGround(groundRecord);
         if (onOpenGround && route === 'decide-later') {
             const message = 'A merge of parcels cannot stand on ground without parcels.';
             this._setLastApplyFailure(safeId, { code: 'merge-open-ground', message });
             console.warn(`[${new Date().toISOString()}] [ProposalManager.applyProposal] ${safeId}: ${message}`);
             return false;
         }
-        let formationOptions = applyOptions;
+        let formationOptions = _withoutParcelsSelected()
+            ? { ...applyOptions, groundRecord }
+            : applyOptions;
         if (onOpenGround) {
-            const hosted = await this._openGroundHostFor(proposalData, applyOptions);
+            const hosted = await this._openGroundHostFor(groundRecord, applyOptions);
             if (!hosted.ok) {
                 this._setLastApplyFailure(safeId, hosted.failure);
                 console.warn(`[${new Date().toISOString()}] [ProposalManager.applyProposal] ${safeId}: ${hosted.failure.message}`);
                 return false;
             }
-            formationOptions = { ...applyOptions, openGroundHost: hosted.host, openGroundParents: hosted.occupied };
+            formationOptions = { ...formationOptions, openGroundHost: hosted.host, openGroundParents: hosted.occupied };
         }
 
         result = await _runProposalApplyWithSummary(safeId, proposalData, async () => {
@@ -3704,6 +3759,13 @@ const ProposalManager = {
     // current, non-corridor live pieces within that scope and proves coverage. Geometry may never
     // expand or rewrite the durable proposal-to-cadastre relationship.
     _resolveLiveFormationParents(proposalData, idLabel, formationLabel = 'formation', options = {}) {
+        proposalData = options.groundRecord || _groundRecord(proposalData);
+        if (!proposalData) {
+            const failure = _proposalApplyFailure('proposal-needs-parcels');
+            const message = failure.message;
+            this._setLastApplyFailure(idLabel, failure);
+            return { ok: false, ids: [], features: [], cadastreIds: [], coverage: 0, message };
+        }
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
         const fabric = _fabricDraft(options);
         const order = browserRoot.__planOrder;

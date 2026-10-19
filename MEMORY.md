@@ -744,3 +744,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-18: A converted or dropped proposal that lands on an applied one goes through the same apply/conflict step as any apply (claims.js appliedRivals via ProposalManager.applyProposal; in-place saves stand rivals down too): no separate path or road rule for conversions.
 
 - 2026-10-19: Direct named-plan bets show a whole-plan before/after image pair; plan member thumbnails cannot represent a bet on the collection. Rationale: the user needs to see the complete design being forecast.
+
+- 2026-10-19: Parcel-source failures have a bounded wait and an explicit Continue without parcels choice; linked designs can apply locally from their own geometry while their published parcel IDs and binding remain unchanged.

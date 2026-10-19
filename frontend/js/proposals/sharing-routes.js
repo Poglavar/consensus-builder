@@ -1609,6 +1609,23 @@ function describeSharedProposalFetchFailure(id, payload) {
     return technical;
 }
 
+// Bound the complete response, including its JSON body. A stalled batch must not expand into
+// thousands of individual requests when the shared API itself is unavailable.
+async function fetchSharedProposalResponse(url, options = {}) {
+    const runtime = typeof window !== 'undefined' ? window : globalThis;
+    const load = async signal => {
+        const response = await fetch(url, { ...options, ...(signal ? { signal } : {}) });
+        let data = null;
+        try { data = await response.json(); } catch (error) { if (response.ok) throw error; }
+        return { ok: response.ok, status: response.status, statusText: response.statusText, data };
+    };
+    const configured = runtime.PARCEL_LOAD_TIMEOUT_MS;
+    const timeoutMs = typeof configured === 'number' && Number.isFinite(configured) && configured > 0 ? configured : 30000;
+    return runtime.ParcelSourceHealth?.withDeadline
+        ? runtime.ParcelSourceHealth.withDeadline(load, { timeoutMs, code: 'proposal-load-timeout' })
+        : load();
+}
+
 async function fetchSharedProposalBatch(ids, backendBase) {
     const requested = Array.from(new Set((Array.isArray(ids) ? ids : [])
         .map(id => String(id || '').trim()).filter(Boolean)));
@@ -1624,13 +1641,13 @@ async function fetchSharedProposalBatch(ids, backendBase) {
         requests += 1;
         try {
             const chunk = requested.slice(start, start + 1000);
-            const response = await fetch(`${backendBase}/proposals/batch`, {
+            const response = await fetchSharedProposalResponse(`${backendBase}/proposals/batch`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
                 body: JSON.stringify({ ids: chunk })
             });
             if (!response.ok) return { records, missing, errors, supported: false, requests };
-            const payload = await response.json();
+            const payload = response.data;
             if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests };
             payload.items.forEach(item => {
                 const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
@@ -1644,6 +1661,7 @@ async function fetchSharedProposalBatch(ids, backendBase) {
                 }
             });
         } catch (error) {
+            if (error?.code === 'proposal-load-timeout') throw error;
             console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
             return { records, missing, errors, supported: false, requests };
         }
@@ -1673,9 +1691,9 @@ async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload =
         if (!payload) {
             const backendBase = resolveBackendBaseUrl();
             requestMade = true;
-            const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
+            const response = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
             if (!response.ok) return { blocked: false, payload: null, requestMade };
-            payload = await response.json();
+            payload = response.data;
         }
         if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
         const proposalCityId = sharedRecordCityOf(payload);
@@ -2154,8 +2172,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     if (batchRecords.supported && batchRecords.missing.has(qid)) return;
                     try {
                         recordFetchProfile.individualRequests += 1;
-                        const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
-                        if (resp.ok) loadedById.set(qid, await resp.json());
+                        const resp = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
+                        if (resp.ok) loadedById.set(qid, resp.data);
                     } catch (_) { /* the apply loop retries and reports this id itself */ }
                 }));
                 const items = queue.map(qid => {
@@ -2186,7 +2204,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 if (!payload) continue;
                 unionCadastreIds.push(...getCadastrePrerequisiteIds(payload));
             }
-            if (unionCadastreIds.length > 0) {
+            if (unionCadastreIds.length > 0 && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
                 groundService.ensureIds(unionCadastreIds, { onProgress: reportSharedPlanProgress }).catch(err => {
                     console.warn('[handleSharedPlanRoute] Union cadastral-ground load failed', err);
                 });
@@ -2266,14 +2284,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         progress: { done: fetchProgressIds.size, total: totalProposals }
                     });
                     recordFetchProfile.individualRequests += 1;
-                    const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
+                    const response = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(id)}`);
                     if (!response.ok) {
                         let reason;
                         if (response.status === 404) {
                             reason = tShare('plan.notFoundOnServer', 'Not found on server');
                         } else {
                             let serverMessage = '';
-                            try { serverMessage = describeSharedProposalFetchFailure(id, await response.json()); } catch (_) { serverMessage = ''; }
+                            try { serverMessage = describeSharedProposalFetchFailure(id, response.data); } catch (_) { serverMessage = ''; }
                             reason = serverMessage
                                 || `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
                         }
@@ -2281,7 +2299,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         markFetchProgress(id);
                         continue;
                     }
-                    proposal = await response.json();
+                    proposal = response.data;
                     loadedById.set(id, proposal);
                     try {
                         const inferredType = formatSharedProposalTypeLabel(proposal);
@@ -2296,7 +2314,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 // transport; the route neither classifies IDs nor resolves geometry itself.
                 const cadastreIds = getCadastrePrerequisiteIds(proposal);
 
-                if (cadastreIds.length > 0) {
+                if (cadastreIds.length > 0 && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
                     const fetchResult = await groundService.ensureIds(cadastreIds, { onProgress: reportSharedPlanProgress });
                     try {
                         lastMissingCadastrePrereqIdsById.set(String(id), fetchResult.missingIds);

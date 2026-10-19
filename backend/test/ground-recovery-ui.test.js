@@ -55,7 +55,8 @@ function boot() {
     intro.appendChild(closeIntro); document.body.appendChild(intro);
     const storage = new Map();
     const window = {
-        document, location: { search: '?intro=1' },
+        document, location: { search: '?intro=1', href: 'https://example.test/proposals/harbor-plan?city=sample', replace(url) { this.replaced = url; } },
+        sessionStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key) },
         localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
         CityConfigManager: {
             getCurrentCityId: () => 'sample',
@@ -65,7 +66,7 @@ function boot() {
         dispatchEvent: events.dispatchEvent.bind(events),
         requestAnimationFrame: callback => callback()
     };
-    const context = vm.createContext({ window, document, CustomEvent, URLSearchParams,
+    const context = vm.createContext({ window, document, CustomEvent, URL, URLSearchParams,
         requestAnimationFrame: callback => callback() });
     // The recovery dialog is the shared one (js/ui/dialogs.js), which the app loads first.
     for (const path of ['ui/dialogs.js', 'site-intro.js', 'parcels/ground-fallback.js']) {
@@ -101,13 +102,29 @@ describe('one parcel recovery dialog after the introduction', () => {
         const error = Object.assign(new Error('Provider denied access'), { status: 502, upstreamStatus: 403 });
         window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error, message: 'Provider denied access.' });
         const choices = () => document.body.querySelectorAll('button').filter(node => node.dataset.option).map(node => node.dataset.option);
-        expect(choices()).toEqual(['url', 'ocr', 'schelling']);
+        expect(choices()).toEqual(['without-parcels', 'url', 'ocr', 'schelling']);
         document.body.querySelector('.ground-fallback-close').listeners.click();
         expect(window.ParcelGroundFallback.isOpen()).toBe(false);
         expect(document.body.classList.contains('ground-fallback-open')).toBe(false);
         window.ParcelGroundFallback.openOptions();
         expect(document.body.querySelector('.ground-fallback-status').textContent).toBe('Provider denied access.');
-        expect(choices()).toEqual(['url', 'ocr', 'schelling']);
+        expect(choices()).toEqual(['without-parcels', 'url', 'ocr', 'schelling']);
+    });
+
+    it('continues without parcels only after the choice and keeps the plan route on reload', () => {
+        const { window, document } = boot();
+        window.closeSiteIntro();
+        window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: Object.assign(new Error('Timeout'), { status: 504 }) });
+        expect(window.ParcelGroundFallback.isWithoutParcels('sample')).toBe(false);
+        const option = document.body.querySelectorAll('button').find(node => node.dataset.option === 'without-parcels');
+        option.listeners.click();
+        expect(window.ParcelGroundFallback.isWithoutParcels('sample')).toBe(true);
+        expect(window.ParcelGroundFallback.isWithoutParcels('another-city')).toBe(false);
+        expect(window.ParcelGroundFallback.activeSource('sample')).toBeNull();
+        expect(window.location.replaced).toBe('https://example.test/proposals/harbor-plan?city=sample');
+        expect(window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: new Error('late failure') })).toBe(false);
+        window.ParcelGroundFallback.clearWithoutParcels('sample');
+        expect(window.ParcelGroundFallback.isWithoutParcels('sample')).toBe(false);
     });
 
     it('turns the Schelling option into the plan layer, not into ground', () => {

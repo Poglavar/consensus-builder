@@ -3,6 +3,7 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 
+const SourceHealth = createRequire(import.meta.url)('../../frontend/js/parcels/source-health.js');
 const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
 
 const source = readFileSync(
@@ -24,7 +25,7 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase, refreshSharedFloorPlanModels };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase, refreshSharedFloorPlanModels, fetchSharedProposalResponse };`,
         context
     );
     return context.sharedImportHelpersForTest;
@@ -728,5 +729,35 @@ describe('shared import of a cancelled proposal', () => {
 
         expect(followServerLifecycle).toHaveBeenCalledWith(local, 'Cancelled');
         expect(result).toMatchObject({ applied: false, cancelled: true, reason: 'Cancelled' });
+    });
+});
+
+describe('shared response deadline', () => {
+    it('bounds the complete plan response body rather than waiting indefinitely', async () => {
+        vi.useFakeTimers();
+        try {
+            const fetch = vi.fn(async () => ({ ok: true, status: 200, json: () => new Promise(() => {}) }));
+            const { fetchSharedProposalResponse } = loadSharedImportHelpers({ fetch,
+                window: { ParcelSourceHealth: SourceHealth, PARCEL_LOAD_TIMEOUT_MS: 10 } });
+            const pending = fetchSharedProposalResponse('/plans/test');
+            const rejected = expect(pending).rejects.toMatchObject({ code: 'proposal-load-timeout', status: 504 });
+            await vi.advanceTimersByTimeAsync(10);
+            await rejected;
+            expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+        } finally { vi.useRealTimers(); }
+    });
+
+    it('does not multiply a hung batch into individual proposal requests', async () => {
+        vi.useFakeTimers();
+        try {
+            const fetch = vi.fn(() => new Promise(() => {}));
+            const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch,
+                window: { ParcelSourceHealth: SourceHealth, PARCEL_LOAD_TIMEOUT_MS: 10 } });
+            const pending = fetchSharedProposalBatch(['1', '2'], 'https://api.example');
+            const rejected = expect(pending).rejects.toMatchObject({ code: 'proposal-load-timeout' });
+            await vi.advanceTimersByTimeAsync(10);
+            await rejected;
+            expect(fetch).toHaveBeenCalledOnce();
+        } finally { vi.useRealTimers(); }
     });
 });
