@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 const scope = createRequire(import.meta.url)('../../frontend/js/agent-wallet-scope.js');
+const proposalLinks = createRequire(import.meta.url)('../../frontend/js/agent-proposal-links.js');
 const evm = { chainId: '0x1', walletAddress: '0xAbC' };
 
 describe('agent wallet scope', () => {
@@ -57,7 +58,8 @@ function readers() {
     let userControlled = true;
     const writes = [];
     const context = vm.createContext({
-        window: { AgentWalletScope: scope },
+        window: { AgentWalletScope: scope, AgentProposalLinks: proposalLinks },
+        getAgentProposalRecords: () => [],
         PersistentStorage: new Map([['parcel_model-parcel_owner', 'user']]),
         agentStorage: { getAgent: () => ({ userControlled }) },
         getCurrentAgentWalletScope: () => active,
@@ -99,19 +101,19 @@ describe('wallet evidence in ownership readers', () => {
     });
     it('updates a matching cached acceptance list without advancing its chain fetch time', () => {
         const h = readers();
-        h.context.ensureAgentDialogListState('user', [], [], [], ['proposal']);
+        h.context.ensureAgentDialogListState('user', [], [], [], [proposalLinks.local('proposal')]);
         h.context.updateAgentDialogAfterAcceptance('proposal');
-        expect(h.writes).toEqual([['user', { scope: evm, lastFetchedAt: 1000, accepted: ['proposal'], pending: [] }]]);
+        expect(h.writes).toEqual([['user', { scope: evm, lastFetchedAt: 1000, accepted: [proposalLinks.local('proposal')], pending: [] }]]);
     });
     it('does not write local acceptance into another wallet scope or another agent profile', () => {
         const h = readers();
-        h.context.ensureAgentDialogListState('user', [], [], [], ['proposal']);
+        h.context.ensureAgentDialogListState('user', [], [], [], [proposalLinks.local('proposal')]);
         h.setScope({ chainId: 1, walletAddress: 'other' });
         h.context.updateAgentDialogAfterAcceptance('proposal');
         expect(h.writes).toEqual([]);
         h.context.document.querySelector = () => ({ dataset: { agentId: 'other-agent' } });
         h.context.updateAgentDialogAfterAcceptance('another-proposal');
-        expect(h.context.agentDialogListData.accepted.data).toEqual(['proposal']);
+        expect(h.context.agentDialogListData.accepted.data).toEqual([proposalLinks.local('proposal')]);
     });
 
 });

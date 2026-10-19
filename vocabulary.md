@@ -505,6 +505,17 @@ activity list is not the current-terms consent tally and establishes neither exe
 payment. Per-entry evidence and qualified proposal references remain audit work.
 [Profile rendering and connected-wallet loader](frontend/js/agents.js).
 
+Profile proposal lists now carry exactly one `localProposalId` or complete `chainRef` per link.
+Local activity arrays are converted at the profile boundary; chain query results retain their
+network, contract/program and token/account even before metadata loads. Resolution never treats a
+chain token as a local key or a missing local key as a publication row. A known local copy and its
+chain link can share one entry only when the full reference matches; equal bare IDs are insufficient.
+Missing local records are unavailable, not asserted deleted; missing chain records remain visible
+and open through the qualified chain reader. Neither receives a lifecycle badge from its ID spelling.
+Displayed local keys retain their exact values, including numeric keys. This is a session-list
+contract break with no reader for the former unqualified cached arrays.
+[Link model](frontend/js/agent-proposal-links.js), [profile adapter](frontend/js/agents.js).
+
 ### Modeled land value and total
 
 The agent dialog's land estimate uses USD 200 per m² and an ETH/USD conversion estimate (default
