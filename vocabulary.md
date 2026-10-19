@@ -6,7 +6,7 @@ This is the maintained vocabulary for Consensus Builder: what its records mean, 
 
 **Baseline:** 2026-10-19, branch `colosseum-worlds-fair`, HEAD `83b1c31fc2facf53430e2959e2fa08347e356c4c`, plus the working-tree edits already present during the audit. Those edits included parcel, geometry, building, readjustment and rendering modules. This is a source audit, not a census of stored rows or verification of a deployed release. References identify files and symbols so they remain useful when line numbers move. The adjacent `cadastre-data` solver was inspected for comparison at HEAD `08b1e96`; it is a separate implementation.
 
-**Status convention:** “Observed” describes code. “Proposed” describes a possible vocabulary or interoperability change. Findings remain open unless their entry records a resolution. The local term identifiers in backticks below are documentation identifiers, not a deployed RDF namespace.
+**Status convention:** “Observed” describes code. “Proposed” describes a possible vocabulary or interoperability change. Findings remain open unless their entry records a resolution. The local term identifiers in backticks below are documentation identifiers. The first implemented RDF publication is described under “Current machine-readable publication”; repository implementation does not imply deployment.
 
 **Change policy:** This is experimental software without customer compatibility obligations. Improve the model in small, verified changes, using one current contract. Existing data can be discarded and recreated; do not add migrations or parallel legacy/current flows solely to preserve it. Record changed meanings and commitment coverage here. Historical commitments are not rewritten or reinterpreted as proof under a new contract.
 
@@ -17,9 +17,9 @@ small changes; the detailed findings below remain the record of unresolved issue
 
 | Work | Status | Result / next bounded step |
 | --- | --- | --- |
-| Code-grounded definitions, relationships and standards research | **Done** | Baseline vocabulary, 18 audit findings, Schema.org and construction/geospatial vocabulary mappings recorded. External mappings are proposals, not implemented exports. |
+| Code-grounded definitions, relationships and standards research | **Done** | Baseline vocabulary, 18 audit findings, Schema.org and construction/geospatial vocabulary mappings recorded. Broader external mappings remain proposals; the bounded JSON-LD view below implements the reviewed record, concept and site mappings. |
 | Plan commitment coverage — V04 | **Done** | Every member hash covers authored site and decision kind, including readjustment proposals. |
-| Identifier namespaces — V01 | **Partly done** | Row/authored lookup namespaces, creation inputs, HEAD headers and named-plan API fields clarified. Browser chain imports and sync now match full chain references, preserving case-sensitive program/account IDs and refusing ambiguous local matches. General proposal API/browser field names and globally qualified export identifiers remain. |
+| Identifier namespaces — V01 | **Partly done** | Row/authored lookup namespaces, creation inputs, HEAD headers and named-plan API fields clarified. Browser chain imports and sync now match full chain references, preserving case-sensitive program/account IDs and refusing ambiguous local matches. The JSON-LD detail view now qualifies publication entities by canonical API URL and keeps row, authored and chain identifiers separate. General proposal API/browser field names remain. |
 | Published design and named-plan immutability — V03 | **Done in code; locally verified** | Database guards protect published content and named-plan identity. Incomplete commitments are rejected; minting also checks current members and the aggregate hash. Activation requires the backend DDL deployment. |
 | Qualified spatial and planning terms — V02, V05, V10, V11, V13 | **In progress** | V02 labels distinguish local composition from named membership. V05 selection labels distinguish source parcels, source parts, formed ground, readjustment plot pieces and remainders; plot pieces reference their authored content, and custom register references are source-qualified. Remaining: consistent provider/jurisdiction/version qualification and other parcel-labelled surfaces; internal names and statutory plans/drawings; proposal site/project site; permitted envelope/illustrative massing/observed building. |
 | Parties, rights and approvals — V06, V07, V15 | **In progress** | V15 site/subdivision labels state unknown ownership and explain omitted draft accounting; the open-ground accounting marker is documented without a title assertion. V07 removes parcel-to-owner acceptance inference, requires current term commitments for local tallies, and keeps seller-offer creation free of presumed owner consent. Unsigned local tallies are excluded from API/portable records and remote imports. Rights-party, signing-key, local-roster, allocation and containing-proposal namespaces are now explicitly scoped. Remaining: approval presentations and ownership-labelled surfaces that still overstate their evidence. |
@@ -27,7 +27,7 @@ small changes; the detailed findings below remain the record of unresolved issue
 | Classifications and quantities — V09, V12, V16 | **In progress** | V12 keeps the planner’s floor area, modeled gain and offer tied to the published geometry; samples above a stated coverage/GFA ceiling are rejected. V16 removes the seller dialog’s boolean-to-money shortfall and no-op Fund action. Structure archives now cover park, square, lake and station, preserving structure category separately from decision kind and excluding local state. Market percentages are labeled as pool shares, with devnet USDC as their basis. Chain imports keep atomic balances separate from explicit authored offers and do not guess an unknown token or its decimals. The shared design-goal concept list now drives editor completeness and structure archives, separately from decision kind and physical-object type. Rights, approval weights, allocation fractions, valuation/cash bases and market pool shares now have explicit unit/basis definitions. Other historical/free-text classifications and misleading presentations remain open. |
 | Named-plan scoring scope — V19 | **Resolved for current-session scoring** | Exact verified members must be the whole applied composition. Other applied proposals prevent a named score. Counts and dimensions use one captured fabric revision; changes detected before Start or Repeat require reopening the score. An isolated evaluator and historical reproducibility are not implemented. |
 | Record authority, relationships and documentation — V14, V17, V18 | **Done for the audited boundaries** | The published-record authority table covers column/JSON precedence and mirror overrides; the API emits one SQL-owned chain attachment, with null clearing stale JSON claims. V18’s cited documentation matches the code. Market help distinguishes parcel-reference grouping from mutually exclusive or geometric alternatives. |
-| Machine-readable publication | **Queued after definitions stabilize** | Choose stable IRIs and publish a small JSON-LD projection; reuse Schema.org, GeoSPARQL, PROV and relevant building terms where meanings match; validate against concrete consumer questions. No triple store is required. |
+| Machine-readable publication | **First projection implemented; locally verified** | Published proposal and named-plan detail routes expose opt-in JSON-LD, with canonical publication IRIs, a versioned vocabulary, ordered commitment nodes and GeoSPARQL site geometry. JSON-LD expansion/RDF conversion and concrete consumer questions are tested. Qualified source releases, rights/decision evidence, building topology and SHACL shapes remain future extensions. |
 
 ## Central terms as implemented
 
@@ -573,7 +573,7 @@ flowchart LR
 
 | ID | Finding and evidence | Consequence / decision to make |
 | --- | --- | --- |
-| V01 | **“Proposal ID” means row ID, authored ID or chain ID. Partially resolved 2026-10-19.** Baseline lookup preferred row IDs but fell back to authored IDs; creation accepted three synonymous input keys; `/plans` called numeric IDs “minted”. [routes](backend/routes/proposals.js), [plan validation](backend/routes/ens-plans.js) | Lookup now uses disjoint row/authored namespaces, creation accepts only `proposalId`, and HEAD headers name the two identifier kinds. Named-plan requests/responses and their consumers now use `proposalRowIds`, `proposalRowId` and `authoredProposalId`; membership does not imply minting. The identifier table above defines the chain distinction. Remaining: qualify general proposal API/browser identifiers and export identities in coordinated small changes. |
+| V01 | **“Proposal ID” means row ID, authored ID or chain ID. Partially resolved 2026-10-19.** Baseline lookup preferred row IDs but fell back to authored IDs; creation accepted three synonymous input keys; `/plans` called numeric IDs “minted”. [routes](backend/routes/proposals.js), [plan validation](backend/routes/ens-plans.js) | Lookup now uses disjoint row/authored namespaces, creation accepts only `proposalId`, and HEAD headers name the two identifier kinds. Named-plan requests/responses and their consumers now use `proposalRowIds`, `proposalRowId` and `authoredProposalId`; membership does not imply minting. The identifier table above defines the chain distinction. The JSON-LD projection now qualifies proposal/plan entities by publication API and exposes row/authored/chain identifiers separately. Remaining: clarify general proposal API/browser identifier names in coordinated small changes. |
 | V02 | **“Plan” means a named collection, local composition, statutory source, or drawing. Partially resolved 2026-10-19.** Named-plan order is also different from formation replay order. [plan store](backend/plans/plan-store.js), [replay](frontend/js/proposals/plan-order.js) | Sharing, replay, applied-proposal statistics and grain-score scope now use qualified labels in all four locales. “Create named plan” fixes selected membership; untitled named plans show their slug in scoring. [The contract](plans.md#named-membership-and-local-application) separates membership, local application, sharing selection, chronology and dependency. Calculation, replay order and data formats are unchanged. Remaining: internal `sharePlan`/`plan` names, statutory-plan/drawing terminology, and the separate scoring correctness issue V19. |
 | V03 | **Fork immutability enforcement and complete commitments. Resolved in code 2026-10-19; locally verified.** Baseline operator scripts could overwrite published content and plan membership; absent hashes could yield `changed: false`. The normal editor already forked published/minted designs. | [Database guards](backend/db/publication-immutability.sql) now reject authored-content and named-plan identity updates, including operator UPSERTs. [Plan validation](backend/plans/plan-commitment.js) requires complete member commitments; invalid plans are rejected/recreated, and minting checks actual content and aggregate agreement. Retained proposal rows provide history without duplicate snapshots. Mutable metadata is explicit. Database enforcement takes effect when its deployment DDL is applied; no persistent database was changed during verification. |
 | V04 | **Plan hashes omitted authored decision kind and site. Resolved 2026-10-19.** The baseline probe showed that changing either field left an ordinary member hash unchanged; the readjustment deal fingerprint also omitted this proposal-level scope. The former site exclusion conflated authored geometry with its PostGIS projection. [plan hashing](backend/plans/plan-hash.js), [sharing](frontend/js/proposals/sharing.js) | Every plan member now commits to `proposal_data.kind` and `proposal_data.site`; readjustment deal fingerprints remain components of that wider commitment. One current SHA-256 path replaces the old path, with no compatibility verifier or migration. [Focused headless unit tests](backend/test/plan-hash.test.js) cover both member types; [route tests](backend/test/ens-plans.test.js) verify drift reporting without rewriting the stored hash. This resolves the missing plan scope, not every difference between plan, sharing and consent projections. |
@@ -597,7 +597,7 @@ flowchart LR
 
 This repository already uses Schema.org JSON-LD for the website/application and instructional pages. The real-estate catalogue emits `Apartment`, `ApartmentComplex`, `PostalAddress` and quantitative floor size. The floor-plan ingestion pipeline also reads third-party JSON-LD. [Application markup](frontend/index.html), [instructional page](frontend/how-to-use-buildings.html), [catalogue generator](backend/routes/novogradnje.js), [page evidence reader](backend/floor-plans/page-evidence.js).
 
-Those are useful existing integration points. The audited proposal/plan/parcel transport remains application JSON, GeoJSON and chain metadata; the audit did not find a shared domain RDF ontology or JSON-LD context for these core records. JSON Schema validates JSON shape; a JSON key named `schema` or a chain attestation schema does not itself supply RDF meaning.
+Those are useful existing integration points. At the audit baseline, proposal/plan/parcel transport used application JSON, GeoJSON and chain metadata without a shared domain RDF vocabulary. The first opt-in proposal/plan projection described below has since been implemented alongside the normal application transport. JSON Schema validates JSON shape; a JSON key named `schema` or a chain attestation schema does not itself supply RDF meaning.
 
 ## External vocabulary assessment
 
@@ -634,70 +634,68 @@ Do not use `Landform` merely because a resource is land: it describes geographic
 | **W3C SKOS** | Stable design/decision-kind concepts, preferred labels, aliases, definitions, broader/narrower relationships and reviewed external concept mappings. | Useful for the vocabulary and multilingual UI labels. Use `closeMatch`/`exactMatch` only between appropriately modeled concepts after review; use RDFS/OWL class relations for actual class alignment. [Recommendation](https://www.w3.org/TR/skos-reference/) |
 | **W3C SHACL** | Validate an exported graph: required identifiers, ordered membership, allowed kinds, geometry roles, units and rights completeness. | RDF/OWL's open-world semantics do not enforce the application's closed-world publication checks. Shapes and existing application validation should express those checks. Spatial coverage and signature validation still need their own implementations. [Recommendation](https://www.w3.org/TR/shacl/) |
 
-### Proposed incorporation path
+### Current machine-readable publication
 
-1. **Resolve the meanings first.** Start with V01–V08 and V11–V12. Keep a small local vocabulary for proposals, named plans, bindings, permitted envelopes, rights snapshots and decision events. Reuse external terms only where the meanings match. A general construction vocabulary will not define this application's consent model for us.
-2. **Choose durable identifiers and publication policy.** Separate vocabulary IRIs, entity IRIs, document URLs, versions and geometry resources. Use globally qualified proposal/parcel/building identities. Decide what happens to entity links when a database row is copied, a cadastre changes, or a plan is superseded. Do not publish replay-local fabric IDs as permanent cadastral identity.
-3. **Add a read-only JSON-LD projection.** Begin with published proposals and named plans, extending the existing public-page metadata. Keep current application JSON, GeoJSON and validation as the implementation boundary. Link source datasets/documents and derived representations with PROV; add BOT topology when actual building/floor evidence exists. A triple store is not required to publish JSON-LD.
-4. **Validate with real consumer questions.** For example: “Which proposals affect this source parcel?”, “Which exact proposal versions does this plan commit to?”, “Is this volume a permission, illustration or survey?”, and “Which party/actor/evidence supports this decision?” Validate JSON-LD expansion and shapes, then compare results with the existing APIs. Schema.org validation alone cannot establish these domain relationships.
+The chosen vocabulary namespace is `https://urbangametheory.xyz/vocabulary/1/#`.
+The human page is `/vocabulary/1/`, with definitions in `vocabulary.jsonld`; `/vocabulary/`
+links to the current version. Definitions and controlled concepts have explicit RDFS/SKOS
+meaning, beyond prefix aliases. The source is [semantics/vocabulary.js](backend/semantics/vocabulary.js),
+which reuses the shared design-goal and decision-kind contracts. Run `npm run build:vocabulary`
+from `backend/` to regenerate the checked-in human and machine documents. Published term
+meanings must remain stable; a breaking meaning change requires a new vocabulary version.
+`/schemas/` is reserved for validation schemas if those are published later.
 
-The following is **an illustrative future export**, not a current API payload. `example.org` IRIs are deliberately fictitious; the project namespace is now selected under `https://urbangametheory.xyz/vocabulary/`; this old example does not allocate actual entity identifiers. The graph keeps a plan, its member, the spatial site, its geometry, and a binding to a source parcel distinct. An ordered list preserves member order. A full export would also include the content commitments, source release, measured intrusion and computation time.
+`GET /proposals/:id?format=jsonld` and `GET /plans/:slug?format=jsonld` return
+`application/ld+json`. Each has an inline context and requires an explicit valid
+`PUBLIC_API_BASE_URL`; a missing or unsuitable base returns 503 for this representation.
+Request host headers never create entity identities. Normal JSON reads keep their contract.
+No content-negotiation, RDF store or automatic data migration is introduced.
 
-```json
-{
-  "@context": {
-    "schema": "https://schema.org/",
-    "geo": "http://www.opengis.net/ont/geosparql#",
-    "cb": "https://example.org/vocab/",
-    "members": { "@id": "cb:members", "@type": "@id", "@container": "@list" },
-    "site": { "@id": "cb:hasSite", "@type": "@id" },
-    "binding": { "@id": "cb:hasBinding", "@type": "@id" },
-    "boundParcel": { "@id": "cb:boundParcel", "@type": "@id" }
-  },
-  "@graph": [
-    {
-      "@id": "https://example.org/plans/harbor-v1",
-      "@type": ["cb:NamedPlan", "schema:Collection"],
-      "schema:name": "Harbor concept",
-      "members": ["https://example.org/proposals/design-a"]
-    },
-    {
-      "@id": "https://example.org/proposals/design-a",
-      "@type": ["cb:Proposal", "schema:CreativeWork"],
-      "cb:decisionKind": { "@id": "cb:community-vote" },
-      "site": "https://example.org/sites/site-a",
-      "binding": "https://example.org/bindings/binding-a"
-    },
-    {
-      "@id": "https://example.org/sites/site-a",
-      "@type": ["cb:ProposalSite", "geo:Feature"],
-      "geo:hasGeometry": { "@id": "https://example.org/geometries/site-a-v1" }
-    },
-    {
-      "@id": "https://example.org/geometries/site-a-v1",
-      "@type": "geo:Geometry",
-      "geo:asWKT": {
-        "@type": "geo:wktLiteral",
-        "@value": "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON ((0 0, 0.001 0, 0.001 0.001, 0 0.001, 0 0))"
-      }
-    },
-    {
-      "@id": "https://example.org/bindings/binding-a",
-      "@type": "cb:ParcelBinding",
-      "site": "https://example.org/sites/site-a",
-      "boundParcel": "https://example.org/cadastre/provider-a/parcel-42",
-      "cb:toleranceMetres": 0
-    },
-    {
-      "@id": "https://example.org/cadastre/provider-a/parcel-42",
-      "@type": ["cb:CadastralParcel", "geo:Feature"],
-      "schema:identifier": "provider-a:parcel-42"
-    }
-  ]
-}
-```
+- **Publication identity:** a proposal is `{canonicalApi}/proposals/{rowId}#proposal`, even
+  when retrieved by authored ID. A plan is `{canonicalApi}/plans/{slug}#plan`. These identify
+  records in that publication store, not immutable snapshots of every returned field. Copying a
+  database to a different canonical API creates distinct publication entities; no `owl:sameAs`
+  is inferred. Preserve the canonical URL across host moves when preserving publication identity.
+- **Proposal meaning:** `cb:Proposal`, `schema:CreativeWork` and `prov:Entity` describe the
+  authored record. Exact shared design goals and interpreted decision kinds link to separate
+  SKOS schemes. Unknown goal strings remain literals. The API's `draft`, Active, terminal and
+  Unknown lifecycle values use a record-state scheme; no current chain observation or physical
+  realization is inferred. Author text is an attribution label, not a verified person or signer.
+- **Spatial meaning:** the site is a `cb:ProposalSite` / `geo:Feature` with a separate
+  `geo:Geometry`. `geo:asGeoJSON` retains the authored Polygon/MultiPolygon coordinates as a
+  `geo:geoJSONLiteral` in CRS84 longitude/latitude. A malformed or differently referenced site
+  returns 422; this does not validate topological correctness, regulatory compliance or binding.
+  Cadastral declarations get proposal-scoped reference nodes containing their exact identifier;
+  absent provider/jurisdiction/release qualification is not replaced by a guessed global parcel IRI.
+- **Chain and quantities:** only a complete canonical `onchain` attachment is exported, as a
+  declared location. It does not prove chain state or execution. Offer and budget are separate
+  `schema:MonetaryAmount` values, only when a finite nonnegative amount and explicit currency
+  are present; zero is preserved. Atomic balances never become offers. The projection is an
+  allowlist over the canonical serializer and excludes local map state, unsigned consent claims,
+  arbitrary embedded JSON-LD, and unverified execution timestamps.
+- **Named commitments:** an RDF list preserves member order. Each `cb:PlanMembership` links
+  the published row and its saved member hash, separately from the current hash. Missing members
+  and current readjustment content that cannot be hashed are flagged explicitly; neither gets an
+  invented current hash. Saved plan/member hashes use the existing application commitment
+  contract and do not claim to hash the whole JSON-LD response. Malformed saved commitments
+  retain the ordinary API's 422 response. Supersession links remain explicit named-plan relations.
 
-Before adopting such a projection, define the local predicates and their domains/ranges. A JSON-LD context maps syntax to IRIs; it does not supply those definitions by itself. Distinguish a code-list concept such as `community-vote` from an actual voting event. Do not use `owl:sameAs` or `owl:equivalentClass` to paper over unresolved findings.
+Implementation: [projection](backend/semantics/published-records.js),
+[proposal route](backend/routes/proposals.js), [plan route](backend/routes/ens-plans.js),
+[artifact generator](backend/scripts/build-vocabulary.mjs),
+[consumer checks](backend/test/semantic-publication.test.js),
+[route checks](backend/test/semantic-publication-route.test.js).
+The tests use the pinned JSON-LD 1.1 processor to expand, flatten and convert exports to RDF,
+then ask for distinct identities, geometry roles, monetary bases and ordered saved/current plan
+commitments. They verify every local emitted term is defined and generated pages match source.
+This is not SHACL, whole-ontology, spatial or signature conformance testing.
+
+Further projections should add qualified source releases/bindings, measured versus permitted
+geometry roles, and decision evidence only when the underlying contracts supply that information.
+Add BOT topology when actual building/floor evidence exists; use PROV activity and attribution
+relations when the producer, source and observation are known. Do not assert generic ownership,
+`owl:sameAs` or `owl:equivalentClass` to conceal unresolved audit findings. The earlier fictitious
+example is replaced by the implemented, tested projection above.
 
 ## Maintenance
 

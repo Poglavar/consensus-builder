@@ -10,6 +10,7 @@ import { isProposalRowId, oneProposalByIdentifierClause, partitionProposalIdenti
 const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
+import { proposalDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { imageFileExists } from '../utils/image-store.js';
 import { canonicalizeLifecycleStatus, resolveIncomingLifecycleStatus } from '../proposals/lifecycle.js';
 import {
@@ -1587,9 +1588,15 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }
 
-            const [proposal] = await attachProposalFloorModels(pool, [serializeProposalRow(result.rows[0])]);
+            const serialized = serializeProposalRow(result.rows[0]);
+            if (req.query.format === 'jsonld') {
+                const document = proposalDocument(serialized, { baseUrl: publicApiBaseUrl() });
+                return res.type('application/ld+json').json(document);
+            }
+            const [proposal] = await attachProposalFloorModels(pool, [serialized]);
             res.json(proposal);
         } catch (err) {
+            if ([SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR].includes(err.code)) return res.status(err.status).json({ error: err.message, code: err.code });
             if (isInvalidRecordError(err)) {
                 console.warn(`GET /proposals/${req.params.id}: ${err.detail || err.message}`);
                 return res.status(422).json({ error: err.message, code: err.code, detail: err.detail });

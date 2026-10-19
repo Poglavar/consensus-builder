@@ -8,6 +8,8 @@ import { normalizeCityCode } from './proposals.js';
 import { changedMembers, memberHash, nextVersionSlug, planHash } from '../plans/plan-hash.js';
 import { proposalAccountOf } from '../markets/contests.js';
 import { assertPlanCommitment, planCommitmentError } from '../plans/plan-commitment.js';
+import { publicApiBaseUrl } from '../utils/public-base-url.js';
+import { planDocument, SEMANTIC_BASE_ERROR } from '../semantics/published-records.js';
 
 const ENS_NAMESPACE = 'proposals.urbangametheory.eth';
 // A named plan resolves to `<publicBaseUrl>/proposals/<id,id,id…>` (see ens.js), and that string is
@@ -120,6 +122,15 @@ export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } 
         if (invalid) return res.status(invalid.status).json({ code: invalid.code, error: invalid.message });
         const ids = Array.isArray(row.proposal_ids) ? row.proposal_ids : [];
         const [members, supersededBy] = await Promise.all([store.members(ids), store.supersededBy(slug)]);
+        if (req.query.format === 'jsonld') {
+            try {
+                const document = planDocument(row, members, supersededBy, { baseUrl: publicApiBaseUrl() });
+                return res.type('application/ld+json').json(document);
+            } catch (err) {
+                if (err.code === SEMANTIC_BASE_ERROR) return res.status(err.status).json({ error: err.message, code: err.code });
+                throw err;
+            }
+        }
         const byId = new Map(members.map(member => [String(member.id), member]));
         const changed = new Set(changedMembers(row.member_hashes, members));
         res.json({
