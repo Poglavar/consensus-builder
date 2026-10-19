@@ -5,6 +5,13 @@ const ring='530800 180200 530810 180200 530810 180210 530800 180210 530800 18020
 function feature(id='123',coordinates=ring){return `<wfs:member><lr:PREDEFINED g:id="row"><lr:INSPIREID>${id}</lr:INSPIREID><lr:OWNER>private ignored</lr:OWNER><lr:GEOMETRY><g:Polygon srsName="urn:ogc:def:crs:EPSG::27700" srsDimension="2"><g:exterior><g:LinearRing><g:posList>${coordinates}</g:posList></g:LinearRing></g:exterior></g:Polygon></lr:GEOMETRY></lr:PREDEFINED></wfs:member>`;}
 function xml(features=feature(),attrs='numberMatched="1" numberReturned="1"'){return `<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:lr="${ns}" xmlns:g="${gml}" ${attrs}>${features}</wfs:FeatureCollection>`;}
 describe('namespace-aware parcel GML reader',()=>{
+ it('reports declared and actual counts when a source claims 190 parcels but supplies 189', async()=>{
+  const members=Array.from({length:189},(_,i)=>feature(String(i+1))).join('');
+  await expect(parseGmlParcels(xml(members,'numberMatched="190" numberReturned="190"'))).rejects.toMatchObject({
+   status:502,code:'parcel-source-unavailable',parcelCounts:{matched:190,returned:190,received:189},
+   message:expect.stringMatching(/matched=190.*returned=190.*received=189/)
+  });
+ });
  it('uses the explicit MapServer schema only for GML 3.2 EPSG:3857 ID and geometry',async()=>{
   const xml=`<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ms="${MAPSERVER_GML_SCHEMA.featureNamespace}" xmlns:g="http://www.opengis.net/gml/3.2" numberMatched="1" numberReturned="1"><wfs:member><ms:dzialki><ms:msGeometry><g:MultiSurface srsName="urn:ogc:def:crs:EPSG::3857" srsDimension="2"><g:surfaceMember><g:Polygon><g:exterior><g:LinearRing><g:posList>2165000 6750000 2165010 6750000 2165010 6750010 2165000 6750010 2165000 6750000</g:posList></g:LinearRing></g:exterior><g:interior><g:LinearRing><g:posList>2165002 6750002 2165004 6750002 2165004 6750004 2165002 6750004 2165002 6750002</g:posList></g:LinearRing></g:interior></g:Polygon></g:surfaceMember></g:MultiSurface></ms:msGeometry><ms:ID_DZIALKI>146501_1.0001.31/1</ms:ID_DZIALKI><ms:NUMER_DZIALKI>ignored</ms:NUMER_DZIALKI></ms:dzialki></wfs:member></wfs:FeatureCollection>`;
   const result=await parseGmlParcels(xml,{schema:MAPSERVER_GML_SCHEMA});

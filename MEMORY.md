@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-19: User approved bounded proposer parcel-read retries (three attempts within three minutes, respecting provider cooldowns) and declared/received count diagnostics; incomplete replies remain failures and artifact uploads or signed actions stay outside the retry loop.
+
 - 2026-10-19: Vocabulary work proceeds in small verified changes under one current contract; experimental records may be recreated instead of preserving legacy data through migrations or parallel code paths.
 
 - 2026-10-19: Run two additional persistent web researchers for unsupported cities outside Africa, seeking genuinely new cadastral sources rather than extending known providers; preserve the separate two-worker Africa research queue.

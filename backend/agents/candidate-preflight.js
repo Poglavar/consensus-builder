@@ -2,6 +2,7 @@
 // The checker is injected so this orchestration stays headless and testable; production passes the
 // same checkProposalBinding used by POST /agent/proposals.
 import { buildProposalRecord } from './record-builder.js';
+import { retryParcelRead } from './parcel-read-retry.js';
 
 function neutralPick(candidate) {
     return {
@@ -32,7 +33,7 @@ export function prioritizedPlannedCandidates(planned) {
 }
 
 export async function checkCandidateBinding({
-    db, candidate, pick, persona, runId, city, turf, checkBinding
+    db, candidate, pick, persona, runId, city, turf, checkBinding, log, retryOptions
 }) {
     if (typeof checkBinding !== 'function') throw new TypeError('checkBinding must be injected');
     const record = buildProposalRecord({
@@ -42,9 +43,9 @@ export async function checkCandidateBinding({
     // missing binding hits; the canonical checker must refuse a mismatching site as published.
     // The posted agent record has no authored `site`; match the route's create precheck exactly and
     // let checkProposalBinding derive its footprint from geometry.buildings.
-    const result = await checkBinding(db, record, record.cadastreParcelIds, {
+    const result = await retryParcelRead(() => checkBinding(db, record, record.cadastreParcelIds, {
         city, parcelSourceId: candidate.parcelSourceId || null
-    });
+    }), { ...retryOptions, sourceId: candidate.parcelSourceId || city || 'cadastre', log });
     if (!result || typeof result.ok !== 'boolean') {
         throw new Error(`binding checker returned no boolean result for ${candidate.candidateId}`);
     }
@@ -63,7 +64,7 @@ export async function checkCandidateBinding({
 
 export async function preflightCandidates({
     db, rankedCandidates, limit, scanLimit = rankedCandidates?.length,
-    persona, runId, city, turf, checkBinding
+    persona, runId, city, turf, checkBinding, log, retryOptions
 }) {
     if (!Array.isArray(rankedCandidates)) throw new TypeError('rankedCandidates must be an array');
     if (!Number.isInteger(limit) || limit < 1) throw new RangeError('limit must be a positive integer');
@@ -74,7 +75,7 @@ export async function preflightCandidates({
     for (const candidate of rankedCandidates.slice(0, scanLimit)) {
         scanned += 1;
         const result = await checkCandidateBinding({
-            db, candidate, persona, runId, city, turf, checkBinding
+            db, candidate, persona, runId, city, turf, checkBinding, log, retryOptions
         });
         if (result.ok) candidates.push(candidate);
         else rejected.push(bindingRejection(candidate, result));
