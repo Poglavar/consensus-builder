@@ -2,7 +2,8 @@
 // with the model's heights; two-part footprints survive as MultiPolygons; artefacts are dropped
 // and reported rather than silently kept or lost.
 import { describe, expect, it } from 'vitest';
-import { buildingHeightM, convertBuildings, footprintToWgs84 } from '../scripts/import-candlestick-courtyard.mjs';
+import { createHash } from 'node:crypto';
+import { buildingHeightM, buildRecords, convertBuildings, footprintToWgs84 } from '../scripts/import-candlestick-courtyard.mjs';
 
 // A small square near the tower centre of the published model (UTM 10N metres).
 const SQUARE = [[554200, 4174300], [554220, 4174300], [554220, 4174320], [554200, 4174320], [554200, 4174300]];
@@ -45,10 +46,32 @@ describe('convertBuildings', () => {
         ] };
         const out = convertBuildings(model);
         expect(out.features.map(f => f.properties.id)).toEqual(['A', 'B']);
-        expect(out.features[0].properties).toMatchObject({ type: 'proposedBuilding', block: 'F001', name: 'Mixed', levels: 3, height: 9.75 });
+        expect(out.features[0].properties).toMatchObject({ type: 'proposedBuildingSingle', block: 'F001', name: 'Mixed', levels: 3, height: 9.75 });
         expect(out.features[1].geometry.type).toBe('MultiPolygon');
         expect(out.dropped).toEqual(['C', 'D']);
         expect(out.levelsHistogram).toEqual({ 3: 1, 6: 1 });
         expect(out.footprintM2).toBe(800);
+    });
+
+    it('writes one ordinary Freeform proposal per source building with complete provenance and geometry', () => {
+        const stats = convertBuildings({ buildings: [
+            { id: 'house/A', block_id: 'F001', footprint_area_m2: 400, footprint_utm_m: { type: 'Polygon', coordinates: [SQUARE] }, source_control_properties: { levels: 3, program: 'Mixed' }, occupied_floorplates: plates(9.75) },
+            { id: 'house/B', block_id: 'F001', footprint_area_m2: 200, footprint_utm_m: { type: 'Polygon', coordinates: [SQUARE.map(([x, y]) => [x + 50, y])] }, source_control_properties: { levels: 5 }, occupied_floorplates: plates(16) }
+        ] });
+        const records = buildRecords({ model: { schema_version: '3.0.1', release: 'test' }, stats, city: 'san_francisco', proposalId: 'concept', expiresInDays: 0, sourceSha256: 'abc' });
+        expect(records.map(record => record.proposalId)).toEqual([
+            `concept-house-a-${createHash('sha256').update('house/A').digest('hex').slice(0, 8)}`,
+            `concept-house-b-${createHash('sha256').update('house/B').digest('hex').slice(0, 8)}`
+        ]);
+        for (const [index, record] of records.entries()) {
+            expect(record).toMatchObject({ goal: 'single', typologyType: 'single', primaryType: 'Urban Rule', site: stats.features[index].geometry });
+            expect(record.buildingProposal).toMatchObject({ typologyType: 'single', createdFrom: 'blockify', parameters: { typology: 'single', height: stats.features[index].properties.height, rotation: 0, footprintMode: 'polygon' } });
+            expect(record.geometry.buildings).toHaveLength(1);
+            expect(record.buildingProposal.parameters.source.sha256).toBe('abc');
+            expect(record).not.toHaveProperty('buildingGeometry');
+            expect(record).not.toHaveProperty('buildingProperties');
+            expect(record.buildingProposal).not.toHaveProperty('buildingFeature');
+            expect(record.buildingProposal.parameters).not.toHaveProperty('mode');
+        }
     });
 });

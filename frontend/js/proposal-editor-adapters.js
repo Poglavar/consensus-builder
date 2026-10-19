@@ -1155,6 +1155,9 @@
                 const context = draft.editorPayload?.context || {};
                 const features = context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : []);
                 if (!features.length) errors.push(issue('missing-building', 'Create at least one building footprint.', 'editorPayload.context.buildings'));
+                if ((draft.editorPayload?.typology || key) === 'single' && features.length > 1) {
+                    errors.push(issue('freeform-building-count', 'Each Freeform proposal contains one building. Use Done in the geometry editor to save separate buildings.', 'editorPayload.context.buildings'));
+                }
                 features.forEach((feature, index) => {
                     if (!featureGeometryValid(feature)) errors.push(issue('invalid-building', `Building ${index + 1} has an invalid footprint.`, `editorPayload.context.buildings.${index}`, feature?.geometry));
                 });
@@ -1235,6 +1238,9 @@
                 const context = clone(draft.editorPayload?.context || {});
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 const typology = draft.editorPayload?.typology || key;
+                if (typology === 'single' && features.length !== 1) {
+                    throw new Error('Each Freeform proposal must contain exactly one building.');
+                }
                 if (isFreePlacementDraft(draft)) {
                     const site = draft.editorPayload.placement.site;
                     if (!features.length || features.some(feature => !geometryWithinSite(feature, site))) {

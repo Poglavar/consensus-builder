@@ -232,6 +232,9 @@
             throw new Error('A Freeform building needs a polygon site.');
         }
         if (!building || !building.geometry) throw new Error('There is no building to keep.');
+        // Site authoring and authoritative binding use MultiPolygon, including a one-part site.
+        const normalizedSite = site.type === 'Polygon'
+            ? { type: 'MultiPolygon', coordinates: [clone(site.coordinates)] } : clone(site);
         const frozen = [building];
         const blockName = draft?.editorPayload?.context?.blockName || null;
         return {
@@ -240,10 +243,10 @@
             editorPayload: {
                 typology: 'single',
                 context: freeformContext(frozen, { blockName }),
-                placement: { free: true, site: clone(site), bindingStatus: 'pending' }
+                placement: { free: true, site: clone(normalizedSite), bindingStatus: 'pending' }
             },
             fields: {
-                site: clone(site), selectedParcelIds: [], cadastreParcelIds: [], binding: null,
+                site: clone(normalizedSite), selectedParcelIds: [], cadastreParcelIds: [], binding: null,
                 ...(draft?.fields?.titleOrigin === 'generated' ? { name: '', titleOrigin: 'generated' } : {})
             }
         };

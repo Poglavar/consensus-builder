@@ -2439,7 +2439,7 @@
             "surroundingsGreen": "Verde",
             "surroundingsInfo": "Una sola opción para toda la superficie de las parcelas alrededor de cada edificio de esta propuesta. Los edificios existentes en esas parcelas se eliminan en cualquier caso.",
             "uploadGeojsonLabel": "Subir GeoJSON",
-            "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+            "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
             "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. Usa «Fijar a la ubicación inicial» para mantenerla dentro; de lo contrario, puedes moverla libremente.",
@@ -2449,7 +2449,7 @@
             "parcelWhole": "Tomar las parcelas enteras",
             "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están.",
             "moveTogether": "Mover toda la propuesta",
-            "uploadInvalid": "El polígono subido no es válido o está fuera de la ubicación fijada."
+            "uploadInvalid": "La geometría subida no es válida o está fuera de la ubicación fijada."
         },
         "buildingUpload": {
             "title": "Subir un modelo de edificio",
@@ -3740,8 +3740,8 @@
                 "entryFailed": "Este contorno es demasiado complejo para editarlo a mano — vuelta a los controles. Consejo: sube «Simplificar (m)» para suavizarlo y prueba a editarlo de nuevo.",
                 "vertex": "Arrastra para remodelar",
                 "deleteVertex": "Eliminar el vértice seleccionado",
-                "uploadGeojson": "Subir GeoJSON",
-                "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+                "uploadGeojson": "Importar GeoJSON de edificios libres",
+                "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
                 "uploadError": "No se pudo leer el archivo."
             },
             "regenerate": "Regenerar"
@@ -3777,8 +3777,8 @@
             },
             "rotateCounterclockwise": "Girar 5 grados en sentido antihorario",
             "rotateClockwise": "Girar 5 grados en sentido horario",
-            "uploadGeojson": "Subir GeoJSON",
-            "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+            "uploadGeojson": "Importar GeoJSON de edificios libres",
+            "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
             "uploadOutside": "El polígono subido no se superpone con estas parcelas de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
             "vertexLabel": "Vértice de la huella",

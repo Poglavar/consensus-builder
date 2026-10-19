@@ -1565,7 +1565,7 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <button type="button" id="blockify-manual-toggle" class="btn btn-block" aria-pressed="false" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
-                    <button type="button" id="blockify-geojson-upload" class="btn btn-block" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                    <button type="button" id="blockify-geojson-upload" class="btn btn-block" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Import Freeform GeoJSON</button>
                     <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" hidden>
                 </div>
                 <div class="parameter-info">
@@ -2055,7 +2055,7 @@ async function requestCloseBlockifyModal() {
 // Tear the blockify modal down. This is pure teardown: the design is committed (or not) by the
 // caller — "Done" saves first, X/Esc discards the design session first.
 function closeBlockifyModal(options = {}) {
-    const { preservePending = false } = options;
+    const { preservePending = false, continueDesignSession = false } = options;
     const hadModal = !!blockifyModal;
     if (blockifyDesignChangeTracker) blockifyDesignChangeTracker.stop();
     blockifyHistoryKeydown?.();
@@ -2114,7 +2114,7 @@ function closeBlockifyModal(options = {}) {
         // Only "Done" commits — it tears down with preservePending after saving. Every other
         // close abandons the design session, leaving the edited object exactly as it was.
         if (!preservePending) window.discardProposalDraftDesignSession?.();
-        window.finishProposalDraftDesignSession?.();
+        if (!continueDesignSession) window.finishProposalDraftDesignSession?.();
     }
 }
 
@@ -3714,55 +3714,20 @@ function renderManualPolygonEditor() {
     });
 }
 
-// Pull the largest Polygon out of an uploaded GeoJSON (Feature / FeatureCollection / geometry) and
-// return its outer ring as [lng,lat] vertices (closing duplicate stripped), or null if none.
-function extractOuterRingFromGeojson(data) {
-    if (window.PolygonGeometryEditor?.extractOuterRingFromGeoJSON) {
-        return window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(data, turf);
-    }
-    const geoms = [];
-    const collect = (g) => {
-        if (!g || typeof g !== 'object') return;
-        if (g.type === 'FeatureCollection' && Array.isArray(g.features)) g.features.forEach(collect);
-        else if (g.type === 'Feature') collect(g.geometry);
-        else if (g.type === 'GeometryCollection' && Array.isArray(g.geometries)) g.geometries.forEach(collect);
-        else if (g.type === 'Polygon') geoms.push(g);
-        else if (g.type === 'MultiPolygon' && Array.isArray(g.coordinates)) g.coordinates.forEach(poly => geoms.push({ type: 'Polygon', coordinates: poly }));
-    };
-    collect(data);
-    if (!geoms.length) return null;
-    let best = null, bestArea = -1;
-    for (const g of geoms) {
-        try { const a = turf.area(turf.feature(g)); if (a > bestArea) { bestArea = a; best = g; } } catch (_) { }
-    }
-    const outer = best && best.coordinates && best.coordinates[0];
-    if (!Array.isArray(outer) || outer.length < 3) return null;
-    const ring = outer.filter(c => Array.isArray(c) && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])).map(c => [c[0], c[1]]);
-    if (ring.length >= 2) {
-        const f = ring[0], l = ring[ring.length - 1];
-        if (l && f[0] === l[0] && f[1] === l[1]) ring.pop();
-    }
-    return ring.length >= 3 ? ring : null;
-}
-
-// Load an uploaded GeoJSON footprint straight into manual mode.
+// Fixed GeoJSON footprints are Freeform buildings, not a set of parcel rules. Continue the same
+// design session in that editor so all polygons and holes remain editable before Done commits.
 function loadGeojsonFootprint(file) {
     const reader = new FileReader();
-    reader.onload = () => {
-        let ring = null;
-        try { ring = extractOuterRingFromGeojson(JSON.parse(reader.result)); }
-        catch (err) { console.error('GeoJSON parse failed', err); }
-        if (!ring) {
-            showBuildingAlert('blockify.modal.manual.uploadNoPolygon', 'No usable polygon found in that file.');
-            return;
+    reader.onload = async () => {
+        try {
+            await window.openFreeformGeoJSONBuildings(JSON.parse(reader.result), {
+                blockName: getBlockifyDisplayName(),
+                closeSource: () => closeBlockifyModal({ preservePending: true, continueDesignSession: true })
+            });
+        } catch (error) {
+            console.error('GeoJSON building import failed', error);
+            showBuildingAlert('blockify.modal.manual.uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
         }
-        blockifyHistory?.record?.();
-        blockifyMode = 'manual';
-        manualOuterRing = ring;
-        setFootprintSlidersEnabled(false);
-        updateManualToggleLabel();
-        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex to remove it. Height stays adjustable.');
-        generateManualBuilding();
     };
     reader.onerror = () => showBuildingAlert('blockify.modal.manual.uploadError', 'Could not read that file.');
     reader.readAsText(file);

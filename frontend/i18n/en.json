@@ -2388,7 +2388,7 @@
             "surroundingsGreen": "Green",
             "surroundingsInfo": "One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.",
             "uploadGeojsonLabel": "Upload GeoJSON",
-            "uploadNoPolygon": "No usable polygon found in that file.",
+            "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",
             "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. Use “Lock to starting site” to keep it within this site; otherwise you can move it freely.",
@@ -2398,7 +2398,7 @@
             "parcelWhole": "Take the whole parcels",
             "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are.",
             "moveTogether": "Move whole proposal",
-            "uploadInvalid": "The uploaded polygon is invalid or outside the locked site."
+            "uploadInvalid": "The uploaded geometry is invalid or outside the locked site."
         },
         "buildingUpload": {
             "title": "Upload a building model",
@@ -3689,8 +3689,8 @@
                 "entryFailed": "This outline is too complex to edit by hand — back to the sliders. Tip: raise \"Simplify (m)\" to smooth it, then try editing again.",
                 "vertex": "Drag to reshape",
                 "deleteVertex": "Delete selected vertex",
-                "uploadGeojson": "Upload GeoJSON",
-                "uploadNoPolygon": "No usable polygon found in that file.",
+                "uploadGeojson": "Import Freeform GeoJSON",
+                "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
                 "uploadError": "Could not read that file."
             },
             "regenerate": "Regenerate"
@@ -3726,8 +3726,8 @@
             },
             "rotateCounterclockwise": "Rotate counterclockwise 5 degrees",
             "rotateClockwise": "Rotate clockwise 5 degrees",
-            "uploadGeojson": "Upload GeoJSON",
-            "uploadNoPolygon": "No usable polygon found in that file.",
+            "uploadGeojson": "Import Freeform GeoJSON",
+            "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
             "uploadOutside": "The uploaded polygon does not overlap these parcels in a usable way.",
             "uploadError": "Could not read that file.",
             "vertexLabel": "Footprint vertex",

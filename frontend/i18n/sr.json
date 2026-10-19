@@ -2405,7 +2405,7 @@
             "surroundingsGreen": "Zelenilo",
             "surroundingsInfo": "Jedan izbor za celu površinu parcela oko svih zgrada u ovom predlogu. Postojeće zgrade na tim parcelama uklanjaju se u svakom slučaju.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
-            "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+            "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim blokom na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
             "infoText": "Prevucite osnovu da je pomerite. Prevucite teme da promenite oblik, kliknite ivicu da dodate teme ili izaberite teme pa ga obrišite dugmetom kante ili tasterom Delete/Backspace. Zaključajte početnu lokaciju da bi zgrada ostala u njoj; u suprotnom je možete slobodno pomerati.",
@@ -2415,7 +2415,7 @@
             "parcelWhole": "Uzmi cele parcele",
             "parcelInfo": "Zgrada podrazumevano formira sopstvenu parcelu prema osnovi, a ostatak zemljišta ostaje vlasniku. Uzimanjem celih parcela one postaju parcela zgrade kakve jesu.",
             "moveTogether": "Pomeri ceo predlog",
-            "uploadInvalid": "Otpremljeni poligon nije ispravan ili je izvan zaključane lokacije."
+            "uploadInvalid": "Otpremljena geometrija nije ispravna ili je izvan zaključane lokacije."
         },
         "buildingUpload": {
             "title": "Učitaj 3D model zgrade",
@@ -3743,8 +3743,8 @@
                 "entryFailed": "Ovaj obris je previše složen za ručno uređivanje — nazad na klizače. Savet: povećajte „Pojednostavi (m)“ da ga izgladite, pa pokušajte ponovo.",
                 "vertex": "Prevucite za oblikovanje",
                 "deleteVertex": "Obriši izabrani vrh",
-                "uploadGeojson": "Učitaj GeoJSON",
-                "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+                "uploadGeojson": "Uvezi GeoJSON slobodnih zgrada",
+                "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
                 "uploadError": "Nije moguće pročitati datoteku."
             },
             "regenerate": "Regeneriši"
@@ -3780,8 +3780,8 @@
             },
             "rotateCounterclockwise": "Zakreni 5 stepeni suprotno od kazaljke na satu",
             "rotateClockwise": "Zakreni 5 stepeni u smeru kazaljke na satu",
-            "uploadGeojson": "Učitaj GeoJSON",
-            "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+            "uploadGeojson": "Uvezi GeoJSON slobodnih zgrada",
+            "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim parcelama na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
             "vertexLabel": "Teme osnove",

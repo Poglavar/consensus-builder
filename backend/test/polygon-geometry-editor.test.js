@@ -11,7 +11,7 @@ const {
     coordinateOnEdge,
     constrainRingToBoundary,
     create,
-    extractOuterRingFromGeoJSON,
+    polygonFeaturesFromGeoJSON,
     insertVertexAfterEdge,
     openRing,
     removeVertexAt,
@@ -153,18 +153,31 @@ describe('shared polygon ring operations', () => {
         expect(turf.booleanWithin(turf.polygon([closed]), boundary)).toBe(true);
     });
 
-    it('extracts the largest polygon ring from common GeoJSON wrappers', () => {
-        const imported = extractOuterRingFromGeoJSON({
-            type: 'FeatureCollection',
-            features: [
-                turf.polygon([[[0, 0], [1, 0], [1, 1], [0, 0]]]),
-                turf.multiPolygon([[[[10, 10], [13, 10], [13, 13], [10, 10]]]])
-            ]
-        }, turf);
-
-        expect(imported).toEqual([[10, 10], [13, 10], [13, 13]]);
-        expect(extractOuterRingFromGeoJSON({ type: 'Point', coordinates: [0, 0] }, turf)).toBeNull();
+    it('imports every footprint and hole with source properties from GeoJSON wrappers', () => {
+        const hole = [[0.2, 0.2], [0.2, 0.4], [0.4, 0.4], [0.4, 0.2], [0.2, 0.2]];
+        const courtyard = turf.polygon([square, hole], { name: 'Courtyard', height: 18 });
+        const smaller = turf.multiPolygon([[[[10, 10], [10.1, 10], [10.1, 10.1], [10, 10]]],
+            [[[11, 11], [11.1, 11], [11.1, 11.1], [11, 11]]]], { name: 'Wings', floors: 2 });
+        const input = turf.featureCollection([courtyard, smaller]);
+        const before = structuredClone(input);
+        const imported = polygonFeaturesFromGeoJSON(input);
+        expect(imported).toHaveLength(3);
+        expect(imported[0]).toEqual(courtyard);
+        expect(imported[1].geometry.coordinates).toEqual(smaller.geometry.coordinates[0]);
+        expect(imported[2].geometry.coordinates).toEqual(smaller.geometry.coordinates[1]);
+        expect(imported[2].properties).toEqual(smaller.properties);
+        imported[0].geometry.coordinates[1][0][0] = 0.3;
+        expect(input).toEqual(before);
+        expect(polygonFeaturesFromGeoJSON({ type: 'GeometryCollection', geometries: [courtyard.geometry] })[0].geometry).toEqual(courtyard.geometry);
     });
+
+    it('rejects a partially invalid or mixed-geometry file instead of importing only usable parts', () => {
+        expect(() => polygonFeaturesFromGeoJSON(turf.featureCollection([squareFeature, turf.point([0, 0])]))).toThrow(/only Polygon/);
+        expect(() => polygonFeaturesFromGeoJSON({ type: 'Polygon', coordinates: [square, [[0, 0], [null, 1], [1, 1]]] })).toThrow(/invalid/);
+        expect(() => polygonFeaturesFromGeoJSON({ type: 'FeatureCollection', features: [] })).toThrow(/No polygon/);
+        expect(() => polygonFeaturesFromGeoJSON({ type: 'MultiPolygon', coordinates: [] })).toThrow();
+    });
+
 });
 
 describe('shared Leaflet interaction model', () => {

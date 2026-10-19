@@ -1328,47 +1328,24 @@
     }
 
     function loadRowHouseGeoJSON(file) {
-        if (!file || !window.PolygonGeometryEditor) return;
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = () => {
-            let ring = null;
+        reader.onload = async () => {
             try {
-                ring = window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(JSON.parse(reader.result), turf);
+                await window.openFreeformGeoJSONBuildings(JSON.parse(reader.result), {
+                    blockName: rowHouseBlockNameOverride || null,
+                    closeSource: () => closeRowHouseModal({ preservePending: true, continueDesignSession: true })
+                });
             } catch (error) {
-                console.error('Row-house GeoJSON parse failed', error);
+                console.error('Row-house GeoJSON import failed', error);
+                showRowHouseEditorAlert('uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
             }
-            if (!ring) {
-                showRowHouseEditorAlert('uploadNoPolygon', 'No usable polygon found in that file.');
-                return;
-            }
-            rowHouseHistory?.record?.();
-            const constrained = window.PolygonGeometryEditor.constrainRingToBoundary(ring, rowHouseSiteBoundary(), turf) || ring;
-            const candidate = rowHouseFeatureWithRing(generatedRowHouseFeature, constrained);
-            if (!candidate || !rowHouseFeatureValid(candidate)) {
-                showRowHouseEditorAlert('uploadOutside', 'The uploaded polygon does not overlap these parcels in a usable way.');
-                return;
-            }
-            candidate.properties = {
-                ...(generatedRowHouseFeature?.properties || {}),
-                type: 'proposedRowHouse',
-                height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
-                footprintMode: 'polygon',
-                rotation: 0
-            };
-            currentOffsetX = 0;
-            currentOffsetY = 0;
-            currentRotation = 0;
-            rowHouseManualMode = true;
-            syncRowHouseGeometryControls();
-            generatedRowHouseFeature = candidate;
-            displayRowHouseBuildingInModal(candidate);
-            autosaveRowHouseDraft();
         };
         reader.onerror = () => showRowHouseEditorAlert('uploadError', 'Could not read that file.');
         reader.readAsText(file);
     }
 
-    // Display building on the modal map
+    // Rule metadata used when displaying the building on the map.
     function currentRowRule() {
         return window.UrbanRuleVariation.normalizeBlockRule({
             typology: 'row',
@@ -1749,7 +1726,7 @@
                             <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                         </div>
                         <div class="parameter-group">
-                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Import Freeform GeoJSON</button>
                             <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                         </div>
                         <div class="parameter-metrics">
@@ -2103,7 +2080,7 @@
     }
 
     function closeRowHouseModal(options = {}) {
-        const { preservePending = false } = options;
+        const { preservePending = false, continueDesignSession = false } = options;
         if (rowHouseGenerationTimer !== null) {
             clearTimeout(rowHouseGenerationTimer);
             rowHouseGenerationTimer = null;
@@ -2171,7 +2148,7 @@
             // Only "Done" commits — it tears down with preservePending after saving. Every other
             // close abandons the design session, leaving the edited object exactly as it was.
             if (!preservePending) window.discardProposalDraftDesignSession?.();
-            window.finishProposalDraftDesignSession?.();
+            if (!continueDesignSession) window.finishProposalDraftDesignSession?.();
         }
     }
 

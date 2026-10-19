@@ -136,6 +136,7 @@ describe('optional tools loader', () => {
 
     it.each([
         ['openSingleBuildingForParcels', 'js/single-building.js'],
+        ['openFreeformGeoJSONBuildings', 'js/single-building.js'],
         ['openRowHouseForParcels', 'js/row-house.js'],
         ['openParcelBasedForParcels', 'js/parcel-based.js']
     ])('does not open %s after the map mode changes during loading', async (name, editorScript) => {
