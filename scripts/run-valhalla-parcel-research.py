@@ -459,7 +459,12 @@ class Runner:
     def _qualification_fingerprint(self, city, saved):
         from parcel_source_stage import _artifact_hashes
         root = saved.get("artifactRoot")
-        current = _artifact_hashes(self.root, Path(root)) if root and Path(root).is_dir() else {}
+        if not root or not Path(root).is_dir():
+            return None
+        try:
+            current = _artifact_hashes(self.root, Path(root))
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+            return None
         return hashlib.sha256(json.dumps({"receipt": saved.get("receiptSha256"), "artifacts": current},
                                          sort_keys=True).encode()).hexdigest()
 

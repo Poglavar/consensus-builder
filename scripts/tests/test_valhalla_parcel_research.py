@@ -84,6 +84,21 @@ class ValidatePacketTests(unittest.TestCase):
         self.assertTrue(any("non-ID or sensitive attribute" in error for error in errors))
 
 class ResumeAndReceiptTests(unittest.TestCase):
+    def test_unavailable_saved_adapter_dependency_has_no_reusable_fingerprint(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            artifact = root / "state/qualification/cities/5590/attempt-01"
+            artifact.mkdir(parents=True)
+            args = SimpleNamespace(repo_root=root, state_dir=Path("state"), queue=Path("queue.json"),
+                                   job_name="test", codex="codex")
+            instance = runner.Runner(args)
+            with patch("parcel_source_stage._artifact_hashes",
+                       side_effect=ValueError("candidate descriptor has unsupported adapter dependency identity: ph-lmb-wms")):
+                fingerprint = instance._qualification_fingerprint(
+                    {"cityCode": "5590"}, {"status": "adapter-ready", "artifactRoot": str(artifact),
+                                            "receiptSha256": "receipt"})
+            self.assertIsNone(fingerprint)
+
     def test_new_cohort_returns_generated_queue_and_preserves_previous(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)

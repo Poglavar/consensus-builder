@@ -76,6 +76,13 @@ class PipelineTests(unittest.TestCase):
         row['qualification']['fingerprint'] = 'changed'
         self.assertEqual(self.pool._select('qualification', 2), [self.cities[0]])
 
+    def test_invalid_fingerprint_is_never_a_cached_qualification_skip(self):
+        row = self.runner.state['cities']['1']
+        row.update(status='reviewed', discoveryDecision='candidate', qualification={'status': 'integrated'})
+        self.runner._qualification_fingerprint = lambda city, saved: None
+        self.pool.validated.add(('1', None))
+        self.assertEqual(self.pool._select('qualification', 1), [self.cities[0]])
+
     def test_unfinished_workspace_owners_are_selected_before_fresh_candidates(self):
         for city in self.cities:
             self.runner._city_entry(city).update(status='reviewed-candidate', discoveryDecision='candidate',
@@ -126,6 +133,13 @@ class PipelineTests(unittest.TestCase):
         self.accept('qualification', {'cities': {'1': {'qualification': saved}},
                                       'validatedStages': [['1', 'receipt']]})
         self.assertEqual(self.pool.validated, {('1', 'same')})
+
+    def test_positive_stage_receipt_cannot_cache_an_invalid_fingerprint(self):
+        saved = {'status': 'integrated', 'receiptSha256': 'receipt'}
+        self.runner._qualification_fingerprint = lambda city, stage: None
+        self.accept('qualification', {'cities': {'1': {'qualification': saved}},
+                                      'validatedStages': [['1', 'receipt']]})
+        self.assertEqual(self.pool.validated, set())
 
     def test_interrupted_stage_retains_qualification_evidence(self):
         self.accept('qualification', {'cities': {'1': {'qualification': {'status': 'running', 'artifactRoot': 'saved'}}},

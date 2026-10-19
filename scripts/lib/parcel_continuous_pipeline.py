@@ -149,7 +149,8 @@ class ContinuousPipeline:
                 if saved.get("status") in {"failed", "blocked-source", "rejected-source", "integration-blocked"}:
                     continue
                 fingerprint = self.runner._qualification_fingerprint(city, saved)
-                if saved.get("status") in {"integrated", "adapter-ready"} and (code, fingerprint) in self.validated:
+                if (fingerprint is not None and saved.get("status") in {"integrated", "adapter-ready"}
+                        and (code, fingerprint) in self.validated):
                     continue
                 packet = self.runner._packet(city, self.cohort)
                 if not self.runner._reviewed_city_receipt(city, packet):
@@ -235,7 +236,9 @@ class ContinuousPipeline:
                 digest = current.get("qualification", {}).get("receiptSha256")
                 if (current.get("qualification", {}).get("status") in {"integrated", "adapter-ready"}
                         and [code, digest] in result.get("validatedStages", [])):
-                    self.validated.add((code, self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])))
+                    fingerprint = self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])
+                    if fingerprint is not None:
+                        self.validated.add((code, fingerprint))
             else:
                 current.update({k: v for k, v in child.items() if k not in
                                 {"qualification", "qualificationHistory", "admission", "wupIdentity", "pipelineFailures"}})
