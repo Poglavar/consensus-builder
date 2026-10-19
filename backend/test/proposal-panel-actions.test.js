@@ -96,6 +96,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
     };
     const globals = {
         window, document, console, Date, Math, Number, String, Array, Object, Set, Map, Promise, JSON,
+        escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
         performance: { now: () => 1 }, requestAnimationFrame: callback => callback(),
         setTimeout: callback => timers.push(callback), clearTimeout() {},
         proposalStorage: { getProposal: () => proposal, getAllProposals: () => relatedProposals || [], _indexProposal() {}, save() {} },
@@ -394,5 +395,14 @@ describe('proposal details action footer', () => {
         expect(parse(minted.content.innerHTML)('.proposal-badges-row .cb-badge--minted')).toHaveLength(1);
         const serial = render({ proposalId: '780', title: 'Block', cadastreParcelIds: [] });
         expect(parse(serial.content.innerHTML)('.proposal-badges-row .cb-badge--minted')).toHaveLength(0);
+    });
+
+    it('presents execution as the recorded lifecycle with a separate map-state badge', () => {
+        const result = render({ proposalId: 'recorded-execution', lifecycleStatus: 'Executed', cadastreParcelIds: [] },
+            { lifecycle: 'Executed', applied: true });
+        const badges = parse(result.content.innerHTML)('.proposal-badges-row');
+        expect(badges.find('.cb-badge--executed').text()).toBe('Execution recorded');
+        expect(badges.find('.cb-badge--executed').attr('title')).toContain('does not verify payment');
+        expect(badges.find('.cb-badge--applied')).toHaveLength(1);
     });
 });

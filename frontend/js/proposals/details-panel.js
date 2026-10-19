@@ -959,14 +959,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="proposal-badges-row">
                 ${(() => {
             // One lifecycle badge from the ladder (docs/design-language.md), the same as the list
-            // rows: Draft → Published → Minted → Executed; "Applied" when it is on this map; a
+            // rows: Draft, Published, Minted or Execution recorded; "Applied" when it is on this map; a
             // modifier for cancelled / expired / concluded / unfunded, from displayState
             // (proposals/display-state.js). Authored payout terms are a separate neutral badge.
             const ladder = displayState.rung;
             const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
-            const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
+            const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
             const ladderBadge = (isMinted && mintedExplorerUrl)
-                ? `<a class="cb-badge cb-badge--minted cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
+                ? `<a class="cb-badge cb-badge--${ladder} cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
                 : `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
             const modifier = displayState.modifier
                 ? `<span class="cb-badge ${displayState.modifierTone}">${statusBadgeLabel}</span>`

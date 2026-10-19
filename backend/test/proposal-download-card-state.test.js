@@ -14,6 +14,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const coreSource = read('../../frontend/js/proposals/core.js');
@@ -187,7 +190,7 @@ describe('the renderer shows it in both tabs', () => {
         expect(listSection).toMatch(/const isDownloaded = downloadEligible && downloadedLookup\(proposal\)/);
     });
 
-    // One lifecycle badge per row (docs/design-language.md): Draft → Published → Minted → Executed,
+    // One display badge per row: Draft, Published, Minted or Execution recorded,
     // plus "Applied" only when the proposal is on this map. Where the record is held is what the
     // tabs say, so the old "Local" / "On server" / "Unsaved" badges are gone.
     // The ladder is one helper (getProposalLadder / proposalLadderBadgesHtml) that the parcel and
@@ -201,8 +204,16 @@ describe('the renderer shows it in both tabs', () => {
         // rules are tested in proposal-display-state.test.js.
         expect(ladderSource).toMatch(/const state = window\.__proposalDisplayState\.of\(proposal, \{ applied: false \}\);/);
         expect(ladderSource).toMatch(/const \{ applied \} = window\.__proposalDisplayState\.of\(proposal,/);
-        expect(ladderSource).toMatch(/<span class="cb-badge cb-badge--\$\{ladder\.rung\}">/);
-        expect(ladderSource).toMatch(/applied \? `<span class="cb-badge cb-badge--applied"/);
+        const render = new Function('window', 'getProposalI18nHelper', 'getProposalLifecycleLabel', 'escapeHtml',
+            `${ladderSource}; return proposalLadderBadgesHtml;`)(
+            { __proposalDisplayState: require('../../frontend/js/proposals/display-state.js'),
+                ProposalKind: require('../../frontend/js/proposals/proposal-kind.js') },
+            () => (_key, fallback) => fallback, key => key, require('../../frontend/js/shared-utils.js').escapeHtml);
+        const recorded = { lifecycleStatus: 'Executed', kind: 'owner-deal' };
+        expect(render(recorded)).toContain('Execution recorded</span>');
+        expect(render(recorded)).toContain('title="This record reports execution.');
+        expect(render(recorded)).not.toContain('cb-badge--applied');
+        expect(render(recorded, { applied: true })).toContain('cb-badge--applied');
         const badgeRow = listSection.slice(listSection.indexOf('proposal-card-badges'));
         expect(badgeRow).toMatch(/proposalLadderBadgesHtml\(proposal, \{ applied: appliedState \}\)/);
     });

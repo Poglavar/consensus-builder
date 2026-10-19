@@ -613,8 +613,8 @@ function sortProposalDataset(dataset) {
 }
 
 // The lifecycle rung of one proposal, the ladder every list shows (docs/design-language.md):
-// Draft → Published → Minted → Executed, and a modifier for a cancelled, expired, concluded or
-// unfunded record. → { rung, label, modifier: { className, label } | null }. The proposals list, the
+// Draft, Published, Minted or Execution recorded, and a modifier for a cancelled, expired,
+// concluded or unfunded record. → { rung, label, hint, modifier: { className, label } | null }. The proposals list, the
 // parcel and block panels and the parcel-set list all read it, so a proposal is named the same
 // wherever it is listed. The derivation is proposals/display-state.js, shared with the details panel.
 function getProposalLadder(proposal) {
@@ -623,7 +623,8 @@ function getProposalLadder(proposal) {
     const modifier = state.modifier
         ? { className: state.modifierTone, label: getProposalLifecycleLabel(state.modifier) }
         : null;
-    return { rung: state.rung, label: window.__proposalDisplayState.rungLabel(state.rung, t), modifier };
+    return { rung: state.rung, label: window.__proposalDisplayState.rungLabel(state.rung, t),
+        hint: window.__proposalDisplayState.rungHint(state.rung, t), modifier };
 }
 
 // Who decides (proposal-kinds.md), once the kind is settled: chosen in the dialog, or published
@@ -649,7 +650,7 @@ function proposalLadderBadgesHtml(proposal, options = {}) {
         ? { applied: options.applied }
         : {});
     return [
-        `<span class="cb-badge cb-badge--${ladder.rung}">${escapeHtml(ladder.label)}</span>`,
+        `<span class="cb-badge cb-badge--${ladder.rung}" title="${escapeHtml(ladder.hint)}">${escapeHtml(ladder.label)}</span>`,
         proposalKindBadgeHtml(proposal, ladder.rung !== 'draft'),
         applied ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(t('common.lifecycle.applied', 'Applied'))}</span>` : '',
         ladder.modifier ? `<span class="cb-badge ${ladder.modifier.className}">${escapeHtml(ladder.modifier.label)}</span>` : ''

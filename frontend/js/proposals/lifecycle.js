@@ -312,7 +312,7 @@ function getProposalLifecycleLabel(key) {
         case 'vote-concluded':
             return t('panel.proposal.voting.concluded', 'Vote concluded');
         case 'executed':
-            return t('panel.proposal.lifecycle.executed', 'Executed');
+            return t('panel.proposal.lifecycle.executed', 'Execution recorded');
         case 'expired':
             return t('panel.proposal.lifecycle.expired', 'Expired');
         case 'cancelled':

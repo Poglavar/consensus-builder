@@ -27,8 +27,9 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 | Reshaping parcels | **Land readjustment** | reparcellization, subdivide, readjust, repartition |
 | The official plan | **official road plan** (with a GUP source tag) | government plan, city plan, GUP alone |
 | Datasets | plain name + source tag: "Official cadastre (DGU)", "3D buildings (GDI)", "Map buildings (OSM)" | the acronym alone |
-| Consent | **Accept** = an owner's binding yes; **Vote** = non-binding support; **Support** = money, as **Pledge** or **Donate** | say yes, consent, boost, back, bid, attest (reserve for lens attestations) |
-| Lifecycle | **Draft → Applied → Published → Minted → Executed**, modifiers **Expired / Withdrawn** | in-memory, unsaved, local, on server, active, inactive |
+| Consent | **Accept** records an owner decision; summaries distinguish unsigned local records from verified signed receipts. **Vote** = non-binding support; **Support** = money, as **Pledge** or **Donate** | imply verified signing authority or legal ownership from a local acceptance; attest (reserve for lens attestations) |
+| Publication and lifecycle display | **Draft / Published / Minted** describe record publication; **Execution recorded** reports the `Executed` lifecycle value. **Expired / Withdrawn / Status unknown** qualify lifecycle. | imply payment, title registration or physical construction from the execution badge |
+| Map state | **Applied** means this browser has applied the proposal to its map model; **Apply / Unapply** changes that state independently of publication and execution. | treat Applied as a step toward verified execution or construction |
 | Lifecycle verbs | **Apply / Unapply** (the map), **Publish** (the server), **Mint** (the chain), **Execute** | un-apply, remove from map, upload, save to server |
 | Views | **2D (map) · 3D (models) · 3D (aerial imagery)**; **Walk** and **AI render** are tools | a globe icon for aerial imagery, realistic, photoreal, abstract 3D |
 | Uploaded geometry | **building model** | model (alone) |

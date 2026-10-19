@@ -1,5 +1,5 @@
 // proposals/display-state.js — the ONE derivation of what a proposal's badges and map action show:
-// its rung on the lifecycle ladder (docs/design-language.md: Draft → Published → Minted → Executed),
+// its display rung (docs/design-language.md: Draft, Published, Minted or Execution recorded),
 // the lifecycle modifier, whether "Applied" is shown, and whether Apply or Unapply is offered. The
 // details panel, the proposals list (and every list that reuses its ladder) and the agent dialog all
 // read it, so one proposal never reads one way in the panel and another in a list.
@@ -37,7 +37,7 @@
     });
 
     const RUNG_LABELS = Object.freeze({
-        executed: ['panel.proposal.lifecycle.executed', 'Executed'],
+        executed: ['panel.proposal.lifecycle.executed', 'Execution recorded'],
         minted: ['panel.proposal.lifecycle.minted', 'Minted'],
         published: ['common.lifecycle.published', 'Published'],
         draft: ['common.lifecycle.draft', 'Draft']
@@ -107,5 +107,14 @@
         return typeof translate === 'function' ? translate(key, fallback) : fallback;
     }
 
-    return Object.freeze({ of, hasMintRecord, isApplicable, rungLabel, MODIFIER_TONES });
+    // The lifecycle field has no uniform durable proof of execution. Even a mint reference does
+    // not upgrade it to verified payment, title registration or physical realization.
+    function rungHint(rung, translate) {
+        const label = rung === 'executed'
+            ? ['panel.proposal.lifecycle.executedHint', 'This record reports execution. The status alone does not verify payment, legal registration or physical construction.']
+            : rung === 'minted' ? ['panel.proposal.lifecycle.mintedHint', 'Minted on-chain'] : null;
+        return label ? (typeof translate === 'function' ? translate(...label) : label[1]) : '';
+    }
+
+    return Object.freeze({ of, hasMintRecord, isApplicable, rungLabel, rungHint, MODIFIER_TONES });
 });

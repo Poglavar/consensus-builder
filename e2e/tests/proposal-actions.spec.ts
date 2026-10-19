@@ -541,6 +541,8 @@ test.describe('Proposal actions @features', () => {
     await openProposalSection(page, 'land');
     const ownerRow = page.locator('.owner-acceptance-row').first();
     const executed = await proposalState(page, proposalId);
+    await expect(page.locator('#proposal-details-panel .cb-badge--executed')).toHaveText('Execution recorded');
+    await expect(page.locator('#proposal-details-panel .cb-badge--executed')).toHaveAttribute('title', /does not verify payment/);
     expect(executed.acceptedParcelIds).toContain(PARCEL_ID);
     expect(executed.executedAt).toBeTruthy();
     await ownerRow.getByRole('button', { name: 'Undo' }).click();
@@ -629,7 +631,10 @@ test.describe('Proposal actions @features', () => {
       if (statusRead === 'unavailable') {
         await expect(page.getByText('Acceptance was confirmed on-chain, but the proposal status could not be refreshed.', { exact: false })).toBeVisible();
       } else {
-        await expect(page.locator('#proposal-details-panel').getByRole('link', { name: /^Executed/ })).toBeVisible();
+        const executionBadge = page.locator('#proposal-details-panel').getByRole('link', { name: /^Execution recorded/ });
+        await expect(executionBadge).toBeVisible();
+        await expect(executionBadge).toHaveAttribute('title', /does not verify payment/);
+        await expect(executionBadge).toHaveAttribute('href', /\/token\//);
         await expect(page.locator('#proposal-details-panel details[data-proposal-section="land"]')).toHaveAttribute('open', '');
       }
     });

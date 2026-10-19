@@ -69,6 +69,17 @@ describe('proposal display state', () => {
         expect(displayState.rungLabel('nonsense')).toBe('Draft');
     });
 
+    it('qualifies recorded execution without upgrading a mint reference to proof of realization', () => {
+        for (const proposal of [{ lifecycleStatus: 'Executed' }, published({ lifecycleStatus: 'Executed', isMinted: true })]) {
+            const { rung } = stateOf(proposal);
+            expect(displayState.rungLabel(rung)).toBe('Execution recorded');
+            expect(displayState.rungHint(rung)).toContain('does not verify payment, legal registration or physical construction');
+        }
+        expect(displayState.rungHint('published')).toBe('');
+        expect(displayState.rungHint('executed', (key, fallback) => `${key}: ${fallback}`))
+            .toContain('panel.proposal.lifecycle.executedHint: This record reports execution.');
+    });
+
     it('displays awaiting funding as an open modifier without asserting owner acceptance', () => {
         expect(stateOf(published({ lifecycleStatus: 'Active', funded: false }), { lifecycleKey: 'awaiting-funding' }))
             .toMatchObject({ rung: 'published', modifier: 'awaiting-funding', modifierTone: 'cb-badge--published' });
