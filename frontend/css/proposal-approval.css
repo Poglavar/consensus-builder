@@ -37,6 +37,11 @@
     color: var(--cb-text-strong);
 }
 
+.approval-card__status {
+    max-width: 100%;
+    white-space: normal;
+}
+
 .approval-card__status--passed { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
 .approval-card__status--pending { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
 .approval-card__status--unresolved { background: var(--cb-surface-2); color: var(--cb-text-muted); }

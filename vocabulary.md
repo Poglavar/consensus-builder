@@ -315,6 +315,15 @@ is missing. `ownershipCounts` counts parcels by inferred category, not people. T
 labels these as modeled metadata and no longer substitutes them for the approval/local-entry count.
 These changes do not verify a register, alter consent tallies or change the estimation producer.
 
+The signed-decision card, hypothetical owner review and signing receipt label their result as
+meeting the **configured approval rules**. This combines the configured support tests and any
+required authority decision; support alone can leave the authority decision pending. It is a
+tally over receipts verified for the current terms and declared approval context, not a lifecycle
+transition, payment, title registration or physical realization. Further decisions may be needed
+from an authority or leaseholder, so the pending review does not always ask for more owners.
+[Approval presentation](frontend/js/proposals/approval-panel.js),
+[rule descriptions](frontend/js/proposals/approval-text.js).
+
 ### Building / building design — `SourceBuilding`, `ProposedBuildingDesign`
 
 A source building is an object in a particular survey or provider dataset. A proposed building is authored geometry, parameters and optional architectural evidence belonging to a proposal. Both can be rendered as buildings, but they make different assertions about existence.

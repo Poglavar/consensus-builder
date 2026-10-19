@@ -324,10 +324,10 @@
         }
         const label = labels(proposal);
         const status = progress.passed
-            ? `<span class="cb-badge approval-card__status approval-card__status--passed">${esc(t('proposalApproval.status.passed', 'Enough to pass'))}</span>`
+            ? `<span class="cb-badge approval-card__status approval-card__status--passed">${esc(t('proposalApproval.status.passed', 'Configured approval rules met'))}</span>`
             : progress.supportMet
-                ? `<span class="cb-badge approval-card__status approval-card__status--pending" data-approval-awaiting-authority>${esc(t('proposalApproval.status.authorityPending', 'Awaiting the authority'))}</span>`
-                : `<span class="cb-badge approval-card__status approval-card__status--pending">${esc(t('proposalApproval.status.pending', 'Not enough yet'))}</span>`;
+                ? `<span class="cb-badge approval-card__status approval-card__status--pending" data-approval-awaiting-authority>${esc(t('proposalApproval.status.authorityPending', 'Required authority decision pending'))}</span>`
+                : `<span class="cb-badge approval-card__status approval-card__status--pending">${esc(t('proposalApproval.status.pending', 'Configured approval rules not met'))}</span>`;
         return `<section class="approval-card" data-approval-card aria-labelledby="${titleId}">
             <div class="approval-card__head"><h4 id="${titleId}" class="approval-card__title">${esc(t('panel.parcel.acceptance.ownerTitle', 'Owner acceptance'))}</h4>${status}</div>
             ${regimeHtml(progress)}
@@ -570,8 +570,8 @@
                 cash: t('proposalApproval.review.cash', 'Cash offered to you'),
                 cashPay: t('proposalApproval.review.cashYouPay', 'Cash you would pay'),
                 withAcceptance: progress => t('proposalApproval.review.withYou', 'With your acceptance: {{progress}}', { progress }),
-                passes: t('proposalApproval.review.passesWithYou', 'Your acceptance is enough for the proposal to pass.'),
-                needsMore: t('proposalApproval.review.needsMore', 'More owners must accept after you before it passes.')
+                passes: t('proposalApproval.review.passesWithYou', 'Your acceptance would meet the configured approval rules.'),
+                needsMore: t('proposalApproval.review.needsMore', 'Further decisions would still be needed under the configured approval rules.')
             };
         }
         return {
@@ -585,8 +585,8 @@
             cash: t('proposalApproval.deals.cashReceived', 'Cash offered'),
             cashPay: t('proposalApproval.deals.cashPaid', 'Proposed cash payment'),
             withAcceptance: progress => t('proposalApproval.deals.withOwner', 'With {{owner}}’s acceptance: {{progress}}', { owner, progress }),
-            passes: t('proposalApproval.deals.passesWithOwner', '{{owner}}’s acceptance would be enough for the proposal to pass.', { owner }),
-            needsMore: t('proposalApproval.deals.needsMoreThanOwner', 'More owners besides {{owner}} must accept before it passes.', { owner })
+            passes: t('proposalApproval.deals.passesWithOwner', '{{owner}}’s acceptance would meet the configured approval rules.', { owner }),
+            needsMore: t('proposalApproval.deals.needsMoreThanOwner', 'Further decisions besides {{owner}}’s acceptance would still be needed under the configured approval rules.', { owner })
         };
     }
 
@@ -830,8 +830,8 @@
         }))}</p>
             <p data-approval-receipt-progress>${esc(t('proposalApproval.review.now', 'Now: {{progress}}', { progress: progressLine(progress) }))}</p>
             <p class="approval-review__verdict">${esc(progress.passed
-                ? t('proposalApproval.receipt.passed', 'The proposal now has enough acceptances to pass.')
-                : t('proposalApproval.receipt.pending', 'The proposal still needs more acceptances.'))}</p>
+                ? t('proposalApproval.receipt.passed', 'The verified decisions meet this proposal’s configured approval rules.')
+                : t('proposalApproval.receipt.pending', 'Further decisions are needed to meet this proposal’s configured approval rules.'))}</p>
             <p class="approval-card__note" data-approval-receipt-shared="${shared?.shared ? 'yes' : 'no'}">${esc(sharedText(shared))}</p>`;
         parts.footer.replaceChildren(button('btn btn-primary', t('proposalApproval.done', 'Done'), close));
         parts.footer.querySelector('button').focus();

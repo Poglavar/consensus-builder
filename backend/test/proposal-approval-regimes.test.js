@@ -243,11 +243,11 @@ describe('distribution rules of a scheme', () => {
 describe('words for the rules', () => {
     it('says each scheme’s rule in one sentence, and the meters by what they count', () => {
         const sentence = id => X.rulesText(A.normalizePolicy(R.policyOf(R.latest(id), R.latest(id).authorities ? ['x'] : [])), t, pin(id));
-        expect(sentence('nl-kavelruil')).toBe('Every owner must accept.');
-        expect(sentence('es-ct-basic')).toBe('Passes with more than 1/2 of the area, and needs the municipality’s approval of the compensation project.');
-        expect(sentence('jp-association')).toBe('Passes with at least 2/3 of the private owners, at least 2/3 of the private leaseholders and at least 2/3 of the private owned and leased area, and needs the prefectural governor’s approval.');
-        expect(sentence('de-umlegung-new')).toBe('Needs only the Umlegung authority’s adoption of the readjustment plan. Owners are heard; their responses do not decide.');
-        expect(X.rulesText(threshold([1, 2], [7, 10]), t)).toBe('Passes with at least 1/2 of the owners and at least 7/10 of the area.');
+        expect(sentence('nl-kavelruil')).toBe('Configured approval rules require every owner to accept.');
+        expect(sentence('es-ct-basic')).toBe('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project.');
+        expect(sentence('jp-association')).toBe('Configured approval rules require at least 2/3 of the private owners, at least 2/3 of the private leaseholders and at least 2/3 of the private owned and leased area and the prefectural governor’s approval.');
+        expect(sentence('de-umlegung-new')).toBe('Configured approval rules require only the Umlegung authority’s adoption of the readjustment plan. Owner responses do not decide this tally.');
+        expect(X.rulesText(threshold([1, 2], [7, 10]), t)).toBe('Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area.');
         expect(X.meterName(test('headcount', 'owners', 'all', 1, 2))).toBe('owners');
         expect(X.meterName(test('area', 'owners+leaseholders', 'private', 1, 2))).toBe('area-owners-and-leaseholders-private');
         expect(X.meterLabel(test('headcount', 'leaseholders', 'all', 1, 2), t)).toBe('Leaseholders');

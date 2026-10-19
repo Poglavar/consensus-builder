@@ -80,15 +80,15 @@
     // The whole rule as one sentence.
     function rulesText(policy, t, regime = null) {
         const rules = approval().policyRules(policy);
-        if (policy?.type === 'unanimous' || !policy) return t('proposalApproval.ruleUnanimous', 'Every owner must accept.');
+        if (policy?.type === 'unanimous' || !policy) return t('proposalApproval.ruleUnanimous', 'Configured approval rules require every owner to accept.');
         const tests = orderTests(rules.tests).map(test => testText(test, t));
         const authority = rules.authorities.length ? authorityText(regime, t) : null;
-        if (!tests.length) return t('proposalApproval.rules.authorityOnly', 'Needs only {{authority}}. Owners are heard; their responses do not decide.', { authority });
+        if (!tests.length) return t('proposalApproval.rules.authorityOnly', 'Configured approval rules require only {{authority}}. Owner responses do not decide this tally.', { authority });
         const joined = tests.length === 1 ? tests[0]
             : tests.slice(0, -1).join(', ') + t('proposalApproval.rules.and', ' and ') + tests[tests.length - 1];
         return authority
-            ? t('proposalApproval.rules.passesWithAuthority', 'Passes with {{tests}}, and needs {{authority}}.', { tests: joined, authority })
-            : t('proposalApproval.rules.passesWith', 'Passes with {{tests}}.', { tests: joined });
+            ? t('proposalApproval.rules.passesWithAuthority', 'Configured approval rules require {{tests}} and {{authority}}.', { tests: joined, authority })
+            : t('proposalApproval.rules.passesWith', 'Configured approval rules require {{tests}}.', { tests: joined });
     }
 
     function regimeName(regime, t) {
