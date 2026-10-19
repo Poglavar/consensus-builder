@@ -2,6 +2,8 @@
 // raw archive and expose only residential projects, apartment facts and available reconstructions.
 import { createHash } from 'node:crypto';
 import { buildingThumbnailSvg } from './building-thumbnail.js';
+import { createRequire } from 'node:module';
+const { compareCompletion } = createRequire(import.meta.url)('../../frontend/novogradnje/catalogue.js');
 
 export const PUBLIC_ORIGIN = 'https://zagreb.lol';
 export const BASE_PATH = '/novogradnje/';
@@ -36,13 +38,21 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
             placement: (model.placements || []).find(p => p.planId === a.planId) || null });
         return value;
     });
-    if (!apartments.length) return null;
+    const floorPlans = (inventory.floorPlans || []).filter(p => p.scope === 'floor' && p.hasPlan === true
+        && (p.architecture || (p.source?.sha256 && retained.has(p.source.sha256)))).map(p => {
+        const value={id:p.id,label:p.label,scope:'floor',levels:p.levels||[],url:`${url}tlocrt/${p.id}/`,hasPlan:true,hasGeometry:Boolean(p.architecture)};
+        if(detail)Object.assign(value,{...p,...value,source:p.source?{...p.source,url:httpUrl(p.source.url),
+            mediaType:retained.get?.(p.source.sha256)||null,assetUrl:p.source.sha256&&retained.has(p.source.sha256)?`${BASE_PATH}api/source/${p.source.sha256}`:null}:null});
+        return value;
+    });
+    if (!apartments.length && !floorPlans.length) return null;
     const value = { id, slug, url, label, name: inventory.name || label, address: label,
         availability: 'ready',
+        archiveEvidence:model.archiveEvidence||null,
         kind: inventory.kind, constructionYear: inventory.constructionYear, completionYear: inventory.completionYear,
         thumbnailUrl: buildingThumbnailSvg(model) ? `${BASE_PATH}api/projects/${id}/thumbnail.svg` : null,
-        titles: inventory.titles || [], location: location(model), apartments,
-        sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length,
+        titles: inventory.titles || [], location: location(model), apartments, floorPlans,
+        sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length + floorPlans.length,
         updatedAt: row.built_at || null };
     if (detail) Object.assign(value, { model: { ...model, inventory: undefined },
         sources: (model.sources || []).map(s => ({ url: httpUrl(s.url), label: s.label })).filter(s => s.url),
@@ -53,12 +63,12 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
 export async function readPublicCatalogue(db) {
     const rows = (await db.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
     // Located leads stay in the collection database; source-only plans require retained bytes.
-    const hashes = [...new Set(rows.flatMap(row => (row.model.inventory?.apartments || []).map(a => a.source?.sha256).filter(Boolean)))];
+    const hashes = [...new Set(rows.flatMap(row => [...(row.model.inventory?.apartments || []),...(row.model.inventory?.floorPlans || [])].map(a => a.source?.sha256).filter(Boolean)))];
     const retained = hashes.length ? new Map((await db.query('SELECT sha256,media_type FROM floor_plan.blob WHERE sha256=ANY($1::text[]) AND bytes_available', [hashes])).rows.map(b => [b.sha256,b.media_type])) : new Map();
     const projects = rows.map(row => publicProject(row, { retained })).filter(Boolean)
-        .sort((a, b) => Number(b.kind === 'new_build') - Number(a.kind === 'new_build') || b.planCount - a.planCount || a.label.localeCompare(b.label, 'hr'));
+        .sort(compareCompletion);
     return { projects, counts: { projects: projects.length, apartments: projects.reduce((n, p) => n + p.apartments.length, 0),
-        withPlans: projects.filter(p => p.planCount > 0).length },
+        withPlans: projects.filter(p => p.planCount > 0).length, floorPlans: projects.reduce((n,p)=>n+p.floorPlans.length,0) },
         updatedAt: rows.map(r => r.built_at).filter(Boolean).sort((a, b) => new Date(b) - new Date(a))[0] || null };
 }
 
@@ -66,7 +76,7 @@ export async function readPublicProject(db, token) {
     const rows = (await db.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
     const row = rows.find(r => projectId(r.site_key) === token || token.endsWith(`-${projectId(r.site_key)}`));
     if (!row) return null;
-    const hashes = (row.model.inventory?.apartments || []).map(a => a.source?.sha256).filter(Boolean);
+    const hashes = [...(row.model.inventory?.apartments || []),...(row.model.inventory?.floorPlans || [])].map(a => a.source?.sha256).filter(Boolean);
     const retained = hashes.length ? new Map((await db.query('SELECT sha256,media_type FROM floor_plan.blob WHERE sha256=ANY($1::text[]) AND bytes_available', [hashes])).rows.map(b => [b.sha256,b.media_type])) : new Map();
     return publicProject(row, { detail: true, retained });
 }
