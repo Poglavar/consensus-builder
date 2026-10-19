@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9263",
+  "cityName": "Sagara",
+  "sourceId": "in-ka-kgis-tiles",
+  "candidateSha256": "8aceb1ac81ff71a492e12538cde9c92f2a73512a000db574a6c88ad3654a4fa8",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 1
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "93f8fd3e29c4c9f931504072fc5cf7c49084b91406ca0b21beb0a97f5479cde7",
+      "featureCount": 1,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "93f8fd3e29c4c9f931504072fc5cf7c49084b91406ca0b21beb0a97f5479cde7",
+  "featureCount": 1,
+  "sampleIds": [
+    "IN-KA-KGIS-g1~750206137~141665162~1bf74691351136450165d0b6deea81a62b7cf54d8961c534cf7fcb88a188446a"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:48:16.778Z",
+      "queryHash": "c8b386740fbaacba439b8b6480416689302fff421f7772d56865e621bd7d84b3",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 120
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:48:17.117Z",
+      "queryHash": "c8b386740fbaacba439b8b6480416689302fff421f7772d56865e621bd7d84b3",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 68
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

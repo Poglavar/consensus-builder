@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9513",
+  "cityName": "Hagaribommanahalli",
+  "sourceId": "in-ka-kgis-tiles",
+  "candidateSha256": "5253ace2e5c0baa786984d7826e0f7fbf1e5084182dd01a89e22291935b99afe",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "238d577ea648332c09cab76c8cd75c2b468f19a0e080b306c926fcc33a517e92",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "238d577ea648332c09cab76c8cd75c2b468f19a0e080b306c926fcc33a517e92",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-KA-KGIS-g1~762102807~150491547~57e405a2e17103348ae6bd1f623d56a3dfe3c4d4e49fbc8e246a31b79569c973",
+    "IN-KA-KGIS-g1~762102807~150491547~96da83abd3919ac95d0b6a3a0f436504e6c0216518d91a2685de2a891878c6c4",
+    "IN-KA-KGIS-g1~762113428~150480461~54a9529edcec4d5f1489f589ea406b84017c6e812902c8e710fb78bdb1d2bacf"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:06:32.901Z",
+      "queryHash": "085a282526a295b283fec53ccd77d3ad6700d76814f8dbe84f320162a3e08b4b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 105
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:06:33.257Z",
+      "queryHash": "085a282526a295b283fec53ccd77d3ad6700d76814f8dbe84f320162a3e08b4b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 60
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10701",
+  "cityName": "Kalitheerthalkuppam",
+  "sourceId": "in-tn-tngis-tiles",
+  "candidateSha256": "6dcfc8cbae048ac3d5cae9a88daca9bf9683a7c257d6775b4f6cbb5846609322",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "09b907d8065ee2a1980af474b0dadab5369bb5a7faa2b568541bbf9edc5728f1",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "09b907d8065ee2a1980af474b0dadab5369bb5a7faa2b568541bbf9edc5728f1",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~796470648~119489462~9daafafc83bd78d5f5e70d673eb52d83455d9111b7fbb976424f029ce46db4ab",
+    "IN-TN-TNGIS-g1~796452141~119485526~b887e0ea35291ffc2837e4bc74faf8e317846aebf684210a4932a293fe534601"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:55:53.044Z",
+      "queryHash": "040aa7735235d97413eede832985ca5e578bfc519a311ef6f40f5b4c5b5aa8d9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 302
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:55:53.473Z",
+      "queryHash": "040aa7735235d97413eede832985ca5e578bfc519a311ef6f40f5b4c5b5aa8d9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 61
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

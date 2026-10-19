@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9203",
+  "cityName": "Karera",
+  "sourceId": "in-mp-bhulekh-survey-tiles",
+  "candidateSha256": "988eb42eb54437eb86eb03ce27af2f163a4b4b46515082f71570a7a234f4b5b0",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "28f99635ca8fef4365238c0d94b2e3c84de49ec6944bdf9d48be00a5df8a9617",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "28f99635ca8fef4365238c0d94b2e3c84de49ec6944bdf9d48be00a5df8a9617",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-MP-BHULEKH-g1~781386334~254573363~1e09979c9e7ada00f9c88e0411f1096b0a12facd247b44c051f60b6efd2a0e9e",
+    "IN-MP-BHULEKH-g1~781387031~254569101~4713393cdf3abd79efcd15d23f330c65bc6ba938e67bb58002ce92a0621c992e",
+    "IN-MP-BHULEKH-g1~781383759~254567987~38a824839e58140549f7e35c531e3b28d4e44a7c8d3c5d3a6fc812c5bfef4236"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:09:36.512Z",
+      "queryHash": "5efc0929b10361ebc666d6c2978c26b925e845635a4a3add5332f01eee29d4e2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 285
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:09:37.058Z",
+      "queryHash": "5efc0929b10361ebc666d6c2978c26b925e845635a4a3add5332f01eee29d4e2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 214
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

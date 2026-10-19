@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "8745",
+  "cityName": "Shikrapur",
+  "sourceId": "in-mh-mrsac-tiles",
+  "candidateSha256": "b3fe058913d0f98a8f6e2b1ad2c131d22b1a0f040582d0ed4f924b2a5f4a1a7e",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "f7b97f593b9032bf43a8820c3443ef31371402e115ae119e4138920b5144a006",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "f7b97f593b9032bf43a8820c3443ef31371402e115ae119e4138920b5144a006",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-MH-MRSAC-g1~741195095~186767903~4ecca6e9f244d143ca1ff76ce9e9bcd27bce07a206b0c68b62d237813b08d109",
+    "IN-MH-MRSAC-g1~741190267~186768513~8914adb5488f0ba63813fa09e10bfffc0a07e50dc7e2ef520127a2fef7ae6817"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:00:52.373Z",
+      "queryHash": "cf78ac403024ec9e0db2f9a980feb1c6a1a238d0cf1865ae5d354b6d092c5ada",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 120
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:00:52.811Z",
+      "queryHash": "cf78ac403024ec9e0db2f9a980feb1c6a1a238d0cf1865ae5d354b6d092c5ada",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 84
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

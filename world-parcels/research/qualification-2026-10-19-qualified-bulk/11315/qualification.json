@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "11315",
+  "cityName": "Gunupur",
+  "sourceId": "in-od-odisha4kgeo-tiles",
+  "candidateSha256": "186262334edda29bfd00c415b6393d79d987f5bd9e08824d141cc84f7f80650d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "0d10d5606445968e5cfd2b5cc47525285ffea3b47e976ccf5d96fd68b5e3b219",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "0d10d5606445968e5cfd2b5cc47525285ffea3b47e976ccf5d96fd68b5e3b219",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-OD-4KGEO-g1~838130665~190739717~a0e7fa81de489daf98d67acc6dc14c9cf89806817f41c0579be69e043b83fe27",
+    "IN-OD-4KGEO-g1~838125300~190741999~25d685cb98753eafc24240e3e1a7056787f62efbe72f8f5c8e4010c4c01d6371"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:10:21.917Z",
+      "queryHash": "8f90741ba71ce216a1106360f33489a2e7169c8d8a7c35466c99672e7da96e4c",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 412
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:10:22.727Z",
+      "queryHash": "8f90741ba71ce216a1106360f33489a2e7169c8d8a7c35466c99672e7da96e4c",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 60
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

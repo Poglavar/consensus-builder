@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9987",
+  "cityName": "Doddaballapura",
+  "sourceId": "in-ka-kgis-tiles",
+  "candidateSha256": "e201fbbeb1cb80ef1af9f55f2e6b1d6a070cb861c5953cfee30b83b1c756fb3d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "8c544df8482c35408a867f1fd9c9166639d3ecc488708ef3c5e7aafdd8ea80dc",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "8c544df8482c35408a867f1fd9c9166639d3ecc488708ef3c5e7aafdd8ea80dc",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-KA-KGIS-g1~775416219~132900177~d6f3a904313f212a3ce9aa04cb62535ab3e24399ca5cd5835e3b9c6856d45d2a",
+    "IN-KA-KGIS-g1~775408065~132905711~6d4508cdc42aed4d60f564b295123f91c8de73efc5fddd0368cc1d22a546ec18",
+    "IN-KA-KGIS-g1~775381887~132912707~3735fd8f92f7ea43aa59493e1f7806d11861ea4bd6710f791cb9acc0f01123af"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:24:30.649Z",
+      "queryHash": "40157f6d6612e4d3934be17ec738910e674375336568f4f1dcaec6cbc08a5b70",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 138
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:24:31.136Z",
+      "queryHash": "40157f6d6612e4d3934be17ec738910e674375336568f4f1dcaec6cbc08a5b70",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 236
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

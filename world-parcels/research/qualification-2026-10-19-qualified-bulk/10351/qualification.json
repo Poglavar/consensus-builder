@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10351",
+  "cityName": "Pernampattu",
+  "sourceId": "in-tn-tngis-tiles",
+  "candidateSha256": "41f7f81ba7bf756de232fcd0fcfc948c985263382eca0566780027b1021f4948",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "7ce689a8dc950b8eef30585b4b31b3c1750779064aaf6a75e78448fa5262f714",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "7ce689a8dc950b8eef30585b4b31b3c1750779064aaf6a75e78448fa5262f714",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~787177813~129350939~936749c5e2b70703f1f9462749f2485fe2e079beb9dc0bea0e043ee92adcb994",
+    "IN-TN-TNGIS-g1~787177974~129352089~5ac8fc636562e671ffa5ab24ce52d1098f5d4fa7e0dc0cb553fcbd43b173ea39",
+    "IN-TN-TNGIS-g1~787169069~129312511~4949ceabd3fd339ba5d3d5749c09f36ded14dd40738696f05f0db5eadc8c5851"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:35:24.789Z",
+      "queryHash": "621736850a3622ba4e188d11a3c25510d673af3b49752d251c71a09763c428a1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 107
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:35:25.076Z",
+      "queryHash": "621736850a3622ba4e188d11a3c25510d673af3b49752d251c71a09763c428a1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 58
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

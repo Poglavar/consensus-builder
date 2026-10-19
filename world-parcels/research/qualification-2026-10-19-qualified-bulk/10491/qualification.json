@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10491",
+  "cityName": "Barhaiya Buzurg",
+  "sourceId": "in-up-ncog-tiles",
+  "candidateSha256": "5e49270ecea8e3416d88b95e0bd30e8b958132b6ca46c65165eea984df9d1e4f",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "ef62eca7603f9eb119ecd6d11f6f042a9a2a2bf470c3de39606ae446bb66b5c2",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "ef62eca7603f9eb119ecd6d11f6f042a9a2a2bf470c3de39606ae446bb66b5c2",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-UP-NCOG-g1~836201996~267220243~4cb734b5f7e2bb62755d5748450f07a313271f21639216c603924d64f4d438ad",
+    "IN-UP-NCOG-g1~836179036~267222543~0329e9981bf1d6283eaae6a2156b8f5ec8ea8f495f647d14969e6f1fba33afbb",
+    "IN-UP-NCOG-g1~836183596~267212146~c697bea6ac45ba92a2a5066556e0b094d0a7f902d2be23280af0a6c8d555d96e"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:07:00.257Z",
+      "queryHash": "a62d4adc3e3e460558040a2a1c3c1bc301051d06b825a05c95504dbacb6a8d57",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 115
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:07:00.637Z",
+      "queryHash": "a62d4adc3e3e460558040a2a1c3c1bc301051d06b825a05c95504dbacb6a8d57",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 249
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

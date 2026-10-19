@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9623",
+  "cityName": "Deori Khas",
+  "sourceId": "in-mp-bhulekh-survey-tiles",
+  "candidateSha256": "e1390853de45e144b36e37706bea9c607f7b00184637d388aaedcfc9fd91b875",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "e6094e1383bff27f985b83b197c7733b610c55cf5ea8409e0fc0fb4d384558c2",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "e6094e1383bff27f985b83b197c7733b610c55cf5ea8409e0fc0fb4d384558c2",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-MP-BHULEKH-g1~790077335~233901365~4be6059f5c9f1b82c5c4cef6c87cb705db359ce1018b588ec54bcbe8271fe87e",
+    "IN-MP-BHULEKH-g1~790077335~233902005~a27b6a490add2d09545dc1660d37f9367e0654a07119a2719ce0d6baadeeb016",
+    "IN-MP-BHULEKH-g1~790081251~233861828~4d65082d4dac421c68d04fce27976fc3b2ec5696928b8c9e56fb1526df53167c"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 8,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:27.538Z",
+      "queryHash": "ed171b3914bd341f476900a164c70f815c05d3473c83bd3df5fc7739e1e9f5e6",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 384
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:28.117Z",
+      "queryHash": "90ae4c0777ef79293723bc6b1c92be41b6714418e178c0490d4676545e1dc7cf",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 316
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:28.601Z",
+      "queryHash": "089d538425f27b31ce6b6c83db271faa3d4fab8f8e260c065546ac32bc919ec8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 44
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:28.710Z",
+      "queryHash": "285499bbe8e24ade32b1445166c8d26b22635dbe5e782ce1c385664336297a75",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 38
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:28.966Z",
+      "queryHash": "ed171b3914bd341f476900a164c70f815c05d3473c83bd3df5fc7739e1e9f5e6",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 45
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:29.133Z",
+      "queryHash": "90ae4c0777ef79293723bc6b1c92be41b6714418e178c0490d4676545e1dc7cf",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 34
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:29.259Z",
+      "queryHash": "089d538425f27b31ce6b6c83db271faa3d4fab8f8e260c065546ac32bc919ec8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 30
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:29.340Z",
+      "queryHash": "285499bbe8e24ade32b1445166c8d26b22635dbe5e782ce1c385664336297a75",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 40
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10047",
+  "cityName": "Jigani",
+  "sourceId": "in-ka-kgis-tiles",
+  "candidateSha256": "8cd67f87baa4a202ce66e3ba1a533b9f894fd1089cb43974557014a9713785e3",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "f9b1c9407f6826d884725cb033ba80a662f808e478fe7a39888d396e2b0514ee",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "f9b1c9407f6826d884725cb033ba80a662f808e478fe7a39888d396e2b0514ee",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-KA-KGIS-g1~776704431~128108075~79757b38ccf5e6e1aa1746361b45b0cb387993777b1b80c0024646ed08207d14",
+    "IN-KA-KGIS-g1~776703894~128158918~ce7940eef3d4f73916d470a4b92b3ddc50a55727b238df9371d80f462fa768ba"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 4,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:13:29.628Z",
+      "queryHash": "54dc4332dcd3c075c7f33bdfac2d5c11ba8e1967746eb82572ed5c46f12f5a4b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 130
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:13:29.684Z",
+      "queryHash": "443f94f61ad499583b4d938a718c12dec6e06d8e945af1fb184aedf18acaba6b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 91
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:13:30.230Z",
+      "queryHash": "54dc4332dcd3c075c7f33bdfac2d5c11ba8e1967746eb82572ed5c46f12f5a4b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 51
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:13:30.231Z",
+      "queryHash": "443f94f61ad499583b4d938a718c12dec6e06d8e945af1fb184aedf18acaba6b",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

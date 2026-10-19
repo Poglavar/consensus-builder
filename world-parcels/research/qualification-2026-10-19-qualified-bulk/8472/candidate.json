@@ -1,0 +1,78 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "OBJECTID"
+    ],
+    "id": "in-mh-mrsac-tiles",
+    "idPrefix": "IN-MH-MRSAC-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "MRSAC_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 9,
+    "maxFeatures": 10000,
+    "metricSrid": 32643,
+    "name": "Maharashtra cadastral maps — indianopenmaps tile snapshot (MRSAC_Cadastrals)",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Maharashtra from the MRSAC_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "MH",
+    "zoom": 13,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "malegaon",
+      "ahmednagar",
+      "kolhapur",
+      "sangli",
+      "nanded",
+      "8472"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "8472": 32643,
+      "malegaon": 32643,
+      "ahmednagar": 32643,
+      "kolhapur": 32643,
+      "sangli": 32643,
+      "nanded": 32643
+    }
+  },
+  "city": {
+    "code": "8472",
+    "name": "Pimpalner",
+    "point": [
+      74.1241438146163,
+      20.9542449730916
+    ]
+  },
+  "sampleIds": [
+    "IN-MH-MRSAC-g1~741240048~209544864~4e3d13b04f5d6d22244563b00b7cbd4bd59a0452d0ea2c128cc0a70739c5a644",
+    "IN-MH-MRSAC-g1~741232216~209548270~a4228c415f9da847b780913c8e017c0b9ce29de31938c7e7521290574b653106",
+    "IN-MH-MRSAC-g1~741180396~209499376~a43fe43ccac82a85f5061e591bd66e0c70b172590e0cef75c09f847f8bc4491b"
+  ],
+  "absentId": "IN-MH-MRSAC-g1~741180396~209499376~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32643",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Maharashtra cadastral maps — indianopenmaps tile snapshot (MRSAC_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Maharashtra; candidate cities are limited to WUP points inside IN-MH. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9159",
+  "cityName": "Bhatkal",
+  "sourceId": "in-ka-kgis-tiles",
+  "candidateSha256": "052e0d8283e41037914fa55d756f6fcdbc597823c8536f73798635329afcb92a",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "028d212ea0d8293afd1e1bd23ba3f21508a25c2d7d0e49b78c9914643597cd7c",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "028d212ea0d8293afd1e1bd23ba3f21508a25c2d7d0e49b78c9914643597cd7c",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-KA-KGIS-g1~745452082~139969851~e16af5e96e7ae4663b7573fb8e03233278615ea46f3df2dcafcd7465fe522d91",
+    "IN-KA-KGIS-g1~745443928~139963605~3ef401762fd192b14375a9b144aa66f4e2e8dbd9f7de3e13cebd300ea410466e",
+    "IN-KA-KGIS-g1~745454443~139951841~73d7deab8cec1c931f3ae56c4faef39c2c2a338a442bc8610b8c34d2575aa657"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:33:33.631Z",
+      "queryHash": "807af0fe7005ac86cab5b18d86d3c24a83f2b5e30c4d535c439fd76810aad3c6",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:33:34.249Z",
+      "queryHash": "807af0fe7005ac86cab5b18d86d3c24a83f2b5e30c4d535c439fd76810aad3c6",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 231
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

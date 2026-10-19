@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10719",
+  "cityName": "Tenali",
+  "sourceId": "in-ap-apsac-tiles",
+  "candidateSha256": "49a6edf1b77a5d39b5c6a28e48310e5e10af6a0019d855a71dc999d3011e26eb",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "319227cf771b25fe2d51ea807dad14b7185e5df895548e37f9f58cad197f63f6",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "319227cf771b25fe2d51ea807dad14b7185e5df895548e37f9f58cad197f63f6",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-AP-APSAC-g1~806439292~162488848~4346a2989d20756a6cc03d108f9da5527c8d78269be1f5ae9558c05bf893f967",
+    "IN-AP-APSAC-g1~806425989~162486376~26f6388f055e25110b34bea631a3319f1f4069aee3372a15b8181661d4ab979b",
+    "IN-AP-APSAC-g1~806439507~162493380~b24292987aeb87042545d06c736102d1b578211338afe7bad855a300819f7001"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:17:28.044Z",
+      "queryHash": "7244b991970cd2bc14e6e3b854bd18bacad51366c762892ffdb9538ac4efc91a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 127
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:17:28.409Z",
+      "queryHash": "7244b991970cd2bc14e6e3b854bd18bacad51366c762892ffdb9538ac4efc91a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 58
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

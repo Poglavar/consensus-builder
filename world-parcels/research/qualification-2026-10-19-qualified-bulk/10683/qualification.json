@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10683",
+  "cityName": "Bhatpar Rani",
+  "sourceId": "in-up-ncog-tiles",
+  "candidateSha256": "86a4e3b4576c1a1c247c1fa40b7919642fb5b45ba419e5dacd370a183ed523fe",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "3a998e819f3b461333b39d480fae9e1dc3f0c51648b1be66778c870757aa5bb0",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32645",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "3a998e819f3b461333b39d480fae9e1dc3f0c51648b1be66778c870757aa5bb0",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-UP-NCOG-g1~840289146~263034229~9f1009576245de56eb39479e66d77298888bf37035cf97cdf521796e67ecbd8a",
+    "IN-UP-NCOG-g1~840287536~263028939~fa0d9a7163a444a92d0ea51e86a02a0477b82a73ef1133553a3d862d5b40be96",
+    "IN-UP-NCOG-g1~840284318~263033460~e200c0163f438ab1b1a63620c4c3bd0bc3aa4d9cad0061c677ec09d4eb8b76d6"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:06:05.508Z",
+      "queryHash": "4bad9be72299c02b66097e0e86cc3d2244f776cd0633ed31008ee0ea147dc583",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 128
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:06:05.910Z",
+      "queryHash": "4bad9be72299c02b66097e0e86cc3d2244f776cd0633ed31008ee0ea147dc583",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 59
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

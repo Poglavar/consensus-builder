@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "11541",
+  "cityName": "Banki",
+  "sourceId": "in-od-odisha4kgeo-tiles",
+  "candidateSha256": "dfd47060c7a68d8a522efe5bb27b1a5db1c7578398424ce4a5309e019bc9757e",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "892529bf7e1de7d62abdfe7d3b17af0b6a0e7f373bf2893344766ac4f0325e41",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32645",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "892529bf7e1de7d62abdfe7d3b17af0b6a0e7f373bf2893344766ac4f0325e41",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-OD-4KGEO-g1~855295730~203717049~6cb50b04d09fc785df99c6277edc8c67d2de51452bf6e21676d1cd98f8a9ae9a",
+    "IN-OD-4KGEO-g1~855296481~203717904~6d4f73e35705625bc8688b9c61c35edc7d158595fcf3779c46adca9cccfb9079",
+    "IN-OD-4KGEO-g1~855291009~203711919~dd19d7482ab92c03752fc9b663d74529056660573a2a48d0e0b4943d8ec0c725"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:11:53.057Z",
+      "queryHash": "fc3f91e93f5b0a5e8f6dfcf668332e791a15fdfce037fbca070c0b3897d1e189",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 550
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:11:54.226Z",
+      "queryHash": "fc3f91e93f5b0a5e8f6dfcf668332e791a15fdfce037fbca070c0b3897d1e189",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 73
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

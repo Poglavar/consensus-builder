@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "11191",
+  "cityName": "Rasulpur",
+  "sourceId": "in-br-ncog-tiles",
+  "candidateSha256": "cfdde4825ba8635e67a746f8586d497fc2e5d0f72dd276909f18042c9936b837",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "39611c6a7d32be8c7712b30f0a0d63aeda770483b5fe9c066b8b4c8b316cd89f",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32645",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "39611c6a7d32be8c7712b30f0a0d63aeda770483b5fe9c066b8b4c8b316cd89f",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-BR-NCOG-g1~859063911~259808756~7b06db78d183f18b516f6475d4beae5eba2b4961ce85e33302ce95489d425bb3",
+    "IN-BR-NCOG-g1~859063536~259807117~80a7c48d170d9210f5ad3cee04cdd0de0c1069c3c6f1f62d6188f18df571c84d",
+    "IN-BR-NCOG-g1~859062999~259804199~ff6634becf7c01b27a5d18ff9bb2edad697d144eac5835209ec0693db71fc500"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:00:48.009Z",
+      "queryHash": "da6033341c6fc7d0b89e0b05d8a050b60958730812039d48682819b0925d8d37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 290
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:00:48.969Z",
+      "queryHash": "da6033341c6fc7d0b89e0b05d8a050b60958730812039d48682819b0925d8d37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 70
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}
