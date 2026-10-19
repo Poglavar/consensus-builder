@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-19: Vocabulary work proceeds in small verified changes under one current contract; experimental records may be recreated instead of preserving legacy data through migrations or parallel code paths.
+
 - 2026-10-19: Run two additional persistent web researchers for unsupported cities outside Africa, seeking genuinely new cadastral sources rather than extending known providers; preserve the separate two-worker Africa research queue.
 
 - 2026-10-19: Process the qualified-city backlog on Valhalla with four parallel admission workers; keep shared app-data writes serial so city bindings and reports cannot overwrite one another. Continue fresh city-by-city web discovery alongside admission.

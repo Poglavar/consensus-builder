@@ -354,3 +354,13 @@ V04 verification: 58 targeted headless unit tests passed across `test/plan-hash.
 contract, API drift reporting and publication/approval integration with mocked storage; it does
 not verify a deployed database or chain mint.
 
+V01 verification: 221 targeted headless unit tests across eight files:
+`test/proposal-identifiers.test.js`, `test/proposal-upload-identifiers.test.js`,
+`test/proposals.test.js`, `test/proposal-edit-auth.test.js`, `test/agent-proposals.test.js`,
+`test/ens-plans.test.js`, `test/chain-mirror.test.js` and `test/proposal-lineage.test.js`,
+run from `backend/` with `npx vitest run <those eight paths> --pool=threads --maxWorkers=2`.
+The initial run had three incorrect test expectations; after correcting those, the affected
+`test/proposals.test.js` rerun passed all 114 tests. The other seven files passed in the initial
+run. Neither run was stopped. Storage, payment and chain boundaries were mocked; no live
+database, payment or mint was changed.
+

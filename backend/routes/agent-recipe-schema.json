@@ -31,7 +31,9 @@
       "default": 0,
       "description": "Linear intrusion tolerance in metres: a parcel is bound when the site reaches into it by more than this width (the diameter of the largest circle inside site ∩ parcel). Default 0: any reach binds. Measurement error only, never a design allowance."
     },
-    "proposalId": { "type": "string", "maxLength": 255, "description": "Unique operation id. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
+    "proposalId": { "type": "string", "minLength": 1, "maxLength": 255, "pattern": "[^0-9]", "description": "Authored operation/content identifier; strings consisting only of digits are reserved for database row IDs. This is not a chain token/account ID. Omit it to have the server generate an authored ID. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
+    "id": false,
+    "proposal_id": false,
     "type": { "type": "string", "maxLength": 50, "description": "parcel | building | structure | road (free text, 50 chars)." },
     "goal": {
       "type": "string",

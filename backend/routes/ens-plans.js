@@ -46,7 +46,7 @@ function validateProposalIds(value) {
     if (!Array.isArray(value) || value.length === 0) return { error: 'proposalIds must be a non-empty array.' };
     if (value.length > MAX_PROPOSALS) return { error: `Too many proposals (max ${MAX_PROPOSALS}).` };
     const ids = value.map((v) => (v === undefined || v === null ? '' : v.toString().trim()));
-    if (!ids.every((id) => PROPOSAL_ID_RE.test(id))) return { error: 'Each proposal id must be a numeric (minted) id.' };
+    if (!ids.every((id) => PROPOSAL_ID_RE.test(id))) return { error: 'proposalIds must contain database row IDs (digits), not authored IDs or chain references.' };
 
     const unique = [...new Set(ids)];
     // Measured on the deduplicated list, because that is what the link will actually carry.
@@ -98,7 +98,7 @@ export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } 
         const proposalIds = idList(req.query.proposal_ids, PROPOSAL_ID_RE);
         const parcelIds = idList(req.query.parcel_ids, PARCEL_ID_RE);
         if (proposalIds === false || parcelIds === false) {
-            return res.status(400).json({ error: `proposal_ids are numeric ids and parcel_ids cadastral ids, at most ${MAX_FILTER_IDS} of each.` });
+            return res.status(400).json({ error: `proposal_ids are database row IDs and parcel_ids cadastral IDs, at most ${MAX_FILTER_IDS} of each.` });
         }
         const rows = await store.list(city, { proposalIds, parcelIds });
         res.json({ plans: rows.map(planView) });
