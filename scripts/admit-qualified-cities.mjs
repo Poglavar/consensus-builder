@@ -439,7 +439,8 @@ async function main() {
 
     const outcomes = latestOutcomes(args.outcomes || undefined);
     const evidence = evidenceIndex(args.states);
-    const wup = wupIndex();
+    // Parallel plan checks need no population metadata. Read the full roster once in serial apply.
+    const wup = args.planOutput && !args.apply ? new Map() : wupIndex();
     const explicitCountry = args.countryConfig ? validateCountryConfig(readJson(args.countryConfig)) : null;
     const plan = [], refused = [];
     const taken = new Set(configIds);
