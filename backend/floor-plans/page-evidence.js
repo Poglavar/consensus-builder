@@ -203,7 +203,7 @@ const AGENCY_OFFICE_TAIL = /\b(?:[\p{Lu}][\p{L}'’\-]*\s+){1,3}(?:nekretnine|re
 const AGENCY_OFFICE_NAME = /^(?:[\p{Lu}][\p{L}'’\-]*\s+){1,3}(?:nekretnine|real\s+estate)\s+(?:d\.?\s*o\.?\s*o\.?|j\.?\s*d\.?\s*o\.?\s*o\.?)$/u;
 const STANDALONE_ADDRESS = /^[\p{L}][\p{L}\p{M} .’'\-]{2,80}\s+\d{1,4}[a-z]?$/iu;
 
-function locationEvidenceText($) {
+export function locationEvidenceBody($) {
     const visible = $('body').clone();
     visible.find(LOCATION_CHROME).remove();
     // Interklasik's office signature begins with an invitation to contact the
@@ -233,7 +233,7 @@ function locationEvidenceText($) {
         if (next.length && STANDALONE_ADDRESS.test(next.text().replace(/\s+/g, ' ').trim())) next.remove();
         item.remove();
     });
-    return visible.text().replace(/\s+/g, ' ').trim();
+    return visible;
 }
 
 // A page may embed whole project tables and recommendation cards. Discovery is
@@ -301,7 +301,7 @@ function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, 
 
 export function extractPageEvidence(html, pageUrl, { sourceKind = null, discovery = true, document = null } = {}) {
     const $ = document || cheerio.load(String(html || ''));
-    const bodyText = locationEvidenceText($);
+    const bodyText = locationEvidenceBody($).text().replace(/\s+/g, ' ').trim();
     if (BLOCKED.test(`${$('title').text()} ${bodyText}`)) return { title: first($('title').text()), canonicalUrl: normalizeUrl($('link[rel="canonical"]').attr('href'), pageUrl) || normalizeUrl(pageUrl, pageUrl), text: bodyText, links: [], assets: [], listing: null, blocked: true, blockedReason: 'challenge-or-access-block' };
     const canonicalUrl = normalizeUrl($('link[rel="canonical"]').attr('href'), pageUrl) || normalizeUrl(pageUrl, pageUrl);
     const scripts = jsonScripts($), records = scripts.flatMap(item => item?.['@graph'] || item);
