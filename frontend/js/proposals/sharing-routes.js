@@ -135,7 +135,7 @@ function focusMapOnSharedProposal(proposal, payload) {
     return false;
 }
 
-/** Spinner on the sidebar's "Share entire plan" button. The label/subtext give way to it so the
+/** Spinner on the sidebar's "Share applied proposals" button. The label/subtext give way to it so the
     button keeps its size, and the busy flag survives updateShowProposalsButton re-enabling it. */
 function setSharePlanButtonBusy(busy) {
     const button = document.getElementById('shareAppliedProposalsButton');

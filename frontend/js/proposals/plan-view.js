@@ -307,7 +307,7 @@
     function renderPanel() {
         const panel = ensurePanel();
         const plan = state.plan || { slug: state.slug };
-        panel.querySelector('#plan-view-title').textContent = win.ProposalPlans.planLabel(plan) || t('plans.view.title', 'Plan');
+        panel.querySelector('#plan-view-title').textContent = win.ProposalPlans.planLabel(plan) || t('plans.view.title', 'Named plan');
         const close = panel.querySelector('[data-plan-action="close"]');
         const closeLabel = t('modal.common.close', 'Close');
         close.setAttribute('aria-label', closeLabel);

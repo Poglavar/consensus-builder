@@ -1001,15 +1001,13 @@
                         <button id="shareAppliedProposalsButton" class="btn btn-block share-plan-button" disabled
                             onclick="shareAppliedProposals()">
                             <i class="fas fa-share-alt"></i>
-                            <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share
-                                entire plan (all
-                                proposals)</span>
+                            <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share applied proposals</span>
                             <span class="share-plan-subtext" data-i18n-key="sidebar.proposals.shareButtonEmpty">No
-                                applied plans. Apply some first</span>
+                                applied proposals. Apply some first</span>
                             <span class="share-plan-spinner" aria-live="polite"
                                 style="display: none; gap: 6px; align-items: center;">
                                 <i class="fas fa-spinner fa-spin"></i>
-                                <span data-i18n-key="sidebar.proposals.shareButtonPreparing">Preparing plan...</span>
+                                <span data-i18n-key="sidebar.proposals.shareButtonPreparing">Preparing proposals…</span>
                             </span>
                         </button>
                     </div>
@@ -1444,7 +1442,7 @@
                         <button type="button" class="cb-segmented__option" aria-pressed="true" data-parcel-proposals-view="proposals"><span
                                 data-i18n-key="panel.parcel.tabProposals">Proposals</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="proposals"></span></button>
                         <button type="button" class="cb-segmented__option" aria-pressed="false" data-parcel-proposals-view="plans"><span
-                                data-i18n-key="plans.title">Plans</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="plans"></span></button>
+                                data-i18n-key="plans.title">Named plans</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="plans"></span></button>
                     </div>
                     <div id="proposals-content"></div>
                     <div id="parcel-plans-content" hidden></div>

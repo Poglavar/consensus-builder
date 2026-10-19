@@ -1,10 +1,33 @@
 <!-- Design of record for named plans: immutable named sets of proposals, and betting on them. -->
 
-# Plans
+# Named plans
 
 A **proposal** is an authored change, rule or transaction concerning land; it may contain several
-buildings, streets or plots. A **plan** is a named, ordered set of proposals: what people actually argue and bet
+buildings, streets or plots. A **named plan** is a named, ordered set of proposals: what people actually argue and bet
 about ("the official UPU Borovje", "Borovje – urban blocks"). Decisions of 2026-10-10.
+
+## Named membership and local application
+
+An **applied composition** is the proposals currently applied in one browser and their materialized
+effects. It can include proposals from several named plans, plus local drafts. It has no named-plan
+identity of its own. Applying or removing a proposal changes this composition, not any named plan.
+
+**Share applied proposals** lets the user choose a subset and upload its proposals. Copying the
+resulting `/proposals/<row IDs>` link shares that selection without creating a named plan. The
+separate **Create named plan** action creates the fixed membership record through `POST /plans`.
+The browser's later application state does not update that record.
+
+| Relationship | Meaning |
+| --- | --- |
+| Proposal is a member of a named plan | Durable, ordered membership recorded by the plan. |
+| Proposal is applied in a browser | Local state that contributes to the current composition and derived fabric. |
+| Proposal is selected for sharing | Temporary selection in the sharing panel; it can be a subset of the composition. |
+| Proposal forms before another proposal | Replay chronology determined by authored/creation time and tie-breakers. |
+| Proposal depends on another proposal | Prerequisite required by its authored inputs; membership or list position alone does not establish it. |
+
+Member order contributes to the named-plan hash. It does not determine replay chronology or
+declare dependencies. A statutory plan or a floor-plan drawing is a different kind of object;
+this document uses “plan” as shorthand for **named plan** only.
 
 ## A named plan never changes
 
@@ -120,5 +143,6 @@ must be discarded and recreated. This adds neither an older-contract reader nor 
 
 ## Links
 
-- `/proposals/<slug>` opens a plan (applies its members), as before.
+- `/proposals/<slug>` opens the named-plan preview. **Apply plan** applies its members locally.
+- `/proposals/<row IDs>` shares selected published proposals without a named-plan record.
 - `/bets/<plan account>` opens the plan's bet, as for proposals.

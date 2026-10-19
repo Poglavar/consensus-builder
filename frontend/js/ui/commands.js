@@ -395,7 +395,7 @@
         control('mintedProposalsButton', { id: 'proposals.minted', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.mintedButton', fallbackLabel: 'Minted Proposals', icon: 'fas fa-certificate' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.shareButton', fallbackLabel: 'Share entire plan (all proposals)', icon: 'fas fa-share-alt' }),
+            labelKey: 'sidebar.proposals.shareButton', fallbackLabel: 'Share applied proposals', icon: 'fas fa-share-alt' }),
         { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 

@@ -1,5 +1,5 @@
 // Named plans in the app (frontend/js/proposals/plans.js): which plans a proposal is part of, the plan
-// line on its row ("Plan: <name>" / "In N plans"), and the rows of a Plans list. Superseded versions
+// line on its row ("Plan: <name>" / "In N named plans"), and the rows of a Plans list. Superseded versions
 // are left out everywhere: a revision replaces its predecessor.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
@@ -31,13 +31,13 @@ describe('the plan line on a proposal row', () => {
     it('links the one plan by name, escaped', () => {
         const html = Plans.planLineHtml([harbor]);
         expect(html).toContain('data-plan-slug="harbor-v2"');
-        expect(html).toContain('Part of plan Harbor &lt;b&gt;');
+        expect(html).toContain('Part of named plan Harbor &lt;b&gt;');
         expect(html).not.toContain('proposal-plan-toggle');
     });
 
-    it('folds several plans under "In N plans" with a link to each', () => {
+    it('folds several plans under "In N named plans" with a link to each', () => {
         const html = Plans.planLineHtml([harbor, ring]);
-        expect(html).toContain('In 2 plans');
+        expect(html).toContain('In 2 named plans');
         expect(html).toContain('class="cb-link proposal-plan-toggle" aria-expanded="false"');
         expect(html).toContain('<ul class="proposal-plan-options" hidden>');
         expect((html.match(/class="cb-link proposal-plan-link"/g) || []).length).toBe(2);

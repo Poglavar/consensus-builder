@@ -473,7 +473,7 @@ function showUploadProposalModal(proposal) {
     const sharePlanButton = document.createElement('button');
     sharePlanButton.type = 'button';
     sharePlanButton.className = 'btn btn-block share-modal-plan-btn';
-    sharePlanButton.textContent = tShare('sharePlanButton', 'Share the whole plan instead (all applied proposals)…');
+    sharePlanButton.textContent = tShare('sharePlanButton', 'Share applied proposals…');
     sharePlanButton.addEventListener('click', () => {
         // The dialog STAYS UP until the plan panel behind it is built and the map framed. Closing
         // first is what made this feel broken: the modal vanished instantly and left the user on a
@@ -485,7 +485,7 @@ function showUploadProposalModal(proposal) {
         spinner.className = 'fas fa-spinner fa-spin';
         spinner.setAttribute('aria-hidden', 'true');
         const label = document.createElement('span');
-        label.textContent = tShare('preparingPlan', 'Preparing plan...');
+        label.textContent = tShare('preparingPlan', 'Preparing proposals…');
         sharePlanButton.appendChild(spinner);
         sharePlanButton.appendChild(label);
 
