@@ -1,5 +1,5 @@
-// Canonical parcel-set relations between proposals (same / contains / inside / overlap) and the
-// land-fork lineage a counterproposal records when its parcel set differs from its origin's.
+// Declared-reference set relations (same / contains / inside / overlap), not geometry or conflicts.
+// Land-fork lineage records how a counterproposal's declaration differs from its origin's.
 (function (global) {
     'use strict';
 
@@ -9,9 +9,7 @@
     }
 
     function normalizeParcelIds(proposal) {
-        const source = Array.isArray(proposal?.parcelSet?.parcelIds)
-            ? proposal.parcelSet.parcelIds
-            : proposal?.cadastreParcelIds;
+        const source = proposal?.cadastreParcelIds;
         return Array.from(new Set(
             (Array.isArray(source) ? source : [])
                 .map(value => String(value ?? '').trim())
@@ -24,10 +22,8 @@
         return String(value || '').trim().toLowerCase();
     }
 
-    function sameCanonicalSet(target, candidate, targetIds, candidateIds) {
-        const targetHash = typeof target?.parcelSet?.setHash === 'string' ? target.parcelSet.setHash : '';
-        const candidateHash = typeof candidate?.parcelSet?.setHash === 'string' ? candidate.parcelSet.setHash : '';
-        if (targetHash && candidateHash) return targetHash === candidateHash;
+    function sameDeclaredReferences(targetIds, candidateIds) {
+        // The set hash is derived publication metadata; it cannot override the actual declaration.
         return targetIds.length === candidateIds.length
             && targetIds.every((id, index) => id === candidateIds[index]);
     }
@@ -44,12 +40,15 @@
         const targetJurisdiction = jurisdictionOf(target);
         const candidateJurisdiction = jurisdictionOf(candidate);
         if (targetJurisdiction && candidateJurisdiction && targetJurisdiction !== candidateJurisdiction) return null;
+        const targetAuthority = String(target?.parcelSet?.authority || '').trim();
+        const candidateAuthority = String(candidate?.parcelSet?.authority || '').trim();
+        if (targetAuthority && candidateAuthority && targetAuthority !== candidateAuthority) return null;
 
         const candidateSet = new Set(candidateIds);
         const sharedParcelIds = targetIds.filter(id => candidateSet.has(id));
         if (!sharedParcelIds.length) return null;
 
-        const sameSet = sameCanonicalSet(target, candidate, targetIds, candidateIds);
+        const sameSet = sameDeclaredReferences(targetIds, candidateIds);
         let kind = 'overlap';
         if (sameSet) kind = 'same';
         else if (sharedParcelIds.length === targetIds.length) kind = 'contains-target';
@@ -70,7 +69,7 @@
     }
 
     function findParcelSetRelations(target, candidates, options = {}) {
-        const limit = Number.isInteger(options.limit) && options.limit > 0 ? options.limit : 12;
+        const limit = Number.isInteger(options.limit) && options.limit > 0 ? options.limit : Infinity;
         const rank = { same: 0, 'contains-target': 1, 'inside-target': 2, overlap: 3 };
         return (Array.isArray(candidates) ? candidates : [])
             .map(candidate => classifyParcelSetRelation(target, candidate))

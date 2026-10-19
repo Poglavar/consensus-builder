@@ -124,6 +124,29 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('reference comparison counts all loaded matches before showing twelve rows', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const id = await page.evaluate(() => {
+      const storage = (window as any).proposalStorage;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: ['reference-card-1', 'reference-card-2'] };
+      const id = storage.addProposal({ ...base, title: 'Reference comparison target' });
+      for (let i = 0; i < 15; i++) storage.addProposal({ ...base, title: `Reference comparison ${i}`,
+        cadastreParcelIds: i < 13 ? base.cadastreParcelIds : ['reference-card-2'] });
+      return id;
+    });
+    await showProposal(page, id);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const card = page.locator('.proposal-parcel-set-card');
+    await expect(card.getByRole('heading')).toHaveText('Proposals sharing references');
+    await expect(card.locator('p')).toHaveText('2 declared cadastral references. Of 15 loaded matches, 13 use the same references and 2 share some. Showing 12.');
+    await expect(card.locator('[data-related-proposal-id]')).toHaveCount(12);
+    await card.locator('[data-related-proposal-id]').first().click();
+    await expect(page.locator('#proposal-details-title')).toContainText('Reference comparison');
+    await expect(page.locator('#proposal-details-title')).not.toHaveText('Reference comparison target');
+  });
+
   test('unloaded source references are not presented as removed parcels', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));

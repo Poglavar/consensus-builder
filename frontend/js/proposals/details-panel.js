@@ -704,8 +704,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (!relationApi || typeof relationApi.findParcelSetRelations !== 'function') return '';
 
         const activeProposal = fullProposal || proposal;
-        const canonicalIds = relationApi.normalizeParcelIds(activeProposal);
-        if (!canonicalIds.length) return '';
+        const declaredIds = relationApi.normalizeParcelIds(activeProposal);
+        if (!declaredIds.length) return '';
 
         let allProposals = [];
         try {
@@ -714,9 +714,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ? proposalStorage.getAllProposals()
                 : [];
         } catch (error) {
-            console.warn('[showProposalInfo] Could not enumerate parcel-set alternatives:', error);
+            console.warn('[showProposalInfo] Could not enumerate declared-reference matches:', error);
         }
-        const relations = relationApi.findParcelSetRelations(activeProposal, allProposals, { limit: 12 });
+        const relations = relationApi.findParcelSetRelations(activeProposal, allProposals);
+        const shownRelations = relations.slice(0, 12);
         const exactCount = relations.filter(relation => relation.kind === 'same').length;
         const overlapCount = relations.length - exactCount;
         const setHash = typeof activeProposal?.parcelSet?.setHash === 'string'
@@ -726,28 +727,28 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const summary = relations.length
             ? tProposal(
                 'panel.proposal.parcelSet.summary',
-                '{{count}} real parcels anchor this proposal. {{exact}} alternatives use the same set and {{overlap}} overlap it.',
-                { count: canonicalIds.length, exact: exactCount, overlap: overlapCount }
+                '{{count}} declared cadastral references. Of {{total}} loaded matches, {{exact}} use the same references and {{overlap}} share some. Showing {{shown}}.',
+                { count: declaredIds.length, total: relations.length, exact: exactCount, overlap: overlapCount, shown: shownRelations.length }
             )
             : tProposal(
                 'panel.proposal.parcelSet.noRelated',
-                '{{count}} real parcels anchor this proposal. No other proposal currently references this land.',
-                { count: canonicalIds.length }
+                '{{count}} declared cadastral references. No other loaded proposal shares these references.',
+                { count: declaredIds.length }
             );
         const relationLabels = {
-            same: tProposal('panel.proposal.parcelSet.relationSame', 'Same parcel set'),
-            'contains-target': tProposal('panel.proposal.parcelSet.relationContains', 'Includes this whole set'),
-            'inside-target': tProposal('panel.proposal.parcelSet.relationInside', 'Inside this parcel set'),
-            overlap: tProposal('panel.proposal.parcelSet.relationOverlap', 'Overlapping land')
+            same: tProposal('panel.proposal.parcelSet.relationSame', 'Same references'),
+            'contains-target': tProposal('panel.proposal.parcelSet.relationContains', 'Includes all these references'),
+            'inside-target': tProposal('panel.proposal.parcelSet.relationInside', 'Subset of these references'),
+            overlap: tProposal('panel.proposal.parcelSet.relationOverlap', 'Some shared references')
         };
-        const rows = relations.map(relation => {
+        const rows = shownRelations.map(relation => {
             const candidate = relation.proposal || {};
             const candidateId = safeAgentText(relation.proposalId);
             const title = safeAgentText(window.ProposalDisplayText.text(candidate.title || candidate.name || relation.proposalId, candidate));
             const author = candidate.author ? safeAgentText(candidate.author) : '';
             const shared = safeAgentText(tProposal(
                 'panel.proposal.parcelSet.sharedCount',
-                '{{shared}} of {{count}} parcels shared',
+                '{{shared}} of {{count}} references shared',
                 { shared: relation.sharedCount, count: relation.targetCount }
             ));
             const lifecycle = typeof getProposalLifecycleLabel === 'function'
@@ -765,20 +766,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }).join('');
 
         return `
-            <section class="proposal-parcel-set-card" aria-label="${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}">
+            <section class="proposal-parcel-set-card" aria-label="${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals sharing references'))}">
                 <div class="proposal-parcel-set-head">
                     <div>
-                        <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Canonical parcel set'))}</div>
-                        <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}</h3>
+                        <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Declared cadastral references'))}</div>
+                        <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals sharing references'))}</h3>
                     </div>
-                    <span class="cb-badge cb-badge--applied proposal-parcel-set-count">${canonicalIds.length}</span>
+                    <span class="cb-badge cb-badge--applied proposal-parcel-set-count">${declaredIds.length}</span>
                 </div>
                 <p>${safeAgentText(summary)}</p>
-                ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Set identity'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
+                ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Recorded set hash'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
                 ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
                 <div class="cb-link-row proposal-parcel-set-activity">
                     <button type="button" class="cb-link activity-scope-link" data-activity-scope="proposalId" data-activity-value="${safeAgentText(relationApi.proposalKey(activeProposal))}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityProposal', 'Activity on this proposal'))}</button>
-                    ${setHash ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity on this land'))}</button>` : ''}
+                    ${setHash ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity for this reference set'))}</button>` : ''}
                 </div>
             </section>`;
     })();
@@ -1057,7 +1058,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>
             </section>` : ''}
             ${chainSettlesProposal ? sectionEnd : ''}
-            ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHint', 'Parcels: {{count}} · alternatives and acceptance', { count: cadastreParcelIds.length }))}
+            ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHint', 'Declared references: {{count}} · matching proposals and consent', { count: cadastreParcelIds.length }))}
             ${parcelSetRelationsHtml}
             ${window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true ? '<div class="approval-card-slot" data-approval-card-slot></div>' : ''}
             ${editApprovalButtonHtml}

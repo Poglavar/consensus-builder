@@ -1607,18 +1607,18 @@
                 "partialHint": "Payout released as each owner accepts"
             },
             "parcelSet": {
-                "eyebrow": "Canonical parcel set",
-                "title": "Proposals on this land",
-                "summary": "{{count}} real parcels anchor this proposal. {{exact}} alternatives use the same set and {{overlap}} overlap it.",
-                "noRelated": "{{count}} real parcels anchor this proposal. No other proposal currently references this land.",
-                "hash": "Set identity",
-                "relationSame": "Same parcel set",
-                "relationContains": "Includes this whole set",
-                "relationInside": "Inside this parcel set",
-                "relationOverlap": "Overlapping land",
-                "sharedCount": "{{shared}} of {{count}} parcels shared",
+                "eyebrow": "Declared cadastral references",
+                "title": "Proposals sharing references",
+                "summary": "{{count}} declared cadastral references. Of {{total}} loaded matches, {{exact}} use the same references and {{overlap}} share some. Showing {{shown}}.",
+                "noRelated": "{{count}} declared cadastral references. No other loaded proposal shares these references.",
+                "hash": "Recorded set hash",
+                "relationSame": "Same references",
+                "relationContains": "Includes all these references",
+                "relationInside": "Subset of these references",
+                "relationOverlap": "Some shared references",
+                "sharedCount": "{{shared}} of {{count}} references shared",
                 "activityProposal": "Activity on this proposal",
-                "activityLand": "Activity on this land"
+                "activityLand": "Activity for this reference set"
             },
             "actions": {
                 "apply": "Apply to map",
@@ -2037,7 +2037,7 @@
                 "market": "Prediction market",
                 "marketHint": "Yes / No bets and settlement rules",
                 "land": "Land & ownership",
-                "landHint": "Parcels: {{count}} · alternatives and acceptance",
+                "landHint": "Declared references: {{count}} · matching proposals and consent",
                 "verification": "Verification & history",
                 "verificationHint": "Lens, evidence and activity",
                 "record": "Proposal record",

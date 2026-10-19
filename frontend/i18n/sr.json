@@ -1641,18 +1641,18 @@
                 "partialHint": "Isplata se vrši kako vlasnici prihvataju"
             },
             "parcelSet": {
-                "eyebrow": "Kanonski skup parcela",
-                "title": "Predlozi na ovom zemljištu",
-                "summary": "{{count}} stvarnih parcela vezuje ovaj predlog za prostor. {{exact}} alternativa koristi isti skup, a {{overlap}} se sa njim preklapa.",
-                "noRelated": "{{count}} stvarnih parcela vezuje ovaj predlog za prostor. Nijedan drugi predlog trenutno ne upućuje na ovo zemljište.",
-                "hash": "Identitet skupa",
-                "relationSame": "Isti skup parcela",
-                "relationContains": "Obuhvata ceo ovaj skup",
-                "relationInside": "Unutar ovog skupa parcela",
-                "relationOverlap": "Zemljište koje se preklapa",
-                "sharedCount": "{{shared}} od {{count}} zajedničkih parcela",
+                "eyebrow": "Deklarisane katastarske oznake",
+                "title": "Predlozi sa zajedničkim oznakama",
+                "summary": "{{count}} deklarisanih katastarskih oznaka. Od {{total}} učitanih podudaranja, {{exact}} koristi iste oznake, a {{overlap}} deli deo oznaka. Prikazano: {{shown}}.",
+                "noRelated": "{{count}} deklarisanih katastarskih oznaka. Nijedan drugi učitani predlog ne deli ove oznake.",
+                "hash": "Zabeleženi hash skupa",
+                "relationSame": "Iste oznake",
+                "relationContains": "Uključuje sve ove oznake",
+                "relationInside": "Podskup ovih oznaka",
+                "relationOverlap": "Deo oznaka je zajednički",
+                "sharedCount": "{{shared}} od {{count}} zajedničkih oznaka",
                 "activityProposal": "Aktivnost na ovom predlogu",
-                "activityLand": "Aktivnost na ovom zemljištu"
+                "activityLand": "Aktivnost za ovaj skup oznaka"
             },
             "actions": {
                 "apply": "Primeni na mapu",
@@ -2071,7 +2071,7 @@
                 "market": "Tržište predviđanja",
                 "marketHint": "Opklade Da / Ne i pravila obračuna",
                 "land": "Zemljište i vlasništvo",
-                "landHint": "Parcele: {{count}} · alternative i prihvatanje",
+                "landHint": "Deklarisane oznake: {{count}} · povezani predlozi i saglasnost",
                 "verification": "Provera i istorija",
                 "verificationHint": "Sočivo, dokazi i aktivnosti",
                 "record": "Zapis predloga",

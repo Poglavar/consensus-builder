@@ -44,7 +44,7 @@ describe('land fork of a proposal', () => {
         expect(buildLandForkLineage(source, ['HR-8', 'HR-9'])).toMatchObject({ relation: 'disjoint', sharedParcelCount: 0, addedParcelCount: 2, removedParcelCount: 3 });
     });
 
-    it('falls back to legacy cadastreParcelIds and a null hash for a local origin', () => {
+    it('uses the current declaration and a null publication hash for a local origin', () => {
         const local = { proposalId: 'local-7', cadastreParcelIds: ['HR-1'] };
         expect(buildLandForkLineage(local, ['HR-1', 'HR-2'])).toMatchObject({
             originProposalId: 'local-7', originSetHash: null, relation: 'contains-origin'

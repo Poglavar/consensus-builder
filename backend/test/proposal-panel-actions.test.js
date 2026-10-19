@@ -12,6 +12,7 @@ const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
 const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
 const displayState = require('../../frontend/js/proposals/display-state.js');
 const panelPresentation = require('../../frontend/js/proposals/panel-presentation.js');
+const referenceRelations = require('../../frontend/js/proposals/parcel-set-relations.js');
 // A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
 const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: 'Prog1111', tokenId: 'Token1111111111111111111111111111111111' });
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
@@ -20,7 +21,7 @@ const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false, sourceFeature = null, sourceReplaced = false } = {}) {
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false, sourceFeature = null, sourceReplaced = false, relatedProposals = null } = {}) {
     const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
@@ -69,7 +70,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         SolanaPledgeBridge: { readSummary: vi.fn(() => Promise.resolve(summary || {})) },
         SolanaPledgeClient: { formatUsdc: value => String(value) },
         ProposalAgentProvenance: null,
-        ParcelSetRelations: null,
+        ParcelSetRelations: relatedProposals ? referenceRelations : null,
         OwnerOffer: null,
         ProposalLensCard: null,
         ProposalParcelHistoryCard: { mountAfter() {} },
@@ -84,13 +85,13 @@ function render(proposal, { applied = false, connected = false, road = false, su
     const globals = {
         window, document, console, Date, Math, Number, String, Array, Object, Set, Map, Promise, JSON,
         performance: { now: () => 1 }, requestAnimationFrame: callback => callback(), setTimeout: () => 1, clearTimeout() {},
-        proposalStorage: { getProposal: () => proposal, getAllProposals: () => [], _indexProposal() {}, save() {} },
+        proposalStorage: { getProposal: () => proposal, getAllProposals: () => relatedProposals || [], _indexProposal() {}, save() {} },
         PersistentStorage: { getItem: () => null },
         ProposalManager: { applyProposal() {}, unapplyProposal() {}, _getProposalDescendants: () => [] },
         APPLY_DISABLED_TYPE_KEYS: new Set(),
         ensureArrayOfStrings: value => Array.isArray(value) ? value.map(String) : [],
         inlineJsArg: value => JSON.stringify(String(value ?? '')),
-        getProposalI18nHelper: () => (_key, fallback) => fallback,
+        getProposalI18nHelper: () => (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (match, key) => params[key] ?? match),
         getProposalDisplayTitle: item => item.title || 'Untitled', getProposalDisplayTypeLabel: () => '',
         getProposalDisplayDescription: () => '', getProposalNftInfo: item => item.nft ? { tokenId: 'Token1111111111111111111111111111111111', chain: 'solana-devnet' } : null,
         buildProposalNftExplorerUrl: () => null,
@@ -136,6 +137,18 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('counts all loaded reference matches before limiting the visible list', () => {
+        const proposal = { proposalId: 'target', cadastreParcelIds: ['source-1', 'source-2'] };
+        const relatedProposals = Array.from({ length: 15 }, (_, i) => ({
+            proposalId: `related-${i}`, title: `Reference match ${i}`, cadastreParcelIds: i < 13 ? ['source-1', 'source-2'] : ['source-2']
+        }));
+        const card = parse(render(proposal, { relatedProposals }).content.innerHTML)('.proposal-parcel-set-card');
+        expect(card.find('h3').text()).toBe('Proposals sharing references');
+        expect(card.find('p').text()).toBe('2 declared cadastral references. Of 15 loaded matches, 13 use the same references and 2 share some. Showing 12.');
+        expect(card.find('[data-related-proposal-id]')).toHaveLength(12);
+        expect(card.text()).not.toContain('Overlapping land');
+    });
+
     it.each([false, true])('does not describe unloaded source geometry as removed or pooled (readjustment: %s)', readjustment => {
         const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'],
             ...(readjustment ? { reparcellization: { polygons: [] } } : {}) };
