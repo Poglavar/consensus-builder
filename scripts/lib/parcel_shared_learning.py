@@ -4,6 +4,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import math
 import os
 import re
 import tempfile
@@ -140,6 +141,18 @@ def _provenance(value: Any, stage: str) -> dict[str, str]:
     return {key: val for key, val in out.items() if val is not None}
 
 
+def _fact_scalar(value: Any) -> str | int | float | bool | None:
+    if isinstance(value, bool) or isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, str):
+        result = value.strip()
+        if result and len(result) <= 200 and not _PRIVATE_PATH.search(result):
+            return result
+    return None
+
+
 def _facts(value: Any) -> dict[str, str | int | float | bool]:
     allowed = {"protocol", "crs", "format", "pagination", "idField", "geometryType", "maxRecordCount"}
     if value is None:
@@ -148,12 +161,10 @@ def _facts(value: Any) -> dict[str, str | int | float | bool]:
         raise ValueError("facts has unsupported fields")
     out = {}
     for key, raw in value.items():
-        if isinstance(raw, (bool, int, float)):
-            out[key] = raw
-        elif isinstance(raw, str) and raw.strip() and len(raw.strip()) <= 200 and not _PRIVATE_PATH.search(raw):
-            out[key] = raw.strip()
-        else:
+        scalar = _fact_scalar(raw)
+        if scalar is None:
             raise ValueError(f"facts.{key} must be a bounded scalar")
+        out[key] = scalar
     return out
 
 
@@ -330,12 +341,16 @@ def _structured_facts(value: Any, *, depth: int = 0) -> dict[str, str | int | fl
         spatial = value.get("spatialReference") or value.get("sourceSpatialReference")
         if isinstance(spatial, dict):
             wkid = spatial.get("latestWkid", spatial.get("wkid"))
-            if isinstance(wkid, (str, int)) and str(wkid).strip():
-                out["crs"] = f"EPSG:{wkid}"
+            safe_wkid = _fact_scalar(wkid)
+            if isinstance(safe_wkid, (str, int)) and not isinstance(safe_wkid, bool):
+                candidate = _fact_scalar(f"EPSG:{safe_wkid}")
+                if candidate is not None:
+                    out["crs"] = candidate
         for key, child in value.items():
             target = aliases.get(str(key).replace("_", "").lower())
-            if target and isinstance(child, (str, int, float, bool)) and str(child).strip():
-                out.setdefault(target, child)
+            scalar = _fact_scalar(child)
+            if target and scalar is not None:
+                out.setdefault(target, scalar)
             if isinstance(child, (dict, list, tuple)):
                 for fact, fact_value in _structured_facts(child, depth=depth + 1).items():
                     out.setdefault(fact, fact_value)
@@ -403,11 +418,11 @@ def build_city_finding(root: Path, city: dict[str, Any], lane: str, state: dict[
             path.relative_to(root)
         except ValueError:
             continue
+        for key, value in _file_facts(path).items():
+            facts.setdefault(key, value)
         copied = _copy_evidence(shared_root, path)
         if copied and copied not in evidence:
             evidence.append(copied)
-            for key, value in _file_facts(path).items():
-                facts.setdefault(key, value)
     for url in _public_urls([city, state]):
         ref = {"url": url}
         if len(evidence) < 8 and ref not in evidence:

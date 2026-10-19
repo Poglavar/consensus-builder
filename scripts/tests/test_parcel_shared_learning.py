@@ -202,6 +202,25 @@ class SharedLearningTests(unittest.TestCase):
         self.assertFalse(any("path" in ref for ref in record["evidenceRefs"]))
         self.assertEqual(record["evidenceRefs"], [{"url": "https://maps.example.gov/parcels"}])
 
+    def test_invalid_fact_candidates_are_skipped_while_nested_valid_facts_survive(self):
+        shared = self.root / "shared"
+        receipt = self.root / "state/receipt.json"
+        receipt.parent.mkdir()
+        receipt.write_text(json.dumps({
+            "crs": "x" * 201,
+            "sourceCrs": "/Users/dev/private-definition",
+            "metadata": {"nativeCrs": "EPSG:3857", "geometryType": "Polygon",
+                         "supportsPagination": True, "maxRecordCount": float("nan")},
+        }))
+        record = learning.build_city_finding(self.root, {"cityCode": "9"}, "review",
+                                             {"discoveryDecision": "candidate",
+                                              "receiptPath": str(receipt),
+                                              "source": {"endpoint": "https://maps.example.gov/parcels"}}, shared)
+        self.assertEqual(record["facts"], {"crs": "EPSG:3857", "geometryType": "Polygon",
+                                           "pagination": True})
+        identifier = learning.append_finding(shared, record)
+        self.assertTrue(identifier.startswith("finding-"))
+
 
 if __name__ == "__main__":
     unittest.main()
