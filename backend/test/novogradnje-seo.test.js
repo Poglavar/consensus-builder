@@ -12,6 +12,7 @@ describe('novogradnje search metadata', () => {
         expect(html).not.toContain('brand-dot');
         expect(html).not.toContain('Prikazujemo samo podatke koji su poznati.');
         expect(html).not.toContain('izgradivost parcele');
+        expect(html).not.toContain('Detalji novogradnji u Zagrebu');
     });
 
     it('renders the catalogue head with robots, share image details and a zagreb.lol breadcrumb', async () => {
