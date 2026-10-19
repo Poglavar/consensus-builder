@@ -126,6 +126,7 @@ recorded in [`HACKATHON.md`](HACKATHON.md#live-external-market-proof).
 | [`backend/`](backend/) | Public API, x402 gate, agent runtime, activity ledger, and land-event oracle |
 | [`blockchain/solana/`](blockchain/solana/) | Anchor programs, generated IDLs, clients, and lifecycle scripts |
 | [`docs/architecture.md`](docs/architecture.md) | Current system diagram and implemented versus next boundaries |
+| [`vocabulary.md`](vocabulary.md) | Code-grounded domain definitions, relationships, semantic audit and RDF vocabulary mappings |
 | [`docs/hackathon-build.md`](docs/hackathon-build.md) | Reproducible install, test, local-view, and demo instructions |
 | [`docs/protocol.md`](docs/protocol.md) | Program IDs, schemas, recipe and adapter contracts, and trust assumptions |
 | [`HACKATHON.md`](HACKATHON.md) | Reviewable hackathon scope and proof links |
