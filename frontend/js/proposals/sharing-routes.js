@@ -1600,32 +1600,37 @@ async function fetchSharedProposalBatch(ids, backendBase) {
     // the plan result, not a generic "not found".
     const errors = new Map();
     if (!requested.length) return { records, missing, errors, supported: true, requests: 0 };
-    try {
-        const response = await fetch(`${backendBase}/proposals/batch`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ ids: requested })
-        });
-        if (!response.ok) return { records, missing, errors, supported: false, requests: 1 };
-        const payload = await response.json();
-        if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests: 1 };
-        const seen = new Set();
-        payload.items.forEach(item => {
-            const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
-            if (!id) return;
-            seen.add(id);
-            if (item.proposal) records.set(id, item.proposal);
-            else {
-                missing.add(id);
-                const reason = describeSharedProposalFetchFailure(id, item);
-                if (reason) errors.set(id, reason);
-            }
-        });
-        return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests: 1 };
-    } catch (error) {
-        console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
-        return { records, missing, errors, supported: false, requests: 1 };
+    const seen = new Set();
+    let requests = 0;
+    for (let start = 0; start < requested.length; start += 1000) {
+        requests += 1;
+        try {
+            const chunk = requested.slice(start, start + 1000);
+            const response = await fetch(`${backendBase}/proposals/batch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({ ids: chunk })
+            });
+            if (!response.ok) return { records, missing, errors, supported: false, requests };
+            const payload = await response.json();
+            if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests };
+            payload.items.forEach(item => {
+                const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
+                if (!id) return;
+                seen.add(id);
+                if (item.proposal) records.set(id, item.proposal);
+                else {
+                    missing.add(id);
+                    const reason = describeSharedProposalFetchFailure(id, item);
+                    if (reason) errors.set(id, reason);
+                }
+            });
+        } catch (error) {
+            console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
+            return { records, missing, errors, supported: false, requests };
+        }
     }
+    return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests };
 }
 
 // The city a shared record belongs to, by the rule storage applies when importing it
