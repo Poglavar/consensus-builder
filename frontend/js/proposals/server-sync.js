@@ -43,9 +43,9 @@ function normalizeServerProposalSummary(raw, cityCode) {
     const goalKey = normalizeProposalGoalKey(raw.goal || raw.type || '');
 
     return {
-        id: serverId || proposalId,
+        id: serverId,
         proposalId: proposalId || serverId,
-        serverProposalId: serverId || proposalId,
+        serverProposalId: serverId,
         city,
         name: raw.name || raw.title || null,
         title: titleCandidate || '',
@@ -73,15 +73,10 @@ function normalizeServerProposalSummary(raw, cityCode) {
 // The local copy of a server proposal, if this browser holds one (downloaded, or the original the
 // server row was uploaded from). State that is about THIS map — applied or not — lives on it.
 function findLocalCopyOfServerProposal(summary) {
-    if (!summary || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
+    if (!summary || typeof proposalStorage === 'undefined') {
         return null;
     }
-    const candidates = [summary.serverProposalId, summary.proposalId, summary.id];
-    for (const key of candidates) {
-        const local = key ? proposalStorage.getProposal(key) : null;
-        if (local) return local;
-    }
-    return null;
+    return proposalStorage.getProposalByServerRowId(summary.serverProposalId ?? summary.id);
 }
 
 // A local copy of a published proposal follows the lifecycle the server reports for it: the server
@@ -854,11 +849,11 @@ function prepareProposalForImport(sharedProposal) {
     // Reconstructing legacy parent/block/child fields here would make transport depend on one
     // browser's materialized parcel ids again. Old rows are handled once by the DB migration.
     const candidate = deepClone(sharedProposal);
-    const serverId = sharedProposal.id || sharedProposal.proposalId || sharedProposal.proposal_id;
+    const serverId = sharedProposal.serverProposalId ?? sharedProposal.id;
     candidate.proposalId = sharedProposal.proposalId || sharedProposal.proposal_id || sharedProposal.id || null;
-    candidate.serverProposalId = (serverId && /^\d+$/.test(String(serverId)))
+    candidate.serverProposalId = (serverId && /^[1-9]\d*$/.test(String(serverId)))
         ? String(serverId)
-        : (sharedProposal.serverProposalId || null);
+        : null;
     candidate.goal = inferredGoal;
     candidate.lifecycleStatus = getLifecycleStatus(sharedProposal);
     candidate.acceptedParcelIds = ensureArrayOfStrings(sharedProposal.acceptedParcelIds);

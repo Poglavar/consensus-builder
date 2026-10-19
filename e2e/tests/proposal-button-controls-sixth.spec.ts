@@ -156,20 +156,33 @@ test.describe('proposal button controls sixth pass @features', () => {
     const server = createSharedProposalServer();
     server.records.set('7017', {
       id: 7017, proposalId: 'published-server-record-7017', title: 'Downloadable proposal',
-      goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
+      goal: 'park', lifecycleStatus: 'Executed', cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
     });
     await attachSharedProposalServer(page, server);
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const localIds = await page.evaluate(parcelId => {
+      const store = (window as any).proposalStorage;
+      return [
+        store.addProposal({ proposalId: '7017', title: 'Unrelated numeric local key', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] }),
+        store.addProposal({ proposalId: 'p-chain-copy', title: 'Unrelated chain token', tokenId: '7017', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] })
+      ];
+    }, PARCEL_ID);
     await page.locator('#proposals-button').click();
     const list = page.locator('#proposals-sheet .proposal-list-modal');
     await list.locator('.proposal-source-btn[data-source="server"]').click();
     const row = list.locator('.proposal-list-item').filter({ hasText: 'Downloadable proposal' });
     await expect(row).toBeVisible();
+    await expect(row.locator('.proposal-download-btn')).toBeEnabled();
+    expect(await page.evaluate(keys => keys.map(key => (window as any).proposalStorage.getProposal(key).lifecycleStatus), localIds))
+      .toEqual(['Active', 'Active']);
     await row.locator('.proposal-download-btn').click();
     await expect(row.locator('.proposal-download-btn')).toBeDisabled();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.serverProposalId === '7017' && proposal.title === 'Downloadable proposal'))).toBe(true);
+    await row.getByRole('button', { name: 'Details', exact: true }).click();
+    await expect(page.locator('#proposal-details-panel')).toContainText('Downloadable proposal');
+    expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('7017').title)).toBe('Unrelated numeric local key');
   });
 
   test('create-dialog geometry Edit launches the selected urban-rule geometry tool', async ({ mockApi: page }) => {

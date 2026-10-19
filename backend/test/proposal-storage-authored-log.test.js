@@ -66,6 +66,53 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it('looks up local keys and unique explicit server rows without chain aliases', () => {
+        const { storage } = bootStore();
+        const chain = { proposalId: 'qualified-chain-key', tokenId: '7', chainProposalId: 'old-chain-alias', onchain: { chainProposalId: 'nested-alias' } };
+        const server = { proposalId: 'local-server-copy', serverProposalId: '42', id: '42' };
+        const numericLocal = { proposalId: '42' };
+        [chain, server, numericLocal].forEach(record => storage.proposals.set(record.proposalId, record));
+        for (const alias of ['7', 'old-chain-alias', 'nested-alias']) {
+            expect(storage.getProposal(alias)).toBeNull();
+            expect(storage.removeProposal(alias)).toBeNull();
+        }
+        expect(storage.getProposal(chain.proposalId)).toBe(chain);
+        expect(storage.getProposal('42')).toBe(numericLocal);
+        expect(storage.getProposalByServerRowId('42')).toBe(server);
+        const syncSource = readFileSync(new URL('../../frontend/js/proposals/server-sync.js', import.meta.url), 'utf8');
+        const findLocal = new Function('proposalStorage', `${syncSource}; return findLocalCopyOfServerProposal;`)(storage);
+        expect(findLocal({ id: 42, proposalId: chain.proposalId })).toBe(server);
+        expect(findLocal({ id: 7, proposalId: chain.proposalId })).toBeNull();
+        expect(findLocal({ proposalId: server.proposalId })).toBeNull();
+        storage.proposals.delete('42');
+        expect(storage.getProposal('42')).toBe(server);
+        storage.proposals.set('conflicting-copy', { proposalId: 'conflicting-copy', serverProposalId: '42' });
+        expect(() => storage.getProposalByServerRowId('42')).toThrow(/Multiple local proposals/);
+        expect(() => storage.removeProposal('42')).toThrow(/Multiple local proposals/);
+        expect(storage.proposals.size).toBe(3);
+    });
+
+    it('does not infer publication from a numeric imported local key', () => {
+        const { storage } = bootStore();
+        const imported = storage.importProposal({ proposalId: '42', goal: 'as-is', cadastreParcelIds: ['source-a'] });
+        expect(imported.proposalId).toBe('42');
+        expect(imported.serverProposalId).toBeUndefined();
+        expect(storage.getProposalByServerRowId('42')).toBeNull();
+    });
+
+    it('refreshes a published row under its original local key and rejects another publication at that key', () => {
+        const { storage } = bootStore();
+        const current = { proposalId: 'original-local', serverProposalId: '42', goal: 'as-is', cadastreParcelIds: ['source-a'] };
+        storage.addProposal(current);
+        const refreshed = storage.importProposal({ ...current, proposalId: 'published-authored', title: 'Updated metadata' });
+        expect(refreshed.proposalId).toBe('original-local');
+        expect([...storage.proposals.keys()]).toEqual(['original-local']);
+        expect(refreshed.title).toBe('Updated metadata');
+        expect(() => storage.importProposal({ ...current, serverProposalId: '43' })).toThrow(/different publication identity/);
+        expect(() => storage.importProposal({ ...current, serverProposalId: undefined })).toThrow(/different publication identity/);
+        expect(storage.getProposal('original-local')).toBe(refreshed);
+    });
+
     it('preserves this browser consent on reload but discards imported unsigned claims', () => {
         const { storage } = bootStore();
         const record = { proposalId: 'session-consent', goal: 'as-is', cadastreParcelIds: ['parcel-a'],

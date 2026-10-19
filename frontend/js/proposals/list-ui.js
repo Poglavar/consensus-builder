@@ -793,7 +793,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         ].filter(Boolean).join('<span class="proposal-card-dot">·</span>');
 
         return `
-            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}" style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
+            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}"${isServerSource ? ` data-server-id="${escapeHtml(proposal.serverProposalId || '')}"` : ''} style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
                 <div class="proposal-card-head">
                     <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
                     <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
@@ -877,13 +877,17 @@ async function handleProposalListItemClick(event) {
     const source = proposalListState.source || 'local';
     console.log('[ProposalList] click on proposal item', { proposalIdAttr, source });
 
-    // Check local storage first, even when browsing the server tab
-    let proposal = getProposalByIdOrHash(proposalIdAttr);
+    // Server rows refer to local copies by their declared row reference, never by an authored-ID
+    // collision with a local key or chain token.
+    const serverRowId = source === 'server' ? item.getAttribute('data-server-id') : null;
+    let proposal = source === 'server'
+        ? findLocalCopyOfServerProposal({ serverProposalId: serverRowId })
+        : getProposalByIdOrHash(proposalIdAttr);
 
     // A published proposal opens like any other: it is fetched into this browser on the way, with
     // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
-        const serverId = proposalIdAttr;
+        const serverId = serverRowId;
         try {
             updateStatus('Downloading proposal…');
             proposal = await importServerProposal(serverId);
@@ -947,10 +951,14 @@ async function handleProposalListDetailsClick(event) {
     const proposalId = event.currentTarget?.getAttribute('data-proposal-details');
     if (!proposalId) return;
 
-    let proposal = getProposalByIdOrHash(proposalId);
+    const serverRowId = proposalListState.source === 'server'
+        ? event.currentTarget.closest('.proposal-list-item')?.getAttribute('data-server-id') : null;
+    let proposal = proposalListState.source === 'server'
+        ? findLocalCopyOfServerProposal({ serverProposalId: serverRowId })
+        : getProposalByIdOrHash(proposalId);
     if (!proposal && proposalListState.source === 'server') {
         try {
-            proposal = await importServerProposal(proposalId);
+            proposal = await importServerProposal(serverRowId);
         } catch (error) {
             if (error?.code === 'proposal-in-other-city') {
                 await openProposalInItsCity(proposalId, error.cityId);

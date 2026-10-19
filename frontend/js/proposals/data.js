@@ -458,23 +458,24 @@ const proposalStorage = {
         if (this.proposals.has(key)) {
             return key;
         }
-        for (const [id, proposal] of this.proposals.entries()) {
-            if (!proposal) continue;
-            const candidates = [
-                proposal.proposalId,
-                proposal.tokenId,
-                proposal.chainProposalId,
-                proposal.onchain && proposal.onchain.chainProposalId,
-                proposal.serverProposalId,
-                proposal.id
-            ]
-                .filter(value => value !== undefined && value !== null && String(value).trim() !== '')
-                .map(String);
-            if (candidates.includes(key)) {
-                return id;
+        // General callers may name an explicit published row. Chain locations are resolved only
+        // through ChainProposalRef; neither a bare token nor an old alias identifies a local copy.
+        return this.getProposalByServerRowId(key)?.proposalId || null;
+    },
+
+    getProposalByServerRowId(rowId) {
+        this._ensureIndexes();
+        if (!/^[1-9]\d*$/.test(String(rowId ?? ''))) return null;
+        const key = String(rowId);
+        let found = null;
+        for (const proposal of this.proposals.values()) {
+            if (!proposal || String(proposal.serverProposalId ?? '') !== key) continue;
+            if (found && found !== proposal) {
+                throw new Error(`Multiple local proposals refer to server row ${key}.`);
             }
+            found = proposal;
         }
-        return null;
+        return found;
     },
 
     findProposalByIdOrHash(idOrHash) {
@@ -1173,14 +1174,13 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
-        // Preserve the original server ID before potentially replacing with hash-based ID.
+        // The incoming proposalId is a local key. Publication is declared separately by
+        // serverProposalId; a numeric local key alone cannot establish that relationship.
         const incomingId = this._coerceProposalId(normalized.proposalId);
-        const isNumericServerId = incomingId && /^\d+$/.test(incomingId);
-        if (isNumericServerId && !normalized.serverProposalId) {
-            normalized.serverProposalId = incomingId;
-        }
 
-        let idKey = incomingId;
+        const publishedCopy = normalized.serverProposalId
+            ? this.getProposalByServerRowId(normalized.serverProposalId) : null;
+        let idKey = publishedCopy?.proposalId || incomingId;
         if (!idKey || isLocalProposalId(idKey)) {
             idKey = this._buildDeterministicId(normalized);
         }
@@ -1194,6 +1194,9 @@ const proposalStorage = {
         // another browser's claims (or erase it when the portable record correctly omits them).
         // The tally starts empty and is recomputed against the incoming terms, never copied.
         const existing = this.proposals.get(idKey);
+        if (existing && String(existing.serverProposalId || '') !== String(normalized.serverProposalId || '')) {
+            throw new Error('Cannot import proposal: its local key belongs to a different publication identity.');
+        }
         if (existing?.ownerAcceptances && typeof existing.ownerAcceptances === 'object') {
             normalized.ownerAcceptances = JSON.parse(JSON.stringify(existing.ownerAcceptances));
             if (typeof refreshProposalAcceptanceValidity === 'function') {

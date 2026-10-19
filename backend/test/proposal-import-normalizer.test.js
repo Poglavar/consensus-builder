@@ -68,7 +68,17 @@ describe('proposal import boundary', () => {
         expect(imported.coordinatedPlanId).toBe('district-plan');
     });
 
-    it('normalizes legacy lifecycle words without importing legacy application state', () => {
+    it('requires an explicit row field rather than inferring publication from an authored or local ID', () => {
+        for (const proposalId of ['42', 'authored-local']) {
+            const imported = prepareProposalForImport({ proposalId, goal: 'as-is', cadastreParcelIds: ['source-a'] });
+            expect(imported.serverProposalId).toBeNull();
+        }
+        expect(prepareProposalForImport({ proposalId: 'authored', id: 42, cadastreParcelIds: ['source-a'] }).serverProposalId).toBe('42');
+        expect(normalizeServerProposalSummary({ proposalId: 'authored', title: 'Missing row', goal: 'as-is' }, 'test-city'))
+            .toMatchObject({ proposalId: 'authored', id: null, serverProposalId: null });
+    });
+
+    it('does not turn a legacy map-application word into lifecycle evidence', () => {
         const imported = prepareProposalForImport({
             proposalId: 'legacy-road',
             status: 'applied',
@@ -80,7 +90,7 @@ describe('proposal import boundary', () => {
             }
         });
 
-        expect(imported.lifecycleStatus).toBe('Active');
+        expect(imported.lifecycleStatus).toBe('Unknown');
         expect(imported.applied).toBe(false);
         expect(imported.roadProposal).not.toHaveProperty('applied');
         expect(imported.roadProposal).not.toHaveProperty('status');
