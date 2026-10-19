@@ -1595,6 +1595,14 @@
         },
         "proposal": {
             "copyId": "Copy ID",
+            "mintConfirmation": {
+                "title": "Proposal minted",
+                "chain": "Chain: {{type}} / {{network}}",
+                "contract": "Contract/program: {{id}}",
+                "token": "Token/account: {{id}}",
+                "viewTransaction": "View transaction",
+                "ok": "OK"
+            },
             "title": "Proposal details",
             "roadSuffix": " (Road)",
             "mapStatus": {

@@ -1629,6 +1629,14 @@
         },
         "proposal": {
             "copyId": "Kopiraj ID",
+            "mintConfirmation": {
+                "title": "Prijedlog je iskovan",
+                "chain": "Lanac: {{type}} / {{network}}",
+                "contract": "Ugovor/program: {{id}}",
+                "token": "Token/račun: {{id}}",
+                "viewTransaction": "Pogledaj transakciju",
+                "ok": "U redu"
+            },
             "title": "Detalji prijedloga",
             "roadSuffix": " (Cesta)",
             "mapStatus": {

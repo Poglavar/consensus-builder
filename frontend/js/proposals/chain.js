@@ -1047,13 +1047,24 @@ function getExplorerBaseUrlForChain(chainId) {
 // overlay keeps the proposal-mint-success-modal id the tests address it by.
 let proposalMintSuccessDialog = null;
 
-function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) {
+function showProposalMintSuccessModal({ localProposalId, chainRef, txHash, chainId, onClose }) {
     try {
         if (proposalMintSuccessDialog) proposalMintSuccessDialog.close();
 
-        const body = document.createElement('p');
-        const label = proposalId ? `Proposal ${proposalId}` : 'Proposal';
-        body.textContent = `${label} has been minted!`;
+        const t = getProposalI18nHelper();
+        const body = document.createElement('div');
+        body.style.overflowWrap = 'anywhere';
+        if (window.ChainProposalRef.identityKey(chainRef)) {
+            [
+                t('panel.proposal.mintConfirmation.chain', 'Chain: {{type}} / {{network}}', { type: chainRef.chainType, network: chainRef.chainId }),
+                t('panel.proposal.mintConfirmation.contract', 'Contract/program: {{id}}', { id: chainRef.contract }),
+                t('panel.proposal.mintConfirmation.token', 'Token/account: {{id}}', { id: chainRef.tokenId })
+            ].forEach(text => {
+                const line = document.createElement('p');
+                line.textContent = text;
+                body.appendChild(line);
+            });
+        }
 
         const explorerBase = getExplorerBaseUrlForChain(chainId);
         const hasExplorer = explorerBase && txHash;
@@ -1072,7 +1083,7 @@ function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) 
         };
 
         const dialogApi = window.CbDialog.open({
-            title: 'Success!',
+            title: t('panel.proposal.mintConfirmation.title', 'Proposal minted'),
             size: 'sm',
             top: true,
             className: 'proposal-mint-success',
@@ -1081,13 +1092,13 @@ function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) 
             actions: [
                 {
                     id: 'view',
-                    label: hasExplorer ? (isSolana ? 'View on Solana Explorer' : 'View on Etherscan') : 'View transaction',
+                    label: t('panel.proposal.mintConfirmation.viewTransaction', 'View transaction'),
                     role: 'secondary',
                     disabled: !hasExplorer,
                     keepOpen: true,
                     onClick: openExplorer
                 },
-                { id: 'ok', label: 'OK', role: 'primary', autofocus: true }
+                { id: 'ok', label: t('panel.proposal.mintConfirmation.ok', 'OK'), role: 'primary', autofocus: true }
             ],
             onClose: () => {
                 if (proposalMintSuccessDialog === dialogApi) proposalMintSuccessDialog = null;
@@ -1095,9 +1106,9 @@ function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) 
                     try {
                         onClose();
                     } catch (_) { }
-                } else if (proposalId && typeof showProposalDetailsModal === 'function') {
+                } else if (localProposalId && typeof showProposalDetailsModal === 'function') {
                     try {
-                        showProposalDetailsModal(proposalId);
+                        showProposalDetailsModal(localProposalId);
                     } catch (_) { }
                 }
             }

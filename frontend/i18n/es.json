@@ -1642,6 +1642,14 @@
         },
         "proposal": {
             "copyId": "Copiar ID",
+            "mintConfirmation": {
+                "title": "Propuesta acuñada",
+                "chain": "Cadena: {{type}} / {{network}}",
+                "contract": "Contrato/programa: {{id}}",
+                "token": "Token/cuenta: {{id}}",
+                "viewTransaction": "Ver transacción",
+                "ok": "Aceptar"
+            },
             "title": "Detalles de la propuesta",
             "roadSuffix": " (Carretera)",
             "mapStatus": {

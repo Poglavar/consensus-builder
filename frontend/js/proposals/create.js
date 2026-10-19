@@ -1472,8 +1472,6 @@ async function createProposal() {
             return await finishReparcellizationAgreementBatch(batch, publishingDraftId);
         }
 
-        let hash = null;
-
         // Try to mint on-chain if blockchain is available and parcels have NFTs
         const recoveredPublish = publishingDraftId
             ? window.proposalDraftStore?.getDraft?.(publishingDraftId)?.publish
@@ -2108,8 +2106,8 @@ async function createProposal() {
         console.debug('[createProposal] All proposal creation steps complete, opening details. Total elapsed:', (performance.now() - startTime).toFixed(2), 'ms');
         if (onchainResult) {
             showProposalMintSuccessModal({
-                proposalId: onchainResult.proposalId,
-                proposalId: hash,
+                localProposalId: proposalId,
+                chainRef: window.ChainProposalRef.chainRefFromProposal(proposal),
                 txHash: onchainResult.transactionHash,
                 chainId: onchainResult.chainId,
                 onClose: openProposalDetails

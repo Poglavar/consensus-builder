@@ -197,14 +197,17 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);
     const success = page.locator('#proposal-mint-success-modal');
-    await expect(success).toContainText('has been minted!', { timeout: 30000 });
+    await expect(success).toContainText('Proposal minted', { timeout: 30000 });
+    await expect(success).toContainText('Token/account: 77');
+    await expect(success).toContainText(`Contract/program: ${PROPOSAL_EVM_CONTRACT}`);
+    await expect(success).toContainText(/Chain: evm \/ (84532|0x14a34)/);
 
     await page.context().route('https://sepolia.basescan.org/**', route => route.fulfill({
       contentType: 'text/html', body: '<title>Explorer boundary</title>'
     }));
     const popupPromise = page.waitForEvent('popup');
     await Promise.all([
-      success.getByRole('button', { name: 'View on Etherscan', exact: true }).click(),
+      success.getByRole('button', { name: 'View transaction', exact: true }).click(),
       popupPromise.then(async popup => {
         await expect.poll(() => popup.url()).toContain(`sepolia.basescan.org/tx/${PROPOSAL_MINT_TX}`);
         await popup.close();
@@ -213,6 +216,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
 
     await success.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(success).toBeHidden();
+    await expect(page.locator('#proposal-details-panel')).toContainText('Mint confirmation test');
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.title === 'Mint confirmation test' && p.nft?.tokenId === '77'))).toBe(true);
   });
 

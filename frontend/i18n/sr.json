@@ -1629,6 +1629,14 @@
         },
         "proposal": {
             "copyId": "Kopiraj ID",
+            "mintConfirmation": {
+                "title": "Predlog je iskovan",
+                "chain": "Lanac: {{type}} / {{network}}",
+                "contract": "Ugovor/program: {{id}}",
+                "token": "Token/nalog: {{id}}",
+                "viewTransaction": "Prikaži transakciju",
+                "ok": "U redu"
+            },
             "title": "Detalji predloga",
             "roadSuffix": " (Put)",
             "mapStatus": {

@@ -240,7 +240,9 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(anchorModal).toBeHidden();
     await create.locator('#createProposalSubmitButton').click();
     const success = page.locator('#proposal-mint-success-modal');
-    await expect(success).toContainText('has been minted!', { timeout: 30000 });
+    await expect(success).toContainText('Proposal minted', { timeout: 30000 });
+    await expect(success).toContainText('Chain: solana / devnet');
+    await expect(success).toContainText('Token/account:');
 
     await page.context().route('https://explorer.solana.com/**', route => route.fulfill({
       status: 200, contentType: 'text/html', body: '<title>Solana explorer boundary</title>',
@@ -251,7 +253,7 @@ test.describe('proposal button controls sixth pass @features', () => {
       await popup.close();
     });
     await Promise.all([
-      success.getByRole('button', { name: 'View on Solana Explorer', exact: true }).click({ noWaitAfter: true }),
+      success.getByRole('button', { name: 'View transaction', exact: true }).click({ noWaitAfter: true }),
       popupHandling,
     ]);
     await success.getByRole('button', { name: 'OK', exact: true }).click();
