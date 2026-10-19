@@ -12,7 +12,7 @@ const created = [];
 afterEach(async () => { for (const fn of created.splice(0).reverse()) await fn(); });
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
-async function fixture({ basePath = '/review/', mutateBatch, mutateImage } = {}) {
+async function fixture({ basePath = '/autokatastar/pregled/', mutateBatch, mutateImage } = {}) {
     const root = await mkdtemp(join(tmpdir(), 'annotation-app-'));
     created.push(() => rm(root, { recursive: true, force: true }));
     const bundleDir = join(root, 'bundle'), dataDir = join(root, 'reviews');
@@ -57,7 +57,7 @@ describe('annotation review server', () => {
         assert.equal(response.status, 200);
         assert.match(response.headers.get('set-cookie'), /HttpOnly/);
         assert.match(response.headers.get('set-cookie'), /SameSite=Strict/);
-        assert.match(response.headers.get('set-cookie'), /Path=\/review\//);
+        assert.equal(response.headers.get('set-cookie').includes('Path=/autokatastar/pregled/'), true);
         assert.equal((await fetch(`${base}api/batch`, { headers: { cookie } })).status, 200);
         const image = await fetch(`${base}images/sample-1.jpg`, { headers: { cookie } });
         assert.equal(image.status, 200);
@@ -98,9 +98,9 @@ describe('annotation review server', () => {
         assert.equal(exported.history.length, 1);
         assert.equal(JSON.parse(await readFile(join(f.dataDir, 'reviews.json'), 'utf8')).history.length, 1);
         await new Promise(resolve => f.server.close(resolve));
-        const restarted = await createReviewServer({ bundleDir: f.bundleDir, dataDir: f.dataDir, token: TOKEN, basePath: '/review/', publicOrigin: ORIGIN });
+        const restarted = await createReviewServer({ bundleDir: f.bundleDir, dataDir: f.dataDir, token: TOKEN, basePath: '/autokatastar/pregled/', publicOrigin: ORIGIN });
         await new Promise((resolve, reject) => { restarted.once('error', reject); restarted.listen(0, '127.0.0.1', resolve); });
-        const restartedBase = `http://127.0.0.1:${restarted.address().port}/review/`;
+        const restartedBase = `http://127.0.0.1:${restarted.address().port}/autokatastar/pregled/`;
         created.push(() => new Promise(resolve => restarted.close(resolve)));
         const restartedCookie = (await login(restartedBase)).cookie;
         const restored = await (await fetch(`${restartedBase}api/reviews`, { headers: { cookie: restartedCookie } })).json();

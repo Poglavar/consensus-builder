@@ -1,15 +1,15 @@
-const VERSION = 'groundwork-shell-v1';
+const VERSION = 'autokatastar-shell-v1';
 const SHELL = ['./', 'styles.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'viewer.mjs', 'strings.mjs', 'manifest.webmanifest', 'icon.svg'];
 const scope = new URL(self.registration.scope).pathname;
 const shellCache = `${VERSION}:${scope}`;
-const imageCache = `groundwork-images:${scope}`;
+const imageCache = `autokatastar-images:${scope}`;
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(shellCache);
   await cache.addAll(SHELL.map(path => new URL(path, self.registration.scope).href));
   await self.skipWaiting();
 })()));
 self.addEventListener('activate', event => event.waitUntil((async () => {
-  for (const key of await caches.keys()) if (key.startsWith('groundwork-shell-') && key.endsWith(`:${scope}`) && key !== shellCache) await caches.delete(key);
+  for (const key of await caches.keys()) if (key.startsWith('autokatastar-shell-') && key.endsWith(`:${scope}`) && key !== shellCache) await caches.delete(key);
   await self.clients.claim();
 })()));
 self.addEventListener('fetch', event => {

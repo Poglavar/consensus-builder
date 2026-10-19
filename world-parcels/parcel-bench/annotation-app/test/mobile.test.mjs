@@ -11,10 +11,10 @@ const { chromium, expect } = require('@playwright/test');
 const bundleDir = fileURLToPath(new URL('../../output/annotation-bundle-v1/', import.meta.url));
 const token = 'local-browser-test-access-key-not-a-secret';
 const origin = 'http://localhost:8789';
-const url = `${origin}/review/`;
+const url = `${origin}/autokatastar/pregled/`;
 async function fixture(t) {
-  const directory = await mkdtemp(join(tmpdir(), 'groundwork-mobile-'));
-  const server = await createReviewServer({ bundleDir, dataDir: directory, token, basePath: '/review/', publicOrigin: origin });
+  const directory = await mkdtemp(join(tmpdir(), 'autokatastar-mobile-'));
+  const server = await createReviewServer({ bundleDir, dataDir: directory, token, basePath: '/autokatastar/pregled/', publicOrigin: origin });
   await new Promise((done, fail) => { server.once('error', fail); server.listen(8789, '127.0.0.1', done); });
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });

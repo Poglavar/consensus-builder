@@ -1,5 +1,5 @@
 const database = new Promise((resolve, reject) => {
-  const request = indexedDB.open('plot-review-v1', 1);
+  const request = indexedDB.open('autokatastar-review-v1', 1);
   request.onupgradeneeded = () => request.result.createObjectStore('data');
   request.onsuccess = () => resolve(request.result);
   request.onerror = () => reject(request.error);

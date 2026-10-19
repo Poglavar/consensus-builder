@@ -9,7 +9,7 @@ document.querySelectorAll('[data-placeholder]').forEach(node => { node.placehold
 let state, draft, task, mode = 'review', anchorStep = 0, imageReady = false, syncRunning = false, saving = false;
 let operations = Promise.resolve(), networkMessage = '', registration;
 const uuid = () => crypto.randomUUID();
-const imageCacheName = `groundwork-images:${new URL('./', location.href).pathname}`;
+const imageCacheName = `autokatastar-images:${new URL('./', location.href).pathname}`;
 const notice = message => { $('notice').textContent = message; };
 async function api(path, options = {}) {
   const response = await fetch(`api/${path}`, { ...options, cache: 'no-store', headers: { 'Content-Type': 'application/json', ...options.headers }, signal: AbortSignal.timeout(15000) });
@@ -182,7 +182,7 @@ async function download() {
 function backup() {
   if (!state) return;
   const url = URL.createObjectURL(new Blob([JSON.stringify({ ...exportLocal(state), drafts: state.drafts || {} }, null, 2)], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = `groundwork-${state.batch.id}-${new Date().toISOString().slice(0, 10)}.json`; link.click();
+  const link = document.createElement('a'); link.href = url; link.download = `autokatastar-${state.batch.id}-${new Date().toISOString().slice(0, 10)}.json`; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 async function connect() {

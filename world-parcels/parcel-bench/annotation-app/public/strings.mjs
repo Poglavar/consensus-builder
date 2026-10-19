@@ -1,6 +1,6 @@
 // This standalone research tool has one language; it does not load the map application's locales.
 export const strings = {
-  title: 'Groundwork', subtitle: 'A few observations. A better map.',
+  title: 'Autokatastar', subtitle: 'A few observations. A better map.',
   unlock: 'Open your review pack', unlockHint: 'Enter your access key once, then download the images for your trip.',
   accessKey: 'Access key', open: 'Open pack', trip: 'Download for trip', sync: 'Sync now', backup: 'Export backup',
   separate: 'Separate', same_surface: 'Same area', unclear: 'Unclear',

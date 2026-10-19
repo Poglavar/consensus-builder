@@ -1,4 +1,4 @@
-# Groundwork: mobile image annotation
+# Autokatastar: mobile image annotation
 
 A standalone, private review app for visible physical/use divisions. No frontend build or npm
 install: the server uses Node 22+ built-ins, and the browser uses ES modules, IndexedDB and a service
@@ -58,30 +58,37 @@ Set the following environment variables (use absolute bundle/data paths):
 ```sh
 export ANNOTATION_BUNDLE="$PWD/../output/annotation-bundle-v1"
 export ANNOTATION_DATA="$PWD/../output/annotation-reviews-v1"
-export ANNOTATION_BASE_PATH=/review/
+export ANNOTATION_BASE_PATH=/autokatastar/pregled/
 export ANNOTATION_ORIGIN=http://localhost:8787
 export ANNOTATION_PORT=8787
 node --env-file=/path/to/ignored/annotation.env server.mjs
 ```
 
 The ignored env file contains `ANNOTATION_TOKEN`, a randomly generated access key of at least 32
-bytes. Never place it in a URL or a tracked file. Open `http://localhost:8787/review/` and enter it.
+bytes. Never place it in a URL or a tracked file. Open `http://localhost:8787/autokatastar/pregled/` and enter it.
 The app binds only to loopback. Offline functionality requires HTTPS or localhost; a phone's plain
 HTTP LAN address is insufficient. Node 22+ is required for the env-file launch and modern APIs.
 
-## Hosted service (prepared, not deployed by this change)
+## Hosted service
 
-`ecosystem.config.cjs` proposes one isolated PM2 process on `prod-de`, loopback port 8791, served at
-`https://zagreb.lol/plot-review/`. Confirm the port and existing nginx routes before installation.
-Keep the immutable imagery pack and mutable reviews under separate `/srv/groundwork/` directories,
-outside the code checkout and static docroots. `/srv/groundwork/secret.env` contains only the access
+`ecosystem.config.cjs` runs one isolated PM2 process on `prod-de`, loopback port 8791, served at
+`https://zagreb.lol/autokatastar/pregled/`. The URL without its trailing slash redirects here.
+Keep the immutable imagery pack and mutable reviews under separate `/srv/autokatastar/` directories,
+outside the code checkout and static docroots. `/srv/autokatastar/secret.env` contains only the access
 key, mode 0600; the versioned PM2 file owns the public config. Use one process, never a cluster.
 
-The nginx location must preserve the `/plot-review/` prefix when proxying to `http://localhost:8791`:
+`bash deploy.sh --run <pushed-release-commit>` fetches the dedicated `autokatastar-review` release
+branch, extracts only this application subtree into `/srv/autokatastar/releases/<commit>/`, and
+starts that exact release. It never switches or deploys the shared map checkout. The initial imagery
+bundle and private access key must already be installed; later code deployments preserve both and
+all accumulated reviews. `current` names the last deployed release, and each release has a `RELEASE`
+receipt. The release branch contains this app's changes without merging diverged map work.
+
+The nginx location must preserve the `/autokatastar/pregled/` prefix when proxying to `http://localhost:8791`:
 
 ```nginx
-location = /plot-review { return 308 /plot-review/; }
-location ^~ /plot-review/ {
+location = /autokatastar/pregled { return 308 /autokatastar/pregled/; }
+location ^~ /autokatastar/pregled/ {
     client_max_body_size 128k;
     proxy_pass http://localhost:8791;
     proxy_set_header Host $host;
@@ -90,7 +97,7 @@ location ^~ /plot-review/ {
 ```
 
 Run `nginx -t` before reload. Start/restart via the ecosystem file with `--update-env`, then verify
-the actual process settings and `GET /plot-review/api/health`. Check unauthenticated API/image
+the actual process settings and `GET /autokatastar/pregled/api/health`. Check unauthenticated API/image
 requests are refused and authenticated writes work at the public origin. The pinned origin accepts
 no cross-origin writes; HTTPS cookies are HttpOnly, Secure and SameSite Strict. Rotating the access
 key invalidates existing cookies. Imagery is cached only in the authenticated browser's private
@@ -157,6 +164,7 @@ Validation record, 2026-10-19 (all runs targeted; none stopped):
 | Headless model + export unit checks, 2 files / 9 tests | 7 passed, 2 failed because export expectations still used the retired complete/partial status names; assertions updated to the explicit starting-task coverage contract. |
 | Final headless export/server unit + mobile browser checks, 3 files / 12 tests | All passed: 9 unit tests and 3 browser checks. The unchanged 5 model tests had already passed. |
 | Headed visual inspection, dedicated Chrome at 390px | Empty-anchor and suggested-pair screens inspected; no browser errors; browser closed afterward. |
+| Rename/publication headless server + mobile checks, 2 files / 8 tests | 3 mobile and 4 server checks passed at `/autokatastar/pregled/`; one server assertion still expected the old cookie path. After correcting it, the 1-file / 5-test headless server rerun passed. No runs stopped. |
 
 Physical iPhone/Safari testing has not been performed. Backend and export boilerplate were delegated
 to a `gpt-6-luna` worker; integration, state behavior, UI, review and Git were handled by the primary agent.
