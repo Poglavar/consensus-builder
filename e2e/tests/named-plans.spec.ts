@@ -37,12 +37,12 @@ async function publishPark(page: any, routes: (page: any, serverId: string) => P
 async function routePlans(page: any, serverId: string): Promise<void> {
   const plan = {
     slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.',
-    author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalIds: [serverId], memberCount: 1, superseded: false,
+    author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, superseded: false,
     proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z'
   };
   await page.route(/\/plans(\?.*)?$/, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ plans: [plan] }) }));
   await page.route(`**/plans/${SLUG}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-    ...plan, supersededBy: [], members: [{ id: serverId, proposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }]
+    ...plan, supersededBy: [], members: [{ proposalRowId: serverId, authoredProposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }]
   }) }));
 }
 
@@ -50,13 +50,13 @@ async function routePlans(page: any, serverId: string): Promise<void> {
 const SECOND = 'e2e-harbor-plan-two';
 const EARLIER = 'e2e-harbor-plan-earlier';
 async function routeTwoPlans(page: any, serverId: string): Promise<void> {
-  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z' };
+  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z' };
   const plans = [
     { ...base, slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.', superseded: false },
     { ...base, slug: SECOND, name: `${SECOND}.proposals.urbangametheory.eth`, title: 'E2E harbor plan two', description: 'The park again.', superseded: false },
     { ...base, slug: EARLIER, name: `${EARLIER}.proposals.urbangametheory.eth`, title: 'E2E harbor plan, earlier', description: 'Before plan two.', superseded: true },
   ];
-  const members = [{ id: serverId, proposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }];
+  const members = [{ proposalRowId: serverId, authoredProposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }];
   await page.route(/\/plans(\?.*)?$/, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ plans }) }));
   for (const plan of plans) {
     await page.route(`**/plans/${plan.slug}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({

@@ -39,7 +39,7 @@
     function plansByMember(plans) {
         const byMember = new Map();
         current(plans).forEach(plan => {
-            (plan.proposalIds || []).forEach(raw => {
+            (plan.proposalRowIds || []).forEach(raw => {
                 const id = String(raw);
                 const list = byMember.get(id) || [];
                 if (!list.includes(plan)) list.push(plan);
@@ -79,7 +79,7 @@
             return `<p class="plan-list-empty">${escapeText(emptyText || t('plans.list.empty', 'No plans here yet.'))}</p>`;
         }
         const rows = list.map(plan => {
-            const count = Number.isFinite(plan.memberCount) ? plan.memberCount : (plan.proposalIds || []).length;
+            const count = Number.isFinite(plan.memberCount) ? plan.memberCount : (plan.proposalRowIds || []).length;
             const details = [plan.author, plan.place, formatDate(plan.createdAt)].filter(Boolean).map(escapeText).join(' · ');
             const pool = plan.proposalAccount
                 ? `<span class="cb-badge cb-badge--minted">${escapeText(t('plans.list.pool', 'Betting pool'))}</span>`

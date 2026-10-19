@@ -1125,7 +1125,7 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                 const resp = await fetch(`${base}/plans/${encodeURIComponent(slug)}`);
                 if (resp.ok) {
                     const plan = await resp.json();
-                    const ids = Array.isArray(plan.proposalIds) ? plan.proposalIds.map(String).filter(Boolean) : [];
+                    const ids = Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds.map(String).filter(Boolean) : [];
                     if (ids.length > 0) {
                         window.__currentNamedPlan = { ...plan, slug };
                         console.log('[handleProposalRouteFromUrl] Named plan resolved:', slug, `${ids.length} proposals`);

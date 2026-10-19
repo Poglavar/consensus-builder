@@ -97,7 +97,7 @@ test.describe('Bets shared button variants @features', () => {
     await page.route(`**/plans/${slug}`, route => route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ slug, title: 'Bets named plan', city: 'zagreb', proposalIds: [...server.records.keys()], proposalAccount: ACCOUNT }),
+      body: JSON.stringify({ slug, title: 'Bets named plan', city: 'zagreb', proposalRowIds: [...server.records.keys()], proposalAccount: ACCOUNT }),
     }));
     await openCity(page);
     await page.locator('#username-display').click();

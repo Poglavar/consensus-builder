@@ -8,9 +8,9 @@ const require = createRequire(import.meta.url);
 const Plans = require('../../frontend/js/proposals/plans.js');
 const MenuModel = require('../../frontend/js/ui/parcel-menu-model.js');
 
-const harbor = { slug: 'harbor-v2', title: 'Harbor <b>', proposalIds: ['1', '2'], memberCount: 2, superseded: false, author: 'Ana', place: 'Borovje' };
-const harborOld = { slug: 'harbor', title: 'Harbor', proposalIds: ['1'], memberCount: 1, superseded: true };
-const ring = { slug: 'ring-road', title: '', proposalIds: ['2', '3'], memberCount: 2, superseded: false, proposalAccount: 'So1anaAccount111' };
+const harbor = { slug: 'harbor-v2', title: 'Harbor <b>', proposalRowIds: ['1', '2'], memberCount: 2, superseded: false, author: 'Ana', place: 'Borovje' };
+const harborOld = { slug: 'harbor', title: 'Harbor', proposalRowIds: ['1'], memberCount: 1, superseded: true };
+const ring = { slug: 'ring-road', title: '', proposalRowIds: ['2', '3'], memberCount: 2, superseded: false, proposalAccount: 'So1anaAccount111' };
 
 describe('which plans a proposal is part of', () => {
     it('maps each published proposal row to the current plans naming it, leaving superseded versions out', () => {

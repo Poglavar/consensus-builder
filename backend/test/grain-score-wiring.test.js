@@ -35,7 +35,7 @@ describe('grain score wiring', () => {
     it('scores only the named plan when unrelated proposals are already applied', () => {
         expect(scoreSource).toContain('function appliedProposalsInScope(scopeIds)');
         expect(scoreSource).toContain('prepareExperience(state.namedPlan, ids)');
-        expect(scoreSource).toContain('plan.slug && Array.isArray(plan.proposalIds)');
+        expect(scoreSource).toContain('plan.slug && Array.isArray(plan.proposalRowIds)');
     });
 
     it('refuses to score a named plan that only partly applied', () => {

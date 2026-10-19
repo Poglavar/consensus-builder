@@ -75,7 +75,7 @@ async function main() {
     for (const plan of PLANS) {
         const existing = await request(values.backend, values.origin, 'GET', `/plans/${plan.slug}`);
         if (existing.status === 200) {
-            log(`${plan.slug} already named (${existing.json.proposalIds.length} members, hash ${existing.json.planHash}); left alone`);
+            log(`${plan.slug} already named (${existing.json.proposalRowIds.length} members, hash ${existing.json.planHash}); left alone`);
             continue;
         }
         const ids = [];
@@ -98,7 +98,7 @@ async function main() {
         log(`${plan.slug}: ${ids.length} members → ${ids.join(',')}`);
         if (!values.apply) continue;
         const created = await request(values.backend, values.origin, 'POST', '/plans', {
-            slug: plan.slug, proposalIds: ids, title: plan.title, description: plan.description, author: plan.author,
+            slug: plan.slug, proposalRowIds: ids, title: plan.title, description: plan.description, author: plan.author,
             place: 'Borovje', city: 'zagreb', ...(plan.supersedes ? { supersedes: plan.supersedes } : {})
         });
         if (created.status !== 201) throw new Error(`naming ${plan.slug} failed (${created.status}): ${created.text.slice(0, 300)}`);

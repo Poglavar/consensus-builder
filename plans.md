@@ -16,6 +16,27 @@ about ("the official UPU Borovje", "Borovje – urban blocks"). Decisions of 202
 - There is no "latest" alias. A name that moves is exactly what this design removes.
 - Title, description and author are fixed with the plan. A typo is a `-v2`.
 
+## API identifiers
+
+`POST /plans` names **published database rows**, for example:
+
+```json
+{ "slug": "harbor-plan", "proposalRowIds": ["41", "42"] }
+```
+
+- Creation and both list/detail responses use `proposalRowIds`, an ordered, deduplicated list of
+  row-ID strings. Members do not have to be minted.
+- `GET /plans?proposal_row_ids=41,42` finds plans containing any of those rows. The `city` and
+  `parcel_ids` filters retain their existing meanings.
+- `GET /plans/:slug` exposes each member's `proposalRowId` and `authoredProposalId` separately.
+  A missing member retains `proposalRowId` and reports `missing: true`; its authored ID is unavailable.
+- The retired creation field `proposalIds` and query filter `proposal_ids` return 400, including
+  when supplied alongside the new fields. Responses have no old aliases.
+
+The persisted column `ens_plan.proposal_ids` contains these row-ID strings. The plan hash uses
+the members' **authored IDs** instead, so it is independent of database row numbering. See
+[the maintained identifier definitions](vocabulary.md#proposal-identifiers-at-api-boundaries).
+
 ## A plan is only as fixed as its members
 
 Proposal rows can still be repaired in place by operator scripts (as the 2026-10-10 Borovje
@@ -29,7 +50,8 @@ sync did). So a plan stores, at creation:
   Readjustment members include the canonical readjustment deal fingerprint, covering plots,
   allocations, financial terms and approval context. That deal fingerprint is a component of the
   plan member hash, not the whole hash. Descriptions, thumbnails and lifecycle state are excluded.
-- `plan_hash` — sha256 over the ordered `[proposalId, memberHash]` list.
+- `plan_hash` — sha256 over the ordered `[authoredProposalId, memberHash]` list
+  (the hash helper calls that authored-ID input `proposalId`).
 - `site` — the union of the members' sites, for the on-chain mint.
 
 `GET /plans/:slug` recomputes each member's hash and reports `changed: true` for any member
@@ -74,6 +96,9 @@ The 2026-10-19 contract includes decision kind and authored site for every membe
 current hashing path. Hashes produced by the preceding contract will report drift; recreate
 affected experimental plans if needed. There is no old-hash verifier, backfill, or promise of
 compatibility with prior plan mints. Stored commitments are never rewritten to appear verified.
+
+The same day's API field rename makes row and authored identifiers explicit. All consumers must
+use the names above; no alias reader is maintained. It changes no stored values or hash inputs.
 
 ## Links
 
