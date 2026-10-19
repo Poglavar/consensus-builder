@@ -11,7 +11,7 @@ describe('bounded public building surroundings', () => {
     it('excludes the replaced survey building and retains a common measured altitude', async () => {
         const old={object_id:1,z_min:123,replaced:true},neighbour={object_id:2,z_min:125,faces:[]},missing={object_id:3,z_min:null};
         const db={query:vi.fn().mockResolvedValue({rows:[neighbour,old,missing]})};
-        expect(await readBuildingContext(db,project)).toMatchObject({buildings:[neighbour],groundZ:123,radiusM:65,source:'zagreb-3d',surveyYear:2022,truncated:false});
+        expect(await readBuildingContext(db,project)).toMatchObject({buildings:[neighbour],groundZ:123,radiusM:100,source:'zagreb-3d',surveyYear:2022,truncated:false});
         const [sql,params]=db.query.mock.calls[0];
         expect(sql).toContain('ST_DWithin');expect(params).toEqual([JSON.stringify(footprint),CONTEXT_RADIUS_M,CONTEXT_LIMIT+1]);
     });
