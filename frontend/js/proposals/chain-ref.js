@@ -67,6 +67,15 @@
         return { chainType, chainId, contract: String(contract), tokenId: String(tokenId) };
     }
 
+    // Return a proposal account only when this complete ChainRef names the configured Solana
+    // deployment. A cluster label or token-like field alone is not enough to scope chain reads.
+    function solanaAccountForDeployment(proposal, programId, cluster = 'devnet') {
+        if (typeof programId !== 'string' || programId.length === 0) return null;
+        const ref = chainRefFromProposal(proposal);
+        if (!ref || ref.chainType !== 'solana' || ref.chainId !== cluster || ref.contract !== programId) return null;
+        return ref.tokenId;
+    }
+
     // Equality is scoped by chain family, network, program/contract and token/account. EVM's
     // hexadecimal addresses are case-insensitive; Solana and Canton identifiers are not.
     function identityKey(ref) {
@@ -101,7 +110,7 @@
         return matches[0] || null;
     }
 
-    const api = { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, identityKey, sameReference, findByReference, CHAIN_TYPES };
+    const api = { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, solanaAccountForDeployment, identityKey, sameReference, findByReference, CHAIN_TYPES };
 
     if (typeof window !== 'undefined') {
         window.ChainProposalRef = api;

@@ -404,8 +404,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     const nftInfo = getProposalNftInfo(fullProposal);
     const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
-    const nftChain = nftInfo && String(nftInfo.chain || nftInfo.chainId || '');
-    const isSolanaPledgeProposal = Boolean(isMinted && nftInfo?.tokenId && nftChain.startsWith('solana'));
+    const proposalAccount = window.ChainProposalRef?.solanaAccountForDeployment(
+        fullProposal,
+        window.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+    ) || null;
+    const isSolanaPledgeProposal = Boolean(isMinted && proposalAccount);
     // Donations, pledges and the prediction market settle on the contract's own execution. A minted
     // approval setup is decided by anchored owner decisions the contract never counts, so it would
     // never execute: those cards are left out (land-readjustmend.md §20).
@@ -608,7 +611,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     };
     let proposalSupportButtonsHtml = '';
     if (chainSettlesProposal && proposalKey) {
-        proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${nftInfo.tokenId}">${renderSupportButtons()}</span>`;
+        proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${proposalAccount}">${renderSupportButtons()}</span>`;
     }
 
     // Map actions remain available in the compact card and the reader. Details is an explicit
@@ -1009,7 +1012,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>
             </div>
             ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionStart('funding', tProposal('panel.proposal.pledge.summary', 'Funding & commitments'), tProposal('panel.proposal.detailsSections.fundingHint', 'Donations, pledges and owner offer')) + proposalOfferHtml : ''}
-            ${chainSettlesProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
+            ${chainSettlesProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${proposalAccount}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('panel.proposal.pledge.onchain', 'On-chain support')}</div>
@@ -1027,13 +1030,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>
                 <div class="proposal-funding-you" data-funding="you">${tProposal('panel.proposal.pledge.connect', 'Connect a Solana wallet to see your support.')}</div>
                 <div class="cb-link-row proposal-funding-links">
-                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${proposalAccount}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
                     <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${window.SolanaPledgeClient?.constants?.PROGRAM_ID || '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.programExplorer', 'Funding program')}</a>
                 </div>
             </section>` : ''}
             ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionEnd : ''}
             ${chainSettlesProposal ? sectionStart('market', tProposal('panel.proposal.detailsSections.market', 'Prediction market'), tProposal('panel.proposal.detailsSections.marketHint', 'Yes / No bets and settlement rules')) : ''}
-            ${chainSettlesProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${nftInfo.tokenId}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
+            ${chainSettlesProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${proposalAccount}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('bets.tagline', 'Bet on cities')}</div>
@@ -1062,7 +1065,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="proposal-market-status" data-market="status" aria-live="polite"></div>
                 <div class="proposal-market-history" data-market="history"><strong>${tProposal('panel.proposal.market.history', 'Recent bets')}</strong><span>${tProposal('world.activity.loading', 'Loading activity…')}</span></div>
                 <div class="cb-link-row proposal-funding-links">
-                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${proposalAccount}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
                     <a class="cb-link cb-link--external" data-market="account-link" target="_blank" rel="noopener noreferrer" hidden>${tProposal('panel.proposal.market.poolAccount', 'Pool account')}</a>
                     <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.market.poolProgram', 'Pool program')}</a>
                 </div>
@@ -1242,8 +1245,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${sectionEnd}
             ${(isSolanaPledgeProposal || agentProvenanceHtml) ? sectionStart('verification', tProposal('panel.proposal.detailsSections.verification', 'Verification & history'), tProposal('panel.proposal.detailsSections.verificationHint', 'Lens, evidence and activity')) : ''}
             ${agentProvenanceHtml}
-            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-lens-card" data-proposal-lens-card="${nftInfo.tokenId}" aria-live="polite"></section>` : ''}
-            ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${nftInfo.tokenId}" aria-label="Proposal timeline">
+            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-lens-card" data-proposal-lens-card="${proposalAccount}" aria-live="polite"></section>` : ''}
+            ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${proposalAccount}" aria-label="Proposal timeline">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">Verifiable hyperstition</div>
@@ -1437,9 +1440,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Pledge totals are chain state, not proposal metadata. Hydrate after rendering so a slow RPC
     // never delays opening Details, and guard the DOM node in case the user selected another plan.
     if (chainSettlesProposal && window.SolanaPledgeBridge?.readSummary) {
-        Promise.resolve(window.SolanaPledgeBridge.readSummary(nftInfo.tokenId))
+        Promise.resolve(window.SolanaPledgeBridge.readSummary(proposalAccount))
             .then(summary => {
-                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
+                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${proposalAccount}"]`);
                 if (!card) return;
                 const donated = summary?.donations?.totalDonated || 0n;
                 const pledged = summary?.pledges?.activePledged || 0n;
@@ -1481,39 +1484,39 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         : 'no pledge';
                     mySupport.textContent = `Your support: ${donationCopy}; ${pledgeCopy}.`;
                 }
-                const actions = document.querySelector(`[data-proposal-support-actions="${nftInfo.tokenId}"]`);
+                const actions = document.querySelector(`[data-proposal-support-actions="${proposalAccount}"]`);
                 if (actions) actions.innerHTML = renderSupportButtons(summary, true);
             })
             .catch(error => {
                 console.warn('Could not load proposal pledge totals', error);
-                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
+                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${proposalAccount}"]`);
                 if (card) card.querySelectorAll('[data-funding="donated"], [data-funding="pledged"]').forEach(node => {
                     node.textContent = tProposal('panel.proposal.pledge.unavailable', 'Unavailable');
                 });
             });
     }
 
-    if (chainSettlesProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`), { proposal: fullProposal, proposalAccount: nftInfo.tokenId });
+    if (chainSettlesProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${proposalAccount}"]`), { proposal: fullProposal, proposalAccount });
 
     // Lens card: decoded chain lens + directory names + per-parcel ownership attestation, consent
     // tally and Say yes, plus the permissionless verdict settlement. Hydrated
     // after render like the pledge card so a slow directory or RPC never delays Details.
     if (isSolanaPledgeProposal && window.ProposalLensCard?.mount) {
         window.ProposalLensCard.mount(
-            document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${nftInfo.tokenId}"]`),
+            document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${proposalAccount}"]`),
             {
                 resolveLens: () => (proposalLensEntries.length ? proposalLensEntries : fetchLensFromChain(fullProposal)),
                 parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [],
-                proposalAccount: nftInfo.tokenId,
+                proposalAccount,
                 approvalUnsupported: window.ProposalApprovalRuntime?.uses(fullProposal) === true
             }
         );
     }
-    if (isSolanaPledgeProposal) window.ProposalParcelHistoryCard?.mountAfter(document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${nftInfo.tokenId}"]`), { parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [] });
+    if (isSolanaPledgeProposal) window.ProposalParcelHistoryCard?.mountAfter(document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${proposalAccount}"]`), { parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [] });
 
     if (isSolanaPledgeProposal && window.ProposalPossibilityTimeline?.build) {
         hydrateProposalPossibilityTimeline(
-            nftInfo.tokenId,
+            proposalAccount,
             fullProposal?.proposalId || '',
             fullProposal?.createdAt || fullProposal?.created_at || proposal?.createdAt || proposal?.created_at || null
         );
@@ -1522,7 +1525,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Market reads use the same proposal account and wallet context as pledge hydration, but the
     // market itself is optional: agent runs may open it later. Never make Details wait on RPC.
     if (chainSettlesProposal && window.SolanaMarketBridge?.readSummary) {
-        hydrateProposalMarketCard(nftInfo.tokenId);
+        hydrateProposalMarketCard(proposalAccount);
     }
 
     // If lens missing but on-chain, attempt a lazy fetch to hydrate and enable the button
@@ -2290,8 +2293,11 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    const nftInfo = getProposalNftInfo(proposal);
-    if (!nftInfo || !nftInfo.tokenId) {
+    const proposalAccount = window.ChainProposalRef?.solanaAccountForDeployment(
+        proposal,
+        window.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+    );
+    if (!proposalAccount) {
         showProposalAlertMessage('proposal_boost_not_minted', 'This proposal is not on-chain yet. Mint it before boosting.');
         return;
     }
@@ -2306,16 +2312,11 @@ async function submitProposalBoost(idOrHash = null) {
         }
         return;
     }
-    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || null);
-    if (typeof targetChainId !== 'string' || !targetChainId.startsWith('solana')) {
-        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donations' : 'Pledges'} currently require a Solana proposal.`);
-        return;
-    }
     if (!window.SolanaPledgeBridge || typeof window.SolanaPledgeBridge[supportKind] !== 'function') {
         showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donation' : 'Pledge'} transaction failed: blockchain bridge unavailable.`);
         return;
     }
-    const pendingKey = `proposalSupportPending:${supportKind}:${nftInfo.tokenId}:${solState.accounts[0]}`;
+    const pendingKey = `proposalSupportPending:${supportKind}:${proposalAccount}:${solState.accounts[0]}`;
     if (proposalSupportInFlight.has(pendingKey)) return;
     let operationId = overlay?.dataset?.pledgeOperationId;
     try {
@@ -2329,7 +2330,7 @@ async function submitProposalBoost(idOrHash = null) {
     let txResult;
     try {
         txResult = await window.SolanaPledgeBridge[supportKind]({
-            proposal: nftInfo.tokenId,
+            proposal: proposalAccount,
             amount: rawAmount,
             operationId,
             onStatus: status => setBoostStatus(window.ProposalSupportView?.statusText?.(status, supportKind) || status.state)
@@ -2362,29 +2363,32 @@ async function submitProposalBoost(idOrHash = null) {
     );
     await recordHumanProposalSupport({
         wallet: solState.accounts[0], action: supportKind,
-        proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
+        proposalId: proposal.proposalId || proposal.tokenId || proposalAccount,
         amount: rawAmount, result: txResult,
         message: supportKind === 'donate'
-            ? `${proposalSupportActor(solState.accounts[0]).name} donated ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || nftInfo.tokenId}.`
-            : `${proposalSupportActor(solState.accounts[0]).name} pledged ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || nftInfo.tokenId}.`
+            ? `${proposalSupportActor(solState.accounts[0]).name} donated ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || proposalAccount}.`
+            : `${proposalSupportActor(solState.accounts[0]).name} pledged ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || proposalAccount}.`
     });
     showProposalInfo(proposal);
 }
 
 async function settleProposalSupport(idOrHash, action) {
     const proposal = resolveProposalForBoost(idOrHash);
-    const nftInfo = proposal ? getProposalNftInfo(proposal) : null;
-    if (!nftInfo?.tokenId || !window.SolanaPledgeBridge?.[action]) {
+    const proposalAccount = proposal && window.ChainProposalRef?.solanaAccountForDeployment(
+        proposal,
+        window.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+    );
+    if (!proposalAccount || !window.SolanaPledgeBridge?.[action]) {
         showProposalAlertMessage('proposal_boost_failed', 'Proposal support action is unavailable.');
         return;
     }
     const solState = window.solanaWalletManager?.getState?.();
     const wallet = solState?.accounts?.[0] || null;
-    const key = `${action}:${nftInfo.tokenId}:${wallet || 'wallet'}`;
+    const key = `${action}:${proposalAccount}:${wallet || 'wallet'}`;
     if (proposalSupportInFlight.has(key)) return;
     proposalSupportInFlight.add(key);
     try {
-        const result = await window.SolanaPledgeBridge[action]({ proposal: nftInfo.tokenId });
+        const result = await window.SolanaPledgeBridge[action]({ proposal: proposalAccount });
         const linkOptions = result?.explorerUrl ? { linkUrl: result.explorerUrl, linkText: 'See transaction on Solana Explorer' } : {};
         const messages = {
             revokePledge: 'Your pledge was revoked; no USDC moved.',
@@ -2396,7 +2400,7 @@ async function settleProposalSupport(idOrHash, action) {
         const message = messages[action] || 'Proposal support updated successfully.';
         showProposalAlertMessage(`proposal_support_${action}_success`, message, {}, linkOptions);
         await recordHumanProposalSupport({
-            wallet, action, proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
+            wallet, action, proposalId: proposal.proposalId || proposal.tokenId || proposalAccount,
             result, message: `${proposalSupportActor(wallet).name}: ${message}`
         });
         showProposalInfo(proposal);

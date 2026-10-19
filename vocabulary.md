@@ -454,8 +454,9 @@ human review. [Mobile review contract](world-parcels/parcel-bench/annotation-app
 [validation and state](world-parcels/parcel-bench/annotation-app/public/model.mjs),
 [exporter](world-parcels/parcel-bench/annotation-app/export_reviews.mjs).
 
-A browser **illustrative plot** (`browser-heuristic-v1`, 2026-10-20) is one four-connected region
-generated from prepared imagery, mapped feature seeds/barriers and local manual corrections.
+A browser **illustrative plot** (`browser-heuristic-v2`, 2026-10-20) starts as one four-connected
+region generated from prepared imagery, mapped feature seeds/barriers and local manual corrections,
+then uses straightened shared vector borders as its displayed and exported geometry.
 It is a demonstration hypothesis with a recomputation-local identity, not a cadastral record,
 human visible-division observation, or registered ownership claim. RGB gradients are crossing
 costs; they do not classify roads, buildings or water. Mapped road/water barriers, whole-footprint
@@ -464,13 +465,21 @@ divider is an extended straight line clipped to a connected ground block, reject
 a mapped building. Water conflicts take precedence and warn. Tiny seedless fragments can remain
 unassigned. Street alignment biases the distance cost and does not guarantee rectangular plots.
 
-The `illustrative-plots-v1` GeoJSON export retains exact raster-cell unions with holes, WGS84
-longitude/latitude, source-metric area in m², image and feature hashes, source attribution,
+Shared internal arcs are simplified once for both neighbours, within 2 m of the initial boundary.
+Junction endpoints and the external road/water/crop envelope stay fixed. Network crossings,
+building-cell clipping and changes to protected seed/representative-cell ownership are rejected.
+Required short segments remain. Initial raster labels locate the candidate divisions; the final
+vector polygons own displayed boundaries, hit testing and area measurements.
+
+The `illustrative-plots-v2` GeoJSON export retains these same polygons with holes, WGS84
+longitude/latitude, final source-metric polygon area in m², image and feature hashes, source attribution,
 controls and image-pixel edits. All features are explicitly estimated and unvalidated. Local drafts
 are bound to recipe and source hashes, while undo history is session-local; no compatibility reader
 or migration preserves a draft across changed source identity. The three-example playground does
-not change frozen evaluation records or integrate a runtime cadastre fallback.
+not change frozen evaluation records or integrate a runtime cadastre fallback. This intentionally
+replaces the v1 exact-cell output and draft recipe identity without a compatibility reader.
 [Recipe](world-parcels/parcel-bench/heuristic-demo/public/core.mjs),
+[straightening](world-parcels/parcel-bench/heuristic-demo/public/regularize.mjs),
 [export](world-parcels/parcel-bench/heuristic-demo/public/geometry.mjs),
 [usage and limits](world-parcels/parcel-bench/heuristic-demo/README.md).
 
@@ -602,6 +611,20 @@ market means no pool has been found; it does not prove a missing proposal. These
 chain/account evidence, not physical construction evidence. Unqualified experimental links must
 be recreated; no alias fallback is provided. [Market reader](backend/routes/markets.js),
 [location projection](backend/markets/contests.js), [share lookup](backend/routes/bets-share.js).
+
+The browser details and parcel comparison use the complete chain reference to admit funding and
+market reads: the configured Solana proposal program on devnet, with a declared proposal account.
+Bare Solana labels, other networks/programs and approval setups whose decisions are outside the
+contract's settlement are excluded. Read-only funding, pool and portfolio requests select devnet
+independently of the connected wallet's network and verify the RPC genesis hash. Proposal reads
+check the owning program and account discriminator. Funding accounts also check their program,
+proposal, devnet USDC mint and, for personal positions, the expected book/escrow and owner. Market
+accounts check program and proposal; the summary requires devnet USDC, and position reads check
+program, market, owner and side. Invalid or incomplete evidence fails the read; it is not a zero
+balance or an empty portfolio. A valid proposal with an absent funding account has no recorded
+support in that account. These checks do not establish that local authored terms match the chain
+commitment. [Browser network check](frontend/js/solana/chain-data-loader.js),
+[funding reader](frontend/js/solana/pledge-client.js), [pool reader](frontend/js/solana/market-client.js).
 
 Market action eligibility uses the observed chain state only: `Active` permits new bets or opening
 a pool; `Executed`, `Cancelled` or `Expired` may permit settlement of an existing unresolved pool.

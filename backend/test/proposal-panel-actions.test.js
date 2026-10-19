@@ -15,8 +15,10 @@ const displayState = require('../../frontend/js/proposals/display-state.js');
 const panelPresentation = require('../../frontend/js/proposals/panel-presentation.js');
 const referenceRelations = require('../../frontend/js/proposals/parcel-set-relations.js');
 const siteDraft = require('../../frontend/js/proposals/site-draft.js');
+const chainRef = require('../../frontend/js/proposals/chain-ref.js');
+const acceptanceClient = require('../../frontend/js/solana/acceptance-client.js');
 // A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
-const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: 'Prog1111', tokenId: 'Token1111111111111111111111111111111111' });
+const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: acceptanceClient.constants.PROPOSAL_NFT_PROGRAM_ID, tokenId: 'Token1111111111111111111111111111111111' });
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const renderStart = source.indexOf('function safeAgentText(');
 const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
@@ -60,6 +62,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
     };
     const window = {
         i18n: null,
+        ChainProposalRef: chainRef,
+        SolanaAcceptanceClient: acceptanceClient,
         __proposalMapActionFailures: actionError ? { [String(proposal.proposalId)]: actionError } : {},
         __proposalGroundForkOffers: forkOffer ? { [String(proposal.proposalId)]: true } : {},
         ProposalGroundRebase: groundRebase,
@@ -152,6 +156,13 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('does not show devnet funding for unqualified references or another deployment', () => {
+        for (const change of [{ chain: 'solana' }, { chain: 'solana-mainnet-beta' }, { contract: 'another-program' }, { contract: null }]) {
+            const result = render({ proposalId: 'wrong-deployment', cadastreParcelIds: [], nft: { ...MINT_RECORD, ...change } });
+            expect(parse(result.content.innerHTML)('.proposal-pledge-summary, .proposal-market-summary').length).toBe(0);
+            expect(parse(result.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(0);
+        }
+    });
     it('shows authored payout terms without promising that acceptance releases money', () => {
         const base = { proposalId: 'payout-terms', cadastreParcelIds: [] };
         const badge = terms => parse(render({ ...base, ...terms }).content.innerHTML)('[data-proposal-payout-terms]');

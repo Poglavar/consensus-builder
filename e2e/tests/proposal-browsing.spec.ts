@@ -2,10 +2,11 @@ import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
-const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 
 async function chooseInMemoryProposal(page: import('@playwright/test').Page): Promise<void> {
   const confirm = page.locator('.cb-dialog-overlay--confirm');
@@ -48,6 +49,7 @@ async function installMarketRpcFixture(page: import('@playwright/test').Page): P
     provider.signTransaction = async (transaction: any) => { transaction.serialize = () => new Uint8Array([1, 2, 3]); return transaction; };
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET });
+  await installSolanaProposalAccount(page, { proposal: PROPOSAL_ACCOUNT, owner: SOLANA_WALLET });
 }
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
@@ -173,7 +175,7 @@ test.describe('Proposal browsing @features', () => {
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Parcel history proposal', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [data.parcelId],
       isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'verification');

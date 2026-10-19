@@ -16,9 +16,10 @@ describe('Solana pledge bridge', () => {
                 readPledgeCommitment: vi.fn(),
                 listDonationPositions: vi.fn()
             },
-            SolanaChainDataLoader: { getConnection: vi.fn(() => ({ rpc: 'devnet' })) },
+            SolanaChainDataLoader: { getConnection: vi.fn(), getVerifiedConnection: vi.fn(async () => ({ rpc: 'devnet' })) },
+            SolanaAcceptanceClient: { fetchProposal: vi.fn(async () => ({ status: 'Active' })) },
             solanaWalletManager: {
-                getCluster: vi.fn(() => 'devnet'),
+                getCluster: vi.fn(() => 'mainnet-beta'),
                 getProvider: vi.fn(() => null)
             }
         };
@@ -27,7 +28,8 @@ describe('Solana pledge bridge', () => {
         const result = await window.SolanaPledgeBridge.readSummary('proposal-account');
 
         expect(window.ensureWalletVendors).toHaveBeenCalledOnce();
-        expect(window.SolanaChainDataLoader.getConnection).toHaveBeenCalledWith('devnet');
+        expect(window.SolanaChainDataLoader.getVerifiedConnection).toHaveBeenCalledWith('devnet');
+        expect(window.SolanaChainDataLoader.getConnection).not.toHaveBeenCalled();
         expect(result).toMatchObject({
             donations: { totalDonated: 10n },
             pledges: { activePledged: 20n },
@@ -35,6 +37,9 @@ describe('Solana pledge bridge', () => {
             myDonations: [],
             wallet: null
         });
+        window.SolanaAcceptanceClient.fetchProposal.mockResolvedValue(null);
+        await expect(window.SolanaPledgeBridge.readSummary('proposal-account')).rejects.toThrow('unavailable');
+        expect(window.SolanaPledgeClient.readDonationEscrow).toHaveBeenCalledOnce();
     });
 
     it('reports connected wallet balances without requiring a support transaction', async () => {

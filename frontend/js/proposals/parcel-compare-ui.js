@@ -478,9 +478,13 @@
         const token = ++state.hydration;
         proposals.forEach((proposal, i) => {
             const side = SIDES[i];
-            const nft = typeof global.getProposalNftInfo === 'function' ? global.getProposalNftInfo(proposal) : null;
             const minted = typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal);
-            const account = minted && nft && nft.tokenId && String(nft.chain || nft.chainId || '').startsWith('solana') ? nft.tokenId : null;
+            const account = minted && global.ProposalApprovalRuntime?.uses(proposal) !== true
+                ? global.ChainProposalRef?.solanaAccountForDeployment(
+                    proposal,
+                    global.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+                ) || null
+                : null;
             if (!account) return;
             const loading = t('panel.proposal.pledge.loading', 'Loading…');
             const unavailable = t('panel.proposal.pledge.unavailable', 'Unavailable');

@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, identityKey, sameReference, findByReference } = require('../../frontend/js/proposals/chain-ref.js');
+const { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, solanaAccountForDeployment, identityKey, sameReference, findByReference } = require('../../frontend/js/proposals/chain-ref.js');
 
 describe('parseChainProposalRef', () => {
     it('parses an EVM proposal location', () => {
@@ -78,6 +78,27 @@ describe('chainRefFromProposal — Canton detection', () => {
     it('infers canton from a "canton-<network>" chainId and strips the prefix', () => {
         const p = { onchain: { chainId: 'canton-devnet', contractAddress: 'canton', proposalId: 'CID123' } };
         expect(chainRefFromProposal(p)).toEqual({ chainType: 'canton', chainId: 'devnet', contract: 'canton', tokenId: 'CID123' });
+    });
+});
+
+describe('solanaAccountForDeployment', () => {
+    const program = 'ProposalProgram';
+    it('returns the account only for a complete exact devnet deployment reference', () => {
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-devnet', contract: program, tokenId: 'ProposalAccount' } }, program))
+            .toBe('ProposalAccount');
+        expect(solanaAccountForDeployment({ onchain: { chainType: 'solana', chainId: 'solana-devnet', contractAddress: program, proposalId: 'OnchainAccount' } }, program))
+            .toBe('OnchainAccount');
+    });
+
+    it('rejects incomplete, wrong-cluster and wrong-program references without case folding', () => {
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana', contract: program, tokenId: '1' } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-mainnet-beta', contract: program, tokenId: '1' } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-testnet', contract: program, tokenId: '1' } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-devnet', contract: 'OtherProgram', tokenId: '1' } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-devnet', tokenId: '1' } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-devnet', contract: program.toLowerCase(), tokenId: '1' } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-devnet', contract: program } }, program)).toBeNull();
+        expect(solanaAccountForDeployment({ nft: { chain: 'solana-devnet', contract: program, tokenId: '1' } }, '')).toBeNull();
     });
 });
 

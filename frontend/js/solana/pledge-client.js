@@ -237,20 +237,37 @@
         const amount = readU64(value, at); at += 8; const status = value[at++]; const initialized = value[at++] === 1;
         return { book, proposal, owner, amount, status, initialized, bump: value[at] };
     }
-    async function readAccount(connection, address, decoder) {
+    function readAccountInfo(info, decoder, expected, programId) {
+        if (!info?.data) return null;
+        if (info.owner?.toBase58?.() !== programKey(programId).toBase58()) throw new Error('Support account belongs to another program.');
+        const value = decoder(info.data);
+        for (const [field, keyValue] of Object.entries(expected)) {
+            if (value[field] !== key(keyValue, field).toBase58()) throw new Error(`Support account has a different ${field}.`);
+        }
+        return value;
+    }
+    async function readAccount(connection, address, decoder, expected, programId) {
         if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
         const info = await connection.getAccountInfo(address);
-        return info?.data ? decoder(info.data) : null;
+        return readAccountInfo(info, decoder, expected, programId);
     }
-    function readDonationEscrow(connection, proposal, programId) { return readAccount(connection, getDonationEscrowPda(proposal, programId)[0], decodeDonationEscrow); }
-    function readPledgeBook(connection, proposal, programId) { return readAccount(connection, getPledgeBookPda(proposal, programId)[0], decodePledgeBook); }
+    function readDonationEscrow(connection, proposal, programId) {
+        return readAccount(connection, getDonationEscrowPda(proposal, programId)[0], decodeDonationEscrow,
+            { proposal, mint: constants.USDC_DEVNET_MINT }, programId);
+    }
+    function readPledgeBook(connection, proposal, programId) {
+        return readAccount(connection, getPledgeBookPda(proposal, programId)[0], decodePledgeBook,
+            { proposal, mint: constants.USDC_DEVNET_MINT }, programId);
+    }
     function readPledgeCommitment(connection, proposal, owner, programId) {
         const [book] = getPledgeBookPda(proposal, programId);
-        return readAccount(connection, getPledgeCommitmentPda(book, owner, programId)[0], decodePledgeCommitment);
+        return readAccount(connection, getPledgeCommitmentPda(book, owner, programId)[0], decodePledgeCommitment,
+            { book, proposal, owner }, programId);
     }
     async function readDonationPosition(connection, proposal, owner, donationId, programId) {
         const [escrow] = getDonationEscrowPda(proposal, programId);
-        return readAccount(connection, getDonationPositionPda(escrow, owner, donationId, programId)[0], decodeDonationPosition);
+        return readAccount(connection, getDonationPositionPda(escrow, owner, donationId, programId)[0], decodeDonationPosition,
+            { escrow, owner }, programId);
     }
     async function listDonationPositions(connection, proposal, owner, programId) {
         if (!connection?.getProgramAccounts) throw new Error('a Solana connection with getProgramAccounts is required');
@@ -259,7 +276,11 @@
             { dataSize: DONATION_POSITION_SIZE }, { memcmp: { offset: 8, bytes: escrow.toBase58() } },
             { memcmp: { offset: 40, bytes: key(owner).toBase58() } }
         ] });
-        return rows.map(row => ({ address: row.pubkey.toBase58(), ...decodeDonationPosition(row.account.data) }));
+        return rows.map(row => {
+            const value = readAccountInfo(row.account, decodeDonationPosition, { escrow, owner }, programId);
+            if (!value) throw new Error('Support position account data is unavailable.');
+            return { address: row.pubkey.toBase58(), ...value };
+        });
     }
     function parseUsdc(value) {
         if (typeof value !== 'string' || !/^\d+(\.\d+)?$/.test(value.trim())) throw new Error('USDC amount must be a decimal string');

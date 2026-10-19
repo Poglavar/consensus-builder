@@ -3,9 +3,11 @@ import { openCity, openParcel, proposalState, showProposal, PARCEL_ID } from '..
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
 
 import { installProposalEvmBoundary, PROPOSAL_EVM_CONTRACT } from '../helpers/proposal-chain-boundary';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
 
 async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {
@@ -110,6 +112,11 @@ async function installMarketRpcFixture(page: import('@playwright/test').Page, re
     w.__proposalMarketRpcEvents = events;
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET, resolved });
+  await installSolanaProposalAccount(page, {
+    proposal: PROPOSAL_ACCOUNT,
+    owner: SOLANA_WALLET,
+    status: resolved ? 1 : 0,
+  });
 }
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
@@ -675,6 +682,7 @@ test.describe('Proposal actions @features', () => {
       };
       w.SolanaChainDataLoader.getConnection = () => connection;
     });
+    await installSolanaProposalAccount(page, { proposal: SOLANA_WALLET, owner: SOLANA_WALLET });
 
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Fundable proposal',
@@ -682,9 +690,9 @@ test.describe('Proposal actions @features', () => {
       lifecycleStatus: 'Active',
       cadastreParcelIds: [data.parcelId],
       isMinted: true,
-      nft: { chain: 'solana-devnet', contract: data.programId, tokenId: data.account },
+      nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
       lens: [data.member],
-    }), { parcelId: PARCEL_ID, programId: PROPOSAL_ACCOUNT, account: SOLANA_WALLET, member: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: SOLANA_WALLET, member: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
 
     await page.locator('.btn-donate-proposal').click();
@@ -833,7 +841,7 @@ test.describe('Proposal actions @features', () => {
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Market stake UI proposal', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [data.parcelId],
       isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'market');
@@ -868,7 +876,7 @@ test.describe('Proposal actions @features', () => {
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Market claim UI proposal', goal: 'park', lifecycleStatus: 'Executed', cadastreParcelIds: [data.parcelId],
       isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'market');

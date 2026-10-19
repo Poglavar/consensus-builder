@@ -88,6 +88,17 @@
         return connection;
     }
 
+    // Funding and markets name the configured devnet deployment. A wallet preference or an
+    // endpoint's label cannot establish the network whose accounts are being displayed.
+    async function getVerifiedConnection(cluster) {
+        if (cluster !== 'devnet') throw new Error('Proposal account reads support Solana devnet only.');
+        const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
+        if (await connection.getGenesisHash() !== 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG') {
+            throw new Error('Solana RPC network does not match devnet.');
+        }
+        return connection;
+    }
+
     function getParcelPda(programId, parcelId) {
         if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
         const enc = new TextEncoder();
@@ -408,6 +419,7 @@
 
     globalScope.SolanaChainDataLoader = {
         getConnection,
+        getVerifiedConnection,
         getParcelPda,
         getParcelMintStatus,
         getParcelMintStatuses,

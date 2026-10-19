@@ -5,6 +5,7 @@ import { attachSharedProposalServer, createSharedProposalServer } from '../helpe
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
 import { installSolanaExternalBoundary } from '../helpers/solana-external-boundary';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
@@ -53,7 +54,7 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
   await expect(page.locator('#welcome-modal')).toBeHidden();
 }
 
-async function installMarketRpcFixture(page: import('@playwright/test').Page, marketExists = true, connectWallet = true): Promise<void> {
+async function installMarketRpcFixture(page: import('@playwright/test').Page, marketExists = true, connectWallet = true, proposalStatus = 0): Promise<void> {
   await page.route('**/markets?*', route => route.fulfill({ json: { contests: [] } }));
   await page.evaluate(({ proposal, wallet, marketExists, connectWallet }) => {
     const w = window as any;
@@ -102,6 +103,11 @@ async function installMarketRpcFixture(page: import('@playwright/test').Page, ma
     w.__proposalMarketRpcEvents = events;
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET, marketExists, connectWallet });
+  await installSolanaProposalAccount(page, {
+    proposal: PROPOSAL_ACCOUNT,
+    owner: SOLANA_WALLET,
+    status: proposalStatus,
+  });
 }
 
 test.describe('proposal button controls sixth pass @features', () => {
@@ -492,7 +498,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await connectWalletByConnectorId(page, 'solana-phantom');
     await waitForBlockchainRuntime(page, ['SolanaMarketClient', 'SolanaChainDataLoader']);
-    await installMarketRpcFixture(page);
+    await installMarketRpcFixture(page, true, true, 1);
     const proposalId = await page.evaluate(({ parcelId, proposalAccount }) => (window as any).proposalStorage.addProposal({
       title: 'Settle pool action', goal: 'park', lifecycleStatus: 'Executed', cadastreParcelIds: [parcelId], isMinted: true,
       nft: { chain: 'solana-devnet', contract: proposalAccount, tokenId: proposalAccount },

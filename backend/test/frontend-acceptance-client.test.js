@@ -257,6 +257,18 @@ const PROPOSAL_VALUES = {
 };
 
 describe('account decoders', () => {
+    it('fetches a proposal only from its owning program and account type', async () => {
+        let info = { owner: new web3.PublicKey(client.constants.PROPOSAL_NFT_PROGRAM_ID),
+            data: encodeAccount(PROPOSAL_IDL, 'Proposal', PROPOSAL_VALUES, 4096) };
+        const connection = { getAccountInfo: async () => info };
+        expect(await client.fetchProposal(connection, PROPOSAL)).toMatchObject({ address: PROPOSAL, status: 'Active' });
+        info = { ...info, owner: new web3.PublicKey(OWNER) };
+        await expect(client.fetchProposal(connection, PROPOSAL)).rejects.toThrow('another program');
+        info = { owner: new web3.PublicKey(client.constants.PROPOSAL_NFT_PROGRAM_ID), data: Buffer.alloc(4096) };
+        await expect(client.fetchProposal(connection, PROPOSAL)).rejects.toThrow(/discriminator/);
+        info = null;
+        expect(await client.fetchProposal(connection, PROPOSAL)).toBeNull();
+    });
     it('readProposal decodes every field including verdict_may_execute and the v3 site fields', () => {
         const parsed = client.readProposal(encodeAccount(PROPOSAL_IDL, 'Proposal', PROPOSAL_VALUES, 4096), PROPOSAL);
         expect(parsed).toMatchObject({
