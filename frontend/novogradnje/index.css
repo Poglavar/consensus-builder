@@ -58,3 +58,6 @@
 .building-viewer-stack{grid-area:viewers;display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
 .building-viewer-stack .viewer-canvas{height:300px;min-height:260px}
 @media(max-width:760px){.viewer-grid.apartment-viewer-grid,.building-detail-layout{grid-template-columns:minmax(0,1fr)}.building-detail-layout{grid-template-areas:"viewers" "apartments"}.building-viewer-stack{grid-template-columns:minmax(0,1fr)}.viewer-panel{height:430px}.viewer-panel>.viewer-canvas,.viewer-panel>.viewer-host,.viewer-panel>.original-preview{height:280px;min-height:240px}.viewer-host>.viewer-canvas{height:280px}}
+
+/* One loading indicator for data, media, maps and 3D previews. */
+.is-loading{position:relative}.loading-indicator{position:absolute;z-index:8;inset:0;display:grid;place-items:center;min-height:40px;border-radius:inherit;pointer-events:none}.loading-indicator::before{content:"";display:block;width:28px;height:28px;border:3px solid #aabdaf;border-top-color:var(--green);border-radius:50%;box-shadow:0 0 0 5px #fffdf8d9;animation:loading-spin .8s linear infinite}.results-grid.is-loading{min-height:120px}.original-preview{position:relative}.context-google-status[hidden]{display:none}@keyframes loading-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.loading-indicator::before{animation:none;border-top-color:var(--amber)}}

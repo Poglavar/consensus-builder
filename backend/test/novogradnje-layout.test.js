@@ -40,17 +40,18 @@ function renderDetail({ selected = false, fallbackPaths = false, located = true,
     });
     const body = element('body');
     body.classList = { add() {}, contains: name => name === 'detail-page' };
+    const loading={start:vi.fn(()=>vi.fn()),media:vi.fn(()=>vi.fn())};
     const viewer = { mountApartment: vi.fn(() => ({ dispose() {} })), mountEnvelope: vi.fn(() => ({ dispose() {} })), mountContext: vi.fn(() => ({ dispose() {} })) };
     const catalogue = { decodeFilters: () => ({}), normalizeFilters: value => value, encodeFilters: () => '', filterProjects: () => [], hasEnvelope: model => Boolean(model?.envelope?.footprint && model.envelope.storeys?.length) };
     const location = { search: '', href: 'https://example.test/novogradnje/' };
     const context = {
-        window: { NovogradnjeCatalogue: catalogue, NovogradnjeViewer: viewer },
+        window: { NovogradnjeCatalogue: catalogue, NovogradnjeViewer: viewer, NovogradnjeLoading:loading },
         document: { body, createElement: element, getElementById: id => nodes[id] },
         location, history: { replaceState() {}, pushState() {} },
         addEventListener() {}, URL, URLSearchParams, Intl, Number, String, Boolean, Array, Object, Math, JSON
     };
     vm.runInNewContext(indexSource, context);
-    return { detail: nodes.detail, viewer };
+    return { detail: nodes.detail, viewer,loading };
 }
 
 function descendants(root) {
@@ -86,6 +87,17 @@ describe('Novogradnje detail layout', () => {
         ]);
         expect(descendants(panels[2]).filter(node => node.className === 'source-link')).toHaveLength(3);
         expect(panels.slice(0, 2).flatMap(descendants).some(node => node.className === 'source-link')).toBe(false);
+    });
+
+    it('tracks original image and PDF loading in their own preview panels',()=>{
+        for(const selected of [true,'floor']){
+            const {loading}=renderDetail({selected});
+            expect(loading.media).toHaveBeenCalledOnce();
+            const [host,media,label]=loading.media.mock.calls[0];
+            expect(host.className).toBe('original-preview');
+            expect(media.tag).toBe(selected===true?'img':'iframe');
+            expect(label).toBe('Učitavanje izvornog tlocrta…');
+        }
     });
 
     it('shows building apartments as source-free rows beside the two stacked building views', () => {

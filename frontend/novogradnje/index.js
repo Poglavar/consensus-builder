@@ -9,13 +9,14 @@
         project:n=>`${n} ${n===1?'stan':n>=2&&n<=4?'stana':'stanova'}`,
         year:p=>Number.isFinite(p.constructionYear)?`Godina izgradnje ${p.constructionYear}`:Number.isFinite(p.completionYear)?`Planirani završetak ${p.completionYear}`:'Godina nije navedena'
     };
-    const C=window.NovogradnjeCatalogue, V=window.NovogradnjeViewer;
+    const C=window.NovogradnjeCatalogue, V=window.NovogradnjeViewer, L=window.NovogradnjeLoading;
     const byId=id=>document.getElementById(id), node=(tag,cls,content)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n;};
     const safePath=(value,fallback)=>typeof value==='string'&&value.startsWith('/novogradnje/')?value:fallback;
     const safeHref=value=>{if(typeof value!=='string'||!value.trim())return null;if(value.startsWith('/'))return value;try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:null;}catch{return null;}};
     const projectPath=p=>safePath(p.url,`/novogradnje/zgrade/${encodeURIComponent(p.slug||p.id)}/`);
     const apartmentPath=(p,a)=>safePath(a.url,`${projectPath(p).replace(/\/$/,'')}/stanovi/${encodeURIComponent(a.id)}/`);
     const floorPlanPath=(p,f)=>safePath(f.url,`${projectPath(p).replace(/\/$/,'')}/tlocrti/${encodeURIComponent(f.id)}/`);
+    let cardLoads=[],mapLoadingStop=null;
     let boot={},catalogue={projects:[],counts:{}},detail=null,activeApartmentId=null,map=null,markerLayer=null,viewers=[],catalogueError='',detailError='';
     try { const raw=byId('novogradnje-boot').textContent.trim(); if(raw&&raw!=='__NOVOGRADNJE_BOOT__')boot=JSON.parse(raw); } catch { /* A missing server payload falls through to the public API. */ }
     if(boot.project){document.body.classList.add('detail-page');}
@@ -42,7 +43,7 @@
     function makeCard(project){
         const article=node('article','project-card'),link=node('a','card-link');link.href=projectPath(project);link.setAttribute('aria-label',`${project.name||project.label||'Projekt'} — otvori projekt`);
         const visual=node('div','card-visual'),tag=project.kind==='new_build'?null:node('span','building-tag',text.kinds[project.kind]||text.kinds.unknown),thumbnail=safePath(project.thumbnailUrl,null);
-        if(thumbnail){const image=node('img','building-thumbnail');image.src=thumbnail;image.alt=`3D obris zgrade ${project.name||project.label||''}`;image.width=320;image.height=180;image.loading='lazy';image.decoding='async';visual.append(image);}
+        if(thumbnail){const image=node('img','building-thumbnail');image.src=thumbnail;image.alt=`3D obris zgrade ${project.name||project.label||''}`;image.width=320;image.height=180;image.loading='lazy';image.decoding='async';visual.append(image);cardLoads.push(L.media(visual,image,'Učitavanje prikaza zgrade…'));}
         else visual.append(node('span','thumbnail-unavailable','3D obris još nije dostupan'));
         if(tag)visual.append(tag);const body=node('div','card-body'),title=node('h3','card-title',project.name||project.label||project.slug||'Stambeni projekt'),address=node('p','card-address',project.address||text.noAddress);body.append(title,address);
         const chips=node('div','card-chips');chips.append(node('span','chip',text.year(project)));if(!project.location)chips.append(node('span','chip amber','Nepoznata lokacija'));if(project.kind==='new_build')chips.append(node('span','chip amber','Novogradnja'));if(project.kind==='unknown')chips.append(node('span','chip','Vrsta nije utvrđena'));
@@ -53,12 +54,12 @@
         return article;
     }
     function renderMap(projects){
-        const host=byId('project-map');if(!window.L){host.textContent='Karta nije dostupna.';return;}if(!map){map=window.L.map(host,{zoomControl:true,scrollWheelZoom:false}).setView([45.815,15.982],11);window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);markerLayer=window.L.layerGroup().addTo(map);}markerLayer.clearLayers();
+        const host=byId('project-map');if(!window.L){host.textContent='Karta nije dostupna.';return;}if(!map){map=window.L.map(host,{zoomControl:true,scrollWheelZoom:false}).setView([45.815,15.982],11);const tiles=window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});tiles.on('loading',()=>{mapLoadingStop?.();mapLoadingStop=L.start(host,'Učitavanje karte…');});tiles.on('load',()=>{mapLoadingStop?.();mapLoadingStop=null;});tiles.addTo(map);markerLayer=window.L.layerGroup().addTo(map);}markerLayer.clearLayers();
         const points=[];for(const p of projects){const loc=p.location;if(!loc||!Number.isFinite(loc.lat)||!Number.isFinite(loc.lng))continue;const marker=window.L.marker([loc.lat,loc.lng]).addTo(markerLayer);const a=document.createElement('a');a.href=projectPath(p);a.textContent=p.name||p.label||'Stambeni projekt';const div=document.createElement('div');div.append(a);marker.bindPopup(div);points.push([loc.lat,loc.lng]);}
         if(points.length)map.fitBounds(points,{padding:[24,24],maxZoom:14});
     }
     function renderResults(){
-        const host=byId('results');host.replaceChildren();byId('catalogue-error').hidden=!catalogueError;byId('catalogue-error').textContent=catalogueError;
+        const host=byId('results');cardLoads.forEach(stop=>stop());cardLoads=[];host.replaceChildren();byId('catalogue-error').hidden=!catalogueError;byId('catalogue-error').textContent=catalogueError;
         const filtered=catalogueError?[]:C.filterProjects(catalogue.projects,readControls());
         filtered.forEach(project=>host.append(makeCard(project)));const apartments=filtered.reduce((sum,p)=>sum+p.apartments.length,0);
         byId('catalogue-count').textContent=catalogueError?'':`${apartments} ${apartments===1?'stan':apartments>=2&&apartments<=4?'stana':'stanova'} · ${filtered.length} ${filtered.length===1?'projekt':'projekata'}`;
@@ -70,8 +71,8 @@
     function addOriginal(host,source,links=host){
         const href=safeHref(source?.assetUrl);if(!href)return;
         const type=String(source.mediaType||'').toLowerCase(),pdf=type==='application/pdf'||/\.pdf(?:[?#]|$)/i.test(href),viewer=node('div','original-preview');
-        if(pdf){const frame=node('iframe');frame.title='Izvorni tlocrt u PDF-u';frame.src=Number.isFinite(source.page)&&source.page>0?`${href}#page=${Math.floor(source.page)}`:href;viewer.append(frame);}
-        else {const image=node('img');image.src=href;image.alt='Izvorna slika tlocrta';image.loading='lazy';viewer.append(image);}
+        if(pdf){const frame=node('iframe');frame.title='Izvorni tlocrt u PDF-u';frame.src=Number.isFinite(source.page)&&source.page>0?`${href}#page=${Math.floor(source.page)}`:href;viewer.append(frame);viewers.push({dispose:L.media(viewer,frame,'Učitavanje izvornog tlocrta…')});}
+        else {const image=node('img');image.src=href;image.alt='Izvorna slika tlocrta';image.loading='lazy';viewer.append(image);viewers.push({dispose:L.media(viewer,image,'Učitavanje izvornog tlocrta…')});}
         host.append(viewer);addSourceLink(links,href,'Otvori izvorni tlocrt ↗');
     }
     function renderDetail(project,apartmentId){
@@ -178,10 +179,10 @@
     async function load(){
         controls(initial);
         if(boot.catalogue)catalogue=boot.catalogue;
-        else try{const r=await fetch('/novogradnje/api/projects',{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);catalogue=await r.json();}catch(error){catalogueError=`Katalog trenutačno nije dostupan. ${error.message||'Provjerite vezu i pokušajte ponovno.'}`;}
+        else {const stop=L.start(byId('results'),'Učitavanje kataloga…');try{const r=await fetch('/novogradnje/api/projects',{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);catalogue=await r.json();}catch(error){catalogueError=`Katalog trenutačno nije dostupan. ${error.message||'Provjerite vezu i pokušajte ponovno.'}`;}finally{stop();}}
         renderResults();
         detail=boot.project||null;activeApartmentId=boot.apartmentId||boot.floorPlanId||null;
-        if(detail&&!detail.model)try{const response=await fetch(`/novogradnje/api/projects/${encodeURIComponent(detail.id||detail.slug)}`,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);detail=await response.json();}catch(error){detailError=`Detalji projekta nisu se učitali. Prikazujemo samo podatke dostupne na ovoj stranici. ${error.message||''}`;}
+        if(detail&&!detail.model){const stop=L.start(byId('detail'),'Učitavanje detalja projekta…');try{const response=await fetch(`/novogradnje/api/projects/${encodeURIComponent(detail.id||detail.slug)}`,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);detail=await response.json();}catch(error){detailError=`Detalji projekta nisu se učitali. Prikazujemo samo podatke dostupne na ovoj stranici. ${error.message||''}`;}finally{stop();}}
         if(detail)renderDetail(detail,activeApartmentId);
     }
     let searchEditing=false;
@@ -193,6 +194,6 @@
     byId('reset').addEventListener('click',()=>{controls(C.normalizeFilters({}));searchEditing=false;updateURL(true);renderResults();});
     byId('include-older').addEventListener('click',()=>{byId('kind').value='all';searchEditing=false;updateURL(true);renderResults();});
     addEventListener('popstate',()=>{searchEditing=false;controls(C.decodeFilters(location.search));renderResults();});
-    addEventListener('pagehide',()=>{clearViewers();map?.remove();});
+    addEventListener('pagehide',()=>{clearViewers();cardLoads.forEach(stop=>stop());mapLoadingStop?.();map?.remove();});
     load();
 })();

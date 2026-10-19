@@ -8,7 +8,7 @@ const body = parse(source, { sourceType: 'script' }).program.body[0].expression.
 const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'attach');
 
 function fixture(initialElevationM = 0, attributionText = 'Google · imagery provider') {
-    const frames = new Map(), listeners = {}, timers = [];
+    const frames = new Map(), listeners = {}, timers = [], stopLoading=vi.fn(), loading={start:vi.fn(()=>stopLoading)};
     let sequence = 0, intersection;
     const element = (tagName = 'div') => ({ tagName: tagName.toUpperCase(), children: [], dataset: {}, append(...nodes) { this.children.push(...nodes); },
         setAttribute() {}, remove: vi.fn() });
@@ -50,7 +50,7 @@ function fixture(initialElevationM = 0, attributionText = 'Google · imagery pro
     const observer = { observe: vi.fn(), disconnect: vi.fn() };
     const context = vm.createContext({
         ION_TOKEN: 'public-browser-test', ASSET_ID: 2275207, document,
-        root: { __siteModelGeometry: { localFrame: () => ({ origin: [16, 45] }) },
+        root: { NovogradnjeLoading:loading, __siteModelGeometry: { localFrame: () => ({ origin: [16, 45] }) },
             __photorealFrame: { TILES_FRAME_EULER: { x: Math.PI / 2, y: 0, z: Math.PI, order: 'ZYX' } },
             PhotorealAttribution: { attributionText: () => attributionText } },
         performance: { now: () => 0 },
@@ -65,7 +65,7 @@ function fixture(initialElevationM = 0, attributionText = 'Google · imagery pro
     const dispose = attach(host, { model: {} }, () => true, [
         { TilesRenderer: Tiles }, { CesiumIonAuthPlugin: Plugin, ReorientationPlugin: Plugin, GLTFExtensionsPlugin: Plugin, TileCompressionPlugin: Plugin }, { DRACOLoader: Decoder }
     ], { THREE: { Group, Color: class {} }, scene, group, camera, renderer: {}, controls, render }, initialElevationM);
-    return { tiles, host, frames, document, listeners, timers, observer, dispose, render, camera, controls, group,
+    return { tiles, host, frames, document, listeners, timers, observer, dispose, render, camera, controls, group,loading,stopLoading,
         visibility: visible => intersection([{ isIntersecting: visible }]),
         frame: now => { const [id, callback] = frames.entries().next().value; frames.delete(id); callback(now); } };
 }
@@ -153,7 +153,11 @@ describe('bounded Google context streaming', () => {
     });
 
     it('disposes tile resources, observers, listeners and pending animation frames', () => {
-        const f = fixture(); f.dispose();
+        const f = fixture();
+        expect(f.loading.start).toHaveBeenCalledWith(f.host,'Učitavanje Google 3D prikaza…');
+        expect(f.host.children[0].hidden).toBe(true);
+        f.dispose();
+        expect(f.stopLoading).toHaveBeenCalledOnce();
         expect(f.tiles.dispose).toHaveBeenCalledOnce();
         expect(f.frames.size).toBe(0);
         expect(f.observer.disconnect).toHaveBeenCalledOnce();

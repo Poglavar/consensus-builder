@@ -48,13 +48,15 @@ function attach(host,project,isCurrent,modules,{THREE,scene,group,camera,rendere
  // Starting below the terrain makes coarse global triangles a misleading ground sample.
  camera.position.z+=initialElevationM;controls.target.z+=initialElevationM;controls.update();group.visible=false;
  tiles.setCamera(camera);tiles.setResolutionFromRenderer(camera,renderer);
- const status=document.createElement('p');status.className='context-google-status';status.textContent='Učitavanje Google 3D prikaza…';status.setAttribute('role','status');
+ const status=document.createElement('p');status.className='context-google-status';status.hidden=true;status.setAttribute('role','status');
  const credit=document.createElement('div');credit.className='context-google-credit';
  const logo=document.createElement('img');logo.src='/novogradnje/google-maps-logo.svg';logo.alt='Google Maps';logo.height=19;
  const sources=document.createElement('details');sources.className='context-google-sources';sources.hidden=true;
  const sourceLabel=document.createElement('summary');sourceLabel.textContent='Izvori podataka';
  const copyrights=document.createElement('span');copyrights.className='context-google-copyrights';sources.append(sourceLabel,copyrights);credit.append(logo,sources);host.append(status,credit);
  const cached=new Map();let revision=0,probed=-1,frameId=0,disposed=false,failed=false,onScreen=true,grounded=false,locked=false,lastLoad=performance.now(),lastProbe=0,lastCredit=0,lastTick=0,lastFrame=null,loadingMs=0;
+ let stopLoading=root.NovogradnjeLoading.start(host,'Učitavanje Google 3D prikaza…');
+ function setLoading(loading){if(loading&&!stopLoading)stopLoading=root.NovogradnjeLoading.start(host,'Učitavanje Google 3D prikaza…');else if(!loading&&stopLoading){stopLoading();stopLoading=null;}}
  const onLoad=event=>{if(event.scene)cached.set(event.scene,event.tile?.internal?.depth||0);revision++;lastLoad=performance.now();};
  const onUnload=event=>{cached.delete(event.scene);revision++;};
  tiles.addEventListener('load-model',onLoad);tiles.addEventListener('dispose-model',onUnload);
@@ -87,9 +89,9 @@ function attach(host,project,isCurrent,modules,{THREE,scene,group,camera,rendere
  function tick(now){
   frameId=0;if(disposed||failed||!isCurrent()||document.hidden||!onScreen)return;
   if(!grounded)loadingMs+=lastFrame===null?0:Math.min(now-lastFrame,1000);lastFrame=now;
-  if(!grounded&&loadingMs>=45000){failed=true;host.dataset.googleState='error';status.hidden=false;status.textContent='Google 3D nije učitan. Odaberi Model pa pokušaj ponovno.';return;}
+  if(!grounded&&loadingMs>=45000){failed=true;setLoading(false);host.dataset.googleState='error';status.hidden=false;status.textContent='Google 3D nije učitan. Odaberi Model pa pokušaj ponovno.';return;}
   if(now-lastTick>=33){
-   lastTick=now;camera.updateMatrixWorld();tiles.setResolutionFromRenderer(camera,renderer);tiles.update();seatGround(now);
+   lastTick=now;camera.updateMatrixWorld();tiles.setResolutionFromRenderer(camera,renderer);tiles.update();seatGround(now);setLoading(!grounded||tiles.loadProgress<1);
    if(now-lastCredit>1000){lastCredit=now;updateCredit();}render();
   }
   frameId=requestAnimationFrame(tick);
@@ -98,7 +100,7 @@ function attach(host,project,isCurrent,modules,{THREE,scene,group,camera,rendere
  const observer=new IntersectionObserver(entries=>{onScreen=entries[0]?.isIntersecting??true;resume();});observer.observe(host);
  document.addEventListener('visibilitychange',resume);
  host.dataset.googleState='loading';resume();
- return ()=>{disposed=true;cancelAnimationFrame(frameId);observer.disconnect();document.removeEventListener('visibilitychange',resume);tiles.removeEventListener('load-model',onLoad);tiles.removeEventListener('dispose-model',onUnload);tiles.dispose();decoder.dispose();cached.clear();scene.remove(seat);status.remove();credit.remove();delete host.dataset.googleState;};
+ return ()=>{disposed=true;setLoading(false);cancelAnimationFrame(frameId);observer.disconnect();document.removeEventListener('visibilitychange',resume);tiles.removeEventListener('load-model',onLoad);tiles.removeEventListener('dispose-model',onUnload);tiles.dispose();decoder.dispose();cached.clear();scene.remove(seat);status.remove();credit.remove();delete host.dataset.googleState;};
 }
 root.NovogradnjeGoogleContext={mount};
 })(window);

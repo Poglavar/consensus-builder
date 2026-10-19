@@ -5,6 +5,13 @@ import { fileURLToPath } from 'node:url';
 
 const viewerSource = readFileSync(fileURLToPath(new URL('../../frontend/novogradnje/viewer.js', import.meta.url)), 'utf8');
 const locatedProject = { location: { lng: 16, lat: 45 }, model: { envelope: { footprint: { type: 'Polygon', coordinates: [[[16,45],[16.001,45],[16.001,45.001],[16,45]]] } } } };
+const envelopeModel = { envelope: { ...locatedProject.model.envelope, storeys: [{ level: 0 }] } };
+const flush = () => new Promise(resolve => setImmediate(resolve));
+function deferred() {
+    let resolve, reject;
+    const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+    return { promise, resolve, reject };
+}
 
 function makeElement(tag) {
     return {
@@ -30,6 +37,7 @@ function loadViewer(overrides = {}) {
         NovogradnjeCatalogue: {},
         ContextBuildings3D: {},
         NovogradnjeGoogleContext: { mount: vi.fn(async () => vi.fn()) },
+        NovogradnjeLoading: { start: vi.fn(() => vi.fn()) },
         __apartmentPeople: { mount: vi.fn(() => vi.fn()) },
         __apartmentSun: { mount: vi.fn(() => vi.fn()) },
         ...overrides
@@ -40,6 +48,68 @@ function loadViewer(overrides = {}) {
 
 describe('Novogradnje viewer mounts', () => {
     afterEach(() => vi.restoreAllMocks());
+
+    it.each(['ready', 'error'])('keeps the envelope loading until the renderer settles: %s', async outcome => {
+        const preview = deferred(), root = loadViewer({ __floorPlanReviewRenderer: { preview: vi.fn(() => preview.promise) } });
+        const host = makeElement('host');
+        root.NovogradnjeViewer.mountEnvelope(host, envelopeModel);
+        const stop = root.NovogradnjeLoading.start.mock.results[0].value;
+        expect(root.NovogradnjeLoading.start).toHaveBeenCalledWith(host, 'Učitavanje 3D prikaza zgrade…');
+        expect(stop).not.toHaveBeenCalled();
+        if (outcome === 'ready') preview.resolve(vi.fn());
+        else preview.reject(new Error('Unavailable'));
+        await flush();
+        expect(stop).toHaveBeenCalledOnce();
+        if (outcome === 'error') expect(host.children[0].textContent).toContain('3D prikaz zgrade nije dostupan');
+    });
+
+    it('stops envelope loading on disposal and disposes a late renderer', async () => {
+        const preview = deferred(), dispose = vi.fn();
+        const root = loadViewer({ __floorPlanReviewRenderer: { preview: vi.fn(() => preview.promise) } }), host = makeElement('host');
+        const mounted = root.NovogradnjeViewer.mountEnvelope(host, envelopeModel);
+        const stop = root.NovogradnjeLoading.start.mock.results[0].value;
+        mounted.dispose();
+        expect(stop).toHaveBeenCalled();
+        preview.resolve(dispose);
+        await flush();
+        expect(dispose).toHaveBeenCalledOnce();
+        expect(host.children).toHaveLength(0);
+    });
+
+    it.each(['ready', 'error'])('keeps the apartment loading until the renderer settles: %s', async outcome => {
+        const preview = deferred(), root = loadViewer({ __floorPlanReviewRenderer: { preview: vi.fn(() => preview.promise) } });
+        const host = makeElement('host');
+        root.NovogradnjeViewer.mountApartment(host, { architecture: { dimensionsM: [4, 5] } });
+        const stop = root.NovogradnjeLoading.start.mock.results[0].value;
+        expect(root.NovogradnjeLoading.start).toHaveBeenCalledWith(host.children[0], 'Učitavanje 3D prikaza stana…');
+        expect(stop).not.toHaveBeenCalled();
+        if (outcome === 'ready') preview.resolve(vi.fn());
+        else preview.reject(new Error('Unavailable'));
+        await flush();
+        expect(stop).toHaveBeenCalledOnce();
+        if (outcome === 'error') expect(host.children[0].children[0].textContent).toContain('3D prikaz nije dostupan');
+    });
+
+    it('stops loading in 2D and keeps a later 3D load active when the earlier renderer resolves', async () => {
+        const first = deferred(), second = deferred(), disposeFirst = vi.fn();
+        const root = loadViewer({ __floorPlanReviewRenderer: { preview: vi.fn().mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise) } });
+        const host = makeElement('host');
+        root.NovogradnjeViewer.mountApartment(host, { architecture: { dimensionsM: [4, 5] } });
+        const button = host.children[1].children[0], stopFirst = root.NovogradnjeLoading.start.mock.results[0].value;
+        button.click();
+        expect(stopFirst).toHaveBeenCalled();
+        expect(host.children[0].children[0].tag).toBe('svg');
+        expect(root.NovogradnjeLoading.start).toHaveBeenCalledOnce();
+        button.click();
+        const stopSecond = root.NovogradnjeLoading.start.mock.results[1].value;
+        first.resolve(disposeFirst);
+        await flush();
+        expect(disposeFirst).toHaveBeenCalledOnce();
+        expect(stopSecond).not.toHaveBeenCalled();
+        second.resolve(vi.fn());
+        await flush();
+        expect(stopSecond).toHaveBeenCalledOnce();
+    });
 
     it('starts apartment plans in 3D and keeps rotation disabled after the first interaction and later toggles', async () => {
         const root = loadViewer();
@@ -66,6 +136,7 @@ describe('Novogradnje viewer mounts', () => {
         const host = makeElement('host');
         const view = root.NovogradnjeViewer.mountApartment(host, { architecture: { dimensionsM: [4, 5] } });
         view.dispose();
+        expect(root.NovogradnjeLoading.start.mock.results[0].value).toHaveBeenCalled();
         resolvePreview(disposeRenderer);
         await new Promise(resolve => setImmediate(resolve));
         expect(disposeRenderer).toHaveBeenCalledOnce();
@@ -98,6 +169,57 @@ describe('Novogradnje viewer mounts', () => {
         expect(root.NovogradnjeGoogleContext.mount).not.toHaveBeenCalled();
     });
 
+    it('keeps context loading through its request and renderer initialization', async () => {
+        const request = deferred(), preview = deferred();
+        const root = loadViewer({ fetch: vi.fn(() => request.promise), __floorPlanReviewRenderer: { preview: vi.fn(() => preview.promise) } });
+        const host = makeElement('host');
+        root.NovogradnjeViewer.mountContext(host, { ...locatedProject, id: 'project' });
+        const stop = root.NovogradnjeLoading.start.mock.results[0].value;
+        expect(root.NovogradnjeLoading.start).toHaveBeenCalledWith(host.children[0].children[0], 'Učitavanje neposredne okolice…');
+        expect(stop).not.toHaveBeenCalled();
+        request.resolve({ ok: true, json: async () => ({ buildings: [{ id: 'b' }], groundZ: 10 }) });
+        await flush();
+        expect(root.__floorPlanReviewRenderer.preview).toHaveBeenCalledOnce();
+        expect(stop).not.toHaveBeenCalled();
+        preview.resolve(vi.fn());
+        await flush();
+        expect(stop).toHaveBeenCalledOnce();
+    });
+
+    it.each(['request', 'renderer'])('stops context loading when its %s fails', async failure => {
+        const root = loadViewer(), host = makeElement('host');
+        if (failure === 'request') root.fetch.mockRejectedValue(new Error('Unavailable'));
+        else {
+            root.fetch.mockResolvedValue({ ok: true, json: async () => ({ buildings: [{ id: 'b' }], groundZ: 10 }) });
+            root.__floorPlanReviewRenderer.preview.mockRejectedValue(new Error('Unavailable'));
+        }
+        root.NovogradnjeViewer.mountContext(host, locatedProject);
+        await flush();
+        expect(root.NovogradnjeLoading.start.mock.results[0].value).toHaveBeenCalledOnce();
+        expect(host.children[0].children[0].children[0].textContent).toContain('3D prikaz okolice trenutačno nije dostupan');
+    });
+
+    it('stops a cancelled context load without clearing the next mode loading when it resolves', async () => {
+        const preview = deferred(), google = deferred(), disposePreview = vi.fn();
+        const root = loadViewer({ __floorPlanReviewRenderer: { preview: vi.fn(() => preview.promise) }, NovogradnjeGoogleContext: { mount: vi.fn(() => google.promise) } });
+        root.fetch.mockResolvedValue({ ok: true, json: async () => ({ buildings: [{ id: 'b' }], groundZ: 10 }) });
+        const host = makeElement('host');
+        root.NovogradnjeViewer.mountContext(host, locatedProject);
+        await flush();
+        const stopModel = root.NovogradnjeLoading.start.mock.results[0].value;
+        host.children[0].children[1].children[1].click();
+        const stopGoogle = root.NovogradnjeLoading.start.mock.results[1].value;
+        expect(stopModel).toHaveBeenCalled();
+        expect(stopGoogle).not.toHaveBeenCalled();
+        preview.resolve(disposePreview);
+        await flush();
+        expect(disposePreview).toHaveBeenCalledOnce();
+        expect(stopGoogle).not.toHaveBeenCalled();
+        google.resolve(vi.fn());
+        await flush();
+        expect(stopGoogle).toHaveBeenCalledOnce();
+    });
+
     it('loads Google context only when selected, disposes it on return to Model, and reuses the model response', async () => {
         const root = loadViewer();
         root.fetch.mockResolvedValue({ ok: true, json: async () => ({ buildings: [{ id: 'b' }], groundZ: 10 }) });
@@ -124,6 +246,7 @@ describe('Novogradnje viewer mounts', () => {
         const host = makeElement('host');
         const mounted = root.NovogradnjeViewer.mountContext(host, locatedProject);
         mounted.dispose();
+        expect(root.NovogradnjeLoading.start.mock.results[0].value).toHaveBeenCalled();
         const disposeGoogle = vi.fn();resolveGoogle(disposeGoogle);
         await new Promise(resolve => setImmediate(resolve));
         expect(disposeGoogle).toHaveBeenCalledOnce();
@@ -138,6 +261,7 @@ describe('Novogradnje viewer mounts', () => {
         await new Promise(resolve => setImmediate(resolve));
         const [view, toolbar] = host.children[0].children;
         expect(view.children[0].textContent).toContain('Google 3D trenutačno nije dostupan');
+        expect(root.NovogradnjeLoading.start.mock.results[0].value).toHaveBeenCalledOnce();
         toolbar.children[1].click();
         await new Promise(resolve => setImmediate(resolve));
         expect(root.NovogradnjeGoogleContext.mount).toHaveBeenCalledTimes(2);
@@ -151,6 +275,7 @@ describe('Novogradnje viewer mounts', () => {
         const signal = root.fetch.mock.calls[0][1].signal;
         view.dispose();
         expect(signal.aborted).toBe(true);
+        expect(root.NovogradnjeLoading.start.mock.results[0].value).toHaveBeenCalled();
     });
 
     it.each([
