@@ -1,5 +1,8 @@
 # Canton / DAML — what's built (README)
 
+> Integration reference: deployment statements below describe the implementation at the time of writing. For current app workflows, videos and setup, use the [documentation index](docs/README.md). Verify the active network and contracts before running these procedures.
+
+
 This complements `feature-daml.md`: the **spec** says what to build; this README
 describes **what exists and how it works**. It's a living doc — updated as we go.
 
