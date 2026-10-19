@@ -1,4 +1,4 @@
-// Assembles one source-backed site's model: footprint (permitted building, surveyed building or parcels),
+// Assembles one source-backed project's model: building footprint or separate parcel context,
 // storey envelope (step 2a) and the fit of every processed plan posted for that site (step 2b).
 // Read-only: returns the model for review; nothing here publishes geometry.
 import { buildEnvelope } from './envelope.js';
@@ -150,7 +150,7 @@ export function sourceOnlySiteModel(listing, plans) {
         architecture: p.model.architecture, source: p.model.source, reviewStatus: p.status || 'needs_review' }));
     return { schema: 'site-model.v1', siteKey: sourceOnlySiteKey(listing.url),
         label: listing.facts?.title || 'Projekt s tlocrtom', listingUrl: listing.url, siblings: [listing.url],
-        location: { status: 'unknown' }, footprint: null, envelope: null, placements: [],
+        location: { status: 'unknown' }, parcelContext: null, footprint: null, envelope: null, placements: [],
         inventory, sources: projectSources([listing]), parcels: [] };
 }
 
@@ -165,7 +165,10 @@ export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
     const siblings = (await db.query(`SELECT url, facts, location FROM floor_plan.listing
         WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL`)).rows
         .filter(row => siteKey(row.location.candidates[0]) === key);
-    const footprint = await siteFootprint(referencesDb, top);
+    const sourceFootprint = await siteFootprint(referencesDb, top);
+    const parcelContext = sourceFootprint?.source === 'parcels'
+        ? { geometry: sourceFootprint.geometry, areaM2: Math.round(sourceFootprint.areaM2), source: 'cadastre-parcels' } : null;
+    const footprint = parcelContext ? null : sourceFootprint;
     const permitHeights = (top.permits || []).map(p => p.height).filter(Boolean);
     const storeySources = [...permitHeights.map(text => ({ kind: 'permit', text })),
         ...siblings.map(row => row.location?.signals?.floors).filter(Boolean).map(text => ({ kind: 'listing', text }))];
@@ -216,7 +219,7 @@ export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
     const label = point ? `${point.street} ${point.number}` : top.permits?.find(p => p.streets?.length)?.streets[0] || key;
     return { schema: 'site-model.v1', siteKey: key, label, listingUrl, siblings: siblings.map(s => s.url), location: { status: listing.location_status, score: top.score,
         reasons: top.reasons }, footprint: footprint ? { source: footprint.source, areaM2: Math.round(footprint.areaM2), caseId: footprint.caseId || null,
-        caseKind: footprint.caseKind || null } : null, envelope, placements,
+        caseKind: footprint.caseKind || null } : null, parcelContext, envelope, placements,
         inventory: projectInventory(siblings, plans),
         sources: projectSources(siblings),
         parcels: (top.parcels || []).map(p => ({ ko: p.ko, kc: p.kc })) };

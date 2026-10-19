@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { buildingThumbnailSvg } from './building-thumbnail.js';
 import { createRequire } from 'node:module';
 const { compareCompletion } = createRequire(import.meta.url)('../../frontend/novogradnje/catalogue.js');
+const { locationPoint } = createRequire(import.meta.url)('../../frontend/js/site-model-geometry.js');
 
 export const PUBLIC_ORIGIN = 'https://zagreb.lol';
 export const BASE_PATH = '/novogradnje/';
@@ -22,20 +23,10 @@ function visiblePlan(plan) {
         plan.source?.listingUrl, ...(plan.sourceUrls || []), ...(plan.source?.urls || []));
 }
 
-function location(model) {
-    const g = model.envelope?.footprint;
-    const ring = g?.type === 'Polygon' ? g.coordinates?.[0] : g?.type === 'MultiPolygon' ? g.coordinates?.[0]?.[0] : null;
-    if (!ring || ring.length < 4 || ring.some(p => !Array.isArray(p) || p.length < 2
-        || !p.slice(0, 2).every(Number.isFinite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 90)) return null;
-    const open = ring.slice(0, -1);
-    return { lng: open.reduce((sum, p) => sum + p[0], 0) / open.length,
-        lat: open.reduce((sum, p) => sum + p[1], 0) / open.length, status: model.location.status };
-}
-
 export function publicProject(row, { detail = false, retained = new Set() } = {}) {
     const model = row.model, inventory = model?.inventory;
     if (!inventory || inventory.excludedUse || !model.siteKey || hiddenListing(model.label, inventory.name)) return null;
-    const located = ['located','probable'].includes(model.location?.status) && Boolean(location(model));
+    const location = locationPoint(model), located = Boolean(location);
     const id = row.public_id || projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
     const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrade/${slug}/`;
     // Facts-only postings stay private; geometry or a retained original drawing qualifies.
@@ -65,10 +56,10 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
         archiveEvidence:model.archiveEvidence||null,
         kind: inventory.kind, constructionYear: inventory.constructionYear, completionYear: inventory.completionYear,
         thumbnailUrl: located && buildingThumbnailSvg(model) ? `${BASE_PATH}api/projects/${id}/thumbnail.svg` : null,
-        titles: inventory.titles || [], location: located ? location(model) : null, apartments, floorPlans,
+        titles: inventory.titles || [], location, apartments, floorPlans,
         sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length + floorPlans.length,
         updatedAt: row.built_at || null };
-    if (detail) Object.assign(value, { model: { ...model, inventory: undefined, ...(located ? {} : { envelope: null, footprint: null, placements: [], location: { status: 'unknown' } }) },
+    if (detail) Object.assign(value, { model: { ...model, inventory: undefined, ...(located ? {} : { envelope: null, footprint: null, parcelContext: null, placements: [], location: { status: 'unknown' } }) },
         sources: (model.sources || []).map(s => ({ url: httpUrl(s.url), label: s.label })).filter(s => s.url),
         yearEvidence: inventory.yearEvidence || [], conflicts: inventory.conflicts || [] });
     return value;

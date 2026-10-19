@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { localFrame, placedSlabs, storeyPrisms, statusColour } = require('../../frontend/js/site-model-geometry.js');
+const { contextGeometry, locationPoint, localFrame, placedSlabs, storeyPrisms, statusColour } = require('../../frontend/js/site-model-geometry.js');
 
 const footprint = { type: 'Polygon', coordinates: [[[15.98, 45.8], [15.9813, 45.8], [15.9813, 45.8002], [15.98, 45.8002], [15.98, 45.8]]] };
 const model = {
@@ -19,6 +19,20 @@ const model = {
 };
 
 describe('site model geometry', () => {
+    it('locates parcel context without giving it building prisms or fitted slabs', () => {
+        const parcelModel = { ...model, location: { status: 'probable' },
+            envelope: { ...model.envelope, footprint: null }, parcelContext: { geometry: footprint } };
+        expect(contextGeometry(parcelModel)).toEqual(footprint);
+        expect(locationPoint(parcelModel)).toMatchObject({ status: 'probable', basis: 'parcel-context' });
+        expect(locationPoint(parcelModel).lng).toBeCloseTo(15.98065);
+        expect(locationPoint({ ...parcelModel, location: { status: 'unknown' } })).toBeNull();
+        expect(localFrame(parcelModel)).toBeNull();
+        expect(storeyPrisms(parcelModel)).toEqual([]);
+        expect(placedSlabs(parcelModel)).toEqual([]);
+        expect(locationPoint({ ...model, location: { status: 'located' }, parcelContext: { geometry: footprint } }))
+            .toMatchObject({ basis: 'building-footprint' });
+    });
+
     it('projects the footprint into local metres around its first vertex', () => {
         const frame = localFrame(model);
         const [x, y] = frame.toLocal([15.9813, 45.8002]);

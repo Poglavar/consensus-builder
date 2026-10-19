@@ -7,7 +7,7 @@ export function catalogueFromPublishedPlans(plans) {
     for(const p of plans){if(!p.buildingId||!p.building)continue;const b=p.building;
         retained.set(p.source.sha256,p.source.mediaType||null);
         if(!groups.has(p.buildingId))groups.set(p.buildingId,{public_id:p.buildingId,built_at:p.updatedAt,model:{siteKey:`publication:${p.buildingId}`,label:b.label||b.name,
-            location:{status:p.location?.status||(p.location?'located':'unknown')},envelope:b.envelope||null,placements:[],sources:b.sources||[],archiveEvidence:b.archiveEvidence||null,
+            location:{status:p.location?.status||(p.location?'located':'unknown')},envelope:b.envelope||null,parcelContext:b.parcelContext||null,placements:[],sources:b.sources||[],archiveEvidence:b.archiveEvidence||null,
             inventory:{name:b.name||b.label,kind:b.kind||'unknown',constructionYear:b.constructionYear,completionYear:b.completionYear,apartments:[],floorPlans:[]}}});
         const row=groups.get(p.buildingId),item={id:p.externalId||p.id,label:p.label,hasPlan:true,architecture:p.architecture,source:p.source,
             scope:p.scope,unitId:p.unitId,levels:p.levels||[],floor:p.floor,areaM2:p.areaM2,rooms:p.rooms,orientation:p.orientation||[],

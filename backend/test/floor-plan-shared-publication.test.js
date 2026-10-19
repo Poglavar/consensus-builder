@@ -4,6 +4,21 @@ const item={id:'s1',unitId:'S1',label:'Stan S1',hasPlan:true,source,architecture
 const model={siteKey:'listing:one',label:'Stan S1',location:{status:'unknown'},inventory:{kind:'new_build',apartments:[item]},sources:[]};
 const blobs=new Map([[sha,{bytes_available:true,media_type:'image/png'}]]);
 describe('shared floor-plan publication producer and consumer',()=>{
+ it('retains parcel-based location through publication without publishing a building footprint',()=>{
+  const geometry={type:'Polygon',coordinates:[[[-.12,51.5],[-.119,51.5],[-.119,51.501],[-.12,51.501],[-.12,51.5]]]};
+  const parcelContext={geometry,areaM2:1000,source:'cadastre-parcels'};
+  const current={...model,location:{status:'probable'},parcelContext,footprint:null,
+   envelope:{footprint:null,footprintSource:null,storeys:[{level:0,elevationM:0,heightM:3}]},placements:[]};
+  const r=publicationRows([{model:current}],{blobs})[0];
+  expect(r.document.location).toMatchObject({basis:'parcel-context',status:'probable'});
+  expect(r.document.building).toMatchObject({footprint:null,parcelContext,envelope:{footprint:null}});
+  expect(r.document.placement).toBeNull();
+  const result=catalogueFromPublishedPlans([{...r.document,id:r.id,buildingId:r.building_id}]);
+  expect(result.projects).toHaveLength(1);
+  expect(result.projects[0]).toMatchObject({locationAvailable:true,location:{basis:'parcel-context'},thumbnailUrl:null});
+  expect(result.projects[0].model).toMatchObject({parcelContext,envelope:{footprint:null},placements:[]});
+ });
+
  it('keeps plan identity independent of geographic association and content revision',()=>{
   expect(publicationPlanId(item)).toBe(publicationPlanId({...item,source:{...source,sha256:'b'.repeat(64)}}));
   expect(publicationPlanId(item)).not.toBe(publicationPlanId({...item,unitId:'S2'}));

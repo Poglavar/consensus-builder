@@ -1,6 +1,6 @@
 // Site-model helpers: one identity per site across postings, plan outlines in metres, north as rotation.
 import { describe, expect, it } from 'vitest';
-import { buildSiteModels, northRotationDeg, planOutline, siteKey, sourceOnlySiteKey, sourceOnlySiteModel } from '../floor-plans/site-model.js';
+import { buildSiteModels, northRotationDeg, planOutline, siteKey, siteModel, sourceOnlySiteKey, sourceOnlySiteModel } from '../floor-plans/site-model.js';
 
 const ring = { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.9001, 45.8], [15.9001, 45.8001], [15.9, 45.8001], [15.9, 45.8]]] };
 
@@ -54,6 +54,34 @@ const located = (url, caseId) => ({ url, location_status:'located', location: { 
 const build = async (_db, url) => ({ schema: 'site-model.v1', listingUrl: url, siblings: [url] });
 
 describe('buildSiteModels', () => {
+    it('retains parcel context without turning it into a building volume or a plan-fit target', async () => {
+        const candidate = { parcels: [{ ko: 'district', kc: '17' }] };
+        const listing = { url: 'https://plans.example/project', facts: { propertyDetails: { propertyType: 'apartment' } }, location_status: 'probable',
+            location: { candidates: [candidate], signals: { floors: 'P+2' } } };
+        const plan = { sha256: 'd'.repeat(64), listing_url: listing.url,
+            model: { scope: 'unit', unitId: 'Example-1', floor: 1, architecture: { dimensionsM: [10, 8],
+                slabs: [[[[0, 0], [1, 0], [1, 1], [0, 1]]]], walls: [], openings: [] }, source: {} } };
+        const db = { async query(sql) {
+            if (/SELECT url, facts, location/.test(sql)) return { rows: [listing] };
+            if (/FROM floor_plan\.extraction e/.test(sql)) return { rows: [plan] };
+            return { rows: [] };
+        } };
+        const referenceReads = [];
+        const referencesDb = { async query(sql) {
+            referenceReads.push(sql);
+            return { rows: [{ g: ring, area: 1000 }] };
+        } };
+        const model = await siteModel(db, listing.url, { referencesDb });
+        expect(referenceReads).toHaveLength(1);
+        expect(referenceReads[0]).toContain('FROM public.parcel');
+        expect(model.parcelContext).toEqual({ geometry: ring, areaM2: 1000, source: 'cadastre-parcels' });
+        expect(model.footprint).toBeNull();
+        expect(model.envelope).toMatchObject({ footprint: null, footprintSource: null });
+        expect(model.envelope.storeys).toHaveLength(3);
+        expect(model.placements).toEqual([]);
+        expect(model.inventory.apartments.some(unit => unit.hasPlan && unit.architecture)).toBe(true);
+    });
+
     it('stores one model per site and retires models of sites no longer located', async () => {
         const db = fakeDb([located('https://a/1', 'P1'), located('https://a/2', 'P1'), located('https://a/3', 'P2')]);
         const result = await buildSiteModels(db, { build, log: () => {} });
@@ -111,6 +139,8 @@ describe('buildSiteModels', () => {
         const model = await (await import('../floor-plans/site-model.js')).siteModel(localDb, current.url, { referencesDb });
         expect(model.siblings).toEqual(['https://a/1', 'https://a/2']);
         expect(model.footprint).toMatchObject({ source: 'permit-footprint', caseId: 'P1' });
+        expect(model.envelope.footprint).toEqual(ring);
+        expect(model.parcelContext).toBeNull();
         expect(referenceQueries).toHaveLength(1);
         expect(referenceQueries[0]).toContain('public.edozvola_feature');
         expect(localQueries.every(sql => !/public\.(?:edozvola_feature|gdi_building_3d|parcel|street)\b/.test(sql))).toBe(true);
