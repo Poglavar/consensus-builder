@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import * as turf from '@turf/turf';
 import { canonicalSeedRecord } from '../scripts/lib/canonical-seed-record.mjs';
 
-export const TRANSLATOR_VERSION = 'gup-spatial-v1';
+export const TRANSLATOR_VERSION = 'gup-spatial-v2';
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const positive = value => finite(value) && value > 0;
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -18,7 +18,7 @@ export const REASONS = Object.freeze({
     source_unknown: 'The source does not supply a defensible new-build massing.',
     source_geometry: 'Invalid, empty or out-of-parcel source geometry.',
     unsupported_footprint_topology: 'The current editable import keeps only one outer ring with at most 60 vertices.',
-    unsupported_floor_profile: 'The current native massing rule cannot preserve these stepped, recessed, underground or unequal-height floors.',
+    unsupported_floor_profile: 'The floor profile cannot be represented by adjoining native ground-based volumes (for example an overhang, missing floor geometry or underground-only form).',
     unsupported_mandatory_form: 'A maximum-only imported mass cannot enforce the mandatory frontage or preservation regime.',
     unsupported_scalar_rule: 'A binding non-geometric limit cannot be enforced by the current native massing rule.',
     source_quantity_mismatch: 'Rendered geometry and the stored floor-area quantities disagree.',
@@ -37,6 +37,46 @@ function polygon(geometry) {
 
 function near(a, b, relative = 0.015, absolute = 0.5) {
     return finite(a) && finite(b) && Math.abs(a - b) <= Math.max(absolute, Math.abs(b) * relative);
+}
+
+// Nested floor polygons have an exact ground-based column decomposition. The ground-floor
+// ring outside the next floor stops at its own ceiling; the remaining core continues upwards.
+// This uses the app's existing multi-volume building proposals, not a new renderer/schema.
+export function floorColumns(row) {
+    const floors = row.floors;
+    if (!Array.isArray(floors) || !floors.length || floors.length > 100) return null;
+    const columns = [];
+    let top = 0;
+    try {
+        if (!polygon(row.footprint_geometry) || !polygon(floors[0].geometry)) return null;
+        for (const [a, b] of [[floors[0].geometry, row.footprint_geometry], [row.footprint_geometry, floors[0].geometry]]) {
+            const outside = turf.difference(turf.feature(a), turf.feature(b));
+            if (outside && turf.area(outside) > 0.1) return null;
+        }
+        for (let index = 0; index < floors.length; index++) {
+            const floor = floors[index], next = floors[index + 1];
+            if (floor.level !== index + 1 || !polygon(floor.geometry) || !positive(floor.height_m)
+                || !near(floor.base_elevation_m, top, 0, 0.001)
+                || !near(floor.top_elevation_m, top + floor.height_m, 0, 0.001)) return null;
+            const feature = turf.feature(floor.geometry);
+            if (!near(turf.area(feature), floor.area_m2)) return null;
+            top = floor.top_elevation_m;
+            let column = feature;
+            if (next) {
+                if (!polygon(next.geometry)) return null;
+                const nextFeature = turf.feature(next.geometry);
+                if (JSON.stringify(next.geometry) === JSON.stringify(floor.geometry)) continue;
+                const overhang = turf.difference(nextFeature, feature);
+                if (overhang && turf.area(overhang) > 0.1) return null;
+                column = turf.difference(feature, nextFeature);
+            }
+            if (column && turf.area(column) > 0.001) columns.push({ geometry: column.geometry,
+                height: top, floors: index + 1, floorHeightM: top / (index + 1) });
+        }
+    } catch (_) { return null; }
+    if (!near(top, row.total_height_m, 0, 0.01) || !columns.length) return null;
+    const area = columns.reduce((sum, c) => sum + turf.area(turf.feature(c.geometry)) * c.floors, 0);
+    return near(area, row.gbp_m2) ? columns : null;
 }
 
 export function classifyParcel(row, { strictScalars = false } = {}) {
@@ -60,28 +100,34 @@ export function classifyParcel(row, { strictScalars = false } = {}) {
     if (/^1\./.test(row.zone || '') || ['2.3', '2.9.1', '3.1', '3.2'].includes(row.zone)) add('unsupported_mandatory_form');
     if (!polygon(row.footprint_geometry) || row.footprint_valid !== true || !finite(row.outside_m2)
         || row.outside_m2 > 0.1 || !polygon(row.parcel_geometry)) add('source_geometry');
-    if (row.footprint_geometry?.type !== 'Polygon' || row.footprint_geometry.coordinates?.length !== 1
-        || row.footprint_geometry.coordinates?.[0]?.length > 61) add('unsupported_footprint_topology');
+    if (Array.isArray(row.floors) && row.floors.length && row.floors.every(f => finite(f.area_m2))
+        && !near(row.floors.reduce((sum, f) => sum + f.area_m2, 0), row.gbp_m2)) add('source_quantity_mismatch');
+    if (reasons.length) return status();
+    const columns = floorColumns(row);
+    if (!columns) { add('unsupported_floor_profile'); return status(); }
+    const complex = columns.length > 1 || row.floors.some(f => f.is_half_floor === true)
+        || row.floors.some(f => !near(f.height_m, row.floors[0].height_m, 0, 0.001));
+    if (complex) flags.push('native_adjoining_volumes');
+    if (!complex && (row.footprint_geometry?.type !== 'Polygon' || row.footprint_geometry.coordinates?.length !== 1
+        || row.footprint_geometry.coordinates?.[0]?.length > 61)) add('unsupported_footprint_topology');
     const floors = row.floors;
     if (!Array.isArray(floors) || !floors.length || floors.length > 100) add('unsupported_floor_profile');
     else {
-        const first = floors[0];
         let top = 0;
         for (let index = 0; index < floors.length; index++) {
             const floor = floors[index];
-            if (floor.level !== index + 1 || floor.is_half_floor === true
-                || !positive(floor.height_m) || !near(floor.height_m, first.height_m, 0, 0.001)
+            if (floor.level !== index + 1
+                || !positive(floor.height_m)
                 || !near(floor.base_elevation_m, top, 0, 0.001)
                 || !near(floor.top_elevation_m, top + floor.height_m, 0, 0.001)
-                || !near(floor.area_m2, row.footprint_area_m2)
                 || !polygon(floor.geometry)
-                || JSON.stringify(floor.geometry) !== JSON.stringify(first.geometry)) add('unsupported_floor_profile');
+                ) add('unsupported_floor_profile');
             top = floor.top_elevation_m;
         }
         if (!near(top, row.total_height_m, 0, 0.01)) add('unsupported_floor_profile');
         if (!near(floors.reduce((sum, floor) => sum + floor.area_m2, 0), row.gbp_m2)) add('source_quantity_mismatch');
         if (!near(turf.area({ type: 'Feature', properties: {}, geometry: row.footprint_geometry }), row.footprint_area_m2)) add('source_quantity_mismatch');
-        if (!near(row.footprint_area_m2 * floors.length, row.gbp_m2)) add('source_quantity_mismatch');
+        if (!complex && !near(row.footprint_area_m2 * floors.length, row.gbp_m2)) add('source_quantity_mismatch');
     }
     const scalarKeys = ['max_kisn', 'min_kisn', 'max_gbp', 'max_units', 'min_plot_area_per_unit_m2', 'min_natural_terrain'];
     if (row.max_units != null || scalarKeys.some(key => row.variables?.[key] != null)) {
@@ -99,10 +145,12 @@ export function translateParcel(row, options = {}) {
         translatorVersion: TRANSLATOR_VERSION, gup: 2025, parcel: row.parcel_id,
         rule: row.rule_id || null, zone: row.zone || null, use: row.planned_use_mark || null,
         solverVersion: row.solver_version || null, computedAt: row.computed_at || null,
-        inputHash: hash(row), applicability: row.applicability_status || null,
+        inputHash: hash({ version: TRANSLATOR_VERSION, row }), applicability: row.applicability_status || null,
         gbpM2: finite(row.gbp_m2) ? row.gbp_m2 : null,
         maxUnits: finite(row.max_units) ? row.max_units : null,
         variables: clone(row.variables || {}), flags: classification.flags,
+        floorProfile: Array.isArray(row.floors) ? row.floors.map(f => ({ level: f.level, areaM2: f.area_m2,
+            baseM: f.base_elevation_m, topM: f.top_elevation_m })) : null,
         legalStatus: 'approximate-spatial-restatement',
         scope: 'one cached above-ground massing option on the current cadastral parcel; not all permitted alternatives or a building permission'
     };
@@ -128,7 +176,7 @@ export function translateParcel(row, options = {}) {
         sourceFeatureId: `gup-2025:${row.parcel_id}`, gupRestatement: source }, geometry: clone(row.footprint_geometry) };
     const site = { type: 'Feature', properties: {}, geometry: clone(row.parcel_geometry) };
     const name = `GUP 2025 · ${row.zone} · ${row.parcel_id}`;
-    const proposal = canonicalSeedRecord({
+    let proposal = canonicalSeedRecord({
         proposalId: `gup25-${source.inputHash.slice(0, 24)}`, city: 'zagreb', name, title: name,
         description: `Približan prostorni prikaz jedne izračunate nadzemne omotnice prema GUP-u 2025. Pravilo ${row.zone}; namjena ${row.planned_use_mark}. Ne predstavlja sve dopuštene alternative niti potvrdu prava građenja. Izvorni uvjeti i neizvjesnosti: ${JSON.stringify(source)}.`,
         author: 'GUP 2025 · prostorni prijepis', type: 'building', goal: 'buildings', primaryType: 'Urban Rule',
@@ -142,6 +190,19 @@ export function translateParcel(row, options = {}) {
                 rule, seed: building.properties.variationSeed, gupRestatement: source } },
         bounds: turf.bbox(site), source
     });
+    if (classification.flags.includes('native_adjoining_volumes')) {
+        const columns = floorColumns(row);
+        const buildings = columns.map((column, index) => ({ type: 'Feature', geometry: clone(column.geometry),
+            properties: { type: 'proposedBuildingSingle', height: column.height, floors: column.floors,
+                floorHeightM: column.floorHeightM, sourceFeatureId: `gup-2025:${row.parcel_id}:${index}`,
+                gupRestatement: source, componentOf: row.parcel_id } }));
+        proposal = canonicalSeedRecord({ ...proposal, goal: 'single', typologyType: 'single',
+            geometry: { superParcel: site, buildings },
+            buildingProposal: { typologyType: 'single', createdFrom: 'gup-spatial-restatement',
+                takeWholeParcels: true, parameters: { typology: 'single', height: row.total_height_m,
+                    representation: 'adjoining-height-volumes', gupRestatement: source } },
+            description: `${proposal.description} Spojeni volumeni različitih visina prikazuju jednu omotnicu. Broj volumena nije broj zgrada; visina etaže po volumenu je prosječna. Procjena stanova u statistici plana nije regulatorni limit GUP-a.` });
+    }
     audit.proposalId = proposal.proposalId;
     audit.newBuildCapacityM2 = row.gbp_m2;
     return retainSourceQuantities({ audit, proposal });

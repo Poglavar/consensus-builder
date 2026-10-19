@@ -11,8 +11,14 @@ skipped and flagged when the current proposal model cannot express the mandate.
 ## Meaning and limits
 
 A represented proposal is **one cached above-ground massing option on one current
-cadastral parcel**. Its footprint is fixed; its height is an optional maximum, or
-a range when the source specifies a minimum number of storeys. It does not represent
+cadastral parcel**. Uniform prisms use an optional maximum, or a range when the source
+specifies a minimum number of storeys. Nested stepped floors use the existing native
+multi-volume building proposal: lower outer rings stop at their ceilings while inner
+cores continue upward. Summed floor area and volume preserve the cached profile.
+These adjoining components are parts of one mass, not separate buildings. Native plan
+statistics count components and estimate apartments; neither is the GUP's building or
+dwelling count. Each component uses an average storey height for area measurement;
+the source's actual floor elevations remain in the provenance. It does not represent
 all alternative placements or establish legal permission. Source applicability
 uncertainty remains a visible flag; a successful geometric check is not a legal verdict.
 
@@ -26,8 +32,8 @@ Refusals include:
 - No current source result, unsuccessful candidate searches and geometry failures.
 - Changed parcel identity/geometry, empirical existing-stock estimates, reconstruction,
   additions and detailed-plan/procedure referrals.
-- Stepped or recessed floors, underground floors, nonuniform floor heights, courtyard
-  holes and multipart footprints that the native editor cannot preserve.
+- Non-nested overhanging floors, underground floors, missing floor geometry and
+  footprints that the applicable native representation cannot preserve.
 - Preservation or mandatory-frontage regimes that an imported maximum cannot enforce.
 - Geometric/scalar discrepancies, including a rendered prism exceeding source GBP.
 
@@ -96,7 +102,7 @@ cd backend
 ```
 
 Tests cover the native serializer, existing massing-to-example machinery, native
-floor-area measurement, scalar strict mode, step/hole refusals, independent stock,
+floor-area/volume preservation for stepped forms, scalar strict mode, overhang/hole refusals, independent stock,
 unknown-versus-zero accounting and inclusion of uncached source parcels.
 
 Official text and map source: [City of Zagreb GUP 2025](https://www.zagreb.hr/izmjene-i-dopune-generalnogurbanistickog-plana-gr/187664).

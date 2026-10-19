@@ -89,9 +89,24 @@ describe('GUP spatial restatement', () => {
         expect(result.proposal).toBeNull(); expect(result.audit.reasons).toContain(reason);
     });
 
-    it('refuses a recessed floor instead of extruding its larger ground footprint to the top', () => {
+    it('preserves a recessed top floor using native adjoining volumes with matching floor area and volume', () => {
         const input = row(); input.floors[3].is_half_floor = true;
-        input.floors[3].area_m2 *= 0.75;
+        input.floors[3].height_m = 2.4; input.floors[3].top_elevation_m = 11.4; input.total_height_m = 11.4;
+        input.floors[3].geometry = turf.transformScale(turf.feature(input.footprint_geometry), Math.sqrt(.75)).geometry;
+        input.floors[3].area_m2 = turf.area(turf.feature(input.floors[3].geometry));
+        input.gbp_m2 = input.floors.reduce((sum,f) => sum + f.area_m2,0);
+        const { proposal, audit } = translateParcel(input);
+        expect(audit.flags).toContain('native_adjoining_volumes');
+        expect(proposal.goal).toBe('single');
+        expect(proposal.geometry.buildings).toHaveLength(2);
+        const area = proposal.geometry.buildings.reduce((sum,f) => sum + yieldModel.measureBuilding(f,proposal.buildingProposal).gfaM2,0);
+        const volume = proposal.geometry.buildings.reduce((sum,f) => sum + turf.area(f)*f.properties.height,0);
+        expect(area).toBeCloseTo(input.gbp_m2,1);
+        expect(volume).toBeCloseTo(input.floors.reduce((sum,f)=>sum+f.area_m2*f.height_m,0),1);
+    });
+
+    it('refuses upper-floor overhangs rather than extending them down through unpermitted ground', () => {
+        const input = row(); input.floors[3].geometry = turf.transformTranslate(turf.feature(input.footprint_geometry),20,90,{units:'meters'}).geometry;
         expect(translateParcel(input).audit.reasons).toContain('unsupported_floor_profile');
         expect(translateParcel(input).proposal).toBeNull();
     });
@@ -99,6 +114,9 @@ describe('GUP spatial restatement', () => {
     it('refuses a hole or multipart outline rather than silently dropping it in the editor', () => {
         const input = row();
         input.footprint_geometry.coordinates.push(turf.bboxPolygon([16.00002,45.80002,16.00003,45.80003]).geometry.coordinates[0]);
+        input.footprint_area_m2 = turf.area(turf.feature(input.footprint_geometry));
+        input.floors.forEach(f => { f.geometry = structuredClone(input.footprint_geometry); f.area_m2 = input.footprint_area_m2; });
+        input.gbp_m2 = input.footprint_area_m2 * input.floors.length;
         expect(translateParcel(input).audit.reasons).toContain('unsupported_footprint_topology');
     });
 
@@ -108,7 +126,7 @@ describe('GUP spatial restatement', () => {
     });
 
     it('preserves a cached numeric estimate when only the native representation is unsupported', () => {
-        const input = row(); input.floors[3].is_half_floor = true;
+        const input = row(); input.floors[3].geometry = turf.transformTranslate(turf.feature(input.footprint_geometry),20,90,{units:'meters'}).geometry;
         const entry = retainSourceQuantities(translateParcel(input));
         expect(entry.proposal).toBeNull();
         expect(entry.audit.newBuildCapacityM2).toBe(input.gbp_m2);
