@@ -3,8 +3,11 @@ module.exports = {
   apps: [{
     name: 'autokatastar-review',
     cwd: __dirname,
-    script: './server.mjs',
-    node_args: '--env-file=/srv/autokatastar/secret.env',
+    // PM2's ESM import wrapper does not set argv[1] to the app; launch the CLI directly.
+    script: process.execPath,
+    interpreter: 'none',
+    args: ['--env-file=/srv/autokatastar/secret.env', './server.mjs'],
+    node_args: [],
     instances: 1,
     exec_mode: 'fork',
     kill_timeout: 10000,

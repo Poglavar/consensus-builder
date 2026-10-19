@@ -76,6 +76,8 @@ HTTP LAN address is insufficient. Node 22+ is required for the env-file launch a
 Keep the immutable imagery pack and mutable reviews under separate `/srv/autokatastar/` directories,
 outside the code checkout and static docroots. `/srv/autokatastar/secret.env` contains only the access
 key, mode 0600; the versioned PM2 file owns the public config. Use one process, never a cluster.
+The process definition launches Node directly (`interpreter: none`), so the server's CLI entrypoint
+runs with the correct `argv[1]`; PM2's ESM import wrapper does not provide that entrypoint identity.
 
 `bash deploy.sh --run <pushed-release-commit>` fetches the dedicated `autokatastar-review` release
 branch, extracts only this application subtree into `/srv/autokatastar/releases/<commit>/`, and
