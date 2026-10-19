@@ -164,6 +164,7 @@ test.describe('Site build palette controls @core', () => {
     await expect(panel.locator('[data-site-action="propose"]')).toBeEnabled();
     const openGroundArea = await page.evaluate(() => (window as any).__siteDraft.bindingSummary((window as any).SiteTool.current().preview).unsurveyedM2);
     expect(openGroundArea).toBeGreaterThan(0);
+    await expect(panel.locator('.site-panel__note').filter({ hasText: 'ownership is unknown' })).toContainText('ground outside the supplied parcels');
     await panel.locator('[data-site-action="propose"]').click();
     const subdivide = page.locator('#site-info-panel .parcel-build-btn--reparcellization');
     await expect(subdivide).toBeEnabled();
@@ -171,6 +172,11 @@ test.describe('Site build palette controls @core', () => {
     await subdivide.click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
+    const openGroundRow = modal.locator('.reparcel-ledger-row--no-owner');
+    await expect(openGroundRow).toContainText('Open ground (ownership unknown)');
+    await expect(openGroundRow.locator('.bal-even')).toHaveText('—');
+    await expect(openGroundRow.locator('.bal-even')).toHaveAttribute('title', 'Ownership is unknown. This draft calculates no balance or cash allocation for this ground.');
+    await expect(openGroundRow.locator('.cash-offer-cell')).toHaveText('—');
     const plan = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).pendingReparcellizationPlan)));
     expect(plan.poolSource).toBe('site');
     expect(plan.poolGeometry).toEqual(await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalDraftStore.getActiveDraft().fields.site))));

@@ -856,7 +856,7 @@ function showProposalDialog(overrides = null) {
     const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
     const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary proposal-design-only">${siteParcelIds.length
         ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
-        : t('modal.createProposal.site.unbound', 'Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority\'s verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
+        : t('modal.createProposal.site.unbound', 'Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
     const toleranceLabel = t('modal.createProposal.tolerance.label', 'Parcel intrusion tolerance (m)');
     const toleranceHelp = t('modal.createProposal.tolerance.help', 'A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour\'s parcel. Use it only for measurement error; max 1 m.');
     const toleranceValue = siteContext && Number(siteContext.toleranceM) > 0 ? Number(siteContext.toleranceM) : 0;
