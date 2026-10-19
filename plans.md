@@ -39,8 +39,8 @@ the members' **authored IDs** instead, so it is independent of database row numb
 
 ## A plan is only as fixed as its members
 
-Proposal rows can still be repaired in place by operator scripts (as the 2026-10-10 Borovje
-sync did). So a plan stores, at creation:
+Published design changes create new proposals linked to their source. A plan retains the original
+member rows; it does not need to duplicate their contents. At creation a plan stores:
 
 - `member_hashes` — per member, SHA-256 of **decision kind, authored site and design/deal content**
   (`backend/plans/plan-hash.js`). Every member includes `proposal_data.kind` and
@@ -54,10 +54,22 @@ sync did). So a plan stores, at creation:
   (the hash helper calls that authored-ID input `proposalId`).
 - `site` — the union of the members' sites, for the on-chain mint.
 
-`GET /plans/:slug` recomputes each member's hash and reports `changed: true` for any member
-that no longer matches. A repaired member therefore shows up instead of silently changing a
-plan people bet on. Rule for repairs: once a proposal belongs to a minted plan, a repair makes
-new rows and a new plan version; it does not edit the rows in place.
+`GET /plans/:slug` requires one valid SHA-256 hash for every member and a valid plan hash before
+comparing content. Missing, partial or malformed saved commitments return 422
+(`plan-commitment-invalid`), including through the list route. There is no “unverified but unchanged”
+case. For a valid saved commitment, a missing member or a content mismatch reports `changed: true`.
+
+The database guards in [publication-immutability.sql](backend/db/publication-immutability.sql)
+reject updates to published proposal content, including direct operator SQL and UPSERT overwrites.
+The proposal's design, identity, terms, source references, site and binding remain fixed. Names,
+descriptions, thumbnails, timeline labels, lifecycle/approval outcomes and chain attachment may
+change; these are separate from authored design. The response ID mirrors in `proposal_data` may
+be populated after insertion; the actual identifier columns remain fixed.
+
+Named-plan fields are fixed too, including membership, hashes, title and supersession. Chain data
+may be attached once. A repair must publish new proposal rows and name a new plan; the former
+in-place repair/import scripts cannot overwrite existing content. The guards are applied by the
+backend deployment's DDL step; no stored content is backfilled or restamped.
 
 ## Betting on a plan
 
@@ -65,7 +77,9 @@ One plan → one on-chain proposal account → one `proposal_market` pool. No pr
 
 - `scripts/mint-plan.mjs` mints a site-only proposal account for the plan (site = the plan's
   site, `image_uri` = `ugt-plan:<slug>@<plan_hash>`, so the account commits to the exact
-  content) and records it on the plan row (`onchain_data`).
+  content) and records it on the plan row (`onchain_data`). Before minting, the store verifies
+  complete commitments, current member hashes and the aggregate plan hash; missing, changed or
+  inconsistent content refuses the mint. ENS does not resolve plans with incomplete commitments.
 - The pool is opened on that account like any other (Bets sheet "Open the pool", or the agents'
   `ensureMarketAndStake`). It settles like any proposal market: Executed → YES, Cancelled or
   Expired (lifecycle lens verdict) → NO.
@@ -99,6 +113,10 @@ compatibility with prior plan mints. Stored commitments are never rewritten to a
 
 The same day's API field rename makes row and authored identifiers explicit. All consumers must
 use the names above; no alias reader is maintained. It changes no stored values or hash inputs.
+
+V03 enforcement requires complete plan commitments on reads and new writes, and makes the
+published-content/fork boundary a database invariant once its DDL is applied. Incomplete plans
+must be discarded and recreated. This adds neither an older-contract reader nor stored snapshots.
 
 ## Links
 

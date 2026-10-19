@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
 import { cityNameAt } from '../jurisdiction.js';
+import { planCommitmentError } from '../plans/plan-commitment.js';
 
 const require = createRequire(import.meta.url);
 const { buildChainProposalPath } = require('../../frontend/js/proposals/chain-ref.js');
@@ -101,7 +102,7 @@ export function setupEnsRoute(app, pool) {
     // Resolve a proposals label to a legacy proposal id list or one chain mirror:
     //   - numeric / hyphen-chain (1, 1-2-3) → those minted proposal id(s)
     //   - chain-<48 hex chars> → one unique canonical chain_<sha256> mirror
-    //   - otherwise a named plan slug → ens_plan's proposal_ids (mutable)
+    //   - otherwise an immutable named plan slug → ens_plan's proposal_ids
     async function lookupProposal(label) {
         const chainMatch = /^chain-([0-9a-f]{48})$/i.exec(label);
         if (chainMatch) {
@@ -159,10 +160,9 @@ export function setupEnsRoute(app, pool) {
         }
         // Named plan
         try {
-            const { rows } = await pool.query('SELECT proposal_ids, title FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
-            if (rows.length) {
-                const ids = Array.isArray(rows[0].proposal_ids) ? rows[0].proposal_ids.map(String) : [];
-                if (ids.length) return { ids, title: rows[0].title, isPlan: true };
+            const { rows } = await pool.query('SELECT slug, proposal_ids, title, member_hashes, plan_hash FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
+            if (rows.length && !planCommitmentError(rows[0])) {
+                return { ids: rows[0].proposal_ids, title: rows[0].title, isPlan: true };
             }
         } catch (_) { /* ens_plan absent */ }
         return null;

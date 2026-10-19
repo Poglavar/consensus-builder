@@ -75,4 +75,13 @@ describe('proposal schema contract', () => {
         expect(list).toMatch(/routes\/proposal-site-ddl\.sql/);
         expect(list).not.toMatch(/routes\/proposals-ddl\.sql/);
     });
+
+    it('ships publication immutability triggers in the backend DDL list', () => {
+        const publicationDdl = readFileSync(fileURLToPath(new URL('../db/publication-immutability.sql', import.meta.url)), 'utf8');
+        expect(publicationDdl).toMatch(/CREATE TRIGGER proposal_publication_immutable/i);
+        expect(publicationDdl).toMatch(/CREATE TRIGGER named_plan_publication_immutable/i);
+        const deploy = readFileSync(fileURLToPath(new URL('../deploy-backend.sh', import.meta.url)), 'utf8');
+        const list = deploy.match(/DDL_FILES=\(([\s\S]*?)\)/)?.[1] || '';
+        expect(list).toMatch(/^\s*db\/publication-immutability\.sql\s*$/m);
+    });
 });

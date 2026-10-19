@@ -158,7 +158,7 @@ export function nextVersionSlug(slug, taken) {
 // Members whose current content no longer matches what the plan was named with.
 export function changedMembers(memberHashes, currentRows) {
     const byId = new Map(currentRows.map(row => [String(row.id), row]));
-    return Object.entries(memberHashes || {})
+    return Object.entries(memberHashes)
         .filter(([id, hash]) => {
             const row = byId.get(String(id));
             if (!row) return true;
