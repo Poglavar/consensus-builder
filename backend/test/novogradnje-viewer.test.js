@@ -30,6 +30,8 @@ function loadViewer(overrides = {}) {
         NovogradnjeCatalogue: {},
         ContextBuildings3D: {},
         NovogradnjeGoogleContext: { mount: vi.fn(async () => vi.fn()) },
+        __apartmentPeople: { mount: vi.fn(() => vi.fn()) },
+        __apartmentSun: { mount: vi.fn(() => vi.fn()) },
         ...overrides
     };
     vm.runInNewContext(viewerSource, { window: root, document, fetch: root.fetch, AbortController, URLSearchParams });
@@ -67,6 +69,20 @@ describe('Novogradnje viewer mounts', () => {
         resolvePreview(disposeRenderer);
         await new Promise(resolve => setImmediate(resolve));
         expect(disposeRenderer).toHaveBeenCalledOnce();
+    });
+
+    it('mounts sunlight and people together and disposes both with the apartment renderer', async () => {
+        const root = loadViewer(), host = makeElement('host');
+        const apartment = { architecture: { dimensionsM: [4, 5] }, placement: { status: 'placed', best: { rotationDeg: 45 } } };
+        const location = { lat: 45, lng: 16 };
+        root.NovogradnjeViewer.mountApartment(host, apartment, { location });
+        const setup = root.__floorPlanReviewRenderer.preview.mock.calls[0][3].setup;
+        const dispose = setup({ scene: {}, group: {}, renderer: {} });
+        expect(root.__apartmentSun.mount).toHaveBeenCalledWith(expect.objectContaining({ architecture: apartment.architecture, placement: apartment.placement, location, controlsHost: host }));
+        expect(root.__apartmentPeople.mount).toHaveBeenCalledOnce();
+        dispose();
+        expect(root.__apartmentSun.mount.mock.results[0].value).toHaveBeenCalledOnce();
+        expect(root.__apartmentPeople.mount.mock.results[0].value).toHaveBeenCalledOnce();
     });
 
     it('requests context by project id and allows zoom without panning', async () => {

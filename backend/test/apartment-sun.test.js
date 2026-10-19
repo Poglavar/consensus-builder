@@ -1,0 +1,105 @@
+import { describe, expect, it, vi } from 'vitest';
+import { createRequire } from 'node:module';
+const require=createRequire(import.meta.url);
+const {mount,ceilingParts,castsShadow}=require('../../frontend/js/apartment-sun.js');
+const geometry=require('../../frontend/js/building-floor-plans.js');
+const state=require('../../frontend/js/apartment-sun-state.js');
+const SunCalc=require('../../frontend/vendor/suncalc.min.js');
+const architecture={schema:'consensus-builder.floor-architecture.v1',dimensionsM:[6,5],wallHeightM:2.7,slabThicknessM:.2,
+    slabs:[[[[0,0],[1,0],[1,1],[0,1]],[[.4,.4],[.4,.6],[.6,.6],[.6,.4]]]],
+    walls:[[[[0,0],[1,0],[1,.04],[0,.04]]]],landings:[],stairs:[],railings:[],openings:[]};
+
+function fixture({reduced=false}={}){
+    const resources=[],observers=[],frames=new Map();let frameId=0;
+    class Vector{
+        set(x,y,z){Object.assign(this,{x,y,z});return this;}
+        copy(p){return this.set(p.x,p.y,p.z);}
+        addScaledVector(p,s){this.x+=p.x*s;this.y+=p.y*s;this.z+=p.z*s;return this;}
+    }
+    class Group{
+        constructor(){this.children=[];this.userData={};this.position=new Vector();}
+        add(...objects){this.children.push(...objects);}
+        remove(...objects){this.children=this.children.filter(object=>!objects.includes(object));}
+        traverse(fn){fn(this);this.children.forEach(object=>object.traverse(fn));}
+    }
+    class Resource{
+        constructor(options){Object.assign(this,options);this.dispose=vi.fn();resources.push(this);}
+        translate(){return this;}
+    }
+    class Mesh extends Group{constructor(geometry,material){super();this.isMesh=true;this.geometry=geometry;this.material=material;}}
+    class Shape{constructor(points){this.points=points;this.holes=[];}}
+    class Color{set(value){this.value=value;return this;}lerp(){return this;}}
+    class Light extends Group{
+        constructor(){super();this.color=new Color();this.shadow={mapSize:new Vector(),camera:{up:new Vector(),updateProjectionMatrix:vi.fn()},dispose:vi.fn()};}
+    }
+    class Element extends EventTarget{
+        constructor(tag){super();this.tag=tag;this.children=[];this.dataset={};this.value='';}
+        append(...elements){elements.forEach(element=>{element.parentElement=this;this.children.push(element);});}
+        setAttribute(key,value){this[key]=value;}
+        remove(){this.parentElement.children=this.parentElement.children.filter(child=>child!==this);}
+        getBoundingClientRect(){return {top:0,bottom:300,left:0,right:500};}
+    }
+    const doc=new EventTarget();doc.hidden=false;doc.createElement=tag=>new Element(tag);
+    const media=new EventTarget();media.matches=reduced;
+    const env={document:doc,innerWidth:1000,innerHeight:900,SunCalc,
+        __apartmentSunState:{...state,dayBounds:date=>state.dayBounds(date||'2026-06-21')},__buildingFloorPlans:geometry,
+        matchMedia:()=>media,requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id),
+        IntersectionObserver:class{constructor(callback){this.callback=callback;this.disconnect=vi.fn();observers.push(this);}observe(){}}
+    };
+    const THREE={Group,Vector2:Vector,Vector3:class extends Vector{constructor(x,y,z){super();this.set(x,y,z);}},Object3D:Group,
+        Mesh,Shape,Path:Shape,ExtrudeGeometry:Resource,MeshBasicMaterial:Resource,MeshDepthMaterial:Resource,Color,
+        DirectionalLight:Light,DoubleSide:2,RGBADepthPacking:3201,PCFShadowMap:1};
+    const group=new Group(),glass=new Mesh(new Resource(),new Resource()),wall=new Mesh(new Resource(),new Resource());
+    glass.name='UnitPart:glass';wall.name='UnitPart:wall';group.add(glass,wall);
+    const scene=new Group(),ambient={isLight:true,isHemisphereLight:true,intensity:2.4},oldLight={isLight:true,intensity:2};scene.add(ambient,oldLight);
+    const host=new Element('host'),controlsHost=new Element('controls'),renderer={shadowMap:{enabled:false,type:0}},render=vi.fn();
+    const dispose=mount({THREE,scene,group,renderer,render,host,controlsHost,architecture,location:{lat:45.815,lng:15.982}},env);
+    const ui=controlsHost.children[0],timeline=ui.children[0],options=ui.children[1];
+    const sun=scene.children.find(child=>child.name==='ApartmentSun');
+    const step=now=>{const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
+    return {group,glass,wall,sun,renderer,render,host,controlsHost,frames,step,dispose,doc,media,observers,ambient,oldLight,resources,
+        pause:timeline.children[0],slider:timeline.children[2],north:options.children[1].children[0]};
+}
+
+describe('apartment sunlight and shadow ownership',()=>{
+    it('puts the hidden ceiling above the walls and preserves floor holes and image-axis conversion',()=>{
+        const [roof]=ceilingParts(architecture,geometry);
+        expect(roof.baseM).toBe(2.7);expect(roof.heightM).toBe(.2);
+        expect(roof.rings).toHaveLength(2);
+        expect(roof.rings[0]).toContainEqual([0,5]);
+        expect(roof.rings[1][0][0]).toBeCloseTo(2.4);expect(roof.rings[1][0][1]).toBeCloseTo(3);
+    });
+    it('lets sunlight through glass while walls, frames, doors and people cast shadows',()=>{
+        expect(castsShadow({name:'UnitPart:glass'})).toBe(false);
+        expect(castsShadow({userData:{floorPartKind:'glass'}})).toBe(false);
+        for(const name of ['UnitPart:wall','UnitPart:frame','UnitPart:door','ApartmentPerson:male'])expect(castsShadow({name})).toBe(true);
+        const f=fixture();expect(f.glass.castShadow).toBe(false);expect(f.wall.castShadow).toBe(true);
+        const roof=f.group.children.find(child=>child.name==='ApartmentShadowCeiling').children[0];
+        expect(roof.castShadow).toBe(true);expect(roof.material.colorWrite).toBe(false);expect(roof.material.depthWrite).toBe(false);
+        expect(roof.customDepthMaterial).toBeDefined();f.dispose();
+    });
+    it('cycles noon to midnight after 10 seconds and back to noon after 20 seconds, with no direct sun at night',()=>{
+        const f=fixture();const noon=f.host.dataset.sunTime;expect(f.sun.intensity).toBeGreaterThan(0);
+        f.step(0);f.step(10000);expect(f.sun.intensity).toBe(0);expect(f.host.dataset.sunTime).toBe('00:00');
+        f.step(20000);expect(f.host.dataset.sunTime).toBe(noon);expect(f.sun.intensity).toBeGreaterThan(0);f.dispose();
+    });
+    it('supports pausing, manual time and an explicitly illustrative north adjustment',()=>{
+        const f=fixture();f.pause.dispatchEvent(new Event('click'));expect(f.frames.size).toBe(0);
+        f.slider.value='0';f.slider.dispatchEvent(new Event('input'));expect(f.sun.intensity).toBe(0);
+        f.north.value='90';f.north.dispatchEvent(new Event('change'));
+        expect(f.controlsHost.children[0].children[2].textContent).toContain('Ručno postavljen N');f.dispose();
+    });
+    it('suspends offscreen and hidden animations and starts paused for reduced motion',()=>{
+        const f=fixture();f.observers[0].callback([{isIntersecting:false}]);expect(f.frames.size).toBe(0);
+        f.observers[0].callback([{isIntersecting:true}]);expect(f.frames.size).toBe(1);
+        f.doc.hidden=true;f.doc.dispatchEvent(new Event('visibilitychange'));expect(f.frames.size).toBe(0);f.dispose();
+        const reduced=fixture({reduced:true});expect(reduced.frames.size).toBe(0);expect(reduced.host.dataset.sunlightState).toBe('paused');reduced.dispose();
+    });
+    it('disposes shadow resources and restores preview lighting on teardown',()=>{
+        const f=fixture(),roof=f.group.children.find(child=>child.name==='ApartmentShadowCeiling').children[0];
+        f.dispose();expect(f.sun.shadow.dispose).toHaveBeenCalledOnce();expect(roof.geometry.dispose).toHaveBeenCalledOnce();
+        expect(roof.material.dispose).toHaveBeenCalledOnce();expect(roof.customDepthMaterial.dispose).toHaveBeenCalledOnce();
+        expect(f.controlsHost.children).toEqual([]);expect(f.frames.size).toBe(0);expect(f.observers[0].disconnect).toHaveBeenCalledOnce();
+        expect(f.ambient.intensity).toBe(2.4);expect(f.oldLight.intensity).toBe(2);expect(f.renderer.shadowMap.enabled).toBe(false);
+    });
+});

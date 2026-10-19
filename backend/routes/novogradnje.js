@@ -12,7 +12,8 @@ const require = createRequire(import.meta.url);
 const { filterProjects, decodeFilters } = require('../../frontend/novogradnje/catalogue.js');
 const directory = fileURLToPath(new URL('../../frontend/novogradnje/', import.meta.url));
 const shared = fileURLToPath(new URL('../../frontend/js/', import.meta.url));
-const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 'floor-plan-review-geometry.js', 'floor-plan-review-renderer.js', 'site-model-geometry.js', 'three-context-buildings.js', 'photoreal-frame.js', 'photoreal-ground.js', 'photoreal-attribution.js', 'apartment-people-navigation.js', 'apartment-people.js']);
+const vendor = fileURLToPath(new URL('../../frontend/vendor/', import.meta.url));
+const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 'floor-plan-review-geometry.js', 'floor-plan-review-renderer.js', 'site-model-geometry.js', 'three-context-buildings.js', 'photoreal-frame.js', 'photoreal-ground.js', 'photoreal-attribution.js', 'apartment-people-navigation.js', 'apartment-people.js', 'apartment-sun-state.js', 'apartment-sun.js']);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
 const kindLabel = kind => ({ new_build: 'Novogradnja', existing: 'Starogradnja', unknown: 'Vrsta nije utvrđena' })[kind] || 'Vrsta nije utvrđena';
@@ -130,6 +131,7 @@ export function setupNovogradnjeRoute(app, pool, { catalogue } = {}) {
         res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path => `<url><loc>${PUBLIC_ORIGIN}${escape(path)}</loc></url>`).join('')}</urlset>`);
     });
     get('/novogradnje/shared/:file', (req, res) => sharedFiles.has(req.params.file) ? res.sendFile(req.params.file, { root: shared }) : res.status(404).end());
+    get('/novogradnje/vendor/:file', (req, res) => ['suncalc.min.js', 'LICENSE.suncalc.txt'].includes(req.params.file) ? res.sendFile(req.params.file, { root: vendor }) : res.status(404).end());
     const page = async (req, res) => {
         const catalogue = await provider.read();
         const project = req.params.slug ? await provider.project(req.params.slug) : null;

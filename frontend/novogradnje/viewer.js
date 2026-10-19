@@ -127,7 +127,8 @@
         show(new URLSearchParams(root.location?.search||'').get('context')==='google'?'google':'model');
         return {dispose(){cancelled=true;generation++;controller?.abort();dispose?.();host.replaceChildren();}};
     }
-    function mountApartment(host, apartment) {
+    function mountApartment(host, apartment, options={}) {
+        host.className+=' apartment-lit-host';
         host.replaceChildren(); const view = el('div','viewer-canvas'); host.append(view);
         const actions = el('div','viewer-actions'), button=el('button','view-toggle');button.type='button';button.textContent='Prikaži u 3D';actions.append(button);host.append(actions);
         let current=null, is3d=Boolean(apartment?.architecture), generation=0, interacted=false;
@@ -138,7 +139,13 @@
             const renderer=root.__floorPlanReviewRenderer, three=root.__threeFloorPlans, plans=root.__buildingFloorPlans;
             try { const dispose=await renderer.preview(view,THREE=>three.createLocalUnitGroup(THREE,apartment.architecture,plans),()=>token===generation,{
                 autoRotate:!interacted,autoRotateSpeed:.35,onInteraction(){interacted=true;},
-                setup(context){return root.__apartmentPeople.mount({...context,host:view,architecture:apartment.architecture});}
+                setup(context){
+                    const disposePeople=root.__apartmentPeople.mount({...context,host:view,architecture:apartment.architecture});
+                    let disposeSun;
+                    try{disposeSun=root.__apartmentSun.mount({...context,host:view,controlsHost:host,architecture:apartment.architecture,placement:apartment.placement,location:options.location});}
+                    catch(error){disposePeople();throw error;}
+                    return ()=>{disposeSun();disposePeople();};
+                }
             });if(token!==generation){dispose?.();return;}current={dispose(){generation++;dispose?.();}}; }
             catch { if(token!==generation)return;const p=el('p','viewer-copy');p.textContent='3D prikaz nije dostupan u ovom pregledniku.';view.replaceChildren(p);current={dispose(){}}; }
         }
