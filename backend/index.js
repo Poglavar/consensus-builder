@@ -36,6 +36,7 @@ import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
+import { setupAffordabotRoute } from './routes/affordabot.js';
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
@@ -361,6 +362,7 @@ export function createApp({
     app.locals.requestContext = requestContext;
 
     setupHealthRoute(app);
+    setupAffordabotRoute(app, activePool);
     setupObjectRoute(app, activePool);
     setupParcelsRoute(app, activePool);
     setupParcelBaRoute(app, activePool);

@@ -149,6 +149,7 @@ try {
 
 if (typeof window !== 'undefined') {
     window.addEventListener('load', () => {
+        window.AffordabotHandoff?.openRequestedDraft();
         setTimeout(() => handleProposalRouteFromUrl(), 100);
         setTimeout(() => handleSingleProposalShareFromUrl(), 200);
         setTimeout(() => handleSharedProposalsFromUrl(), 250);
