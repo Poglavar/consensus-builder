@@ -20,6 +20,19 @@ function rejectionOf(row) {
 }
 
 describe('proposal API serializer', () => {
+    it('omits unsigned consent from both SQL and JSON while preserving authored approval configuration', () => {
+        const claims = { acceptedParcelIds: ['parcel-a'], ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['party-a'] } } };
+        const row = { accepted_parcel_ids: claims.acceptedParcelIds, owner_acceptances: claims.ownerAcceptances,
+            proposal_data: { ...claims, approvalConfig: { schema: 'proposal-approval/v1' } } };
+        const before = structuredClone(row);
+        for (const projected of [serializeProposalRow(row), stripLocalProposalState(row.proposal_data)]) {
+            expect(projected).not.toHaveProperty('acceptedParcelIds');
+            expect(projected).not.toHaveProperty('ownerAcceptances');
+            expect(projected.approvalConfig).toEqual(row.proposal_data.approvalConfig);
+        }
+        expect(row).toEqual(before);
+    });
+
     it.each([undefined, null])('does not revive a chain location from JSON when SQL is %s', onchain_data => {
         const row = { onchain_data, proposal_data: {
             onchain: { proposalId: 'stale-a' }, onchainData: { proposalId: 'stale-b' }

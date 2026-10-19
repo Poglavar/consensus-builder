@@ -1254,6 +1254,17 @@ const proposalStorage = {
             return null;
         }
 
+        // Refreshing the same local record must not replace this browser's consent history with
+        // another browser's claims (or erase it when the portable record correctly omits them).
+        // The tally starts empty and is recomputed against the incoming terms, never copied.
+        const existing = this.proposals.get(idKey);
+        if (existing?.ownerAcceptances && typeof existing.ownerAcceptances === 'object') {
+            normalized.ownerAcceptances = JSON.parse(JSON.stringify(existing.ownerAcceptances));
+            if (typeof refreshProposalAcceptanceValidity === 'function') {
+                refreshProposalAcceptanceValidity(normalized);
+            }
+        }
+
         this._indexProposal(normalized);
         if (!deferSave) this.save();
         return normalized;

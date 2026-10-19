@@ -143,6 +143,7 @@ export function stripLocalProposalState(proposal) {
         // decisions and authority workflow state are runtime claims from one client and never do.
         'ownerApprovals', 'ownerApprovalHistory', 'approvalState', 'approvalRuntimeState',
         'authorityApprovals', 'authorityApprovalHistory', 'authorityState', 'authorityRuntimeState',
+        'acceptedParcelIds', 'ownerAcceptances',
         // the prepared artifact travels with a record to its publication, which stores it in
         // consensus.proposal_prepared; it is never part of the record itself
         'preparedArtifact'
@@ -239,8 +240,6 @@ export function serializeProposalRow(row, options = {}) {
         referenceAt: proposal.cadastreFrame?.capturedAt || proposal.createdAt || null,
         geometryHash: proposal.cadastreFrame?.geometryHash || null
     });
-    proposal.acceptedParcelIds = choose(row.accepted_parcel_ids, proposal.acceptedParcelIds);
-    proposal.ownerAcceptances = choose(row.owner_acceptances, proposal.ownerAcceptances);
     proposal.roadProposal = choose(row.road_proposal, proposal.roadProposal);
     proposal.buildingProposal = choose(row.building_proposal, proposal.buildingProposal);
     proposal.structureProposal = choose(row.structure_proposal, proposal.structureProposal);

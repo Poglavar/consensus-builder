@@ -88,12 +88,14 @@ function setProposalApplied(proposal, applied, options = {}) {
     return proposal.applied;
 }
 
-// Server/chain/share payloads must not carry a browser's local visibility or purchase simulation.
+// Server/chain/share payloads must not carry local visibility, purchase simulation or unsigned consent.
 function stripProposalAppliedState(proposal) {
     if (!proposal || typeof proposal !== 'object') return proposal;
     delete proposal.applied;
     delete proposal.appliedAt;
     delete proposal.localPurchaseSimulation;
+    delete proposal.acceptedParcelIds;
+    delete proposal.ownerAcceptances;
     STATUS_SUB_KEYS.forEach(key => {
         const sub = proposal[key];
         if (!sub || typeof sub !== 'object') return;
@@ -104,7 +106,12 @@ function stripProposalAppliedState(proposal) {
 }
 
 function parkProposalForImport(proposal) {
-    if (proposal) delete proposal.localPurchaseSimulation;
+    if (proposal) {
+        delete proposal.localPurchaseSimulation;
+        // A remote browser's tally is not a decision made in this browser or a signed receipt.
+        proposal.acceptedParcelIds = [];
+        proposal.ownerAcceptances = {};
+    }
     normalizeProposalStatusAxes(proposal);
     setProposalApplied(proposal, false, { stamp: false });
     return proposal;

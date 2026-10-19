@@ -62,6 +62,26 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it('preserves this browser consent on reload but discards imported unsigned claims', () => {
+        const { storage } = bootStore();
+        const record = { proposalId: 'session-consent', goal: 'as-is', cadastreParcelIds: ['parcel-a'],
+            acceptedParcelIds: ['parcel-a'], ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['party-a'] } } };
+        const before = structuredClone(record);
+        storage.addProposal(record);
+        storage.load();
+        expect(storage.getProposal(record.proposalId)).toMatchObject(record);
+        const imported = storage.importProposal({ ...record, proposalId: 'remote-consent' });
+        expect(imported.acceptedParcelIds).toEqual([]);
+        expect(imported.ownerAcceptances).toEqual({});
+        expect(storage.getProposal(record.proposalId)).toMatchObject(record);
+        const refresh = storage.importProposal({ ...record, title: 'Refreshed metadata',
+            ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['remote-party'] } } });
+        expect(refresh.ownerAcceptances).toEqual(record.ownerAcceptances);
+        expect(refresh.ownerAcceptances).not.toBe(record.ownerAcceptances);
+        expect(refresh.acceptedParcelIds).toEqual([]); // no current-terms evaluator in this fixture
+        expect(record).toEqual(before);
+    });
+
     it('initializes authored records as Active but preserves unknown lifecycle on import and reload', () => {
         const { storage, persisted } = bootStore();
         const record = { proposalId: 'new-record', title: 'New design', goal: 'as-is', cadastreParcelIds: ['HR-1'] };

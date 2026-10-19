@@ -1024,8 +1024,6 @@ describe('GET /proposals/:id', () => {
             expiresAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-01-15T00:00:00.000Z',
             cadastreParcelIds: ['PARENT'],
-            acceptedParcelIds: ['PARENT'],
-            ownerAcceptances: { PARENT: true },
             roadProposal: { width: 4 },
             buildingProposal: { height: 8 },
             structureProposal: { floors: 2 },
@@ -1034,6 +1032,8 @@ describe('GET /proposals/:id', () => {
             bounds: [1, 2, 3, 4],
             onchain: null
         });
+        expect(res.body).not.toHaveProperty('acceptedParcelIds');
+        expect(res.body).not.toHaveProperty('ownerAcceptances');
         expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');

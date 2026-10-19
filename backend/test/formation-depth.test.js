@@ -109,6 +109,20 @@ describe('explicit cadastral conformance', () => {
 });
 
 describe('publish projection', () => {
+    it('retains unsigned consent locally while excluding it from a portable record', () => {
+        const record = { goal: 'as-is', cadastreParcelIds: [BASE], acceptedParcelIds: [BASE],
+            ownerAcceptances: { [BASE]: { acceptedOwnerKeys: ['party-a'] } },
+            approvalConfig: { schema: 'proposal-approval/v1' } };
+        const before = structuredClone(record);
+        const gate = records.preparePublishRecord(record);
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal).not.toHaveProperty('acceptedParcelIds');
+        expect(gate.proposal).not.toHaveProperty('ownerAcceptances');
+        expect(gate.proposal.approvalConfig).toEqual(record.approvalConfig);
+        expect(records.stripDerivedRecordData(record)).toMatchObject(record);
+        expect(record).toEqual(before);
+    });
+
     it('omits an unverified execution timestamp without mutating the local record or lifecycle', () => {
         const record = { goal: 'park', cadastreParcelIds: [BASE], lifecycleStatus: 'Executed',
             executedAt: '2026-10-01T10:00:00.000Z', createdAt: '2026-09-01T10:00:00.000Z' };

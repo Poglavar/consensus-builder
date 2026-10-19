@@ -133,7 +133,9 @@ test.describe('Proposal actions @features', () => {
       const imported = w.proposalStorage.importProposal({
         proposalId: 'unknown-lifecycle', title: 'Unreported lifecycle', goal: 'parcelBased',
         cadastreParcelIds: [parcelId], expiresAt: '2020-01-01T00:00:00Z',
+        acceptedParcelIds: [parcelId], ownerAcceptances: { [parcelId]: { ownerOrder: ['remote-party'], acceptedOwnerKeys: ['remote-party'] } },
       });
+      if (imported.acceptedParcelIds.length || Object.keys(imported.ownerAcceptances).length) throw new Error('Imported unsigned consent survived');
       return imported.proposalId;
     }, PARCEL_ID);
     await showProposal(page, proposalId);
