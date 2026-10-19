@@ -32,10 +32,10 @@ describe('grain score wiring', () => {
         expect(serveConfig.rewrites).toContainEqual({ source: '/plans/**', destination: '/index.html' });
     });
 
-    it('scores only the named plan when unrelated proposals are already applied', () => {
-        expect(scoreSource).toContain('function appliedProposalsInScope(scopeIds)');
-        expect(scoreSource).toContain('prepareExperience(state.namedPlan, ids)');
-        expect(scoreSource).toContain('plan.slug && Array.isArray(plan.proposalRowIds)');
+    it('uses verified exact membership for both the named route and the score button', () => {
+        expect(scoreSource).toContain('rules.selectNamedPlanProposals(plan, applied)');
+        expect(scoreSource).toContain('rules.verifiedNamedPlanMembers(plan)');
+        expect(scoreSource).toContain('await openPlanGrainScoreRoute(plan.slug)');
     });
 
     it('refuses to score a named plan that only partly applied', () => {
@@ -61,7 +61,7 @@ describe('grain score wiring', () => {
         expect(block).toBeTruthy();
         [
             'buttonLabel', 'buttonHint', 'buttonEmpty', 'title', 'appliedComposition', 'localScope', 'namedScope', 'ready', 'start', 'countTitle',
-            'fineTitle', 'methodologyBody', 'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete'
+            'fineTitle', 'methodologyBody', 'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete', 'exactMembersRequired'
         ].forEach(key => expect(block[key], `${locale}.${key}`).toBeTruthy());
     });
 });

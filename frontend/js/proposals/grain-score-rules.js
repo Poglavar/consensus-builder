@@ -41,6 +41,44 @@
         return `/plans/${encodeURIComponent(normalized)}/score`;
     }
 
+    // Only the plan detail endpoint supplies current commitment verification. A slug, list row,
+    // absent changed flag or partial member list cannot establish the named scoring scope.
+    function verifiedNamedPlanMembers(plan) {
+        const ids = plan && plan.proposalRowIds;
+        const members = plan && plan.members;
+        if (!Array.isArray(ids) || !ids.length || !Array.isArray(members)
+            || members.length !== ids.length) return null;
+        const rowIds = ids.map(String);
+        if (rowIds.some(id => !/^\d+$/.test(id)) || new Set(rowIds).size !== rowIds.length) return null;
+        const byRow = new Map();
+        for (const member of members) {
+            if (!member || member.missing === true || member.changed !== false
+                || typeof member.authoredProposalId !== 'string' || !member.authoredProposalId.trim()) return null;
+            const rowId = String(member.proposalRowId);
+            if (byRow.has(rowId)) return null;
+            byRow.set(rowId, member);
+        }
+        if (rowIds.some(id => !byRow.has(id))) return null;
+        return rowIds.map(id => byRow.get(id));
+    }
+
+    // Publication identity and lineage are separate relationships: even an unchanged fork is a
+    // different member. Never substitute an authored/local id or an ancestor for a row id.
+    function selectNamedPlanProposals(plan, applied) {
+        const members = verifiedNamedPlanMembers(plan);
+        if (!members || !Array.isArray(applied)) return null;
+        const selected = [];
+        for (const member of members) {
+            const matches = applied.filter(record => record
+                && String(record.serverProposalId) === String(member.proposalRowId));
+            // The author's browser retains its local proposalId when upload assigns a content
+            // fingerprint as the server's authored ID. Only serverProposalId joins those copies.
+            if (matches.length !== 1) return null;
+            selected.push(matches[0]);
+        }
+        return selected;
+    }
+
     function coordinatesFromGeometry(input) {
         const geometry = input && input.type === 'Feature' ? input.geometry : input;
         if (!geometry || !Array.isArray(geometry.coordinates)) return [];
@@ -240,6 +278,8 @@
         normalizePlanSlug,
         parsePlanScorePath,
         buildPlanScorePath,
+        verifiedNamedPlanMembers,
+        selectNamedPlanProposals,
         parcelDimensionsMeters,
         isFineGrainParcel,
         startingParcelIds,

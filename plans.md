@@ -31,9 +31,17 @@ this document uses “plan” as shorthand for **named plan** only.
 
 **Applied proposal stats** reports the current browser composition. **Urban grain score** identifies
 whether it is using that local composition or a named-plan scope. A named-plan card displays the
-plan's title, or its slug when it has no title. The current score filter can follow a member's local
-replacement/source lineage and measures the live fabric; it is not yet an exact committed-member
-evaluation. That separate correctness issue is recorded as V19 in [the audit register](vocabulary.md#audit-register--findings-and-resolutions).
+plan's title, or its slug when it has no title. Both named-score entry points fetch current plan
+detail and require every member to be verified unchanged and applied with its exact published row
+ID (`serverProposalId` locally). The author’s local key can differ from the published authored ID.
+A local fork or replacement cannot stand in for that member; a fork counts only when its own
+published row belongs to the plan. Missing, changed, unverified or unapplied members
+prevent a named score, without falling back to the local composition.
+
+The measurement still uses live fabric over the members' cadastral scope. Other applied proposals
+may affect those parcels, so exact member selection does not yet guarantee an isolated or historically
+reproducible result. Fabric isolation and explicit materialization inputs remain open as V19 in
+[the audit register](vocabulary.md#audit-register--findings-and-resolutions).
 
 ## A named plan never changes
 

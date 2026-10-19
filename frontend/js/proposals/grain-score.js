@@ -69,53 +69,11 @@
         });
     }
 
-    // A named-plan link may be opened in a browser that already has unrelated proposals applied.
-    // Keep those proposals visible on the map, but exclude them from this plan's parcel fabric and
-    // score. Replacement snapshots still answer to the server id of the proposal they replaced, so
-    // walk the stored replacement chain when matching the plan's ids.
-    function appliedProposalsInScope(scopeIds) {
-        const applied = appliedProposals();
-        const wanted = new Set((Array.isArray(scopeIds) ? scopeIds : [])
-            .map(value => value == null ? '' : String(value))
-            .filter(Boolean));
-        if (!wanted.size) return applied;
-
-        let all = applied;
-        try {
-            if (typeof proposalStorage !== 'undefined' && proposalStorage
-                && typeof proposalStorage.getAllProposals === 'function') {
-                all = proposalStorage.getAllProposals() || applied;
-            }
-        } catch (_) { /* the applied records are still enough for ordinary proposals */ }
-        const byKey = new Map();
-        all.forEach(proposal => {
-            if (proposal && proposal.proposalId != null) {
-                byKey.set(String(proposal.proposalId), proposal);
-            }
-        });
-
-        return applied.filter(proposal => {
-            const seen = new Set();
-            let current = proposal;
-            let hops = 0;
-            while (current && hops < 10) {
-                const candidates = [current.serverProposalId, current.proposalId, current.id];
-                try {
-                    if (typeof getSerialProposalId === 'function') {
-                        candidates.push(getSerialProposalId(current));
-                    }
-                } catch (_) { }
-                if (candidates.some(value => value != null && wanted.has(String(value)))) return true;
-
-                const previous = current.replacementOfProposalId || current.sourceProposalId || null;
-                if (previous == null || seen.has(String(previous))) break;
-                if (wanted.has(String(previous))) return true;
-                seen.add(String(previous));
-                current = byKey.get(String(previous)) || null;
-                hops += 1;
-            }
-            return false;
-        });
+    function renderExactMembersRequired() {
+        renderError(t(
+            'sidebar.proposals.grainScore.exactMembersRequired',
+            'This named plan requires every original published proposal to be verified and applied. A local edit or fork cannot replace a member.'
+        ));
     }
 
     function updateButtonState() {
@@ -527,8 +485,14 @@
         });
     }
 
-    async function prepareExperience(plan, scopeIds = null) {
-        const proposals = appliedProposalsInScope(scopeIds);
+    async function prepareExperience(plan) {
+        state.prepared = null;
+        const applied = appliedProposals();
+        const proposals = plan?.slug ? rules.selectNamedPlanProposals(plan, applied) : applied;
+        if (!proposals) {
+            renderExactMembersRequired();
+            return null;
+        }
         if (!proposals.length) {
             renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
             return null;
@@ -880,16 +844,21 @@
         const plan = currentNamedPlan() || { slug: null, title: null };
         state.namedPlan = plan.slug ? plan : null;
         const soundPreparation = sound.prepare();
+        if (plan.slug) {
+            updateRouteForScore(plan);
+            const prepared = await openPlanGrainScoreRoute(plan.slug);
+            if (prepared) await runInspection({ soundPreparation });
+            return;
+        }
         saveAndSimplifyChrome();
         renderLoading(plan);
-        if (plan.slug) updateRouteForScore(plan);
-        const scopeIds = plan.slug && Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds : null;
-        const prepared = await prepareExperience(plan, scopeIds);
+        const prepared = await prepareExperience(plan);
         if (!prepared) return;
         await runInspection({ soundPreparation });
     }
 
     async function openPlanGrainScoreRoute(slug) {
+        state.prepared = null;
         const normalized = rules.normalizePlanSlug(slug);
         if (!normalized) {
             renderError(t('sidebar.proposals.grainScore.planNotFound', 'This named plan could not be found.'));
@@ -909,11 +878,11 @@
                 return;
             }
             const plan = await response.json();
-            const ids = Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds.map(String).filter(Boolean) : [];
-            if (!ids.length) {
-                renderError(t('sidebar.proposals.grainScore.emptyPlan', 'This named plan contains no proposals.'));
+            if (!rules.verifiedNamedPlanMembers(plan)) {
+                renderExactMembersRequired();
                 return;
             }
+            const ids = plan.proposalRowIds.map(String);
             // In the plan's city first, as /proposals/<slug> does (proposals/core.js ensurePlanCity):
             // parcel lookups go to the current city's cadastre.
             if (typeof global.ensurePlanCity === 'function' && await global.ensurePlanCity(plan.city)) return;
@@ -930,9 +899,10 @@
                 updateButtonState();
                 return;
             }
-            const prepared = await prepareExperience(state.namedPlan, ids);
+            const prepared = await prepareExperience(state.namedPlan);
             if (prepared) renderReady();
             updateButtonState();
+            return prepared;
         } catch (error) {
             console.error('[grain-score] named score route failed', error);
             renderError(t('sidebar.proposals.grainScore.planLoadFailed', 'The named plan could not be loaded.'));
