@@ -51,6 +51,9 @@ describe('buildSiteModels', () => {
         expect(result).toMatchObject({ sites: 2, built: 2, failed: 0, retired: 2 });
         const retire = db.statements.find(s => /^DELETE/.test(s.sql.trim()));
         expect(retire.params[0].sort()).toEqual(['permit:P1', 'permit:P2']);
+        expect(retire.sql).toContain("split_part(site_key, ':', 1) = ANY($2::text[])");
+        expect(retire.params[1]).toEqual(['permit', 'address', 'parcels']);
+        expect(retire.params[1]).not.toContain('registered');
     });
 
     it('keeps every stored model when the pass is truncated by the limit', async () => {
