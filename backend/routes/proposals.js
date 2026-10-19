@@ -684,9 +684,10 @@ export function createProposalParcelPrecheck(pool) {
 
 // Claims a free upload cannot prove, removed before storage (the record is otherwise stored as
 // sent). `agent` is the paid-agent stamp — only the x402 route may write it. Owner acceptances and
-// an Executed lifecycle assert that OTHER people consented / land changed hands; the browser's
-// values are a local simulation, and on-chain proposals get their real lifecycle from the oracle
-// (oracle/proposal-lifecycle.js), which keys on onchain.proposalId. Returns what was dropped.
+// an Executed lifecycle need independent evidence; browser values cannot establish these claims.
+// A verified mirror initializes lifecycle from its chain read. The separate lifecycle oracle
+// can subsequently update that projection. Neither establishes legal title or physical realization.
+// Returns what was dropped.
 //
 // Also dropped on the free route: an author that is a wallet address or agent persona (see
 // isReservedAuthorIdentity) and any client thumbnail that is not an image in our own store (see
@@ -770,7 +771,7 @@ export function createProposalCreateHandler(pool) {
             // Read from the sanitized copy: dropUnprovableClaims has removed a reserved author.
             const author = typeof proposal.author === 'string' ? proposal.author : null;
             let lifecycleStatus = precheck.value.lifecycleStatus;
-            if (lifecycleStatus === 'Executed') {
+            if (!req.chainMirror && lifecycleStatus === 'Executed') {
                 lifecycleStatus = 'Active';
                 delete proposal.executedAt;
                 droppedClaims.push('lifecycleStatus:Executed');

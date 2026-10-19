@@ -1,11 +1,14 @@
-// Read immutable proposal commitments from configured chain deployments for verified mirrors.
+// Read proposal commitments and observed lifecycle from configured deployments for verified mirrors.
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Contract, FetchRequest, JsonRpcProvider } from 'ethers';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PROPOSAL_PROGRAM_ID, readProposalLens, readProposalSite } from '../oracle/proposal-lifecycle.js';
 
+const require = createRequire(import.meta.url);
+const { decodeProposalStatus } = require('../../frontend/js/proposals/chain-status.js');
 const ADDRESS_FILE = fileURLToPath(new URL('../../frontend/contracts/addresses.json', import.meta.url));
 const ADDRESSES = JSON.parse(readFileSync(ADDRESS_FILE, 'utf8'));
 const EVM_RPCS = Object.freeze({
@@ -24,7 +27,7 @@ const MAX_STRING_BYTES = 16_384;
 const DEFAULT_TIMEOUT_MS = 8_000;
 const MAX_UINT256 = (1n << 256n) - 1n;
 
-// Read the immutable fields a server mirror needs directly from the minting chain. RPC endpoints
+// Read the fields a server mirror needs directly from the minting chain. RPC endpoints
 // and contract/program identities come from this module's deployment allowlists or server config;
 // request data can select only one of those known deployments.
 
@@ -91,6 +94,12 @@ function normalizeStringList(values, field) {
     return result;
 }
 
+function readLifecycleStatus(code) {
+    const status = decodeProposalStatus(code);
+    if (status === 'Unknown') throw chainProofError('On-chain proposal lifecycle is missing or unknown.');
+    return status;
+}
+
 function decodeSolanaProposalPrefix(input) {
     const data = Buffer.from(input || []);
     const discriminator = createHash('sha256').update('account:Proposal').digest().subarray(0, 8);
@@ -117,7 +126,10 @@ function decodeSolanaProposalPrefix(input) {
     if (conditionalByte > 1) throw chainProofError('Solana Proposal conditional flag is invalid.');
     const metadataUri = string();
     if (!metadataUri) throw chainProofError('Solana Proposal metadata URI is missing.');
-    return { cadastreParcelIds: normalizeStringList(cadastreParcelIds, 'parcel list'), isConditional: conditionalByte === 1, metadataUri, metadataEndOffset: offset };
+    need(2); // acceptance_possible, then ProposalStatus
+    const lifecycleStatus = readLifecycleStatus(data[offset + 1]);
+    return { cadastreParcelIds: normalizeStringList(cadastreParcelIds, 'parcel list'), isConditional: conditionalByte === 1,
+        metadataUri, metadataEndOffset: offset, lifecycleStatus };
 }
 
 function validateSolanaSiteTail(input, metadataEndOffset) {
@@ -183,7 +195,8 @@ async function readEvmProposal(ref, options) {
         if (!metadataUri) throw chainProofError('EVM Proposal metadata URI is missing.');
         if (typeof (proposal.isConditional ?? proposal[1]) !== 'boolean') throw chainProofError('EVM Proposal conditional flag is invalid.');
         if (!Array.isArray(lens)) throw chainProofError('EVM Proposal lens is invalid.');
-        return { ref, cadastreParcelIds, metadataUri, lens: lens.map(String), isConditional: proposal.isConditional ?? proposal[1], owner: String(owner) };
+        return { ref, cadastreParcelIds, metadataUri, lens: lens.map(String), isConditional: proposal.isConditional ?? proposal[1],
+            owner: String(owner), lifecycleStatus: readLifecycleStatus(proposal.status ?? proposal[4]) };
     } catch (error) {
         if (error?.status) throw error;
         throw rpcUnavailable();

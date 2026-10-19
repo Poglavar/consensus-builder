@@ -10,6 +10,7 @@ import { createRetryingFetch } from '../utils/retrying-fetch.js';
 
 const require = createRequire(import.meta.url);
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
+const { STATUS_BY_CODE } = require('../../frontend/js/proposals/chain-status.js');
 const siteHash = require('../../frontend/js/proposals/site-hash.js');
 const agentPersonas = JSON.parse(readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
 
@@ -100,6 +101,10 @@ export async function verifyCadastreSnapshot(record) {
 export async function loadChainMirror(ref, { readChain = readChainProposal, readMetadata = readChainMetadata,
     now = () => new Date() } = {}) {
     const chain = await readChain(ref);
+    if (!STATUS_BY_CODE.includes(chain.lifecycleStatus)) {
+        throw chainProofError('On-chain proposal lifecycle is missing or unknown.');
+    }
+    const lifecycle = { status: chain.lifecycleStatus, observedAt: now().toISOString() };
     const metadata = await readMetadata(chain.metadataUri);
     const record = chainRecord.fromMetadata(metadata);
     const geometryError = validateSiteGeometry(record.site);
@@ -116,7 +121,7 @@ export async function loadChainMirror(ref, { readChain = readChainProposal, read
             contractAddress: canonicalRef.contract, proposalId: canonicalRef.tokenId,
             metadataUri: chain.metadataUri, owner: chain.owner },
         evidence: { protocol: chainRecord.PROTOCOL, ref: canonicalRef, metadataUri: chain.metadataUri,
-            verifiedAt: now().toISOString(), record, ...(agent ? { agent } : {}) }
+            verifiedAt: now().toISOString(), lifecycle, record, ...(agent ? { agent } : {}) }
     };
 }
 
@@ -133,7 +138,7 @@ export function resolveChainMirror({ loadMirror = loadChainMirror } = {}) {
             const mirror = await loadMirror(body.chainRef);
             req.chainMirror = mirror.evidence;
             req.body = { ...structuredClone(mirror.record), proposalId: mirror.proposalId,
-                onchain: mirror.onchain, lifecycleStatus: 'Active' };
+                onchain: mirror.onchain, lifecycleStatus: mirror.evidence.lifecycle.status };
             req.proposalBound = { site: mirror.record.site, binding: mirror.record.binding, city: mirror.record.city || null };
             next();
         } catch (error) {
