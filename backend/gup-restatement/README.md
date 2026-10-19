@@ -6,7 +6,9 @@ cached GUP massing into the existing Consensus Builder urban-rule proposal forma
 It does not change the GUP solver or introduce another planning language.
 
 The user requested a reasonably close citywide spatial restatement, with locations
-skipped and flagged when the current proposal model cannot express the mandate.
+skipped and flagged when the current proposal model cannot express the spatial mandate.
+The user explicitly accepted approximate massing with non-spatial limits retained as
+notes, and requested that uncovered model gaps, including dwelling caps, be listed.
 
 ## Meaning and limits
 
@@ -109,3 +111,52 @@ Official text and map source: [City of Zagreb GUP 2025](https://www.zagreb.hr/iz
 The supplied local Markdown hash is pinned for each export. Cached source calculations
 retain their own version and timestamp; the export does not certify that all legal
 conditions were resolved or that neighbouring maxima can be realised simultaneously.
+
+## First local export, 19 October 2026
+
+The complete mapped cohort contains 194,676 current parcels. The local v44 cache
+supports 10,622 represented proposals in 71 native draft plans; 184,054 parcels are
+skipped with reasons, not assigned zero capacity. Of the represented proposals,
+10,505 use adjoining stepped volumes. The source inputs are identical to the earlier
+117-prism diagnostic; 10,505 representations were gained and none lost. Independent
+cached numeric new-build quantities survive for 12,894 parcels.
+
+Every exported proposal passed native serialization and floor-area/volume measurement.
+Maximum differences from cached geometry were 0.092% for floor area and 0.967% for
+volume. These figures measure translation fidelity, not legal accuracy. Local import
+read back all 10,622 records; repeating it inserted zero proposals and verified all
+10,622 existing records across the same 71 plans. See
+[the coverage review](coverage-2026-10-19.json) for counts, source hashes and targeted
+headless unit test run history. Large per-parcel audits remain local ignored output.
+
+## Gaps uncovered
+
+- **Maximum dwelling counts:** source `maxUnits` and `max_units` survive as notes; the
+  native apartment estimate does not enforce them. Minimum plot area per dwelling
+  likewise needs its own constraint.
+- **Independent scalar budgets:** minimum/maximum KISN, maximum GBP and minimum
+  natural terrain remain notes. The imported example can match their source massing,
+  but editing or varying its geometry does not revalidate those budgets. Natural
+  terrain is not established merely by leaving an area without buildings.
+- **Mandatory form and preservation:** a maximum envelope does not require retention
+  of existing fabric, a continuous frontage or a minimum mandatory built form. These
+  regimes are skipped conservatively; generic smaller massing is not a substitute.
+- **Relations with neighbours:** an imported outline does not encode the conditional
+  right to attach to a boundary, required party-wall treatment or how a changed
+  neighbour affects setbacks. A cached boundary-touching shape is not proof of that
+  legal entitlement.
+- **Alternative designs and interdependent limits:** this export preserves one cached
+  option, not the complete permitted design space. Adjacent parcel maxima are not
+  proven jointly realisable. Most stepped proposals are fixed native geometry, not
+  executable urban rules.
+- **Floor representation:** nested setbacks can be decomposed into adjoining native
+  volumes, but exact per-floor elevations remain source notes. Overhangs, underground
+  forms and unsupported editable footprint topology are skipped. Component counts
+  do not establish a permitted number of buildings.
+- **Applicability and procedures:** detailed-plan referrals, reconstruction/additions,
+  exceptions, proxy contexts and unresolved legal conditions need separate evidence
+  and workflows. Geometry alone cannot establish permission.
+- **Source coverage:** missing cache rows, failed candidate searches and inconsistent
+  source geometry/quantities leave flagged gaps. This is not a proposal-model
+  limitation in every case, nor evidence of a prohibition. The separate Sesvete GUP
+  and ground without cadastral coverage are outside the represented parcel cohort.

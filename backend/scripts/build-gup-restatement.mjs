@@ -171,6 +171,7 @@ async function build(pool, options) {
 
 async function apply(pool, options) {
     if (!isLocalDatabase()) throw new Error('Apply is restricted to the local database.');
+    log('Checking the completed export against current source inputs before local import.');
     const manifest = await maybeJson(resolve(options.out, 'manifest.json'));
     if (!manifest?.completed || manifest.version !== TRANSLATOR_VERSION) throw new Error('A complete compatible export is required.');
     if (digest(await fingerprint(pool)) !== digest(manifest.inputs)) throw new Error('Current source no longer matches the export.');
@@ -178,10 +179,12 @@ async function apply(pool, options) {
     if (!manifest.proposalBundleHash || digest(bundle) !== manifest.proposalBundleHash) throw new Error('Proposal bundle does not match the completed manifest.');
     const { proposals } = bundle;
     if (!proposals.length) { log('No representable proposals; flags remain in the export. Nothing written.'); return; }
+    log(`Importing ${proposals.length} native drafts with transactional read-back verification.`);
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const ids = [];
+        let inserted = 0, existingCount = 0;
         for (const proposal of proposals) {
             const { rows } = await client.query(`INSERT INTO public.proposal
                 (proposal_id,city,name,title,description,author,type,lifecycle_status,cadastre_parcel_ids,building_proposal,bounds,proposal_data)
@@ -189,9 +192,11 @@ async function apply(pool, options) {
                 ON CONFLICT (proposal_id) DO NOTHING RETURNING *`,
             [proposal.proposalId, proposal.name, proposal.description, proposal.author, JSON.stringify(proposal.cadastreParcelIds),
                 JSON.stringify(proposal.buildingProposal), JSON.stringify(proposal.bounds), JSON.stringify(proposal)]);
+            if (rows.length) inserted++; else existingCount++;
             const row = rows[0] || (await client.query('SELECT * FROM public.proposal WHERE proposal_id=$1', [proposal.proposalId])).rows[0];
             verifyProposalReadBack(row, proposal);
             ids.push(String(row.id));
+            if (ids.length % 250 === 0 || ids.length === proposals.length) log(`Verified ${ids.length}/${proposals.length} local draft records.`);
         }
         const store = createPlanStore(client);
         const members = await store.members(ids);
@@ -217,7 +222,7 @@ async function apply(pool, options) {
         }
         await client.query('COMMIT');
         await jsonFile(resolve(options.out, 'local-plans.json'), { key: manifest.key, plans });
-        log(`Read back ${ids.length} native proposals in ${plans.length} local plans; repeat apply is a no-op.`);
+        log(`Read back ${ids.length} native proposals in ${plans.length} local plans; inserted ${inserted}, verified existing ${existingCount}.`);
     } catch (error) { await client.query('ROLLBACK'); throw error; }
     finally { client.release(); }
 }
