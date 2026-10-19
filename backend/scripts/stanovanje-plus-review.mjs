@@ -8,6 +8,7 @@ import {createRequire} from 'node:module';
 import {geometryIssues} from '../floor-plans/geometry-quality.js';
 import {reviewRoutes} from './stanovanje-plus-review/routes.mjs';
 import {buildingOutline} from './stanovanje-plus-review/building-model.mjs';
+import {boundRegistration} from './stanovanje-plus-review/registration.mjs';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const root=path.join(repo,'backend/logs/stanovanje-plus-ten-20261019');
@@ -26,6 +27,10 @@ const items=selection.map(source=>{
  const issues=model&&!validation.length?geometryIssues(model.architecture,{rooms:model.rooms||[]}):[];
  const evidence=optional(path.join(dir,'building-evidence.json'));
  const building=model&&!validation.length?buildingOutline(evidence,model.architecture):null;
+ if(building){
+  const geo=path.join(dir,'geographic-evidence.json'),geoHash=fs.existsSync(geo)?createHash('sha256').update(fs.readFileSync(geo)).digest('hex'):null;
+  building.registration=boundRegistration(optional(path.join(dir,'alignment.json')),modelSha256,geoHash);
+ }
  if(building)fs.writeFileSync(path.join(dir,'building-outline.json'),JSON.stringify(building,null,2));
  return {source,revision,model,modelSha256,building,validation,geometryReviewIssues:issues,manualReview,refinementGeometry:optional(path.join(dir,'refinement-geometry.json')),frame:optional(path.join(dir,'frame.json')),
   image:`/source/${source.code}/source.png`,download:`/model/${source.code}/${file}`,
@@ -33,7 +38,7 @@ const items=selection.map(source=>{
   refinementReceipt:optional(path.join(dir,'refinement-response.json'))&&{file:'refinement-response.json'}};
 });
 const manifest={schema:'stanovanje-plus.private-review.v2',createdAt:new Date().toISOString(),private:true,
- publication:'none',geographicRegistration:'none; local drawing coordinates only',
+ publication:'none',geographicRegistration:'Independent footprint alignment is recorded per building; floor numbers remain separate.',
  qualityGate:'Per-model manual review is bound to its exact file hash. Format validation and geometry checks do not establish usability.',
  originalRunManifest:originalManifest,
  models:items.map(i=>({code:i.source.code,revision:i.revision,model:i.download,buildingOutline:i.building?{aboveGroundCount:i.building.aboveGroundCount,belowGroundCount:i.building.belowGroundCount,heightBasis:i.building.heightBasis,outlineBasis:i.building.outlineBasis}:null,formatValid:!i.validation.length,manualReview:i.manualReview,validation:i.validation,geometryReviewIssues:i.geometryReviewIssues,

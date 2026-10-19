@@ -12,6 +12,7 @@ test('review routes expose only source images, selected revisions and shared ren
  assert.equal(routes.get('/shared/three-floor-plans.js'),'/repository/frontend/js/three-floor-plans.js');
  assert.equal(routes.get('/building-model.mjs'),'/repository/backend/scripts/stanovanje-plus-review/building-model.mjs');
  assert.equal(routes.get('/building-view.mjs'),'/repository/backend/scripts/stanovanje-plus-review/building-view.mjs');
+ assert.equal(routes.get('/registration.mjs'),'/repository/backend/scripts/stanovanje-plus-review/registration.mjs');
  assert.equal(routes.get('/model/first/building-outline.json'),'/private-review/first/building-outline.json');
  for(const blocked of ['/source/first/response.json','/source/first/source.svg','/.env','/../package.json','/shared/../index.html'])assert.equal(routes.has(blocked),false,blocked);
  assert.equal(routes.get('/source/first/source.png'),'/private-review/first/source.png');
