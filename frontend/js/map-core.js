@@ -807,7 +807,9 @@ function applyBuildingFeatureLayerChanges(layerGroup, layersById, changes) {
 }
 
 function buildingLayerOptions() {
+    if (!map.getPane('observedBuildings')) map.createPane('observedBuildings');
     return {
+        pane: 'observedBuildings',
         // Context only: existing buildings must never intercept clicks meant for the parcels
         // beneath them (they are inspectable in 3D, not in 2D).
         interactive: false,

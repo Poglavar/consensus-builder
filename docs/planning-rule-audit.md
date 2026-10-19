@@ -136,6 +136,19 @@ Implementation order:
 3. **Add the Atlas adapter using the same path.** Preserve all dictionary fields and methods; compose districts/overlays against real parcel and street context. Draw sourced zoning areas and supported geometric effects with evidence labels. Retain conditional expressions as unresolved until their evaluator exists.
 4. **Extend by rule family.** Add contextual setbacks, frontage/retention, party-wall rules, use/procedure and accessory/affordability conditions with explicit capabilities. Select supported cases by their evidence, not by promising an entire city or district is simple.
 
+## First implemented view slice
+
+Implemented locally on 2026-10-19; not a deployment or complete rules-engine claim.
+
+- **View selector:** Existing, Permitted, Proposed and Compare coordinate the map and model. Existing context is subdued when comparing. The old model-only Built/Planned visibility selectors are replaced by this shared control; their Surviving/Removed filters are not exposed in this first interface. Source-survey choices remain in Layers.
+- **Source picker and inspector:** click a map outline or model volume, or choose a source with the keyboard. Selection survives 2D/model and presentation-mode changes. The inspector shows calculated area/height, independent dwelling/floor-area/natural-ground limits, source evidence and unresolved applicability. No manual conversion or application step is involved.
+- **City adapters:** `backend/planning/sources.js` selects providers by city. The Zagreb adapter reads existing automated restatement proposals by their stored bounds; it translates source fields once into `planning-representations.v1`. No client renderer branches on Zagreb. New cities without a provider report unavailable coverage rather than zero capacity.
+- **Bounded reads:** `GET /planning/representations?city=…&bbox=west,south,east,north` is read-only, accepts at most 4 km² and returns at most 200 candidates for the current provider. Truncation and omitted invalid geometry are explicit. Invalid height/ring/frame data is not invented. Source identities and input hashes remain attached to geometry.
+- **Shared projection:** both clients consume `PlanningScene.volumeFeatures`, including adjoining volumes, polygon holes, base and top heights. The map uses Leaflet; the model reuses native polygon extrusion and resource disposal. Source volumes never enter cadastral slicing or mutate proposal application. The model uses the map's entry viewport snapshot, as the existing 3D scene does; orbiting does not expand the loaded cohort.
+- **Presentation:** desktop floating controls, a phone grid and source sheet, light/dark tokens, translated labels and count forms. Aerial imagery directs users to model 3D for source massing because its terrain alignment is a different contract.
+
+This slice reads the already imported Zagreb cohort; it adds no new import job or persistent normative schema. Existing-building and authored-design stores and renderers remain in place under the common view policy. Independent rule evaluation, full historical/version selection, authored-record normalization, a unified inspector for every entity type, and Atlas ingestion remain open. Viewing an approximate candidate does not close any of the rule gaps above.
+
 ## Demonstration and outreach readiness
 
 A useful demonstration must show the same selected source proposal in 2D and 3D, source constraints alongside observed buildings and a design, explicit estimated/unsupported rules, and a design edit that either revalidates or reports what cannot be checked. It must survive save/reload and a second import without duplicate proposals or source-to-design identity confusion.

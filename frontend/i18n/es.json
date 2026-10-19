@@ -7580,5 +7580,54 @@
                 "apply": "Aplicar plan"
             }
         }
-    }
+    },
+  "planningViews": {
+    "title": "Edificios y volúmenes",
+    "viewLabel": "Vista de planificación",
+    "detailsLabel": "Detalles de la fuente de planificación",
+    "existing": "Existente",
+    "permitted": "Permitido",
+    "existingNote": "La ciudad según las fuentes de edificios disponibles.",
+    "proposedNote": "Tus propuestas de edificios aplicadas, con la ciudad existente como contexto.",
+    "noProposals": "Aún no hay propuestas de edificios aplicadas. Explora alternativas en Propuestas.",
+    "loading": "Cargando volúmenes permitidos…",
+    "zoom": "Acerca el mapa para explorar los volúmenes permitidos.",
+    "unavailable": "Esta ciudad aún no tiene una fuente de volúmenes permitidos conectada.",
+    "empty": "No hay volúmenes representados en esta zona. Esto no significa que esté prohibido construir.",
+    "error": "No se pudo cargar la fuente de planificación.",
+    "loaded": {
+      "one": "{{count}} opción calculada · cobertura parcial de la fuente",
+      "other": "{{count}} opciones calculadas · cobertura parcial de la fuente"
+    },
+    "truncated": {
+      "one": "Se muestra {{count}} opción · acerca el mapa para reducir el área",
+      "other": "Se muestran {{count}} opciones · acerca el mapa para reducir el área"
+    },
+    "partial": {
+      "one": "{{count}} opción visible · parte de la geometría de origen no está disponible",
+      "other": "{{count}} opciones visibles · parte de la geometría de origen no está disponible"
+    },
+    "sourceProposal": "Volumen permitido",
+    "close": "Cerrar detalles de la fuente",
+    "obligatory": "Propuesta de fuente obligatoria",
+    "approximate": "Aproximado",
+    "oneOption": "Una opción calculada según las reglas de la fuente. No representa todos los diseños posibles.",
+    "floorArea": "Superficie construida calculada",
+    "height": "Altura del volumen",
+    "dwellingLimit": "Límite de viviendas",
+    "conditionsTitle": "Condiciones pendientes de comprobar",
+    "conditionsNote": "La aplicabilidad y los límites independientes siguen sin resolverse. Esta forma no es un permiso de construcción verificado.",
+    "sourceDetails": "Fuente y evidencia",
+    "computed": "Calculado el {{date}}",
+    "sourceTerms": "Condiciones originales, conservadas sin reinterpretación",
+    "readSource": "Leer el plan original",
+    "constraint": {
+      "dwellings": "Máximo de viviendas",
+      "floorArea": "Superficie construida máxima",
+      "naturalGround": "Terreno natural mínimo"
+    },
+    "inspect": "Inspeccionar una opción de volumen…",
+    "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
+    "openModel": "Abrir el modelo 3D"
+  }
 }

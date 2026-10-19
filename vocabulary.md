@@ -19,13 +19,25 @@ User decision, 2026-10-19: existing regulations, permitted massing and permits b
 These are independent axes:
 
 - **Decision kind:** the existing `owner-deal`, `owner-vote`, `community-vote` path.
-- **Normative authority and applicability:** issuer, source instrument/version, effective period, geographic/use/project scope, conditions and supersession. Runtime support is pending; do not infer these from decision kind or an import timestamp.
+- **Normative authority and applicability:** issuer, source instrument/version, effective period, geographic/use/project scope, conditions and supersession. Authored-schema support is pending; the read-only representation contract below carries source assertions without changing decision kind. Do not infer authority from an import timestamp.
 - **Proposal lifecycle and local application:** publishing, voting, execution and applying to the browser's live fabric retain their existing meanings. An imported regulation does not fabricate a vote, signed acceptance, execution event or physical construction.
 - **Representation role:** an observed building, permitted massing, example build-out and proposed design may use common geometry and renderers while making different assertions. An envelope may be an outer bound or one candidate, rather than a jointly achievable filled solid.
 
 The source proposal, its constraints, and its derived geometry keep linked identities and versions. Changing a provider result must not silently rewrite an authored design or a historical source version. An automated importer needs repeatable source identities, retained unresolved rules and explicit source coverage. An unsupported constraint is not permission to ignore it; missing source data is not zero permitted capacity.
 
 The implementation comparison and first shared adapter design are in [the planning-rule audit](docs/planning-rule-audit.md). This direction leaves the current `ProposalKind` enum and lifecycle behavior unchanged until their consumers and validation can be updated together.
+
+## Observed: planning representations and comparison views
+
+Implemented in this branch, 2026-10-19. A **planning representation** is a read-only spatial assertion linked to an existing source proposal. It is neither a new `ProposalKind` nor an applied change to the live fabric. The `planning-representations.v1` response carries a representation ID, source proposal ID, source version, polygon volumes, spatial reference, source authority assertions, assessment, independent constraints and retained source evidence. The proposal ID identifies the record; the source version identifies the inputs used for this representation. This endpoint does not establish immutable historical versions.
+
+The first adapter reads automated Zagreb GUP restatements already stored in `proposal`. Its representation is **one calculated option**, with approximate geometry and unresolved applicability, not the complete feasible envelope or a verified permit. `authority.effect = obligatory` classifies the source's intended normative effect; it does not resolve whether that instrument applies to this case. Independent limits remain `not-evaluated`. Original source variables remain inspectable when no executable mapping exists.
+
+The **view selector** uses `existing`, `permitted`, `proposed` and `compare` as presentation modes. The shared policy controls observed-building context, source massing and applied design visibility in 2D and model 3D. It preserves the selected source representation across view changes while that item remains loaded. **Permitted** is a presentation role, not a legal assessment result. **Proposed** currently means the browser's applied building composition, not every published proposal.
+
+The **source picker** and **source inspector** refer to the same representation ID as map outlines and 3D volumes. Geographic coordinates use `OGC:CRS84` longitude/latitude; `baseM` and `topM` are metres relative to the model's ground reference. Unsupported frames are not rendered. The existing model's horizontal projection is Web Mercator and its vertical dimensions are raw metres; this is a visualization convention, not a globally survey-accurate local engineering frame.
+
+Existing buildings and authored proposals retain their current stores and rendering paths; the shared policy coordinates them. Full migration of their records and selection into the representation contract, executable constraint assessment, datum-aware terrain placement, and Atlas ingestion remain pending. See [the implementation record](docs/planning-rule-audit.md#first-implemented-view-slice).
 
 ## Central terms as implemented
 

@@ -35,7 +35,10 @@ function loadBuildingLayerRuntime() {
     const allLayers = new Set();
     const mapLayers = new Set();
     const optionsByFeature = new Map();
+    const panes = new Map();
     const map = {
+        getPane(name) { return panes.get(name); },
+        createPane(name) { const pane = {}; panes.set(name, pane); return pane; },
         hasLayer(layer) { return mapLayers.has(layer); },
         addLayer(layer) { mapLayers.add(layer); return this; },
         removeLayer(layer) { mapLayers.delete(layer); return this; }

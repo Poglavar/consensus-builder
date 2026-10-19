@@ -153,7 +153,8 @@
                 'css/schelling-plan.css',
                 'css/proposal-details.css',
                 'css/proposal-approval.css',
-                'css/plans.css'
+                'css/plans.css',
+                'css/planning-views.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -445,6 +446,17 @@
         </button>
         <div id="three-container" aria-hidden="true"></div>
 
+        <!-- Content is shared across map and model; changing view never applies a source proposal. -->
+        <section id="planning-views" class="planning-views" aria-label="Buildings and massing" data-i18n-key="planningViews.title" data-i18n-attr="aria-label" hidden>
+            <p class="planning-eyebrow"></p>
+            <div class="cb-segmented" role="group" aria-label="Planning view" data-i18n-key="planningViews.viewLabel" data-i18n-attr="aria-label"></div>
+            <p class="planning-view-status" role="status" aria-live="polite"></p>
+            <button type="button" class="cb-link planning-view-retry" hidden></button>
+            <select class="planning-source-picker" hidden></select>
+            <button type="button" class="cb-link planning-open-model" hidden></button>
+        </section>
+        <aside id="planning-inspector" class="planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
+
         <div id="area-monitor-drawing-toolbar" class="map-editor-toolbar" hidden>
             <span data-i18n-key="mapShell.reorg.watchedAreas">Watched areas</span>
             <div class="map-editor-toolbar-actions">
@@ -714,7 +726,8 @@
                                     <input type="checkbox" id="showBuildingsOsm" onchange="toggleLayer('buildingsOsm')">
                                     <span data-i18n-key="sidebar.buildings.showOsm">OSM buildings (matches the map)</span>
                                 </label>
-                                <label>
+                                <!-- The shared view selector owns proposed-building visibility. -->
+                                <label hidden>
                                     <input type="checkbox" id="showProposedBuildings"
                                         onchange="toggleLayer('proposedBuildings')">
                                     <span data-i18n-key="sidebar.buildings.showProposed">Show Proposed Buildings</span>
@@ -1909,6 +1922,8 @@
             'js/ui/busy-control.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
+            'js/planning/scene.js',
+            'js/planning/views.js',
             'js/bets/bets-link.js',
             'js/bets/lmsr.js',
             'js/bets/sha256.js',

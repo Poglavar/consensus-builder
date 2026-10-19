@@ -207,6 +207,7 @@
     let parcelGroundGeneration = 0;
     let buildingGroup = null; // buildings extrusion
     let existingBuildingsGroup = null;
+    let planningSourcesGroup = null;
     let proposedBuildingsGroup = null;
     let ineligibleBuildingsGroup = null;
     let parkGroup = null; // park decorations (trees)
@@ -442,7 +443,6 @@
     let representationSelect = null;
     let rerollBtn = null;
     let rerollBusy = false;
-    let displayStateSelects = { built: null, planned: null };
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
     // Parcel selection emphasizes the clicked ground while keeping the city and camera in place.
@@ -486,19 +486,6 @@
     // 2D map viewport — i.e. switching to 3D preserves the user's 2D altitude
     // and just adds tilt, instead of reframing to a different scale.
     const CAMERA_DISTANCE_SCALE = 1.0;
-
-    function updateDisplayStateControls() {
-        try {
-            ['built', 'planned'].forEach((kind) => {
-                const current = kind === 'built' ? builtDisplay : plannedDisplay;
-                const select = displayStateSelects[kind];
-                if (!select) return;
-                select.value = current;
-                const selectedOption = select.options && select.options[select.selectedIndex];
-                select.title = selectedOption?.dataset?.tooltip || selectedOption?.textContent || '';
-            });
-        } catch (_) { }
-    }
 
     // With planned proposals off, the cadastre shows its pre-proposal state (proposal-created
     // parcels hidden); any other combination shows the full fabric.
@@ -600,28 +587,52 @@
         } catch (_) { }
     }
 
-    function setBuildingDisplay(kind, state) {
-        if (!buildingDisplayPolicy.displayStatesForKind(kind).includes(state)) return;
-        if (kind === 'built') {
-            if (builtDisplay === state) return;
-            builtDisplay = state;
-        } else if (kind === 'planned') {
-            if (plannedDisplay === state) return;
-            plannedDisplay = state;
-        } else {
-            return;
+    // Source massing is a representation of an obligatory proposal, never an applied building.
+    // Reuse the scene's polygon extrusion and resource ownership without slicing the live cadastre.
+    function rebuildPlanningSources3D() {
+        if (!isActive || !planningSourcesGroup || !window.PlanningViews) return;
+        clearGroupChildren(planningSourcesGroup);
+        const view = window.PlanningViews.getPolicy();
+        planningSourcesGroup.visible = view.permitted !== 'off' && !realisticLayerActive;
+        if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
+        const selectedId = window.PlanningViews.getState()?.selectedId;
+        const color = window.PlanningViews.color('permitted');
+        for (const item of window.PlanningViews.getItems()) {
+            for (const feature of window.PlanningScene.volumeFeatures(item)) {
+                const selected = item.id === selectedId;
+                const material = new THREE.MeshBasicMaterial({ color, transparent: true,
+                    opacity: selected ? 0.42 : view.permitted === 'solid' ? 0.28 : 0.12,
+                    depthWrite: false, side: THREE.DoubleSide, polygonOffset: true,
+                    polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+                const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
+                if (!meshes.length) { material.dispose(); continue; }
+                for (const mesh of meshes) {
+                    markOwnedMaterial(mesh, material);
+                    mesh.userData.planningRepresentationId = item.id;
+                    mesh.renderOrder = 3;
+                    planningSourcesGroup.add(mesh);
+                    const geometry = new THREE.EdgesGeometry(mesh.geometry);
+                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: selected ? 1 : 0.6, depthWrite: false });
+                    const edges = new THREE.LineSegments(geometry, edgeMaterial);
+                    markOwnedGeometry(edges, geometry); markOwnedMaterial(edges, edgeMaterial);
+                    edges.renderOrder = 4;
+                    planningSourcesGroup.add(edges);
+                }
+            }
         }
-        updateDisplayStateControls();
-        // Changing display drops out of parcel isolation so the new state is shown in full.
-        isolatedParcelId = null;
-        updateIsolationButton();
-        if (!applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();
-        applyModeVisibility();
-        // In realistic mode the Built row also drives the photoreal mesh itself.
-        if (kind === 'built' && window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function'
-            && window.PhotorealMode.isActive() && typeof window.PhotorealMode.setBuiltVisible === 'function') {
-            window.PhotorealMode.setBuiltVisible(state !== 'off');
-        }
+        invalidateThreeView();
+    }
+
+    function syncPlanningView3D() {
+        const policy = window.PlanningViews?.getPolicy();
+        if (!policy) return;
+        builtDisplay = policy.existing;
+        plannedDisplay = policy.proposed;
+        if (isActive) {
+            if (!applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();
+            applyModeVisibility();
+            rebuildPlanningSources3D();
+        } else buildingViewDirty = true;
     }
 
     // Sets the built-context load radius (metres) and refetches at the new size. The camera is
@@ -1292,10 +1303,7 @@
     function ensureBuildingModeControls() {
         const layersHost = document.getElementById('model-layer-controls');
         if (!threeContainer || !layersHost) return;
-        if (buildingModeControlsEl && buildingModeControlsEl.parentElement === layersHost) {
-            updateDisplayStateControls();
-            return;
-        }
+        if (buildingModeControlsEl && buildingModeControlsEl.parentElement === layersHost) return;
 
         buildingModeControlsEl = document.createElement('div');
         buildingModeControlsEl.className = 'three-mode-ui-panel';
@@ -1357,53 +1365,7 @@
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
 
-        // Display-state rows use equal-width selects. Built has one more state than Planned, so
-        // segmented buttons divided the same panel into four versus three unequal/truncated cells.
-        // A select represents this compact state choice without hiding any localized label.
-        const makeDisplayRow = (kind, labelText) => {
-            const row = document.createElement('div');
-            row.className = 'three-mode-emphasis-row';
-            const label = document.createElement('label');
-            label.className = 'three-mode-emphasis-label';
-            label.textContent = labelText;
-            // Full explanation on hover — the row label is short but its meaning isn't obvious.
-            label.title = threeI18n('threeMode.controls.' + kind + 'Tooltip', labelText);
-            label.htmlFor = `three-mode-${kind}-display`;
-            row.appendChild(label);
-            const stateTooltips = {
-                solid: threeI18n('threeMode.controls.stateSolidTooltip', 'Solid'),
-                ghost: threeI18n('threeMode.controls.stateGhostTooltip', 'Transparent'),
-                surviving: threeI18n('threeMode.controls.stateSurvivingTooltip', 'Surviving'),
-                removed: threeI18n('threeMode.controls.stateRemovedTooltip', 'Removed'),
-                off: threeI18n('threeMode.controls.stateOffTooltip', 'Off')
-            };
-            const stateLabels = {
-                solid: threeI18n('threeMode.controls.stateSolid', 'Solid'),
-                ghost: threeI18n('threeMode.controls.stateGhost', 'Transparent'),
-                surviving: threeI18n('threeMode.controls.stateSurviving', 'Surviving'),
-                removed: threeI18n('threeMode.controls.stateRemoved', 'Removed'),
-                off: threeI18n('threeMode.controls.stateOff', 'Off')
-            };
-            const states = buildingDisplayPolicy.displayStatesForKind(kind)
-                .map(state => [state, stateLabels[state]]);
-            const select = document.createElement('select');
-            select.id = `three-mode-${kind}-display`;
-            select.className = 'three-mode-display-select';
-            select.setAttribute('aria-label', labelText);
-            states.forEach(([state, stateLabel]) => {
-                const option = document.createElement('option');
-                option.value = state;
-                option.textContent = stateLabel;
-                if (stateTooltips[state]) option.dataset.tooltip = stateTooltips[state];
-                select.appendChild(option);
-            });
-            select.addEventListener('change', () => setBuildingDisplay(kind, select.value));
-            displayStateSelects[kind] = select;
-            row.appendChild(select);
-            return row;
-        };
-        buildingModeControlsEl.appendChild(makeDisplayRow('built', threeI18n('threeMode.controls.built', 'Built')));
-        buildingModeControlsEl.appendChild(makeDisplayRow('planned', threeI18n('threeMode.controls.planned', 'Planned')));
+        // Existing / Permitted / Proposed / Compare owns visibility in both map and model.
 
         // Massing vs example build-out, plus the dice that re-rolls every example at once.
         const representationRow = document.createElement('div');
@@ -1613,7 +1575,6 @@
         buildingModeControlsEl.appendChild(xrayRow);
 
         layersHost.appendChild(buildingModeControlsEl);
-        updateDisplayStateControls();
         updateIsolationButton();
     }
 
@@ -6188,11 +6149,15 @@
             // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
             return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial);
         };
-        if (!window.LiveParcelFabric) {
-            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, material, 0, height));
-            meshes.forEach(m => targetGroup.add(m));
-            return;
-        }
+        const drawUnsliced = () => {
+            const tint = window.PlanningViews && targetGroup === proposedBuildingsGroup && material !== buildingMaterials.massing;
+            const surface = tint ? cloneBuildingMaterial(material) : material;
+            if (tint) surface.color.set(window.PlanningViews.color('proposed'));
+            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, surface, 0, height), facadeSource, !!tint);
+            if (tint && !meshes.length) surface.dispose();
+            meshes.forEach(mesh => { if (tint && !hasFacade) markOwnedMaterial(mesh, surface); targetGroup.add(mesh); });
+        };
+        if (!window.LiveParcelFabric) { drawUnsliced(); return; }
 
         const candidateParcels = [];
         try {
@@ -6220,7 +6185,8 @@
         } catch (e) {
             buildingId = Math.random().toString();
         }
-        const baseColor = new THREE.Color(stringToColor(buildingId));
+        const baseColor = new THREE.Color(window.PlanningViews && targetGroup === proposedBuildingsGroup
+            ? window.PlanningViews.color('proposed') : stringToColor(buildingId));
 
         // Intersect the building with each candidate parcel and keep only the parcels it
         // actually covers (a bbox overlap is not enough — non-intersecting candidates would
@@ -6346,8 +6312,7 @@
                 buildingFacades.disposeGroup(pendingSliceObjects);
                 threeResources.disposeOwnedSubtree(pendingSliceObjects);
             }
-            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, material, 0, height));
-            meshes.forEach(m => targetGroup.add(m));
+            drawUnsliced();
         }
 
         // Storey divisions wrap the whole building once, whether it drew sliced or unsliced.
@@ -7206,9 +7171,10 @@
         buildingGroup = new THREE.Group();
         buildingGroup.name = 'Buildings';
         existingBuildingsGroup = new THREE.Group(); existingBuildingsGroup.name = 'ExistingBuildings';
+        planningSourcesGroup = new THREE.Group(); planningSourcesGroup.name = 'PermittedMassing';
         proposedBuildingsGroup = new THREE.Group(); proposedBuildingsGroup.name = 'ProposedBuildings';
         ineligibleBuildingsGroup = new THREE.Group(); ineligibleBuildingsGroup.name = 'IneligibleBuildings';
-        buildingGroup.add(existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup);
+        buildingGroup.add(existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, planningSourcesGroup);
         floorPlanGroup = new THREE.Group();
         floorPlanGroup.name = 'FloorPlans';
         parkGroup = new THREE.Group();
@@ -7307,8 +7273,11 @@
         }
         try { buildExistingTransitAlignments3D(scene); } catch (error) { console.error('[three-mode] transit alignments failed', error); }
         // Apply initial visibility based on the current display states.
+        const planningPolicy = window.PlanningViews?.getPolicy();
+        if (planningPolicy) { builtDisplay = planningPolicy.existing; plannedDisplay = planningPolicy.proposed; }
         applyModeVisibility();
         await rebuild3DBuildingsOnly();
+        rebuildPlanningSources3D();
         if (!isCurrent()) return false;
         buildingViewDirty = false;
         buildingWorkIncomplete = false;
@@ -7790,7 +7759,6 @@
         isolationResetEl = null;
         isolationBannerEl = null;
         parcelInfoPanelEl = null;
-        displayStateSelects = { built: null, planned: null };
         representationSelect = null;
         facadeCheckbox = null;
         facadeStyleSelect = null;
@@ -7825,6 +7793,7 @@
         parkGroundGroup = squareGroundGroup = lakeGroundGroup = proposalGroundGroup = reparcellizationGroup = null;
         buildingGroup = null;
         existingBuildingsGroup = proposedBuildingsGroup = ineligibleBuildingsGroup = null;
+        planningSourcesGroup = null;
         buildingDisplaySnapshot = null;
         buildingBuildPending = false;
         buildingWorkIncomplete = false;
@@ -8035,6 +8004,7 @@
             ensureNearbyTrees();
             ensureNearbyWater();
         } else if (!await initScene()) return false;
+        syncPlanningView3D();
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
                 window.activeProposalDraftComparison.draftId,
@@ -8112,6 +8082,13 @@
         rebuild3DBuildingsOnly({ family: 'existing' });
         refreshLifeSurface();
     });
+
+    window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
+    window.addEventListener('planningselectionchange', event => {
+        if (isActive && event.detail?.id) { clearIsolation(); hideParcelInfoPanel(); }
+        rebuildPlanningSources3D();
+    });
+    window.addEventListener('planningviewchange', syncPlanningView3D);
 
     // Rebuild on proposed buildings updates. Invalidate the nearby cache too so the
     // buffer query re-runs against the new proposal shape.
@@ -8270,11 +8247,17 @@
             if (!obj || obj.visible === false) continue;
             let proposalId = null;
             let parcelId = null;
+            let planningId = null;
+            let visible = true;
             while (obj) {
+                if (obj.visible === false) visible = false;
+                if (obj.userData?.planningRepresentationId) planningId = obj.userData.planningRepresentationId;
                 if (!proposalId && obj.userData?.proposalId) proposalId = String(obj.userData.proposalId);
                 if (!parcelId && obj.userData?.parcelId) parcelId = String(obj.userData.parcelId);
                 obj = obj.parent;
             }
+            if (!visible) continue;
+            if (planningId) return { planningId };
             if (proposalId || parcelId) return { proposalId, parcelId };
         }
         return null;
@@ -8300,6 +8283,11 @@
             if (moved > 6) return;
         }
         const picked = pickMapSubjectFromEvent(evt);
+        if (picked?.planningId) {
+            window.PlanningViews.select(picked.planningId);
+            return;
+        }
+        window.PlanningViews?.select(null);
         if (picked?.proposalId) {
             const proposal = window.proposalStorage?.getProposal?.(picked.proposalId) || null;
             const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
@@ -8636,6 +8624,7 @@
     // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
+        if (planningSourcesGroup) planningSourcesGroup.visible = !realisticLayerActive && window.PlanningViews?.getPolicy().permitted !== 'off';
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;

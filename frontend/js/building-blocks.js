@@ -1260,7 +1260,8 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
         try {
             // Buildings are an overlay on top of parcels; keep parcels clickable.
             L.geoJSON(building, {
-                style: PROPOSED_BUILDING_STYLE,
+                style: window.PlanningViews ? { ...PROPOSED_BUILDING_STYLE,
+                    color: window.PlanningViews.color('proposed'), fillColor: window.PlanningViews.color('proposed') } : PROPOSED_BUILDING_STYLE,
                 interactive: false,
                 pane: 'proposedBuildingsPane',
                 renderer: proposedBuildingCanvas()

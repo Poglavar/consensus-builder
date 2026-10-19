@@ -7590,5 +7590,57 @@
                 "apply": "Primijeni plan"
             }
         }
-    }
+    },
+  "planningViews": {
+    "title": "Zgrade i građevne mase",
+    "viewLabel": "Planski prikaz",
+    "detailsLabel": "Podaci o planskom izvoru",
+    "existing": "Postojeće",
+    "permitted": "Dopušteno",
+    "existingNote": "Grad prema dostupnim podacima o zgradama.",
+    "proposedNote": "Primijenjeni prijedlozi zgrada u kontekstu postojećeg grada.",
+    "noProposals": "Nema primijenjenih prijedloga zgrada. Istražite mogućnosti u Prijedlozima.",
+    "loading": "Učitavanje dopuštenih građevnih masa…",
+    "zoom": "Približite kartu za prikaz dopuštenih građevnih masa.",
+    "unavailable": "Za ovaj grad još nije povezan izvor dopuštenih građevnih masa.",
+    "empty": "U ovom području nema prikazanih građevnih masa. To ne znači da je gradnja zabranjena.",
+    "error": "Planski izvor nije moguće učitati.",
+    "loaded": {
+      "one": "{{count}} izračunata varijanta · pokrivenost izvora je djelomična",
+      "few": "{{count}} izračunate varijante · pokrivenost izvora je djelomična",
+      "other": "{{count}} izračunatih varijanti · pokrivenost izvora je djelomična"
+    },
+    "truncated": {
+      "one": "Prikazana je {{count}} varijanta · približite za manje područje",
+      "few": "Prikazane su {{count}} varijante · približite za manje područje",
+      "other": "Prikazano je {{count}} varijanti · približite za manje područje"
+    },
+    "partial": {
+      "one": "Prikazana je {{count}} varijanta · dio izvorne geometrije nije dostupan",
+      "few": "Prikazane su {{count}} varijante · dio izvorne geometrije nije dostupan",
+      "other": "Prikazano je {{count}} varijanti · dio izvorne geometrije nije dostupan"
+    },
+    "sourceProposal": "Dopuštena građevna masa",
+    "close": "Zatvori podatke o izvoru",
+    "obligatory": "Obvezujući izvorni prijedlog",
+    "approximate": "Približno",
+    "oneOption": "Jedna izračunata mogućnost prema izvornim pravilima. Ne predstavlja sve moguće oblike gradnje.",
+    "floorArea": "Izračunata podna površina",
+    "height": "Visina građevne mase",
+    "dwellingLimit": "Najviše stanova",
+    "conditionsTitle": "Uvjeti još zahtijevaju provjeru",
+    "conditionsNote": "Primjenjivost i neovisna ograničenja nisu razriješeni. Ovaj oblik nije potvrđena dozvola za gradnju.",
+    "sourceDetails": "Izvor i dokazi",
+    "computed": "Izračunato {{date}}",
+    "sourceTerms": "Izvorni uvjeti, sačuvani bez dodatnog tumačenja",
+    "readSource": "Pročitaj izvorni plan",
+    "constraint": {
+      "dwellings": "Najveći broj stanova",
+      "floorArea": "Najveća podna površina",
+      "naturalGround": "Najmanji udio prirodnog terena"
+    },
+    "inspect": "Pregledaj varijantu volumena…",
+    "photoNote": "Dopuštene volumene pregledajte na karti ili u 3D modelu.",
+    "openModel": "Otvori 3D model"
+  }
 }

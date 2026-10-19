@@ -7529,5 +7529,54 @@
                 "apply": "Apply plan"
             }
         }
-    }
+    },
+  "planningViews": {
+    "title": "Buildings and massing",
+    "viewLabel": "Planning view",
+    "detailsLabel": "Planning source details",
+    "existing": "Existing",
+    "permitted": "Permitted",
+    "existingNote": "The city as recorded by building sources.",
+    "proposedNote": "Your applied building proposals, with the existing city for context.",
+    "noProposals": "No building proposals applied yet. Browse Proposals to explore alternatives.",
+    "loading": "Loading permitted massing…",
+    "zoom": "Zoom in to explore permitted massing.",
+    "unavailable": "No permitted-massing source is connected for this city yet.",
+    "empty": "No represented massing in this area. This does not mean building is prohibited.",
+    "error": "The planning source could not be loaded.",
+    "loaded": {
+      "one": "{{count}} calculated option · source coverage is partial",
+      "other": "{{count}} calculated options · source coverage is partial"
+    },
+    "truncated": {
+      "one": "Showing {{count}} option · zoom in to see a smaller area",
+      "other": "Showing {{count}} options · zoom in to see a smaller area"
+    },
+    "partial": {
+      "one": "{{count}} option shown · some source geometry is unavailable",
+      "other": "{{count}} options shown · some source geometry is unavailable"
+    },
+    "sourceProposal": "Permitted massing",
+    "close": "Close source details",
+    "obligatory": "Obligatory source proposal",
+    "approximate": "Approximate",
+    "oneOption": "One calculated option under the source rules. It is not the full range of possible designs.",
+    "floorArea": "Calculated floor area",
+    "height": "Massing height",
+    "dwellingLimit": "Dwelling limit",
+    "conditionsTitle": "Conditions still need checking",
+    "conditionsNote": "Applicability and independent limits are unresolved. This shape is not a verified building permission.",
+    "sourceDetails": "Source and evidence",
+    "computed": "Calculated {{date}}",
+    "sourceTerms": "Original source conditions, retained without reinterpretation",
+    "readSource": "Read the source plan",
+    "constraint": {
+      "dwellings": "Maximum dwellings",
+      "floorArea": "Maximum floor area",
+      "naturalGround": "Minimum natural ground"
+    },
+    "inspect": "Inspect a massing option…",
+    "photoNote": "Explore permitted massing in the map or 3D model view.",
+    "openModel": "Open 3D model view"
+  }
 }
