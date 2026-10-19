@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
+import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 const bookkeeping = require('../../frontend/js/proposals/owner-acceptance.js');
@@ -10,25 +11,41 @@ const flow = require('../../frontend/js/proposals/ownership-flow.js');
 const status = require('../../frontend/js/proposals/status.js');
 const execution = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
 const core = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
+const agents = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
+const agentActions = parse(agents, { sourceType: 'script' }).program.body
+    .filter(node => node.type === 'FunctionDeclaration' && ['executeAgentAction', 'buildProposalLogLinkAgent'].includes(node.id.name))
+    .map(node => agents.slice(node.start, node.end)).join('\n');
 
 function fixture() {
-    const proposal = { proposalId: 'local-consent', goal: 'as-is', cadastreParcelIds: ['base-a'], acceptedParcelIds: ['base-a'] };
+    const proposal = { proposalId: 'local-consent', goal: 'as-is', lifecycleStatus: 'Active', applied: false,
+        cadastreParcelIds: ['base-a'], acceptedParcelIds: ['base-a'] };
+    const agent = { id: 'actor-a', name: 'Actor A', proposalsAccepted: [], proposalsExecuted: [], ethBalance: 100 };
     const alert = vi.fn();
     const bridge = { acceptProposal: vi.fn() };
     const context = createContext({
         ...bookkeeping, ...status, __ownershipFlow: flow, setTimeout: vi.fn(), console: { debug: vi.fn(), error: vi.fn() },
         getOwnerSlotsForParcel: () => [{ key: 'owner-a', displayName: 'Owner A' }],
-        getCurrentUserAgent: () => ({ id: 'actor-a' }),
+        getCurrentUserAgent: () => agent,
         proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id), normalizeParcelIdList: ids => ids.map(String),
         proposalStorage: { getProposal: () => proposal, save: vi.fn() },
         showProposalAlertMessage: alert, ProposalChainBridge: bridge,
-        getProposalNftInfo: () => ({ chain: 'evm', tokenId: '1', contract: 'fixture' })
+        getProposalNftInfo: () => ({ chain: 'evm', tokenId: '1', contract: 'fixture' }),
+        ProposalManager: { applyProposal: vi.fn() }, transferParcelOwnership: vi.fn(),
+        resolveProposalRecipientAgentId: () => 'recipient-a',
+        PersistentStorage: { getItem: () => 'actor-a' },
+        AgentSupportSimulation: { settle: vi.fn() },
+        agentStorage: { updateAgent: vi.fn() },
+        document: { getElementById: () => null, querySelector: () => null },
+        addUserActionToGameLog: vi.fn()
     });
     context.window = context;
     runInContext(core, context);
     runInContext(execution, context);
+    runInContext(agentActions, context);
     context.showProposalAlertMessage = alert;
-    return { context, proposal, alert, bridge };
+    context.refreshProposalOwnerAcceptanceUI = vi.fn();
+    context.restoreProposalDetailsScroll = vi.fn();
+    return { context, proposal, agent, alert, bridge };
 }
 
 function seedAcceptance(proposal) {
@@ -39,6 +56,54 @@ function seedAcceptance(proposal) {
 }
 
 describe('local owner consent evidence', () => {
+    it.each([true, false, undefined])('final local acceptance records consent only with funded=%s', async funded => {
+        const { context, proposal } = fixture();
+        if (funded !== undefined) proposal.funded = funded;
+        const result = await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a', { acceptedByAgentId: 'actor-a' });
+        expect(result).toMatchObject({ ownerAccepted: true, parcelAccepted: true });
+        expect(result).not.toHaveProperty('proposalExecuted');
+        expect(proposal.ownerAcceptances['base-a'].acceptedBy['owner-a']).toMatchObject({ effectHash: 'terms-a', agentId: 'actor-a' });
+        expect(proposal.acceptedParcelIds).toEqual(['base-a']);
+        expect(proposal).toMatchObject({ lifecycleStatus: 'Active', applied: false });
+        expect(proposal.executedAt).toBeUndefined();
+        expect(proposal.funded).toBe(funded);
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(context.transferParcelOwnership).not.toHaveBeenCalled();
+    });
+
+    it('a human acceptance records accepted activity without an execution claim', async () => {
+        const { context, proposal, agent, bridge } = fixture();
+        proposal.funded = true;
+        context.getProposalNftInfo = () => null;
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(agent.proposalsAccepted).toEqual([proposal.proposalId]);
+        expect(agent.proposalsExecuted).toEqual([]);
+        expect(context.addUserActionToGameLog).toHaveBeenCalledWith(expect.stringContaining('recorded acceptance'));
+        expect(context.agentStorage.updateAgent).toHaveBeenCalledWith(agent.id, { proposalsAccepted: [proposal.proposalId] });
+        expect(bridge.acceptProposal).not.toHaveBeenCalled();
+        expect(proposal.lifecycleStatus).toBe('Active');
+    });
+
+    it('an agent acceptance leaves simulated support and balances unchanged', async () => {
+        const { context, proposal, agent } = fixture();
+        Object.assign(proposal, { funded: true, budget: 10,
+            simulatedPledges: [{ agentId: agent.id, amount: 40, status: 'Active' }],
+            simulatedDonations: [{ agentId: agent.id, amount: 10, status: 'Escrowed' }] });
+        const before = JSON.stringify({ pledges: proposal.simulatedPledges, donations: proposal.simulatedDonations });
+        const message = await context.executeAgentAction(agent, { type: 'accept', proposalId: proposal.proposalId, parcelId: 'base-a', ownerKey: 'owner-a' });
+        expect(message).toContain('accepted proposal');
+        expect(agent.proposalsAccepted).toEqual([proposal.proposalId]);
+        expect(agent.proposalsExecuted).toEqual([]);
+        expect(agent.ethBalance).toBe(100);
+        expect(proposal.budget).toBe(10);
+        expect(JSON.stringify({ pledges: proposal.simulatedPledges, donations: proposal.simulatedDonations })).toBe(before);
+        expect(context.AgentSupportSimulation.settle).not.toHaveBeenCalled();
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(context.transferParcelOwnership).not.toHaveBeenCalled();
+        expect(proposal.lifecycleStatus).toBe('Active');
+        expect(proposal.executedAt).toBeUndefined();
+    });
+
     it.each(['Active', 'Executed'])('withdrawing local consent preserves %s lifecycle and map state', async lifecycleStatus => {
         const { context, proposal } = fixture();
         Object.assign(proposal, { lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z', applied: true });

@@ -219,18 +219,19 @@ test.describe('Proposal actions @features', () => {
     expect((await proposalState(page, proposalId)).lifecycleStatus).toBe('Active');
   });
 
-  test('withdrawing local consent preserves the recorded execution lifecycle', async ({ mockApi: page }) => {
+  test('final local acceptance records consent without execution or ownership changes', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await loadParcelOwnershipFixture(page);
     const proposalId = await page.evaluate((parcelId) => (window as any).proposalStorage.addProposal({
-      title: 'Single owner execution',
+      title: 'Single owner consent',
       goal: 'parcelBased',
       lifecycleStatus: 'Active',
       funded: true,
       offer: 0,
       cadastreParcelIds: [parcelId],
     }), PARCEL_ID);
+    const ownerBefore = await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID);
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
@@ -239,32 +240,27 @@ test.describe('Proposal actions @features', () => {
     await expect(ownerRow.getByRole('button', { name: 'Accept' })).toBeVisible();
     await ownerRow.getByRole('button', { name: 'Accept' }).click();
 
-    await expect.poll(async () => (await proposalState(page, proposalId)).lifecycleStatus).toBe('Executed');
-    const executed = await proposalState(page, proposalId);
-    expect(executed.acceptedParcelIds).toContain(PARCEL_ID);
-    expect(executed.executedAt).toBeTruthy();
-    await ownerRow.getByRole('button', { name: 'Undo' }).click();
-    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
-    const withdrawn = await proposalState(page, proposalId);
-    expect(withdrawn.lifecycleStatus).toBe('Executed');
-    expect(withdrawn.executedAt).toBe(executed.executedAt);
-    expect(withdrawn.applied).toBe(executed.applied);
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
+    const accepted = await proposalState(page, proposalId);
+    expect(accepted.lifecycleStatus).toBe('Active');
+    expect(accepted.executedAt).toBeFalsy();
+    expect(accepted.applied).toBe(false);
+    expect(await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID)).toBe(ownerBefore);
+    const profile = await page.evaluate(() => (window as any).getCurrentUserAgent());
+    expect(profile.proposalsAccepted).toContain(proposalId);
+    expect(profile.proposalsExecuted).not.toContain(proposalId);
+    await expect(ownerRow.getByRole('button', { name: 'Undo' })).toBeVisible();
+    await expect(page.locator('#proposal-details-panel').getByRole('button', { name: /Apply to map/ })).toBeVisible();
   });
 
-  test('an applied Active conditional offer can withdraw acceptance on EVM', async ({ mockApi: page }) => {
-    await injectMockEvmWallet(page, { chainIdHex: '0x14a34', walletKind: 'metamask' });
+  test('withdrawing local consent preserves the recorded execution lifecycle', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await loadParcelOwnershipFixture(page);
-    await connectWalletByConnectorId(page, 'metamask');
-    await installProposalEvmBoundary(page);
-    const proposalId = await page.evaluate(({ parcelId, contract }) => {
+    const proposalId = await page.evaluate(parcelId => {
       const w = window as any;
-      const id = w.proposalStorage.addProposal({
-        title: 'Applied conditional consent', goal: 'parcelBased', lifecycleStatus: 'Active',
-        funded: false, isConditional: true, cadastreParcelIds: [parcelId],
-        nft: { chain: '84532', contract, tokenId: '5' },
-      });
+      const id = w.proposalStorage.addProposal({ title: 'Previously executed record', goal: 'parcelBased',
+        lifecycleStatus: 'Executed', executedAt: '2026-10-01T10:00:00.000Z', cadastreParcelIds: [parcelId] });
       const p = w.proposalStorage.getProposal(id);
       const owners = w.getOwnerSlotsForParcel(parcelId);
       const key = owners[0].key;
@@ -276,10 +272,55 @@ test.describe('Proposal actions @features', () => {
       w.setProposalApplied(p, true);
       w.proposalStorage.save();
       return id;
+    }, PARCEL_ID);
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const ownerRow = page.locator('.owner-acceptance-row').first();
+    const executed = await proposalState(page, proposalId);
+    expect(executed.acceptedParcelIds).toContain(PARCEL_ID);
+    expect(executed.executedAt).toBeTruthy();
+    await ownerRow.getByRole('button', { name: 'Undo' }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    const withdrawn = await proposalState(page, proposalId);
+    expect(withdrawn.lifecycleStatus).toBe('Executed');
+    expect(withdrawn.executedAt).toBe(executed.executedAt);
+    expect(withdrawn.applied).toBe(executed.applied);
+  });
+
+  test('EVM acceptance records consent and an applied Active conditional offer can withdraw it', async ({ mockApi: page }) => {
+    await injectMockEvmWallet(page, { chainIdHex: '0x14a34', walletKind: 'metamask' });
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    await connectWalletByConnectorId(page, 'metamask');
+    await installProposalEvmBoundary(page);
+    const proposalId = await page.evaluate(({ parcelId, contract }) => {
+      const w = window as any;
+      const id = w.proposalStorage.addProposal({
+        title: 'Applied conditional consent', goal: 'parcelBased', lifecycleStatus: 'Active',
+        funded: true, isConditional: true, cadastreParcelIds: [parcelId],
+        nft: { chain: '84532', contract, tokenId: '5' },
+      });
+      const p = w.proposalStorage.getProposal(id);
+      w.setProposalApplied(p, true);
+      w.proposalStorage.save();
+      return id;
     }, { parcelId: PARCEL_ID, contract: PROPOSAL_EVM_CONTRACT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
+    await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Accept', exact: true }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
+    const accepted = await proposalState(page, proposalId);
+    expect(accepted.lifecycleStatus).toBe('Active');
+    expect(accepted.executedAt).toBeFalsy();
+    expect(accepted.applied).toBe(true);
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      return w.__proposalEvmSubmitted?.data?.slice(0, 10)
+        === w.ethers.id('acceptProposal(uint256,string,bytes32,bytes32,bytes32)').slice(0, 10);
+    })).toBe(true);
     await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Undo' }).click();
     await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
     const after = await proposalState(page, proposalId);

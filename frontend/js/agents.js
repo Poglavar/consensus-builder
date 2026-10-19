@@ -982,21 +982,6 @@ async function executeAgentAction(agent, action) {
                 if (!result) {
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to accept proposal ${String(action.proposalId).substring(0, 8)} but could not resolve owner acceptance.`;
                 }
-                if (result && result.proposalExecuted) {
-                    if (!agent.proposalsExecuted.includes(action.proposalId)) {
-                        agent.proposalsExecuted.push(action.proposalId);
-                        agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
-                    }
-                    const executedProposal = proposalStorage.getProposal(action.proposalId);
-                    if (executedProposal && window.AgentSupportSimulation) {
-                        window.AgentSupportSimulation.settle(executedProposal, id => agentStorage.getAgent(id));
-                        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(executedProposal);
-                        proposalStorage.save();
-                        for (const participant of agentStorage.getAllAgents()) {
-                            agentStorage.updateAgent(participant.id, { ethBalance: participant.ethBalance });
-                        }
-                    }
-                }
                 // Update agent's accepted proposals list
                 if (!agent.proposalsAccepted.includes(action.proposalId)) {
                     agent.proposalsAccepted.push(action.proposalId);

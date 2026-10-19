@@ -1381,31 +1381,18 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     const proposalLinkHtml = `<button type="button" data-proposal-id="${proposalIdAttr}" class="cb-link proposal-link-clickable">${proposalIdForLog}</button>`;
     const agentLinkHtml = `<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`;
 
-    if (result.proposalExecuted) {
-        if (typeof addUserActionToGameLog === 'function') {
-            addUserActionToGameLog(`${agentLinkHtml} executed proposal ${proposalLinkHtml} after confirming acceptance for ${ownerLabel}.`);
-        }
-        if (!userAgent.proposalsExecuted) {
-            userAgent.proposalsExecuted = [];
-        }
-        if (!userAgent.proposalsExecuted.includes(proposalId)) {
-            userAgent.proposalsExecuted.push(proposalId);
-            agentStorage.updateAgent(userAgent.id, { proposalsExecuted: userAgent.proposalsExecuted });
-        }
-    } else {
-        if (typeof addUserActionToGameLog === 'function') {
-            const logMsg = isVote
-                ? `${agentLinkHtml} voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
-                : `${agentLinkHtml} recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
-            addUserActionToGameLog(logMsg);
-        }
-        if (!userAgent.proposalsAccepted) {
-            userAgent.proposalsAccepted = [];
-        }
-        if (!userAgent.proposalsAccepted.includes(proposalId)) {
-            userAgent.proposalsAccepted.push(proposalId);
-            agentStorage.updateAgent(userAgent.id, { proposalsAccepted: userAgent.proposalsAccepted });
-        }
+    if (typeof addUserActionToGameLog === 'function') {
+        const logMsg = isVote
+            ? `${agentLinkHtml} voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
+            : `${agentLinkHtml} recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
+        addUserActionToGameLog(logMsg);
+    }
+    if (!userAgent.proposalsAccepted) {
+        userAgent.proposalsAccepted = [];
+    }
+    if (!userAgent.proposalsAccepted.includes(proposalId)) {
+        userAgent.proposalsAccepted.push(proposalId);
+        agentStorage.updateAgent(userAgent.id, { proposalsAccepted: userAgent.proposalsAccepted });
     }
 
     // Preserve exact scroll/anchor position BEFORE any updates

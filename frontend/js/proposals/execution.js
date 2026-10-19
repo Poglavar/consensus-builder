@@ -478,32 +478,6 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
     return summary;
 }
 
-function applyProposalOwnershipTransfer(proposal) {
-    if (!proposal || typeof resolveProposalRecipientAgentId !== 'function') return;
-    const toAgentId = resolveProposalRecipientAgentId(proposal);
-    if (!toAgentId) return; // no-change / open sale / unknown
-    const goalKey = (proposal.goal || '').toString().toLowerCase();
-    if (goalKey === 'decide-later' || goalKey === 'reparcellization') return; // owners set in appliers
-    const ids = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
-    ids.forEach(pid => {
-        const key = `parcel_${pid}_owner`;
-        const from = (typeof PersistentStorage !== 'undefined') ? PersistentStorage.getItem(key) : null;
-        if (from !== toAgentId && typeof transferParcelOwnership === 'function') {
-            transferParcelOwnership(pid, from, toAgentId);
-        }
-    });
-}
-
-function proposalRecipientConsentSatisfied(proposal) {
-    try {
-        if (typeof window === 'undefined' || !window.PROPOSAL_REQUIRE_RECIPIENT_CONSENT) return true;
-        const otp = proposal.ownershipTransferProposal || {};
-        const recipient = otp.recipient || (proposal.facets || {}).ownership;
-        if (recipient !== 'third-party' || otp.recipientScope === 'any') return true;
-        return proposal.recipientConsented === true;
-    } catch (_) { return true; }
-}
-
 function recordRecipientConsent(proposalId) {
     const all = (proposalStorage && proposalStorage.getAllProposals) ? (proposalStorage.getAllProposals() || []) : [];
     const p = all.find(x => (x.proposalId || x.id) === proposalId);
@@ -573,43 +547,6 @@ function acceptAsRecipient(proposalId) {
         const p = all.find(x => (x.proposalId || x.id) === proposalId);
         if (p && typeof showProposalInfo === 'function') showProposalInfo(p, null, true);
     } catch (_) { }
-}
-
-async function autoApplyExecutedProposalToMap(proposal) {
-    if (!proposal || !proposal.proposalId) {
-        return false;
-    }
-    if (typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
-        return false;
-    }
-    try {
-        const applied = await ProposalManager.applyProposal(proposal.proposalId);
-        if (applied && typeof window !== 'undefined' && window.currentlyHighlightedProposal &&
-            (window.currentlyHighlightedProposal.proposalId === proposal.proposalId)) {
-            let refreshed = proposal;
-            if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
-                const stored = proposalStorage.getProposal(proposal.proposalId);
-                if (stored) {
-                    refreshed = stored;
-                }
-            }
-            window.currentlyHighlightedProposal = refreshed;
-            if (typeof showProposalInfo === 'function') {
-                try {
-                    showProposalInfo(refreshed, window.selectedParcelInProposal);
-                } catch (error) {
-                    console.warn('autoApplyExecutedProposalToMap: failed to refresh proposal details', error);
-                }
-            }
-            if (typeof applyProposalHighlights === 'function') {
-                try { applyProposalHighlights(); } catch (error) { console.warn('autoApplyExecutedProposalToMap: failed to refresh highlights', error); }
-            }
-        }
-        return applied;
-    } catch (error) {
-        console.warn('autoApplyExecutedProposalToMap: failed to apply executed proposal', { proposalId: proposal.proposalId, error });
-        return false;
-    }
 }
 
 function proposalApplyFailureReason(proposalId, error = null) {
@@ -1258,30 +1195,17 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
             'The selected lens has not established these rights and your authority to act for this owner.'));
         return null;
     }
-    const lrValidation = proposalRequiresDealConsent(proposal)
-        ? window.ReparcellizationValidation?.validate(proposal, { turf: window.turf }) : null;
-    const canExecute = !withdraw && result.passed
-        && (proposalRequiresDealConsent(proposal) ? lrValidation?.readyForApproval && lrValidation.fundingReady : proposal.funded !== false)
-        && !isNonBindingProposal(proposal)
-        && proposalRecipientConsentSatisfied(proposal);
-    if (canExecute) {
-        proposal.lifecycleStatus = 'Executed';
-        proposal.executedAt = new Date().toISOString();
-    }
+    // A verified decision updates consent only. Chain execution, map application and payments
+    // require their own actions/evidence; a passed local tally cannot supply them.
     proposalStorage._indexProposal?.(proposal);
     proposalStorage.save();
-    if (canExecute) {
-        updateShowProposalsButton();
-        autoApplyExecutedProposalToMap(proposal);
-        applyProposalOwnershipTransfer(proposal);
-    }
     // The signed decision goes to the relay so other browsers can verify and count it; it stays
     // valid here either way, and the next sync of this proposal retries what did not arrive.
     const signed = withdraw ? (proposal.ownerApprovalHistory || []).at(-1) : proposal.ownerApprovals?.[result.ownerId];
     const shared = signed && window.ProposalApprovalRelay ? await window.ProposalApprovalRelay.push(proposal, signed) : { shared: false, code: 'not_published' };
     if (!shared.shared) console.info(`[${new Date().toISOString()}] [ProposalApproval] decision for ${result.ownerId} kept in this browser: ${shared.code}`);
     return { ownerKey: result.ownerId, ownerAccepted: !withdraw,
-        parcelAccepted: result.acceptedParcelIds.includes(String(parcelId)), proposalExecuted: canExecute,
+        parcelAccepted: result.acceptedParcelIds.includes(String(parcelId)),
         parcelNumber: String(parcelId), shared };
 }
 
@@ -1459,7 +1383,7 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             proposal.acceptedParcelIds = proposal.acceptedParcelIds.filter(id => id !== normalizedParcelId);
         }
 
-        // Persist the same validity decision the UI and execution use, including other parcels.
+        // Persist the same consent validity decision the UI uses, including other parcels.
         refreshProposalAcceptanceValidity(proposal);
         if (typeof proposalStorage._indexProposal === 'function') {
             proposalStorage._indexProposal(proposal);
@@ -1471,59 +1395,10 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             || null;
         const parcelNumber = parcelFeature?.properties?.BROJ_CESTICE || normalizedParcelId;
 
-        let proposalExecuted = false;
-        // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed.
-        // Votes never execute or transfer — an owner vote only accumulates yes-votes in this same
-        // structure (so the tally UI is shared), staying "Open for voting" until it concludes.
-        const canExecute = proposal.funded !== false
-            && !isNonBindingProposal(proposal)
-            && proposalRecipientConsentSatisfied(proposal);
-        // Execution counts only acceptances valid against the CURRENT effect — consent given to a
-        // since-edited proposal must never carry it over the line (§12 step 4).
-        refreshProposalAcceptanceValidity(proposal);
-        if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
-            proposal.lifecycleStatus = 'Executed';
-            proposal.executedAt = new Date().toISOString();
-            if (typeof proposalStorage._indexProposal === 'function') {
-                proposalStorage._indexProposal(proposal);
-            }
-            proposalStorage.save();
-            updateShowProposalsButton();
-
-            autoApplyExecutedProposalToMap(proposal);
-            applyProposalOwnershipTransfer(proposal);
-
-            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            const executedMessage = (() => {
-                const fullId = proposal.proposalId;
-                const parcelCount = proposal.cadastreParcelIds.length;
-                const fallback = `Proposal ${fullId} executed! All ${parcelCount} parcels accepted`;
-                if (t) {
-                    return t(
-                        'ephemeral.messages.proposal_executed_all_parcels',
-                        'Proposal {{hash}} executed! All {{count}} parcels accepted.',
-                        { hash: fullId, count: parcelCount }
-                    );
-                }
-                return fallback;
-            })();
-
-            if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
-                if (typeof markProposedBuildingState === 'function') {
-                    markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true });
-                }
-            }
-
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(executedMessage);
-            }
-            proposalExecuted = true;
-        }
-
+        // Recording consent does not execute the proposal, apply it to the map or transfer value.
         return {
             ownerAccepted: true,
             parcelAccepted: parcelFullyAccepted,
-            proposalExecuted,
             parcelNumber
         };
     } catch (error) {
