@@ -2,6 +2,7 @@
 // these tests pin the grouping, the ordering and the public shape GET /markets serves.
 import { describe, expect, it } from 'vitest';
 import { buildContests, closesAtOf, contestId, foldVersions, groupByLand, normalizeParcelIds, proposalAccountOf, siteNameOf } from '../markets/contests.js';
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
 const ACCOUNT_A = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const ACCOUNT_B = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
@@ -19,11 +20,15 @@ const market = (address, yesPool, noPool, resolved = false, outcome = 0) => ({
 });
 
 describe('proposalAccountOf', () => {
-    it('accepts only a base58 Solana proposal account on a solana chain', () => {
-        expect(proposalAccountOf({ chainId: 'solana-devnet', proposalId: ACCOUNT_A })).toBe(ACCOUNT_A);
-        expect(proposalAccountOf({ chainId: 'solana-mainnet', proposalAccount: ACCOUNT_A })).toBe(ACCOUNT_A);
-        expect(proposalAccountOf({ chainId: '0x1', proposalId: '12' })).toBeNull();
-        expect(proposalAccountOf({ chainId: 'solana-devnet', proposalId: 'not-base58-0OIl' })).toBeNull();
+    it('requires the exact devnet program and canonical account field', () => {
+        const location = { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT_A };
+        expect(proposalAccountOf(location)).toBe(ACCOUNT_A);
+        for (const change of [
+            { chainId: 'solana-mainnet' }, { chainId: 'solana' }, { chainId: 'solana-devnet-fake' },
+            { contractAddress: null }, { contractAddress: ACCOUNT_B },
+            { proposalId: undefined, proposalAccount: ACCOUNT_A }, { proposalId: undefined, tokenId: ACCOUNT_A },
+            { proposalId: 'not-base58-0OIl' }, { proposalId: 'z'.repeat(44) }, { proposalId: ` ${ACCOUNT_A}` }
+        ]) expect(proposalAccountOf({ ...location, ...change })).toBeNull();
         expect(proposalAccountOf(null)).toBeNull();
     });
 });

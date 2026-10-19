@@ -4,12 +4,14 @@
 // read; the payload is cached briefly per city because every sheet open would otherwise be an RPC.
 
 import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
 import { Connection } from '@solana/web3.js';
 import { buildContests, proposalAccountOf } from '../markets/contests.js';
 import { PLAN_IN_CITY_SQL } from '../plans/plan-store.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { EFFECTIVE_STATUS_SQL, normalizeCityCode } from './proposals.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
+import { DEVNET_GENESIS_HASH, PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -21,6 +23,13 @@ export const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const PROPOSAL_STATUS_NAMES = Object.freeze(['Active', 'Executed', 'Cancelled', 'Expired']);
 const CACHE_TTL_MS = 20_000;
 const MAX_PROPOSALS = 2000;
+const PROPOSAL_DISCRIMINATOR = createHash('sha256').update('account:Proposal').digest().subarray(0, 8);
+
+async function assertMarketNetwork(connection) {
+    if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) {
+        throw new Error('Proposal markets require Solana devnet.');
+    }
+}
 
 // The columns rowToProposal reads; the bet link route (bets-share.js) selects one row by account.
 export const PROPOSAL_COLUMNS_SQL = `
@@ -94,14 +103,23 @@ export function defaultMarketReader(env = process.env) {
     let connection = null;
     return async (proposalAccounts) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+        await assertMarketNetwork(connection);
         const pdas = proposalAccounts.map(account => ({ account, pda: marketClient.getMarketPda(account)[0] }));
         const result = new Map();
         const infos = await getMultipleAccountsBatched(connection, pdas.map(entry => entry.pda), { batchSize });
         pdas.forEach((entry, index) => {
             const info = infos[index];
+            let market = null;
+            if (info) {
+                if (info.owner?.toBase58() !== marketClient.constants.PROGRAM_ID) throw new Error('Unexpected market account program.');
+                market = marketClient.decodeMarket(info.data);
+                if (market.proposal !== entry.account || market.stakeMint !== DEVNET_USDC_MINT) {
+                    throw new Error('Market account has a different proposal or stake mint.');
+                }
+            }
             result.set(entry.account, {
                 address: entry.pda.toBase58(),
-                market: info && info.data ? marketClient.decodeMarket(info.data) : null
+                market
             });
         });
         return result;
@@ -109,25 +127,25 @@ export function defaultMarketReader(env = process.env) {
 }
 
 // On-chain status of each proposal account (the status the market program resolves from).
-// Returns Map(proposalAccount → 'Active' | 'Executed' | 'Cancelled' | 'Expired'); unreadable
-// accounts are left out, so the database word stands in for them.
+// Returns Map(proposalAccount → 'Active' | 'Executed' | 'Cancelled' | 'Expired'). Missing or
+// unverified accounts fail the read; a database word cannot stand in for a chain observation.
 export function defaultProposalStatusReader(env = process.env) {
     const batchSize = accountsPerRequest(env);
     let connection = null;
     return async (proposalAccounts) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+        await assertMarketNetwork(connection);
         const result = new Map();
         const addresses = proposalAccounts.map(account => new web3.PublicKey(account));
         const infos = await getMultipleAccountsBatched(connection, addresses, { batchSize });
         proposalAccounts.forEach((account, index) => {
             const info = infos[index];
-            if (!info || !info.data) return;
-            try {
-                const name = PROPOSAL_STATUS_NAMES[decodeProposalState(info.data).status];
-                if (name) result.set(account, name);
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] GET /markets: proposal ${account} did not decode: ${error.message}`);
-            }
+            if (!info || info.owner?.toBase58() !== PROPOSAL_PROGRAM_ID) throw new Error('Proposal account is missing or belongs to a different program.');
+            const bytes = Buffer.from(info.data || []);
+            if (!bytes.subarray(0, 8).equals(PROPOSAL_DISCRIMINATOR)) throw new Error('Account is not a Proposal account.');
+            const name = PROPOSAL_STATUS_NAMES[decodeProposalState(bytes).status];
+            if (!name) throw new Error('Proposal account has an unknown lifecycle status.');
+            result.set(account, name);
         });
         return result;
     };

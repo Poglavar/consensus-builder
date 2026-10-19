@@ -5,13 +5,15 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { rowToProposal, setupMarketsRoute } from '../routes/markets.js';
 
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+
 const ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 
 function rows() {
     return [{
         id: 789, proposal_id: 'agent-densifier-01-2026-10-01-1', city: 'zagreb', title: 'Plan-led infill',
         goal: 'single', lifecycle_status: 'Active', created_at: new Date('2026-10-01T10:00:00Z'), expires_at: null,
-        cadastre_parcel_ids: ['HR-335614-2311'], onchain_data: { chainId: 'solana-devnet', proposalId: ACCOUNT },
+        cadastre_parcel_ids: ['HR-335614-2311'], onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT },
         author: 'densifier-01', agent: true, proposal_role: null, screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, site_name: 'Rudeš'
     }, {
         id: 790, proposal_id: 'local-rival', city: 'zagreb', title: 'Rival', goal: 'park', lifecycle_status: 'Active',
@@ -85,7 +87,7 @@ describe('GET /markets', () => {
         const PLAN_ACCOUNT = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
         const plan = { slug: 'borovje-urbani-blokovi', title: 'Borovje – urbani blokovi', place: 'Borovje', author: 'UGT',
             created_at: new Date('2026-10-10T10:00:00Z'), proposal_ids: ['790'],
-            onchain_data: { chainId: 'solana-devnet', proposalId: PLAN_ACCOUNT } };
+            onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: PLAN_ACCOUNT } };
         const res = await request(appFor({
             pool: poolFor(rows(), [plan]),
             readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: null }], [PLAN_ACCOUNT, { address: 'PMKT', market: { yesPool: 5n, noPool: 3n, resolved: false, outcome: 0 } }]]),
@@ -106,7 +108,7 @@ describe('GET /markets', () => {
         const V1 = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
         const V2 = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
         const version = (slug, supersedes, account, at) => ({ slug, title: 'UPU Borovje', place: 'Borovje', author: 'Grad Zagreb',
-            created_at: new Date(at), proposal_ids: ['790'], supersedes, onchain_data: { chainId: 'solana-devnet', proposalId: account } });
+            created_at: new Date(at), proposal_ids: ['790'], supersedes, onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: account } });
         const pool = poolFor(rows(), [version('upu-borovje-v2', 'upu-borovje', V2, '2026-10-10T18:17:15Z'), version('upu-borovje', null, V1, '2026-10-10T14:08:54Z')]);
         const res = await request(appFor({
             pool,
@@ -144,6 +146,22 @@ describe('GET /markets', () => {
             id: 789, proposalId: 'agent-densifier-01-2026-10-01-1', createdAt: '2026-10-01T10:00:00.000Z',
             parcelIds: ['HR-335614-2311'], proposalAccount: ACCOUNT, agent: true
         });
+    });
+
+    it('does not query devnet for an account declared on another network or program', async () => {
+        const readMarkets = vi.fn(async () => new Map());
+        const readProposalStatuses = vi.fn(async () => new Map());
+        const [source] = rows();
+        for (const location of [
+            { ...source.onchain_data, chainId: 'solana-mainnet' },
+            { ...source.onchain_data, contractAddress: 'another-program' }
+        ]) {
+            const res = await request(appFor({ pool: poolFor([{ ...source, onchain_data: location }]), readMarkets, readProposalStatuses })).get('/markets?city=test-city');
+            expect(res.status).toBe(200);
+            expect(res.body.contests).toEqual([]);
+        }
+        expect(readMarkets).not.toHaveBeenCalled();
+        expect(readProposalStatuses).not.toHaveBeenCalled();
     });
 });
 

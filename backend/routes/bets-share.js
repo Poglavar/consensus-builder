@@ -6,7 +6,7 @@
 // fallback serves index.html and the app reads the same path itself, only without a preview.
 
 import { createRequire } from 'node:module';
-import { buildContests } from '../markets/contests.js';
+import { buildContests, DEVNET_PROPOSAL_LOCATION_SQL } from '../markets/contests.js';
 import { PROPOSAL_COLUMNS_SQL, defaultMarketReader, defaultProposalStatusReader, rowToPlan, rowToProposal } from './markets.js';
 
 const require = createRequire(import.meta.url);
@@ -20,13 +20,13 @@ const SITE_NAME = 'Consensus Builder';
 const TAGLINE = 'Bet on cities';
 const CACHE_SECONDS = 60;
 
-// One minted proposal by its Solana account, whichever onchain_data field holds it (the same three
-// markets/contests.js proposalAccountOf reads), newest first when a re-mint left two rows.
+// One proposal declared in the exact devnet program served by these markets. The canonical
+// onchain_data location matches markets/contests.js proposalAccountOf; aliases are not searched.
 const PROPOSAL_BY_ACCOUNT_SQL = `
     SELECT ${PROPOSAL_COLUMNS_SQL}
     FROM proposal
-    WHERE LOWER(COALESCE(onchain_data->>'chainId', onchain_data->>'chain', '')) LIKE 'solana%'
-      AND $1 IN (onchain_data->>'proposalId', onchain_data->>'proposalAccount', onchain_data->>'tokenId')
+    WHERE ${DEVNET_PROPOSAL_LOCATION_SQL}
+      AND onchain_data->>'proposalId' = $1
     ORDER BY created_at DESC
     LIMIT 1`;
 
@@ -34,7 +34,7 @@ const PROPOSAL_BY_ACCOUNT_SQL = `
 const PLAN_BY_ACCOUNT_SQL = `
     SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, city
     FROM ens_plan
-    WHERE LOWER(COALESCE(onchain_data->>'chainId', '')) LIKE 'solana%' AND onchain_data->>'proposalId' = $1
+    WHERE ${DEVNET_PROPOSAL_LOCATION_SQL} AND onchain_data->>'proposalId' = $1
     LIMIT 1`;
 const PLAN_MEMBERS_SQL = `SELECT ${PROPOSAL_COLUMNS_SQL} FROM proposal WHERE id = ANY($1::int[])`;
 
@@ -44,12 +44,14 @@ async function betSubject(pool, proposalAccount) {
     const { rows } = await pool.query(PROPOSAL_BY_ACCOUNT_SQL, [proposalAccount]);
     if (rows.length) {
         const proposal = rowToProposal(rows[0]);
+        if (proposal.proposalAccount !== proposalAccount) return null;
         // The preview shows before and after side by side when the pair has been rendered.
         return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotPairUrl || proposal.screenshotUrl, proposals: [proposal], plans: [] };
     }
     const { rows: planRows } = await pool.query(PLAN_BY_ACCOUNT_SQL, [proposalAccount]);
     if (!planRows.length) return null;
     const plan = rowToPlan(planRows[0]);
+    if (plan.proposalAccount !== proposalAccount) return null;
     const { rows: memberRows } = await pool.query(PLAN_MEMBERS_SQL, [plan.memberIds.map(Number)]);
     const members = memberRows.map(rowToProposal);
     const byId = new Map(members.map(member => [String(member.id), member]));

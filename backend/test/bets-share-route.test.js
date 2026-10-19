@@ -5,6 +5,8 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { describeRow, escapeHtml, setupBetsShareRoute } from '../routes/bets-share.js';
 
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+
 const ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const OTHER = 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw';
 
@@ -12,7 +14,7 @@ function row(overrides = {}) {
     return {
         id: 789, proposal_id: 'agent-densifier-01-2026-10-09-1', city: 'zagreb', title: 'Plan-led infill in <Rudeš> & "more"',
         goal: 'single', lifecycle_status: 'Active', created_at: new Date('2026-10-09T11:11:00Z'), expires_at: null,
-        cadastre_parcel_ids: ['HR-335614-2309/2'], onchain_data: { chainId: 'solana-devnet', proposalId: ACCOUNT },
+        cadastre_parcel_ids: ['HR-335614-2309/2'], onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT },
         author: 'densifier-01', agent: true, proposal_role: null, screenshot_url: null, site_name: null,
         ...overrides
     };
@@ -43,6 +45,8 @@ describe('GET /bets/:proposalAccount', () => {
         expect(res.headers['content-type']).toMatch(/text\/html/);
         expect(res.headers['cache-control']).toBe('public, max-age=60');
         expect(pool.query.mock.calls[0][1]).toEqual([ACCOUNT]);
+        expect(pool.query.mock.calls[0][0]).toContain("onchain_data->>'chainId' = 'solana-devnet'");
+        expect(pool.query.mock.calls[0][0]).toContain(`onchain_data->>'contractAddress' = '${PROPOSAL_PROGRAM_ID}'`);
         expect(meta(res.text, 'og:title')).toBe('Plan-led infill in &lt;Rudeš&gt; &amp; &quot;more&quot; · Bet on cities');
         expect(meta(res.text, 'og:description')).toBe('83.3% chance it gets built · Pool 0.3 USDC · Yes pays 1.04×, no pays 1.23×.');
         expect(meta(res.text, 'og:image')).toBe('https://urbangametheory.xyz/images/og-globe-20261019.jpg');
@@ -89,6 +93,16 @@ describe('GET /bets/:proposalAccount', () => {
         expect(res.text).toContain('content="0; url=/?city=zg"');
     });
 
+    it('does not preview a same-address record from another network or program', async () => {
+        for (const location of [
+            { chainId: 'solana-mainnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT },
+            { chainId: 'solana-devnet', contractAddress: OTHER, proposalId: ACCOUNT }
+        ]) {
+            const res = await request(appFor({ rows: [row({ onchain_data: location })] }).app).get(`/bets/${ACCOUNT}`);
+            expect(res.status).toBe(404);
+        }
+    });
+
     it('answers 400 for a path that is not an account, and ignores a city that is not one', async () => {
         const res = await request(appFor().app).get('/bets/not-an-account?city=%3Cscript%3E');
         expect(res.status).toBe(400);
@@ -130,7 +144,7 @@ describe('GET /bets/:account for a named plan', () => {
         const app = express();
         const planRow = { slug: 'borovje-urbani-blokovi', title: 'Borovje – urban blocks', place: 'Borovje', author: 'UGT',
             created_at: new Date('2026-10-10T10:00:00Z'), proposal_ids: ['5', '6'], city: 'zagreb',
-            onchain_data: { chainId: 'solana-devnet', proposalId: ACCOUNT } };
+            onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT } };
         const members = [
             row({ id: 5, proposal_id: 'street', onchain_data: null, screenshot_url: null, cadastre_parcel_ids: ['HR-1-1'] }),
             row({ id: 6, proposal_id: 'block', onchain_data: null, screenshot_url: 'https://cdn.example/block.png', cadastre_parcel_ids: ['HR-1-1'] })

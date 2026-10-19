@@ -6,22 +6,28 @@
 // nothing here touches the database or an RPC.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
+import { PublicKey } from '@solana/web3.js';
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
 const require = createRequire(import.meta.url);
 // The sheet's own model (frontend/js/bets/bets-model.js): the same state words and the same order,
 // so the API and the Bets sheet cannot disagree about which row leads.
 const { compareContests, compareRows, rowState } = require('../../frontend/js/bets/bets-model.js');
 
-const BASE58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+export const DEVNET_PROPOSAL_LOCATION_SQL = `
+    onchain_data->>'chainId' = 'solana-devnet'
+    AND onchain_data->>'contractAddress' = '${PROPOSAL_PROGRAM_ID}'`;
 
-/** The Solana proposal account a published proposal was minted as, or null. */
+/** A declared account in the deployment this market serves; the RPC reader verifies the account. */
 export function proposalAccountOf(onchainData) {
     const data = onchainData && typeof onchainData === 'object' ? onchainData : null;
     if (!data) return null;
-    const chain = String(data.chainId || data.chain || '').toLowerCase();
-    if (!chain.startsWith('solana')) return null;
-    const account = String(data.proposalId || data.proposalAccount || data.tokenId || '').trim();
-    return BASE58.test(account) ? account : null;
+    if (data.chainId !== 'solana-devnet' || data.contractAddress !== PROPOSAL_PROGRAM_ID) return null;
+    if (typeof data.proposalId !== 'string') return null;
+    try {
+        const account = new PublicKey(data.proposalId).toBase58();
+        return account === data.proposalId ? account : null;
+    } catch { return null; }
 }
 
 export function normalizeParcelIds(value) {
