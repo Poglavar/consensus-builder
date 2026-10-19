@@ -1713,7 +1713,11 @@
                 "offer": "Offer:",
                 "offerOriginal": "(was {{amount}})",
                 "parcels": "Parcels in proposal:",
-                "area": "Total area:",
+                "area": "Area:",
+                "siteArea": "Site area:",
+                "sourceArea": "Source parcel area sum:",
+                "availableSourceArea": "Available source parcel area:",
+                "areaCoverage": "Areas available for {{known}} of {{total}} declared references.",
                 "areaUnit": "m²",
                 "created": "Created:"
             },

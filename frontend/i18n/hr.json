@@ -1747,7 +1747,11 @@
                 "offer": "Ponuda:",
                 "offerOriginal": "(bilo {{amount}})",
                 "parcels": "Čestice u prijedlogu:",
-                "area": "Ukupna površina:",
+                "area": "Površina:",
+                "siteArea": "Površina obuhvata:",
+                "sourceArea": "Zbroj površina izvornih čestica:",
+                "availableSourceArea": "Dostupna površina izvornih čestica:",
+                "areaCoverage": "Površine su dostupne za {{known}} od {{total}} deklariranih oznaka.",
                 "areaUnit": "m²",
                 "created": "Kreirano:"
             },

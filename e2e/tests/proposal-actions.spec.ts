@@ -124,6 +124,40 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('area metrics distinguish site area, partial source sums and unknown measurements', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active' };
+      const site = { type: 'Polygon', coordinates: [[[0,0],[0.001,0],[0.001,0.001],[0,0.001],[0,0]]] };
+      return {
+        partial: w.proposalStorage.addProposal({ ...base, title: 'Site and source areas', site, cadastreParcelIds: [parcelId, 'area-unloaded'] }),
+        unknown: w.proposalStorage.addProposal({ ...base, title: 'Unknown source area', cadastreParcelIds: ['area-unloaded'] })
+      };
+    }, PARCEL_ID);
+    await showProposal(page, ids.partial);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const site = page.locator('[data-proposal-area-basis="site"]');
+    const sources = page.locator('[data-proposal-area-basis="source-parcels"]');
+    await expect(site.locator('.metric-label')).toHaveText('Site area:');
+    await expect(site.locator('.metric-value')).toContainText('m²');
+    const siteArea = Number((await site.locator('.metric-value').innerText()).replace(/[^\d]/g, ''));
+    expect(siteArea).toBeGreaterThan(12000);
+    expect(siteArea).toBeLessThan(12500);
+    await expect(sources).toHaveAttribute('data-area-complete', 'false');
+    await expect(sources.locator('.metric-label')).toHaveText('Available source parcel area:');
+    await expect(sources.locator('.metric-value')).not.toHaveText('—');
+    await expect(page.locator('.proposal-area-coverage')).toHaveText('Areas available for 1 of 2 declared references.');
+    await showProposal(page, ids.unknown);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    await expect(site).toHaveCount(0);
+    await expect(sources.locator('.metric-value')).toHaveText('—');
+    await expect(page.locator('.proposal-area-coverage')).toHaveText('Areas available for 0 of 1 declared references.');
+  });
+
   test('reference comparison counts all loaded matches before showing twelve rows', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));

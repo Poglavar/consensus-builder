@@ -156,19 +156,29 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const parentParcels = cadastreParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
     const perfEndParcelFeatures = performance.now();
 
-    // Total area: sum across whatever we have resolved so far. As parcelDataLoaded fires and
-    // more rows hydrate via the lazy list, this number is best-effort — accuracy improves as
-    // the user scrolls / panes parcels into view.
-    // A proposal on open ground has no (or not only) cadastral parents: with none, its area is
-    // its site's (computeProposalArea prefers the site).
-    // An applied proposal's parents are replaced on the map and may not carry a measured area any
-    // more; then the site's area stands in, rather than a sum of nothing reading "0 m²".
-    // Cadastre records carry the measured area as calculated_area; live parcels as calculatedArea.
-    const parentAreas = parentParcels.map(ap => ap?.feature?.properties?.calculatedArea ?? ap?.feature?.properties?.calculated_area);
-    const siteArea = () => (typeof computeProposalArea === 'function' ? (Number(computeProposalArea(proposal)) || 0) : 0);
-    const totalArea = parentParcels.length && parentAreas.every(Number.isFinite)
-        ? parentAreas.reduce((sum, area) => sum + area, 0)
-        : (siteArea() || parentAreas.filter(Number.isFinite).reduce((sum, area) => sum + area, 0));
+    // Site and source-parcel area are different extents. Inspect all retained source records,
+    // independently of the first 20 rendered rows; peekMany neither fetches nor clones geometry.
+    // Missing areas remain unknown, and a partial source sum states its measurement coverage.
+    // Source records may carry calculated_area or its normalized calculatedArea spelling;
+    // otherwise measure their retained geometry without fetching another source.
+    const sourceFeatures = window.CadastralParcelRepository?.peekMany?.(cadastreParcelIds) || [];
+    let siteAreaM2 = null;
+    if (fullProposal.site && window.__siteDraft?.siteAreaM2) {
+        try { siteAreaM2 = window.__siteDraft.siteAreaM2(fullProposal.site); }
+        catch (error) { console.warn('[showProposalInfo] Could not measure the proposal site:', error); }
+    }
+    const areaSummary = window.ProposalPanelPresentation.areaSummary({
+        hasSite: !!fullProposal.site, siteAreaM2,
+        declaredCount: new Set(cadastreParcelIds).size,
+        sourceAreas: sourceFeatures.map(feature => {
+            try { return window.ProposalPanelPresentation.sourceAreaM2(feature, window.__siteDraft?.siteAreaM2); }
+            catch (error) {
+                console.warn('[showProposalInfo] Could not measure a source parcel:', feature.properties?.parcelId, error);
+                return null;
+            }
+        })
+    });
+    const areaText = area => area === null ? '—' : `${Math.round(area).toLocaleString()} m²`;
 
     const renderAncestorParcelItem = (parentParcelOrId) => {
         const parentParcel = (typeof parentParcelOrId === 'string')
@@ -1078,9 +1088,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-value">${hasApprovalSetup && ownerAcceptanceSummaryFast.ownershipResolved !== true
                     ? '—' : ownerAcceptanceSummaryFast.totalOwners}</span>
             </div>
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Total Area:')}</span> <span class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</span>
-            </div>
+            ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
+                <span class="metric-value">${areaText(areaSummary.siteAreaM2)}</span>
+            </div>` : ''}
+            ${areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels" data-area-complete="${areaSummary.sourceComplete}">
+                <span class="metric-label">${areaSummary.sourceComplete
+                    ? tProposal('panel.proposal.metrics.sourceArea', 'Source parcel area sum:')
+                    : tProposal('panel.proposal.metrics.availableSourceArea', 'Available source parcel area:')}</span>
+                <span class="metric-value">${areaText(areaSummary.sourceAreaM2)}</span>
+            </div><p class="proposal-area-coverage"><small>${tProposal('panel.proposal.metrics.areaCoverage', 'Areas available for {{known}} of {{total}} declared references.', {
+                known: areaSummary.sourceCount, total: areaSummary.declaredCount
+            })}</small></p>` : ''}
+            ${!areaSummary.hasSite && !areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="unknown">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span><span class="metric-value">—</span>
+            </div>` : ''}
             <hr class="proposal-details-divider proposal-details-divider--tight">
             ${cadastreParcelIds.length > 0 ? `
             <div class="metric-group">

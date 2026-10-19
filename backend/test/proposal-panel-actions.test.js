@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { load } from 'cheerio';
 import { createRequire } from 'node:module';
+import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const supportView = require('../../frontend/js/proposals/support-view.js');
@@ -13,6 +14,7 @@ const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
 const displayState = require('../../frontend/js/proposals/display-state.js');
 const panelPresentation = require('../../frontend/js/proposals/panel-presentation.js');
 const referenceRelations = require('../../frontend/js/proposals/parcel-set-relations.js');
+const siteDraft = require('../../frontend/js/proposals/site-draft.js');
 // A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
 const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: 'Prog1111', tokenId: 'Token1111111111111111111111111111111111' });
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
@@ -21,8 +23,11 @@ const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false, sourceFeature = null, sourceReplaced = false, relatedProposals = null } = {}) {
-    const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false, sourceFeature = null, sourceFeatures = null, sourceReplaced = false, relatedProposals = null } = {}) {
+    // Model the renderer's deferred HTML mount as well as its direct innerHTML path.
+    const timers = [];
+    const htmlContainer = () => ({ innerHTML: '', appendChild(node) { this.innerHTML += node.innerHTML; } });
+    const content = { ...htmlContainer(), dataset: {}, scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
     const panelClasses = new Set();
@@ -50,8 +55,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
         },
         querySelectorAll: () => [],
         addEventListener() {}, removeEventListener() {},
-        createDocumentFragment: () => ({ appendChild() {} }),
-        createElement: () => ({ set innerHTML(value) { this._html = value; }, get firstChild() { return null; }, appendChild() {} })
+        createDocumentFragment: htmlContainer,
+        createElement: () => ({ ...htmlContainer(), get childNodes() { return [{ innerHTML: this.innerHTML }]; }, get firstChild() { return null; } })
     };
     const window = {
         i18n: null,
@@ -63,7 +68,11 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalDisplayText: displayText,
         __proposalDisplayState: displayState,
         ProposalPanelPresentation: panelPresentation,
-        CadastralParcelRepository: { get: () => sourceFeature },
+        CadastralParcelRepository: {
+            get: vi.fn(id => sourceFeatures ? sourceFeatures.find(feature => feature.properties.parcelId === id) : sourceFeature),
+            peekMany: ids => (sourceFeatures || [sourceFeature].filter(Boolean)).filter(feature => ids.includes(feature.properties.parcelId))
+        },
+        __siteDraft: { siteAreaM2: site => siteDraft.siteAreaM2(site, { turf }) },
         ProposalSupportView: supportView,
         ProposalKind,
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
@@ -84,7 +93,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
     };
     const globals = {
         window, document, console, Date, Math, Number, String, Array, Object, Set, Map, Promise, JSON,
-        performance: { now: () => 1 }, requestAnimationFrame: callback => callback(), setTimeout: () => 1, clearTimeout() {},
+        performance: { now: () => 1 }, requestAnimationFrame: callback => callback(),
+        setTimeout: callback => timers.push(callback), clearTimeout() {},
         proposalStorage: { getProposal: () => proposal, getAllProposals: () => relatedProposals || [], _indexProposal() {}, save() {} },
         PersistentStorage: { getItem: () => null },
         ProposalManager: { applyProposal() {}, unapplyProposal() {}, _getProposalDescendants: () => [] },
@@ -131,12 +141,50 @@ function render(proposal, { applied = false, connected = false, road = false, su
     const context = vm.createContext(globals);
     vm.runInContext(`${renderSource}\nthis.renderProposal = showProposalInfo;`, context);
     context.renderProposal(proposal, null, null, { presentation: 'compact' });
+    while (timers.length) timers.shift()();
     return { footer, content, window };
 }
 
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('shows unknown source areas as an em dash and gives partial sums their actual coverage', () => {
+        const proposal = { proposalId: 'areas', cadastreParcelIds: ['source-1', 'source-2'] };
+        let content = parse(render(proposal).content.innerHTML);
+        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('—');
+        expect(content('.proposal-area-coverage').text()).toBe('Areas available for 0 of 2 declared references.');
+        content = parse(render(proposal, { sourceFeature: { type: 'Feature', geometry: null,
+            properties: { parcelId: 'source-1', calculated_area: 100 } } }).content.innerHTML);
+        expect(content('[data-proposal-area-basis="source-parcels"]').attr('data-area-complete')).toBe('false');
+        expect(content('[data-proposal-area-basis="source-parcels"] .metric-label').text()).toBe('Available source parcel area:');
+        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('100 m²');
+        expect(content('.proposal-area-coverage').text()).toBe('Areas available for 1 of 2 declared references.');
+    });
+
+    it('sums every retained source area even when only twenty parcel rows are rendered', () => {
+        const sourceFeatures = Array.from({ length: 25 }, (_, i) => ({ type: 'Feature', geometry: null,
+            properties: { parcelId: `source-${i}`, calculatedArea: 10 } }));
+        const proposal = { proposalId: 'areas', cadastreParcelIds: sourceFeatures.map(feature => feature.properties.parcelId) };
+        const result = render(proposal, { sourceFeatures });
+        const content = parse(result.content.innerHTML);
+        expect(result.window.CadastralParcelRepository.get).toHaveBeenCalledTimes(20);
+        expect(content('.proposal-parcel-row')).toHaveLength(20);
+        expect(content('[data-proposal-area-basis="source-parcels"]').attr('data-area-complete')).toBe('true');
+        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('250 m²');
+        expect(content('.proposal-area-coverage').text()).toBe('Areas available for 25 of 25 declared references.');
+    });
+
+    it('measures the site separately even when all source parcel areas are known', () => {
+        const site = { type: 'Polygon', coordinates: [[[0,0],[0.001,0],[0.001,0.001],[0,0.001],[0,0]]] };
+        const proposal = { proposalId: 'areas', cadastreParcelIds: ['source-1'], site };
+        const content = parse(render(proposal, { sourceFeature: { type: 'Feature', geometry: null,
+            properties: { parcelId: 'source-1', calculated_area: 100 } } }).content.innerHTML);
+        const siteArea = Number(content('[data-proposal-area-basis="site"] .metric-value').text().replace(/[^\d]/g, ''));
+        expect(siteArea).toBeGreaterThan(12000);
+        expect(siteArea).toBeLessThan(12500);
+        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('100 m²');
+    });
+
     it('counts all loaded reference matches before limiting the visible list', () => {
         const proposal = { proposalId: 'target', cadastreParcelIds: ['source-1', 'source-2'] };
         const relatedProposals = Array.from({ length: 15 }, (_, i) => ({

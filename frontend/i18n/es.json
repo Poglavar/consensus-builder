@@ -1760,7 +1760,11 @@
                 "offer": "Oferta:",
                 "offerOriginal": "(era {{amount}})",
                 "parcels": "Parcelas en la propuesta:",
-                "area": "Área total:",
+                "area": "Superficie:",
+                "siteArea": "Superficie del ámbito:",
+                "sourceArea": "Suma de superficies de parcelas de origen:",
+                "availableSourceArea": "Superficie disponible de parcelas de origen:",
+                "areaCoverage": "Superficies disponibles para {{known}} de {{total}} referencias declaradas.",
                 "areaUnit": "m²",
                 "created": "Creada:"
             },

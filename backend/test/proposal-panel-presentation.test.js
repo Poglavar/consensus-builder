@@ -16,6 +16,25 @@ function extractBetween(source, startMarker, endMarker) {
 }
 
 describe('proposal panel presentation', () => {
+    it('uses available source-area metadata or measures retained geometry without inventing a missing area', () => {
+        const geometry = { type: 'Polygon', coordinates: [] };
+        const measure = vi.fn(() => 250);
+        expect(Presentation.sourceAreaM2({ properties: { calculated_area: 100 }, geometry }, measure)).toBe(100);
+        expect(measure).not.toHaveBeenCalled();
+        expect(Presentation.sourceAreaM2({ properties: {}, geometry }, measure)).toBe(250);
+        expect(measure).toHaveBeenCalledWith(geometry);
+        expect(Presentation.sourceAreaM2({ properties: { calculatedArea: 0 } }, measure)).toBeNull();
+        expect(Presentation.sourceAreaM2(null, measure)).toBeNull();
+    });
+
+    it('keeps unknown areas distinct from zero and site area distinct from source totals', () => {
+        expect(Presentation.areaSummary()).toMatchObject({ siteAreaM2: null, sourceAreaM2: null, sourceComplete: false });
+        expect(Presentation.areaSummary({ hasSite: true, siteAreaM2: 75, sourceAreas: [100, 200], declaredCount: 2 }))
+            .toMatchObject({ siteAreaM2: 75, sourceAreaM2: 300, sourceCount: 2, sourceComplete: true });
+        expect(Presentation.areaSummary({ hasSite: true, siteAreaM2: NaN, sourceAreas: [100, undefined, NaN, 0, -1, '200'], declaredCount: 6 }))
+            .toMatchObject({ siteAreaM2: null, sourceAreaM2: 100, sourceCount: 1, declaredCount: 6, sourceComplete: false });
+    });
+
     it('keeps source loading independent of observed map replacement', () => {
         expect(Presentation.parcelReferenceState()).toBe('unloaded');
         expect(Presentation.parcelReferenceState({ hasGeometry: true })).toBe('available');
