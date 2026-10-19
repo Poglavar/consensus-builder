@@ -3793,11 +3793,11 @@
             "regenerate": "Regenerate",
             "parametersTitle": "Parameters",
             "labels": {
-                "maxFloors": "Max floors:",
+                "maxFloors": "Rule max floors:",
                 "minDistance": "Min distance from borders (m):",
-                "buildingCount": "Buildings:",
-                "totalArea": "Permitted footprint (m²):",
-                "totalVolume": "Permitted volume (m³):",
+                "buildingCount": "Rule envelopes:",
+                "totalArea": "Rule footprint (m²):",
+                "totalVolume": "Rule volume (m³):",
                 "avgFloors": "Example floors (avg):",
                 "ruleType": "What the rule compels:",
                 "ruleTypeMax": "At most this",
@@ -3808,11 +3808,11 @@
                 "minPlotArea": "Min plot size (m²):"
             },
             "helper": {
-                "maxFloors": "Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.",
+                "maxFloors": "Maximum floors under the rule authored in this proposal. The example varies within its limits.",
                 "minDistance": "Min Distance: buildings keep at least this distance from parcel borders.",
-                "regenerate": "Click Regenerate for another example build-out — floor counts, footprint sizes and positions within the setbacks. The permitted figures above never change.",
-                "ruleType": "What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).",
-                "minPlotArea": "Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first."
+                "regenerate": "Regenerate shows another example within the authored rule. The rule footprint and volume stay the same.",
+                "ruleType": "These are proposed building rules; compliance with current planning rules has not been verified. Choose a maximum, a range, or an exact form.",
+                "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule."
             },
             "messages": {
                 "creationFailed": "Building generation failed. Try adjusting parameters.",
@@ -3824,9 +3824,9 @@
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} parcels",
                 "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule",
-                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
-                "excludedNoRoom": "The setback leaves no room to build on this plot.",
-                "excludedCannotMeet": "Too small to meet the minimum this rule compels — the rule contradicts itself here."
+                "excludedBelowMinPlot": "Smaller than this proposed rule’s minimum plot size; merge it or change the rule.",
+                "excludedNoRoom": "This proposed setback leaves no room for a building.",
+                "excludedCannotMeet": "The plot cannot meet this proposed rule’s minimum."
             },
             "generatedSummaryExcluded": "Generated {{buildings}} · {{excluded}}"
         }

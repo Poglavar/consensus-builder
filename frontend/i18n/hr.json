@@ -3843,11 +3843,11 @@
             "regenerate": "Regeneriraj",
             "parametersTitle": "Parametri",
             "labels": {
-                "maxFloors": "Maks. katova:",
+                "maxFloors": "Maks. katova prema pravilu:",
                 "minDistance": "Min. udaljenost od granica (m):",
-                "buildingCount": "Zgrade:",
-                "totalArea": "Dopuštena tlocrtna površina (m²):",
-                "totalVolume": "Dopušteni volumen (m³):",
+                "buildingCount": "Gabariti prema pravilu:",
+                "totalArea": "Tlocrtna površina prema pravilu (m²):",
+                "totalVolume": "Volumen prema pravilu (m³):",
                 "avgFloors": "Katova u primjeru (pros.):",
                 "ruleType": "Što pravilo obvezuje:",
                 "ruleTypeMax": "Najviše ovoliko",
@@ -3858,11 +3858,11 @@
                 "minPlotArea": "Najmanja površina čestice (m²):"
             },
             "helper": {
-                "maxFloors": "Maks. katova: dopuštena gornja granica. Primjer izgradnje varira od 1 kata do nje.",
+                "maxFloors": "Najveći broj katova zadan ovim prijedlogom. Primjer varira unutar tih granica.",
                 "minDistance": "Min. udaljenost: zgrade drže barem ovu udaljenost od granica čestice.",
-                "regenerate": "Klikni Regeneriraj za drugi primjer izgradnje — broj katova te veličina i položaj tlocrta unutar odmaka. Dopuštene brojke iznad se nikad ne mijenjaju.",
-                "ruleType": "Što pravilo obvezuje: najviše ovoliko (nitko nije dužan graditi), između minimuma i ovoga, ili točno ovoliko (svi grade puni gabarit).",
-                "minPlotArea": "Najmanja površina čestice: na česticama manjima od ove po ovom se pravilu ne može graditi i prikazane su šrafirano. Prvo ih treba spojiti."
+                "regenerate": "Regeneriraj za još jedan primjer unutar predloženog pravila. Tlocrt i volumen prema pravilu ostaju isti.",
+                "ruleType": "Ovo su predložena pravila gradnje; usklađenost s važećim prostornim pravilima nije provjerena. Odaberite maksimum, raspon ili točan oblik.",
+                "minPlotArea": "Čestice manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promijenite pravilo."
             },
             "messages": {
                 "creationFailed": "Generiranje zgrada nije uspjelo. Pokušaj prilagoditi parametre.",
@@ -3874,9 +3874,9 @@
                 "singleParcelLabel": "Čestica {{id}}",
                 "multiParcelLabel": "{{count}} čestica",
                 "generatedSummaryExcluded": "Generirano {{count}} zgrada · {{excluded}} čestica izuzeto pravilom",
-                "excludedBelowMinPlot": "Manja od najmanje površine čestice — treba je spojiti sa susjednom prije nego se ovdje išta može graditi.",
-                "excludedNoRoom": "Nakon odmaka na ovoj čestici ne ostaje mjesta za gradnju.",
-                "excludedCannotMeet": "Premala da zadovolji minimum koji ovo pravilo obvezuje — pravilo si ovdje proturječi."
+                "excludedBelowMinPlot": "Manja od najmanje površine čestice prema ovom predloženom pravilu; spojite je sa susjednom ili promijenite pravilo.",
+                "excludedNoRoom": "Ovaj odmak iz predloženog pravila ne ostavlja prostor za zgradu.",
+                "excludedCannotMeet": "Čestica ne može zadovoljiti minimum iz ovog predloženog pravila."
             },
             "generatedSummaryExcluded": "Generirano: {{buildings}} · {{excluded}}"
         }

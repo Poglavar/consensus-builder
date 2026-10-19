@@ -3844,11 +3844,11 @@
             "regenerate": "Regenerar",
             "parametersTitle": "Parámetros",
             "labels": {
-                "maxFloors": "Pisos máximos:",
+                "maxFloors": "Máximo de plantas según la regla:",
                 "minDistance": "Distancia mín. de los bordes (m):",
-                "buildingCount": "Edificios:",
-                "totalArea": "Huella permitida (m²):",
-                "totalVolume": "Volumen permitido (m³):",
+                "buildingCount": "Envolventes según la regla:",
+                "totalArea": "Huella según la regla (m²):",
+                "totalVolume": "Volumen según la regla (m³):",
                 "avgFloors": "Pisos del ejemplo (prom.):",
                 "ruleType": "Qué obliga la norma:",
                 "ruleTypeMax": "Como máximo esto",
@@ -3859,11 +3859,11 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "maxFloors": "Pisos máximos: el techo permitido. El ejemplo de edificación varía desde 1 piso hasta ese valor.",
+                "maxFloors": "Número máximo de plantas definido en esta propuesta. El ejemplo varía dentro de esos límites.",
                 "minDistance": "Distancia mínima: los edificios mantienen al menos esta distancia de los bordes de la parcela.",
-                "regenerate": "Haz clic en Regenerar para otro ejemplo de edificación — pisos, tamaño y posición de la planta dentro de los retiros. Las cifras permitidas de arriba nunca cambian.",
-                "ruleType": "Qué obliga la norma: como máximo esto (nadie está obligado a construir), entre un mínimo y esto, o exactamente esto (todos construyen el volumen completo).",
-                "minPlotArea": "Superficie mínima de parcela: en parcelas menores que esta no se puede construir bajo esta norma, y se muestran rayadas. Primero hay que fusionarlas."
+                "regenerate": "Regenerar muestra otro ejemplo dentro de la regla propuesta. La huella y el volumen que establece la regla no cambian.",
+                "ruleType": "Estas son reglas de edificación propuestas; no se ha verificado su cumplimiento con la normativa urbanística vigente. Elige un máximo, un rango o una forma exacta.",
+                "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla."
             },
             "messages": {
                 "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
@@ -3875,9 +3875,9 @@
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas",
                 "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
-                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
-                "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
-                "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
+                "excludedBelowMinPlot": "Menor que la superficie mínima de esta regla propuesta; fusiónala con una parcela vecina o cambia la regla.",
+                "excludedNoRoom": "Este retiro propuesto no deja espacio para un edificio.",
+                "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regla propuesta."
             },
             "generatedSummaryExcluded": "Generado: {{buildings}} · {{excluded}}"
         }

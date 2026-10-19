@@ -3843,11 +3843,11 @@
             "regenerate": "Regeneriši",
             "parametersTitle": "Parametri",
             "labels": {
-                "maxFloors": "Maks. spratova:",
+                "maxFloors": "Maks. spratova prema pravilu:",
                 "minDistance": "Min. udaljenost od granica (m):",
-                "buildingCount": "Zgrade:",
-                "totalArea": "Dozvoljena površina osnove (m²):",
-                "totalVolume": "Dozvoljena zapremina (m³):",
+                "buildingCount": "Gabariti prema pravilu:",
+                "totalArea": "Površina osnove prema pravilu (m²):",
+                "totalVolume": "Zapremina prema pravilu (m³):",
                 "avgFloors": "Spratova u primeru (pros.):",
                 "ruleType": "Šta pravilo obavezuje:",
                 "ruleTypeMax": "Najviše ovoliko",
@@ -3858,11 +3858,11 @@
                 "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
-                "maxFloors": "Maks. spratova: dozvoljena gornja granica. Primer izgradnje varira od 1 sprata do nje.",
+                "maxFloors": "Najveći broj spratova zadat ovim predlogom. Primer varira unutar tih granica.",
                 "minDistance": "Min. udaljenost: zgrade drže barem ovu udaljenost od granica parcele.",
-                "regenerate": "Klikni Regeneriši za drugi primer izgradnje — broj spratova te veličina i položaj osnove unutar odmaka. Dozvoljene brojke iznad se nikad ne menjaju.",
-                "ruleType": "Šta pravilo obavezuje: najviše ovoliko (niko nije dužan da gradi), između minimuma i ovoga, ili tačno ovoliko (svi grade pun gabarit).",
-                "minPlotArea": "Najmanja površina parcele: na parcelama manjim od ove po ovom pravilu ne može da se gradi i prikazane su šrafirano. Prvo ih treba spojiti."
+                "regenerate": "Regeneriši za još jedan primer unutar predloženog pravila. Površina osnove i zapremina prema pravilu ostaju iste.",
+                "ruleType": "Ovo su predložena pravila gradnje; usklađenost sa važećim pravilima planiranja nije proverena. Izaberite maksimum, raspon ili tačan oblik.",
+                "minPlotArea": "Parcele manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promenite pravilo."
             },
             "messages": {
                 "creationFailed": "Generisanje zgrada nije uspelo. Pokušaj da podesite parametre.",
@@ -3874,9 +3874,9 @@
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcela",
                 "generatedSummaryExcluded": "Generisano {{count}} zgrada · {{excluded}} parcela izuzeto pravilom",
-                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
-                "excludedNoRoom": "Nakon odmaka na ovoj parceli ne ostaje mesta za gradnju.",
-                "excludedCannotMeet": "Premala da zadovolji minimum koji ovo pravilo obavezuje — pravilo sebi ovde protivreči."
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele prema ovom predloženom pravilu; spojite je sa susednom ili promenite pravilo.",
+                "excludedNoRoom": "Ovaj odmak iz predloženog pravila ne ostavlja prostor za zgradu.",
+                "excludedCannotMeet": "Parcela ne može da zadovolji minimum iz ovog predloženog pravila."
             },
             "generatedSummaryExcluded": "Generisano: {{buildings}} · {{excluded}}"
         }
