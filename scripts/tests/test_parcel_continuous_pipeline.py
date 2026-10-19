@@ -76,6 +76,14 @@ class PipelineTests(unittest.TestCase):
         row['qualification']['fingerprint'] = 'changed'
         self.assertEqual(self.pool._select('qualification', 2), [self.cities[0]])
 
+    def test_unfinished_workspace_owners_are_selected_before_fresh_candidates(self):
+        for city in self.cities:
+            self.runner._city_entry(city).update(status='reviewed-candidate', discoveryDecision='candidate',
+                                                qualification={'status': 'integrated'})
+        self.runner.state['cities']['3']['qualification']['status'] = 'running'
+        self.runner.state['cities']['4']['qualification']['status'] = 'ready-isolated'
+        self.assertEqual(self.pool._select('qualification', 2), self.cities[2:])
+
     def accept(self, lane, result):
         spec = {'lane': lane, 'cityCodes': ['1']}
         self.pool.pipeline['tasks']['task'] = {}
@@ -103,6 +111,20 @@ class PipelineTests(unittest.TestCase):
         self.accept('qualification', result)
         self.accept('qualification', result)
         self.assertEqual(self.runner.state['cities']['1']['qualification']['status'], 'failed')
+
+    def test_failed_stage_cannot_validate_an_unchanged_integrated_result(self):
+        saved = {'status': 'integrated', 'receiptSha256': 'receipt'}
+        self.runner.state['cities']['1']['qualification'] = saved
+        self.accept('qualification', {'cities': {'1': {'qualification': saved}}, 'error': 'slot recovery required'})
+        self.assertEqual(self.pool.validated, set())
+
+    def test_saved_result_is_validated_only_with_a_positive_stage_receipt(self):
+        saved = {'status': 'integrated', 'receiptSha256': 'receipt'}
+        self.accept('qualification', {'cities': {'1': {'qualification': saved}}})
+        self.assertEqual(self.pool.validated, set())
+        self.accept('qualification', {'cities': {'1': {'qualification': saved}},
+                                      'validatedStages': [['1', 'receipt']]})
+        self.assertEqual(self.pool.validated, {('1', 'same')})
 
     def test_interrupted_stage_retains_qualification_evidence(self):
         self.accept('qualification', {'cities': {'1': {'qualification': {'status': 'running', 'artifactRoot': 'saved'}}},

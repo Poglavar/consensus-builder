@@ -81,6 +81,7 @@ def execute_task(runner_class, args):
         child.save_state()
         _write(control / "result.json", {"lane": lane, "cities": child.state.get("cities", {}),
             "usage": child.state.get("usage", {}), "failedItems": child.state.get("failedItems", {}),
+            "validatedStages": sorted(child.validated_stages),
             "adapterStageBlocked": child.state.get("adapterStageBlocked"),
             "systemic": systemic, "error": error, "interrupted": child.stop_requested})
     return 1 if error or systemic else 0
@@ -105,7 +106,13 @@ class ContinuousPipeline:
     def _select(self, lane, count):
         busy = self._claimed()
         selected = []
-        for city in self.cities:
+        ordered = self.cities
+        if lane == "qualification":
+            # Persistent slots must finish/recover their previous owner before a
+            # different city can reuse them, including immediately after restart.
+            ordered = sorted(self.cities, key=lambda city: 0 if self.runner._city_entry(city).get(
+                "qualification", {}).get("status") in {"running", "ready-isolated"} else 1)
+        for city in ordered:
             code = str(city["cityCode"])
             if code in busy:
                 continue
@@ -219,7 +226,9 @@ class ContinuousPipeline:
                         current[key] = child[key]
                 if current.get("qualification", {}).get("status") in {"running", "ready-isolated"} and result.get("interrupted"):
                     current["qualification"]["status"] = "ready-isolated"
-                if current.get("qualification", {}).get("status") in {"integrated", "adapter-ready"}:
+                digest = current.get("qualification", {}).get("receiptSha256")
+                if (current.get("qualification", {}).get("status") in {"integrated", "adapter-ready"}
+                        and [code, digest] in result.get("validatedStages", [])):
                     self.validated.add((code, self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])))
             else:
                 current.update({k: v for k, v in child.items() if k not in
