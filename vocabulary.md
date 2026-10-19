@@ -485,8 +485,20 @@ current user's profile. Other agents show their local model assignments; opening
 never queries the viewer's wallet as their own. Wallet results apply only to the dialog/list
 instance that requested them, so a late response cannot populate a different profile. These
 links do not establish registered land ownership. Model assignments remain available to the
-valuation without a connected wallet. The transient chain cache and account-change handling
-still require a separate audit of observation freshness and scope.
+valuation without a connected wallet. Session wallet observations now have an explicit `scope` (network and wallet), contract/program,
+parcel IDs and fetch time. They contain only the wallet response, never local assignments.
+Ownership lookup and indexing use them only for the currently user-controlled agent and matching
+connected scope. EVM account casing is normalized; Solana account casing remains significant.
+Successful empty responses replace earlier observations. Disconnects or wallet/network changes
+remove the previous scope from visible lists and ownership queries; late results cannot repopulate it.
+A completed chain fetch alone advances the profile cache timestamp. Reopening or recording a local
+acceptance does not refresh chain evidence. A matching cached observation can be shown while it is
+refetched after its 60-second reuse period; it is not a live proof of present possession.
+
+**Intentional session-format break, 2026-10-20:** `agentWalletObservations` replaces the unqualified
+`agentDialogTempOwnership` arrays. Old page-memory arrays are not read or migrated. Reload/reobserve
+instead. Per-token qualified identity and verification of the loaders' underlying chain evidence
+remain separate audit work. [Scope rules](frontend/js/agent-wallet-scope.js).
 
 “Recorded acceptances” combines local consent records with chain-observed acceptances. This
 activity list is not the current-terms consent tally and establishes neither execution nor

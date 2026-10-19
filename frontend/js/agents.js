@@ -315,14 +315,8 @@ function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransi
         }, { storage: storage || PersistentStorage });
     }
 
-    if (includeTransient) {
-        // Merge in transient ownership fetched from chain during this session
-        try {
-            if (agentDialogTempOwnership && agentDialogTempOwnership[agentId]) {
-                parcels.push(...agentDialogTempOwnership[agentId]);
-            }
-        } catch (_) { }
-    }
+    // Merge only observations belonging to the current connected wallet scope.
+    if (includeTransient) parcels.push(...getAgentObservedWalletParcels(agentId));
 
     return Array.from(new Set(parcels));
 }
@@ -345,16 +339,9 @@ function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient
     }
 
     if (includeTransient) {
-        try {
-            if (agentDialogTempOwnership && typeof agentDialogTempOwnership === 'object') {
-                Object.keys(agentDialogTempOwnership).forEach(agentId => {
-                    const parcelIds = Array.isArray(agentDialogTempOwnership[agentId])
-                        ? agentDialogTempOwnership[agentId]
-                        : [];
-                    parcelIds.forEach(parcelId => addOwnership(agentId, parcelId));
-                });
-            }
-        } catch (_) { }
+        Object.keys(agentWalletObservations).forEach(agentId => {
+            getAgentObservedWalletParcels(agentId).forEach(parcelId => addOwnership(agentId, parcelId));
+        });
     }
 
     ownerToParcels.forEach((parcelIds, ownerId) => {
@@ -1187,21 +1174,23 @@ function normalizeChainIdSafe(chainId) {
     return chainId !== undefined && chainId !== null ? String(chainId) : null;
 }
 
+function getCurrentAgentWalletScope() {
+    // A connected Solana wallet takes precedence; an unknown cluster has no usable scope.
+    const evm = window.walletManager?.getState?.();
+    const solana = window.solanaWalletManager?.getState?.();
+    return window.AgentWalletScope.connected({
+        evm, solana,
+        solanaCluster: window.solanaWalletManager?.getCluster?.() || solana?.cluster
+    });
+}
+
 function getCurrentWalletChainId() {
-    // Check Solana wallet first
-    const solWm = window.solanaWalletManager;
-    if (solWm && typeof solWm.getState === 'function') {
-        const solState = solWm.getState();
-        if (solState && solState.status === 'connected' && Array.isArray(solState.accounts) && solState.accounts.length > 0) {
-            const cluster = solWm.getCluster ? solWm.getCluster() : 'devnet';
-            return `solana-${cluster}`;
-        }
-    }
-    const walletState = window.walletManager && typeof window.walletManager.getState === 'function'
-        ? window.walletManager.getState()
-        : null;
-    if (!walletState || !walletState.chainId) return null;
-    return normalizeChainIdSafe(walletState.chainId);
+    return getCurrentAgentWalletScope()?.chainId || null;
+}
+
+function getAgentObservedWalletParcels(agentId) {
+    if (agentStorage.getAgent(agentId)?.userControlled !== true) return [];
+    return window.AgentWalletScope.parcelIds(agentWalletObservations[agentId], getCurrentAgentWalletScope());
 }
 
 function filterProposalIdsForChain(proposalIds = [], chainId) {
@@ -1321,7 +1310,8 @@ async function showAgentDialog(agentId, options = {}) {
     // Check if this is the current user's agent
     const isUserAgent = agent.userControlled === true;
 
-    const currentChainId = getCurrentWalletChainId();
+    const walletScope = getCurrentAgentWalletScope();
+    const currentChainId = walletScope?.chainId || null;
     const walletState = window.walletManager ? window.walletManager.getState() : null;
     const walletConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
     const walletAccounts = walletConnected ? (walletState.accounts || []) : [];
@@ -1345,8 +1335,7 @@ async function showAgentDialog(agentId, options = {}) {
     const initialTotalWealthDisplay = '-';
 
     // Prefer cached on-chain data when available so lists don't rebuild on every open
-    const cacheMatchesChain = cachedLists && cachedLists.chainId && cachedLists.chainId === currentChainId;
-    const usableCache = isUserAgent && cacheMatchesChain ? cachedLists : null;
+    const usableCache = isUserAgent && window.AgentWalletScope.matches(cachedLists?.scope, walletScope) ? cachedLists : null;
 
     const initialParcels = usableCache && Array.isArray(usableCache.parcels) && usableCache.parcels.length
         ? cachedLists.parcels
@@ -1401,6 +1390,7 @@ async function showAgentDialog(agentId, options = {}) {
     modal.className = 'cb-dialog cb-dialog--lg agent-dialog-modal';
     modal.dataset.portfolioUsdPerEth = String(portfolioBasis.usdPerEth);
     modal.dataset.agentId = agent.id;
+    modal.__walletScope = walletScope;
     if (readOnly) {
         modal.classList.add('agent-dialog-readonly');
     }
@@ -1520,6 +1510,7 @@ async function showAgentDialog(agentId, options = {}) {
         (async () => {
             try {
                 const value = await calculatePortfolioValue(ownedParcels, { forceRefresh: true, usdPerEth: portfolioBasis.usdPerEth });
+                if (!modal.isConnected || (isUserAgent && window.AgentWalletScope.key(walletScope) !== window.AgentWalletScope.key(getCurrentAgentWalletScope()))) return;
                 console.log('[AgentDialog] Portfolio calculation result:', value);
                 portfolioValue = Number.isFinite(value) ? value : NaN;
 
@@ -1564,19 +1555,29 @@ async function showAgentDialog(agentId, options = {}) {
     const cleanupFns = [];
     const reloadFn = () => {
         try {
-            const evmState = window.walletManager && typeof window.walletManager.getState === 'function'
-                ? window.walletManager.getState()
-                : null;
-            const solanaState = window.solanaWalletManager && typeof window.solanaWalletManager.getState === 'function'
-                ? window.solanaWalletManager.getState()
-                : null;
-            const hasEvmAccounts = evmState && Array.isArray(evmState.accounts) && evmState.accounts.length > 0;
-            const hasSolanaAccounts = solanaState && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
-            const hasConnectedWallet =
-                (evmState && evmState.status === 'connected' && hasEvmAccounts) ||
-                (solanaState && solanaState.status === 'connected' && hasSolanaAccounts);
-            if (!hasConnectedWallet) {
-                return; // ignore interim events until a wallet is connected
+            if (!isUserAgent || !modal.isConnected) return;
+            const nextScope = getCurrentAgentWalletScope();
+            if (window.AgentWalletScope.key(modal.__walletScope) !== window.AgentWalletScope.key(nextScope)) {
+                modal.__walletScope = nextScope;
+                const currentAgent = agentStorage.getAgent(agent.id) || agent;
+                ensureAgentDialogListState(agent.id,
+                    getAgentParcelDetails(agent.id),
+                    filterProposalIdsForChain(currentAgent.proposalsCreated || [], nextScope?.chainId),
+                    filterProposalIdsForChain(currentAgent.proposalsAccepted || [], nextScope?.chainId),
+                    getUserPendingProposals(agent.id, nextScope?.chainId));
+                for (const type of ['parcels', 'created', 'accepted', 'pending']) {
+                    modal.querySelector(`[data-list-type="${type}"]`)?.replaceChildren();
+                    setSectionCount(type, agentDialogListData[type].data.length);
+                    renderFirstPageForList(type);
+                }
+                updatePendingAmountDisplay(agentDialogListData.pending.data);
+                const valueNode = modal.querySelector('[data-agent-portfolio-value]');
+                const totalNode = modal.querySelector('[data-agent-total-wealth]');
+                if (valueNode) valueNode.textContent = '-';
+                if (totalNode) {
+                    totalNode.textContent = '-';
+                    totalNode.setAttribute('data-portfolio-value', '');
+                }
             }
             loadAgentChainData(agent, isUserAgent);
         } catch (err) {
@@ -1986,20 +1987,12 @@ async function loadAgentChainData(agent, isUserAgent) {
     if (!isUserAgent) return;
     const targetModal = document.querySelector('.agent-dialog-modal');
     if (!targetModal || targetModal.dataset.agentId !== agent.id) return;
-    const solanaWalletManager = window.solanaWalletManager;
-    const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function'
-        ? solanaWalletManager.getState()
-        : null;
-    const solanaConnected = !!(solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0);
-    const solanaCluster = solanaConnected
-        ? (solanaWalletManager && typeof solanaWalletManager.getCluster === 'function'
-            ? solanaWalletManager.getCluster()
-            : (solanaState.cluster || 'devnet'))
-        : null;
-
-    const walletState = window.walletManager && window.walletManager.getState && window.walletManager.getState();
-    const walletProvider = window.walletManager && window.walletManager.getProvider && window.walletManager.getProvider();
-    const evmConnected = !!(walletState && walletProvider && Array.isArray(walletState.accounts) && walletState.accounts.length > 0);
+    const walletScope = getCurrentAgentWalletScope();
+    if (!walletScope) return;
+    const solanaConnected = walletScope.chainId.startsWith('solana-');
+    const solanaCluster = solanaConnected ? walletScope.chainId.slice(7) : null;
+    const walletProvider = window.walletManager?.getProvider?.();
+    const evmConnected = !solanaConnected && !!walletProvider;
 
     const useSolana = solanaConnected;
     if (useSolana) {
@@ -2017,8 +2010,8 @@ async function loadAgentChainData(agent, isUserAgent) {
         return;
     }
 
-    const walletAddress = useSolana ? solanaState.accounts[0] : walletState.accounts[0];
-    const chainId = useSolana ? `solana-${solanaCluster}` : walletState.chainId;
+    const walletAddress = walletScope.walletAddress;
+    const chainId = walletScope.chainId;
     const normalizedChainId = typeof normalizeChainId === 'function' ? normalizeChainId(chainId) : chainId;
     console.log('[AgentDialog] Loading chain data', { walletAddress, chainId, useSolana });
 
@@ -2029,14 +2022,11 @@ async function loadAgentChainData(agent, isUserAgent) {
         ensureAgentDialogListState(agent.id, [], [], [], []);
     }
     const targetList = agentDialogListData;
-    const isCurrentProfile = () => targetModal.isConnected && agentDialogListData === targetList;
+    const isCurrentProfile = () => targetModal.isConnected && agentDialogListData === targetList
+        && window.AgentWalletScope.matches(walletScope, getCurrentAgentWalletScope());
 
     const cache = getAgentDialogCache(agent.id);
-    const cacheFresh = cache
-        && cache.chainId === normalizedChainId
-        && cache.walletAddress === walletAddress
-        && cache.lastFetchedAt
-        && (Date.now() - cache.lastFetchedAt) < AGENT_DIALOG_CACHE_TTL_MS;
+    const cacheFresh = window.AgentWalletScope.fresh(cache, walletScope, Date.now(), AGENT_DIALOG_CACHE_TTL_MS);
 
     const cacheKey = `${agent.id}:${normalizedChainId}:${walletAddress}`;
     const existingFetch = agentDialogFetchPromises.get(cacheKey);
@@ -2140,10 +2130,10 @@ async function loadAgentChainData(agent, isUserAgent) {
             const proposalAcceptanceMap = new Map(); // proposalId -> {cadastreParcelIds:Set, acceptedParcels:Set}
 
             const uniq = arr => Array.from(new Set(arr));
-            const existingParcels = agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data : [];
-            const existingCreated = agentDialogListData && agentDialogListData.created ? agentDialogListData.created.data : [];
-            const existingAccepted = agentDialogListData && agentDialogListData.accepted ? agentDialogListData.accepted.data : [];
-            const existingPending = agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data : [];
+            const currentAgent = agentStorage.getAgent(agent.id) || agent;
+            const existingParcels = getAgentParcelDetails(agent.id, { includeTransient: false });
+            const existingCreated = filterProposalIdsForChain(currentAgent.proposalsCreated || [], normalizedChainId);
+            const existingAccepted = filterProposalIdsForChain(currentAgent.proposalsAccepted || [], normalizedChainId);
 
             const uniqParcels = uniq([...existingParcels.map(p => (p.id || p)), ...parcels.map(p => p.parcelId)]);
             const uniqCreated = uniq([
@@ -2183,18 +2173,16 @@ async function loadAgentChainData(agent, isUserAgent) {
             }
 
             // Merge the data we already have so the UI updates immediately
-            const parcelsAdded = mergeAgentDialogListData('parcels', uniqParcels);
-            const createdAdded = mergeAgentDialogListData('created', uniqCreated);
+            const parcelsAdded = replaceAgentDialogListData('parcels', uniqParcels);
+            const createdAdded = replaceAgentDialogListData('created', uniqCreated);
             let acceptedAdded = false;
             let pendingAdded = false;
 
-            // Record ownership temporarily for this session (do not persist across reloads)
-            if (isUserAgent && Array.isArray(uniqParcels) && uniqParcels.length) {
-                agentDialogTempOwnership[agent.id] = uniqParcels.slice();
-                if (typeof window !== 'undefined') {
-                    window.agentDialogTempOwnership = agentDialogTempOwnership;
-                }
-            }
+            // Keep only this wallet response as chain evidence, including a successful empty result.
+            agentWalletObservations[agent.id] = {
+                scope: walletScope, contractAddress: parcelAddress,
+                parcelIds: parcels.map(parcel => parcel.parcelId), fetchedAt: Date.now()
+            };
 
             // Render early (and clear loaders) for lists that already have data
             renderFirstPageForList('parcels');
@@ -2313,6 +2301,7 @@ async function loadAgentChainData(agent, isUserAgent) {
             }
 
             if (!isCurrentProfile()) return;
+            const existingPending = getUserPendingProposals(agent.id, normalizedChainId);
             const uniqPending = uniq([...existingPending, ...pendingProposals]);
             const uniqAccepted = uniq([...existingAccepted, ...acceptedProposals]);
 
@@ -2381,8 +2370,8 @@ async function loadAgentChainData(agent, isUserAgent) {
             }
 
             if (!isCurrentProfile()) return;
-            acceptedAdded = mergeAgentDialogListData('accepted', uniqAccepted);
-            pendingAdded = isUserAgent ? mergeAgentDialogListData('pending', uniqPending) : false;
+            acceptedAdded = replaceAgentDialogListData('accepted', uniqAccepted);
+            pendingAdded = isUserAgent ? replaceAgentDialogListData('pending', uniqPending) : false;
 
             renderFirstPageForList('accepted');
             if (isUserAgent) {
@@ -2406,8 +2395,7 @@ async function loadAgentChainData(agent, isUserAgent) {
 
             // Persist latest snapshot for reuse
             setAgentDialogCache(agent.id, {
-                chainId: normalizedChainId,
-                walletAddress,
+                scope: walletScope,
                 parcels: agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data.slice() : [],
                 created: agentDialogListData && agentDialogListData.created ? agentDialogListData.created.data.slice() : [],
                 accepted: agentDialogListData && agentDialogListData.accepted ? agentDialogListData.accepted.data.slice() : [],
@@ -2552,10 +2540,10 @@ const AGENT_DIALOG_PAGE_SIZES = {
 const agentDialogCache = (typeof window !== 'undefined' && window.agentDialogCache) || {};
 const AGENT_DIALOG_CACHE_TTL_MS = 60 * 1000; // reuse data for a short period before refetching
 const agentDialogFetchPromises = new Map();
-const agentDialogTempOwnership = (typeof window !== 'undefined' && window.agentDialogTempOwnership) || {};
+const agentWalletObservations = {};
 if (typeof window !== 'undefined') {
     window.agentDialogCache = agentDialogCache;
-    window.agentDialogTempOwnership = agentDialogTempOwnership;
+    window.agentWalletObservations = agentWalletObservations;
 }
 let agentDialogListData = null;
 
@@ -2600,41 +2588,17 @@ function ensureAgentDialogListState(agentId, parcelDetails, createdProposals, ac
     if (typeof window !== 'undefined') {
         window.agentDialogListData = agentDialogListData;
     }
-    // Persist initial snapshot for reuse on reopen
-    setAgentDialogCache(agentId, {
-        ...(getAgentDialogCache(agentId) || {}),
-        parcels: agentDialogListData.parcels.data.slice(),
-        created: agentDialogListData.created.data.slice(),
-        accepted: agentDialogListData.accepted.data.slice(),
-        pending: agentDialogListData.pending.data.slice(),
-        lastFetchedAt: Date.now()
-    });
+    // Only a completed chain fetch can write a fetched snapshot or advance its timestamp.
     return agentDialogListData;
 }
 
-function mergeAgentDialogListData(listType, newItems) {
+function replaceAgentDialogListData(listType, newItems) {
     if (!agentDialogListData || !agentDialogListData[listType]) return false;
     const info = agentDialogListData[listType];
-    const existingKeys = new Set(
-        info.data.map(item => (typeof item === 'string' ? item : item.id || item.parcelId || item.parcel_id || item))
-    );
-    const normalized =
-        listType === 'parcels'
-            ? normalizeParcelEntries(newItems)
-            : (newItems || []).filter(Boolean);
-
-    let added = false;
-    normalized.forEach(item => {
-        const key = typeof item === 'string' ? item : item.id || item.parcelId || item.parcel_id || item;
-        if (!key || existingKeys.has(key)) {
-            return;
-        }
-        existingKeys.add(key);
-        info.data.push(item);
-        added = true;
-    });
-
-    return added;
+    info.data = listType === 'parcels' ? normalizeParcelEntries(newItems) : Array.from(new Set(newItems || []));
+    info.loaded = 0;
+    document.querySelector(`[data-list-type="${listType}"]`)?.replaceChildren();
+    return true;
 }
 
 function renderFirstPageForList(listType) {
@@ -2668,11 +2632,13 @@ function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, a
     const modalBody = document.querySelector('.agent-dialog-modal-body');
     if (modalBody) {
         modalBody.addEventListener('scroll', () => {
-            // Check each list to see if we need to load more items
-            Object.keys(listData).forEach(listType => {
+            // Check current lists, including replacements after a wallet scope change.
+            const currentLists = agentDialogListData;
+            if (!currentLists) return;
+            Object.keys(currentLists).forEach(listType => {
                 const listContainer = document.querySelector(`[data-list-type="${listType}"]`);
                 if (listContainer && shouldLoadMore(modalBody, listContainer)) {
-                    const listInfo = listData[listType];
+                    const listInfo = currentLists[listType];
                     if (listInfo.loaded < listInfo.data.length) {
                         loadMoreItems(listType, listInfo);
                     }
@@ -2839,7 +2805,8 @@ function updateAgentDialogAfterAcceptance(proposalId) {
     if (!proposalId) return;
 
     const modal = document.querySelector('.agent-dialog-modal');
-    if (!modal || !agentDialogListData) return;
+    const currentAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+    if (!modal || !agentDialogListData || !currentAgent || modal.dataset.agentId !== currentAgent.id) return;
 
     const listData = agentDialogListData;
     const hasPending = listData.pending && Array.isArray(listData.pending.data);
@@ -2880,18 +2847,16 @@ function updateAgentDialogAfterAcceptance(proposalId) {
             acceptedList.innerHTML = '';
             renderFirstPageForList('accepted');
         }
-        setSectionCount('accepted', listData.accepted.data.length, 'Proposals Accepted');
+        setSectionCount('accepted', listData.accepted.data.length, 'Recorded acceptances');
     }
 
     // Keep cache aligned so reopen preserves the updated lists
-    const currentAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
-    if (currentAgent && typeof setAgentDialogCache === 'function') {
-        const existingCache = getAgentDialogCache(currentAgent.id) || {};
+    const existingCache = getAgentDialogCache(currentAgent.id);
+    if (window.AgentWalletScope.matches(existingCache?.scope, getCurrentAgentWalletScope())) {
         setAgentDialogCache(currentAgent.id, {
             ...existingCache,
             accepted: hasAccepted ? listData.accepted.data.slice() : [],
-            pending: hasPending ? listData.pending.data.slice() : [],
-            lastFetchedAt: Date.now()
+            pending: hasPending ? listData.pending.data.slice() : []
         });
     }
 }

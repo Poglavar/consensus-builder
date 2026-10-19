@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { parse } from '@babel/parser';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const walletScope = createRequire(import.meta.url)('../../frontend/js/agent-wallet-scope.js');
 
 const source = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
 const node = parse(source, { sourceType: 'script' }).program.body.find(n => n.id?.name === 'loadAgentChainData');
@@ -13,6 +15,8 @@ const deferred = () => {
     return { promise, resolve, reject };
 };
 function harness() {
+    let walletState = { status: 'connected', accounts: ['wallet-a'], chainId: '0x1' };
+    let localParcels = [];
     const requested = deferred();
     const response = deferred();
     let modal = { dataset: { agentId: 'user' }, isConnected: true };
@@ -23,7 +27,8 @@ function harness() {
     const errors = vi.fn();
     const context = vm.createContext({
         window: {
-            walletManager: { getState: () => ({ accounts: ['wallet-a'], chainId: '0x1' }), getProvider: () => ({}) },
+            AgentWalletScope: walletScope,
+            walletManager: { getState: () => walletState, getProvider: () => ({}) },
             ChainDataLoader: { resolveContractAddress: async (_chain, name) => name === 'ParcelNFT' ? 'parcel-contract' : null, getParcelsFromChain: fetchParcels },
             ContractsLoader: {}, ethers: {}
         },
@@ -31,8 +36,11 @@ function harness() {
         console: { log() {}, debug() {}, warn() {} },
         handleAgentDialogChainChange() {}, pruneAgentDialogListDataForChain() {},
         getAgentDialogCache: () => null,
-        agentDialogListData: lists(), agentDialogTempOwnership: {}, agentDialogFetchPromises: new Map(), AGENT_DIALOG_CACHE_TTL_MS: 60000,
-        setListLoading() {}, mergeAgentDialogListData: merge, renderFirstPageForList() {}, setSectionCount() {},
+        getCurrentAgentWalletScope: () => walletScope.connected({ evm: walletState }),
+        agentStorage: { getAgent: () => ({ id: 'user', userControlled: true }) },
+        getAgentParcelDetails: () => localParcels, filterProposalIdsForChain: ids => ids, getUserPendingProposals: () => [],
+        agentDialogListData: lists(), agentWalletObservations: {}, agentDialogFetchPromises: new Map(), AGENT_DIALOG_CACHE_TTL_MS: 60000,
+        setListLoading() {}, replaceAgentDialogListData: merge, renderFirstPageForList() {}, setSectionCount() {},
         updatePendingAmountDisplay() {}, updatePendingProposalsCount() {}, setAgentDialogCache: cache, setListError: errors
     });
     vm.runInContext(loaderSource, context);
@@ -42,7 +50,7 @@ function harness() {
         modal = { dataset: { agentId: id }, isConnected: true };
         context.agentDialogListData = lists();
     };
-    return { context, load, requested, response, fetchParcels, merge, cache, errors, switchProfile };
+    return { context, load, requested, response, fetchParcels, merge, cache, errors, switchProfile, setWallet: state => { walletState = state; }, setLocal: ids => { localParcels = ids.map(id => ({ id })); } };
 }
 
 describe('connected-wallet profile scope', () => {
@@ -61,8 +69,8 @@ describe('connected-wallet profile scope', () => {
         await loading;
         expect(h.fetchParcels).toHaveBeenCalledWith('wallet-a', '0x1', 'parcel-contract');
         expect(h.merge).toHaveBeenCalledWith('parcels', ['wallet-parcel']);
-        expect(h.context.agentDialogTempOwnership.user).toEqual(['wallet-parcel']);
-        expect(h.cache).toHaveBeenCalledWith('user', expect.objectContaining({ walletAddress: 'wallet-a' }));
+        expect(h.context.agentWalletObservations.user).toMatchObject({ scope: { walletAddress: 'wallet-a', chainId: '0x1' }, contractAddress: 'parcel-contract', parcelIds: ['wallet-parcel'] });
+        expect(h.cache).toHaveBeenCalledWith('user', expect.objectContaining({ scope: { walletAddress: 'wallet-a', chainId: '0x1' } }));
     });
     it.each(['other', 'user'])('discards late observations after replacing the dialog with %s', async id => {
         const h = harness();
@@ -72,7 +80,7 @@ describe('connected-wallet profile scope', () => {
         h.response.resolve([{ parcelId: 'old-wallet-parcel' }]);
         await loading;
         expect(h.merge).not.toHaveBeenCalled();
-        expect(h.context.agentDialogTempOwnership).toEqual({});
+        expect(h.context.agentWalletObservations).toEqual({});
         expect(h.cache).not.toHaveBeenCalled();
     });
     it('does not put a late request error into another profile', async () => {
@@ -100,4 +108,31 @@ describe('connected-wallet profile scope', () => {
         expect(h.merge).toHaveBeenCalledWith('parcels', ['new-observation']);
         expect(h.merge).not.toHaveBeenCalledWith('parcels', ['old-observation']);
     });
+    it.each([
+        { status: 'connected', accounts: ['wallet-b'], chainId: '0x1' },
+        { status: 'connected', accounts: ['wallet-a'], chainId: '0x2' },
+        { status: 'disconnected', accounts: [], chainId: '0x1' }
+    ])('discards a late observation after wallet scope changes to %j', async state => {
+        const h = harness();
+        const loading = h.load();
+        await h.requested.promise;
+        h.setWallet(state);
+        h.response.resolve([{ parcelId: 'stale-parcel' }]);
+        await loading;
+        expect(h.merge).not.toHaveBeenCalled();
+        expect(h.context.agentWalletObservations).toEqual({});
+        expect(h.cache).not.toHaveBeenCalled();
+    });
+    it('replaces an old observation with an empty result without claiming local assignments as chain evidence', async () => {
+        const h = harness();
+        h.setLocal(['model-parcel']);
+        h.context.agentWalletObservations.user = { scope: { chainId: '0x1', walletAddress: 'wallet-a' }, contractAddress: 'parcel-contract', parcelIds: ['old-parcel'] };
+        const loading = h.load();
+        await h.requested.promise;
+        h.response.resolve([]);
+        await loading;
+        expect(h.context.agentWalletObservations.user.parcelIds).toEqual([]);
+        expect(h.merge).toHaveBeenCalledWith('parcels', ['model-parcel']);
+    });
+
 });
