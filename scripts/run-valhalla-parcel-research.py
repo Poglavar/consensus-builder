@@ -1705,6 +1705,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             packet = self._packet(city, cohort_dir)
             if self._reviewed_city_receipt(city, packet) is not None:
                 validated_done += 1
+            elif entry.get("status") in discovery_outcomes.REVIEWED_STATUSES:
+                entry["status"] = "research-complete" if packet.get("valid") else "pending"
         self.log("queue loaded", count=len(cities), rankStart=start_rank, rankEnd=end_rank,
                  validatedReviewedOnResume=validated_done, workers=self.args.workers)
 

@@ -148,7 +148,9 @@ class ContinuousPipeline:
                 fingerprint = self.runner._qualification_fingerprint(city, saved)
                 if saved.get("status") in {"integrated", "adapter-ready"} and (code, fingerprint) in self.validated:
                     continue
-                if not self.runner._reviewed_city_receipt(city, self.runner._packet(city, self.cohort)):
+                packet = self.runner._packet(city, self.cohort)
+                if not self.runner._reviewed_city_receipt(city, packet):
+                    row["status"] = "research-complete" if packet.get("valid") else "pending"
                     continue
             selected.append(city)
             if len(selected) >= count:
@@ -292,7 +294,8 @@ class ContinuousPipeline:
                             self._start(lane, selected)
                             started = True
                 if not self.active and not started:
-                    if self.waiting_for_claim:
+                    if self.waiting_for_claim or any(self.runner._city_entry(city).get("status") ==
+                                                     "research-complete" for city in self.cities):
                         self.runner.save_state()
                         time.sleep(min(1.0, self.runner.args.poll_seconds))
                         continue

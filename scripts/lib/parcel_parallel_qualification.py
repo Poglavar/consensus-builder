@@ -205,7 +205,9 @@ def _collect(runner, city, receipt, packet, digest, isolation, document):
     runner.state.setdefault("usage", {}).update(document.get("usage", {}))
     before = None
     try:
-        with _shared_write(runner):
+        write_context = (_shared_write(runner) if document.get("result", {}).get("status") == "adapter-ready"
+                         else nullcontext({}))
+        with write_context:
             before = runner._candidate_workspace_snapshot()
             result = _import_result(runner, city, receipt, packet, isolation, document)
             result.update(receiptSha256=digest, finishedAt=now())
@@ -297,10 +299,18 @@ def advance_candidates(runner, cities, cohort_dir):
             valid, reason = stage.revalidate_stage(runner, city, receipt, packet, current)
             if valid:
                 with _shared_write(runner):
-                    _admit(runner, city, receipt, current, digest)
-                    blocked = runner.state.get("adapterStageBlocked")
-                    if blocked and blocked.get("cityCode") == str(city["cityCode"]):
-                        raise RuntimeError(blocked.get("reason") or "admission changed files before failing")
+                    still_valid, locked_reason = stage.revalidate_stage(runner, city, receipt, packet, current)
+                    if still_valid:
+                        _admit(runner, city, receipt, current, digest)
+                        blocked = runner.state.get("adapterStageBlocked")
+                        if blocked and blocked.get("cityCode") == str(city["cityCode"]):
+                            raise RuntimeError(blocked.get("reason") or "admission changed files before failing")
+                    else:
+                        entry.setdefault("qualificationHistory", []).append(
+                            {**current, "invalidationReason": locked_reason})
+                        entry["qualification"] = {"status": "pending", "receiptSha256": digest,
+                                                  "summary": "shared runtime changed qualification dependencies; retry against current adapters"}
+                        runner.save_state()
                 progressed = True
                 continue
             entry.setdefault("qualificationHistory", []).append({**current, "invalidationReason": reason})

@@ -156,6 +156,24 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(self.pool._select('research', 2), [])
         self.assertTrue(self.pool.waiting_for_claim)
 
+    def test_stale_candidate_receipt_returns_to_review(self):
+        row = self.runner.state['cities']['1']
+        row.update(status='reviewed-candidate', discoveryDecision='candidate', packetValid=True)
+        self.runner._reviewed_city_receipt = lambda city, packet: None
+        self.assertEqual(self.pool._select('qualification', 2), [])
+        self.assertEqual(row['status'], 'research-complete')
+
+    def test_last_retained_packet_is_reviewed_before_queue_completion(self):
+        self.pool.cities = [self.cities[0]]
+        self.runner.state['cities']['1']['packetValid'] = True
+        launched = []
+        def start(lane, cities):
+            launched.append(lane)
+            self.runner.stop_requested = True
+        self.pool._start = start
+        self.pool.run()
+        self.assertEqual(launched, ['review'])
+
 
 if __name__ == '__main__':
     unittest.main()

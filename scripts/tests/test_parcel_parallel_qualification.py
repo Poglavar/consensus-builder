@@ -215,7 +215,15 @@ class ParallelTests(unittest.TestCase):
     def test_failed_isolated_worker_does_not_import_code_or_block_others(self):
         ws, isolation, document = self.isolated({"backend/parcels/adapter.js": "unfinished"})
         document["result"]["status"] = "failed"
+        calls = []
+        @contextmanager
+        def shared_write():
+            calls.append("entered")
+            yield {}
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner._shared_write = shared_write
         parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        self.assertEqual(calls, [])
         self.assertNotIn("adapterStageBlocked", self.runner.state)
         self.assertEqual((self.root / "backend/parcels/adapter.js").read_text(), "base")
         self.assertEqual(self.runner.state["usage"], document["usage"])
@@ -314,6 +322,28 @@ class ParallelTests(unittest.TestCase):
         prepare.assert_not_called()
         self.assertEqual(admission.call_count, 1)
         self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
+
+    def test_reused_stage_is_revalidated_after_shared_runtime_sync(self):
+        ws, isolation, document = self.isolated()
+        result = parallel._import_result(self.runner, self.city, {}, {}, isolation, document)
+        result.update(status="integrated", receiptSha256=self.digest)
+        entry = self.runner._city_entry(self.city)
+        entry["qualification"] = result
+        @contextmanager
+        def shared_write():
+            (self.root / "backend/parcels/adapter.js").write_text("new shared adapter bytes")
+            yield {"generation": "new"}
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner._shared_write = shared_write
+        with patch.object(parallel, "admit_candidate") as admission, \
+                patch.object(parallel, "prepare_workspace") as prepare:
+            self.assertTrue(parallel.advance_candidates(self.runner, [self.city], self.root))
+        admission.assert_not_called()
+        prepare.assert_not_called()
+        self.assertEqual(entry["qualification"]["status"], "pending")
+        self.assertIn("shared runtime changed", entry["qualification"]["summary"])
+        self.assertEqual(len(entry["qualificationHistory"]), 1)
+        self.assertNotIn(("42", self.digest), self.runner.validated_stages)
 
     def test_stop_reaches_both_workers_and_leaves_durable_results_for_resume(self):
         barrier = threading.Barrier(2)
