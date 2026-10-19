@@ -1008,7 +1008,7 @@ describe('GET /proposals/:id', () => {
             description: 'JSON description',
             author: 'json-author',
             type: 'road',
-            lifecycleStatus: 'draft',
+            lifecycleStatus: 'Unknown',
             offer: 12,
             offerCurrency: 'USD',
             budget: 34,
@@ -1479,8 +1479,16 @@ describe('GET /proposals/summary', () => {
         await request(app).get('/proposals/summary?lifecycle=Active');
         const call = pool.getCalls()[0];
         // The WHERE clause derives the lifecycle, not a raw column compare.
-        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
+        expect(call.sql).toMatch(/WHEN LOWER\(BTRIM\(COALESCE\(lifecycle_status, ''\)\)\) = 'active'[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
         expect(call.params).toContain('Active');
+    });
+
+    it('allows Unknown reads to be filtered without treating them as Active', async () => {
+        pool.setResult({ rows: [] });
+        const response = await request(app).get('/proposals/summary?lifecycle=Unknown');
+        expect(response.status).toBe(200);
+        expect(pool.getCalls()[0].params).toContain('Unknown');
+        expect(pool.getCalls()[0].sql).toContain("ELSE 'Unknown'");
     });
 
     it('filters by goal (against the stored goal, falling back to type)', async () => {
@@ -1560,7 +1568,7 @@ describe('GET /proposals/summary', () => {
             title: null,
             author: null,
             type: null,
-            lifecycleStatus: 'Active',
+            lifecycleStatus: 'Unknown',
             createdAt: null
         });
     });

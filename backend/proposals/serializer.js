@@ -203,8 +203,10 @@ export function serializeProposalRow(row, options = {}) {
     proposal.description = choose(row.description, proposal.description);
     proposal.author = choose(row.author, proposal.author);
     proposal.type = choose(row.type, proposal.type);
-    proposal.lifecycleStatus = row.effective_status
-        || effectiveLifecycleStatus(choose(row.lifecycle_status, proposal.lifecycleStatus), choose(row.expires_at, proposal.expiresAt), options.now);
+    // The lifecycle column owns this fact. Missing/invalid state cannot be repaired from an older
+    // authored JSON projection or inferred from a deadline.
+    proposal.lifecycleStatus = effectiveLifecycleStatus(
+        row.effective_status ?? row.lifecycle_status, row.expires_at, options.now);
 
     proposal.offer = present(row.offer) ? Number(row.offer) : proposal.offer;
     proposal.offerCurrency = choose(row.offer_currency, proposal.offerCurrency);

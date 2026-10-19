@@ -1092,19 +1092,20 @@ export function createProposalCreateHandler(pool) {
 }
 
 // The marketplace/on-chain LIFECYCLE status, past-expiry-aware (shared with GET /markets). A proposal past expires_at reads
-// as 'Expired' even if the stored value is stale. This one expression is used both for the
+// as 'Expired' only when its stored lifecycle is Active. This one expression is used both for the
 // returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
 // (case-insensitive — the DB may carry both 'Executed' and 'executed').
 export const EFFECTIVE_STATUS_SQL = `
     CASE
-        WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'active'
             AND expires_at IS NOT NULL AND expires_at <= now()
         THEN 'Expired'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
-        ELSE 'Active'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'executed' THEN 'Executed'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'cancelled' THEN 'Cancelled'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'expired' THEN 'Expired'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'draft' THEN 'draft'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'active' THEN 'Active'
+        ELSE 'Unknown'
     END`;
 
 export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
@@ -1139,11 +1140,12 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
 
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
-        // The lifecycle-phase filter (Active/Executed/Cancelled/Expired). Named `?lifecycle=`.
+        // The lifecycle-phase filter also exposes Unknown read results. Named `?lifecycle=`.
         const lifecycleRaw = typeof req.query.lifecycle === 'string' && req.query.lifecycle.trim()
             ? req.query.lifecycle.trim()
             : null;
-        const lifecycle = lifecycleRaw ? canonicalizeLifecycleStatus(lifecycleRaw) : null;
+        const lifecycle = lifecycleRaw?.toLowerCase() === 'unknown' ? 'Unknown'
+            : lifecycleRaw ? canonicalizeLifecycleStatus(lifecycleRaw) : null;
         const type = req.query.type;
         const author = req.query.author;
         const goal = typeof req.query.goal === 'string' && req.query.goal.trim() ? req.query.goal.trim() : null;
@@ -1162,7 +1164,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             parcelIds,
             lifecycle,
             lifecycleError: lifecycleRaw && !lifecycle
-                ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft.'
+                ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft, Unknown.'
                 : null,
             type,
             author,

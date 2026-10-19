@@ -20,6 +20,20 @@ function rejectionOf(row) {
 }
 
 describe('proposal API serializer', () => {
+    it.each([undefined, null, '', 'pending'])(
+        'does not replace unknown stored lifecycle %s from authored JSON or expiry', lifecycle_status => {
+            const proposal = serializeProposalRow({
+                lifecycle_status, expires_at: '2020-01-01T00:00:00Z',
+                proposal_data: { lifecycleStatus: 'Executed' }
+            });
+            expect(proposal.lifecycleStatus).toBe('Unknown');
+        });
+
+    it('preserves an Unknown SQL result despite an apparently Active stored projection', () => {
+        expect(serializeProposalRow({ effective_status: 'Unknown', lifecycle_status: 'Active' })
+            .lifecycleStatus).toBe('Unknown');
+    });
+
     it.each(['Active', 'Executed', 'Cancelled', 'Expired', 'draft'])(
         'does not serve an unqualified execution timestamp from a stored %s record', lifecycleStatus => {
             const row = { id: 5, proposal_id: 'record-a', lifecycle_status: lifecycleStatus,
