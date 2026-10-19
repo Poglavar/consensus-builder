@@ -776,3 +776,5 @@ The user requires only per-city failed URL lists and working settings plus share
 
 - 2026-10-19: The user requested a mobile annotation pipeline for public-transport trips. Autokatastar in ParcelBench uses immutable image packs, phone-first saving, explicit downloads for offline review, revision-safe synchronization and a separate human observation export; uncertain pairs remain unscored and evaluation roles stay unassigned.
 - 2026-10-19: The user named the annotation app Autokatastar and requested publication at `zagreb.lol/autokatastar/pregled`; deploy its dedicated app subtree and keep imagery and human reviews outside code releases.
+
+- 2026-10-19: Autokatastar, the bot monitor, Veleprojekti admin, and the other key-protected zagreb.lol review tools use one owner-selected access key; keep its value only in private environment files.

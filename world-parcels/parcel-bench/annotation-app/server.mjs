@@ -92,7 +92,7 @@ function validateStore(store, batch) {
 }
 
 export async function createReviewServer({ bundleDir, dataDir, token, basePath = '/', publicOrigin }) {
-    if (typeof bundleDir !== 'string' || typeof dataDir !== 'string' || typeof token !== 'string' || Buffer.byteLength(token, 'utf8') < 32) throw new Error('bundleDir, dataDir and a token of at least 32 bytes are required');
+    if (typeof bundleDir !== 'string' || typeof dataDir !== 'string' || typeof token !== 'string' || Buffer.byteLength(token, 'utf8') < 8) throw new Error('bundleDir, dataDir and a token of at least 8 bytes are required');
     const bundle = resolve(bundleDir), data = resolve(dataDir);
     if (!bundleDir.startsWith('/') || !dataDir.startsWith('/')) throw new Error('bundleDir and dataDir must be absolute paths');
     if (bundle === data || bundle.startsWith(`${data}${sep}`) || data.startsWith(`${bundle}${sep}`)) throw new Error('bundleDir and dataDir must be separate');

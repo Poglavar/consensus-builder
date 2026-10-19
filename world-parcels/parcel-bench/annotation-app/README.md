@@ -64,8 +64,9 @@ export ANNOTATION_PORT=8787
 node --env-file=/path/to/ignored/annotation.env server.mjs
 ```
 
-The ignored env file contains `ANNOTATION_TOKEN`, a randomly generated access key of at least 32
-bytes. Never place it in a URL or a tracked file. Open `http://localhost:8787/autokatastar/pregled/` and enter it.
+The ignored env file contains `ANNOTATION_TOKEN`, an access key of at least 8 bytes. The hosted
+service uses the same owner-selected key as the other private zagreb.lol review/admin tools.
+Never place it in a URL or a tracked file. Open `http://localhost:8787/autokatastar/pregled/` and enter it.
 The app binds only to loopback. Offline functionality requires HTTPS or localhost; a phone's plain
 HTTP LAN address is insufficient. Node 22+ is required for the env-file launch and modern APIs.
 
