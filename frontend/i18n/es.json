@@ -4399,6 +4399,10 @@
     },
     "city": {
         "labels": {
+            "hyderabad": "Hyderabad, India",
+            "jakarta": "Jakarta, Indonesia",
+            "rio_de_janeiro": "Rio de Janeiro, Brasil",
+            "sisulu_village": "Sisulu Village, Sudáfrica",
             "mandvi": "Mandvi, India",
             "bhuj": "Bhuj, India",
             "nahariyya": "Nahariyya, Israel",

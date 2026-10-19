@@ -15984,7 +15984,8 @@
       "maxBboxKm2": 2,
       "metricSrid": 32735,
       "cityIds": [
-        "gqeberha"
+        "gqeberha",
+        "sisulu_village"
       ],
       "defaultForCity": true,
       "evidenceFile": "evidence/source-purpose.json",
@@ -16615,6 +16616,132 @@
       "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/479b8f41f794492abc0d95aa16737400?f=pjson",
       "licenceNote": "Public anonymous reads verified. Item licenseInfo and accessInformation are null; redistribution permission and final attribution terms remain second-pass follow-ups.",
       "attribution": "Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow.",
+      "defaultForCity": true
+    },
+    {
+      "id": "br-rio-pgeo3-imoveis-territoriais",
+      "name": "IMOVEIS_TERRITORIAIS / Polígonos Parcelamento",
+      "adapter": "arcgis",
+      "endpoint": "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0",
+      "idField": "objectid",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "idPrefix": "BR-RIO-IMOVEIS-TERRITORIAIS-",
+      "outFields": [
+        "objectid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "sourceCrs": "EPSG:31983",
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "rio_de_janeiro"
+      ],
+      "defaultForCity": true,
+      "operator": "Prefeitura da Cidade do Rio de Janeiro",
+      "attribution": "Prefeitura da Cidade do Rio de Janeiro — IMOVEIS_TERRITORIAIS / Polígonos Parcelamento",
+      "licenceNote": "Public use with source citation and preservation of original information, per municipal iteminfo. Additional redistribution conditions are unverified.",
+      "scope": "Municipal cadastral-map parcelment subset. Three retained polygons in inner northern Rio; citywide completeness and legal-registry equivalence are not established.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      }
+    },
+    {
+      "id": "id-jakarta-satu-bpn-persil-2021-map",
+      "adapter": "arcgis",
+      "endpoint": "https://jakartasatu.jakarta.go.id/server/rest/services/BPN/Persil_BPN_2021_map/MapServer",
+      "layerId": 9,
+      "countryCode": "ID",
+      "cityIds": [
+        "jakarta"
+      ],
+      "idField": "FID",
+      "objectIdField": "FID",
+      "idType": "integer",
+      "idPrefix": "ID-JAKARTA-BPN-L9-",
+      "outFields": [
+        "FID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "sourceCrs": "EPSG:4326",
+      "attribution": "Jakarta Satu / Pemerintah Provinsi DKI Jakarta; BPN parcel service",
+      "license": "Not stated in public service metadata; reuse review deferred",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "name": "Jakarta Satu BPN Persil 2021 — Jaksel",
+      "metricSrid": 32748,
+      "scope": "Selected Jaksel layer 9; three bounded Jakarta Selatan samples verified. District and citywide completeness are unknown.",
+      "catalogueUrl": "https://jakartasatu.jakarta.go.id/geoportal",
+      "defaultForCity": true
+    },
+    {
+      "id": "in-tg-tgrac-hydra-fourth-window-cadastral-parcels",
+      "name": "TGRAC Hydra Fourth Window cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0",
+      "idField": "OBJECTID_12",
+      "objectIdField": "OBJECTID_12",
+      "idType": "integer",
+      "idPrefix": "tgrac-hydra-fourth-window:OBJECTID_12=",
+      "parcelNumberField": "Parcel_num",
+      "outFields": [
+        "OBJECTID_12",
+        "Parcel_num"
+      ],
+      "attributeNotNull": [
+        "Parcel_num"
+      ],
+      "attributeExclusions": {
+        "Parcel_num": [
+          "",
+          " "
+        ]
+      },
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 9,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "TG",
+      "metricSrid": 32644,
+      "cityIds": [
+        "hyderabad"
+      ],
+      "attribution": "Telangana Remote Sensing Applications Centre (TGRAC), Government of Telangana — Hydra Cadastral Parcels",
+      "catalogueUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder",
+      "licenceNote": "Public anonymous reads observed; no explicit reuse licence in inspected TGRAC metadata. Reuse terms remain a second-pass follow-up.",
+      "scope": "Official cadastral survey parcels; initial exact-ID evidence is limited to three full Khairatabad polygons. Neither the layer extent nor sampled cells establish Hyderabad-wide coverage.",
+      "caveats": [
+        "Native ArcGIS OIDs identify current service rows; continuity after republishing is unverified.",
+        "Blank Parcel_num records, including the observed Cheruvu feature, are outside this numbered-parcel scope. Unobserved whitespace-only encodings remain a filtering follow-up.",
+        "Custom WGS 1984 Lambert Conformal Conic source WKT has no EPSG identifier. Only service outSR=4326 is used; storage datum/operation/grid and alignment remain unverified.",
+        "Full layer topology, completeness, currentness, reuse terms and application binding are second-pass follow-ups."
+      ],
       "defaultForCity": true
     }
   ],

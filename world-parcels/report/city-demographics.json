@@ -99,13 +99,17 @@
       "latitude": -6.21462,
       "longitude": 106.84513,
       "registryCityIds": [
-        "geonames:1642911"
+        "geonames:1642911",
+        "wup2025:5590"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "jakarta"
+      ],
       "wupCityCode": 5590,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 36098681,
       "population2025": 41913860,
@@ -155,7 +159,8 @@
           "distanceKm": 12.756
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "id-jakarta-satu-bpn-persil-2021-map"
     },
     {
       "id": "wup2025:6249",
@@ -3012,11 +3017,14 @@
       "registryCityIds": [
         "wup2025:7935"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rio_de_janeiro"
+      ],
       "wupCityCode": 7935,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 9273974,
       "population2025": 9500336,
@@ -3080,7 +3088,8 @@
           "distanceKm": 0.001
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "br-rio-pgeo3-imoveis-territoriais"
     },
     {
       "id": "wup2025:2994",
@@ -3185,11 +3194,14 @@
       "registryCityIds": [
         "wup2025:9913"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "hyderabad"
+      ],
       "wupCityCode": 9913,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 8304057,
       "population2025": 9190795,
@@ -3253,7 +3265,8 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-tg-tgrac-hydra-fourth-window-cadastral-parcels"
     },
     {
       "id": "wup2025:5264",
@@ -159228,6 +159241,35 @@
           "reason": "Deferred to second-pass review."
         }
       ]
+    },
+    {
+      "id": "wup2025:3008",
+      "name": "Sisulu Village",
+      "countryCode": "ZA",
+      "latitude": -32.9409772812421,
+      "longitude": 27.7340419384007,
+      "wupLatitude": -32.9409772812421,
+      "wupLongitude": 27.7340419384007,
+      "wupName": "Sisulu Village",
+      "wupCityCode": 3008,
+      "population2025": 157462,
+      "population2015": 148229,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "registryCityIds": [
+        "wup2025:3008"
+      ],
+      "appCityIds": [
+        "sisulu_village"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "za-csg-property-viewer-erven"
     }
   ],
   "wikipediaLookupErrors": [

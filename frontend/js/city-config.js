@@ -20715,6 +20715,198 @@
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'na-windhoek-cadastral1-public-arcgis', idPrefix: 'NA-WINDHOEK-CADASTRAL1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Windhoek municipality (origin claimed by Cadastral1 publisher); public hosted copy attributed to 2013, with positional and attribute inaccuracies.' },
             buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        sisulu_village: {
+            id: 'sisulu_village',
+            wupCityCode: '3008',
+            label: translateCityText('city.labels.sisulu_village', 'Sisulu Village, South Africa'),
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-32.9409772812421, 27.7340419384007],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-32.9409772812421, 27.7340419384007],
+                fallbackDataset: [27.7340419384007, -32.9409772812421]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-property-viewer-erven',
+                idPrefix: 'ZA-CSG-PV-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        jakarta: {
+            id: 'jakarta',
+            wupCityCode: '5590',
+            label: translateCityText('city.labels.jakarta', 'Jakarta, Indonesia'),
+            currency: {
+                locale: 'id-ID',
+                code: 'IDR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-6.32413937217468, 106.818948660662],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-6.32413937217468, 106.818948660662],
+                fallbackDataset: [106.818948660662, -6.32413937217468]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'id-jakarta-satu-bpn-persil-2021-map',
+                idPrefix: 'ID-JAKARTA-BPN-L9-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Jakarta Satu / Pemerintah Provinsi DKI Jakarta; BPN parcel service'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        rio_de_janeiro: {
+            id: 'rio_de_janeiro',
+            wupCityCode: '7935',
+            label: translateCityText('city.labels.rio_de_janeiro', 'Rio de Janeiro, Brazil'),
+            currency: {
+                locale: 'pt-BR',
+                code: 'BRL'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-22.84580558584, -43.3667336343256],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-22.84580558584, -43.3667336343256],
+                fallbackDataset: [-43.3667336343256, -22.84580558584]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'br-rio-pgeo3-imoveis-territoriais',
+                idPrefix: 'BR-RIO-IMOVEIS-TERRITORIAIS-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Prefeitura da Cidade do Rio de Janeiro — IMOVEIS_TERRITORIAIS / Polígonos Parcelamento'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        hyderabad: {
+            id: 'hyderabad',
+            wupCityCode: '9913',
+            label: translateCityText('city.labels.hyderabad', 'Hyderabad, India'),
+            currency: {
+                locale: 'en-IN',
+                code: 'INR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [17.4165008146067, 78.4763701379343],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [17.4165008146067, 78.4763701379343],
+                fallbackDataset: [78.4763701379343, 17.4165008146067]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'in-tg-tgrac-hydra-fourth-window-cadastral-parcels',
+                idPrefix: 'tgrac-hydra-fourth-window:OBJECTID_12=',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Telangana Remote Sensing Applications Centre (TGRAC), Government of Telangana — Hydra Cadastral Parcels'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
     };
 
     function ensureProjectionDefinitions() {

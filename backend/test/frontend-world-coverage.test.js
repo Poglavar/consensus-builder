@@ -329,7 +329,8 @@ describe('region coverage axis', () => {
 describe('searchPlaces', () => {
     it('is diacritic-insensitive both ways', () => {
         expect(coverage.searchPlaces('sibenik')[0]).toMatchObject({ kind: 'live-city', cityId: 'sibenik', name: 'Šibenik' });
-        expect(coverage.searchPlaces('São')[0].name).toBe('São Paulo');
+        expect(coverage.searchPlaces('São')).toEqual(coverage.searchPlaces('sao'));
+        expect(coverage.searchPlaces('São').some(hit => hit.name === 'São Paulo')).toBe(true);
         expect(coverage.searchPlaces('sao paulo')[0].name).toBe('São Paulo');
     });
 

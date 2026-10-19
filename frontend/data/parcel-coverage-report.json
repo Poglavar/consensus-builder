@@ -10,15 +10,15 @@
     "statisticalJurisdictions": 237,
     "checkedCityCount": 3063,
     "uncheckedCityCount": 127,
-    "cityRegistryFoundCount": 2466,
-    "verifiedCitySampleCount": 1815,
+    "cityRegistryFoundCount": 2469,
+    "verifiedCitySampleCount": 1818,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 2594,
+    "populationMatchedCount": 2595,
     "growthMatchedCount": 1617,
-    "checkedCitiesMissingDate": 8,
+    "checkedCitiesMissingDate": 10,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 1742,
+    "configuredAppCityCount": 1746,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -83307,10 +83307,13 @@
       "registryCityIds": [
         "wup2025:9913"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "hyderabad"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 9913,
       "wupName": "Hyderabad",
@@ -83328,24 +83331,22 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-08",
-      "checkedDateEvidence": {
-        "date": "2026-10-08",
-        "path": "research/india-africa-next10-2026-10-08/city-9913.json",
-        "field": "$.checkedAt"
-      },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features.",
-      "verifiedSample": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-tg-tgrac-hydra-fourth-window-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0"
+      ],
       "evidenceFiles": [
-        "research/hyderabad.json",
-        "research/retry/cities/hyderabad.json",
-        "research/india-africa-next10-2026-10-08/city-9913.json"
+        "cities/9913/settings.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.41389&mlon=78.47569#map=12/17.41389/78.47569",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.41389%2C78.47569",
@@ -86616,12 +86617,16 @@
       "latitude": -6.21462,
       "longitude": 106.84513,
       "registryCityIds": [
-        "geonames:1642911"
+        "geonames:1642911",
+        "wup2025:5590"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "jakarta"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 5590,
       "wupName": "Jakarta",
@@ -86645,16 +86650,21 @@
         "path": "research/jakarta.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "id-jakarta-satu-bpn-persil-2021-map"
+      ],
+      "evidenceUrls": [
+        "https://jakartasatu.jakarta.go.id/server/rest/services/BPN/Persil_BPN_2021_map/MapServer"
+      ],
       "evidenceFiles": [
-        "research/jakarta.json"
+        "research/jakarta.json",
+        "cities/5590/settings.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-6.21462&mlon=106.84513#map=12/-6.21462/106.84513",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-6.21462%2C106.84513",
@@ -170670,10 +170680,13 @@
       "registryCityIds": [
         "wup2025:7935"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rio_de_janeiro"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 7935,
       "wupName": "Rio de Janeiro",
@@ -170691,12 +170704,8 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-07",
-      "checkedDateEvidence": {
-        "date": "2026-10-07",
-        "path": "research/same-country-expansion-2026-10-07/brazil-research.json",
-        "field": "$.checkedAt"
-      },
+      "checkedDate": null,
+      "checkedDateEvidence": null,
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
@@ -170704,15 +170713,13 @@
       "impliedParcelsTried": null,
       "integrationAttempts": [],
       "sourceIds": [
-        "br-rio-prefeitura-lotes-2013"
+        "br-rio-pgeo3-imoveis-territoriais"
       ],
       "evidenceUrls": [
-        "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1"
+        "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0"
       ],
       "evidenceFiles": [
-        "research/rio-de-janeiro.json",
-        "research/same-country-expansion-2026-10-07/brazil-research.json",
-        "research/rio-live-assessment.json"
+        "cities/7935/settings.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-22.84585&mlon=-43.36665#map=12/-22.84585/-43.36665",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-22.84585%2C-43.36665",
@@ -189183,21 +189190,30 @@
       "countryCode": "ZA",
       "latitude": -32.9409772812421,
       "longitude": 27.7340419384007,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3008"
+      ],
+      "appCityIds": [
+        "sisulu_village"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 3008,
-      "wupName": null,
+      "wupName": "Sisulu Village",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
+      "population2015": 148229,
+      "population2025": 157462,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-11",
       "checkedDateEvidence": {
@@ -189205,10 +189221,10 @@
         "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
         "field": "$.cities[163].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -189225,9 +189241,17 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "cities/3008/settings.json",
+        "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
+        "evidence/source-purpose.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-32.94098&mlon=27.73404#map=12/-32.94098/27.73404",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-32.94098%2C27.73404",
       "wikipediaUrl": null,
@@ -225685,7 +225709,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 1182,
-      "citiesWithRegistry": 1135,
+      "citiesWithRegistry": 1136,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -225714,7 +225738,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 46,
-      "citiesWithRegistry": 35,
+      "citiesWithRegistry": 36,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -229557,7 +229581,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 81,
-      "citiesWithRegistry": 36,
+      "citiesWithRegistry": 37,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,

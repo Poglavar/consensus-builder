@@ -438,3 +438,11 @@ spend limits. Only configured actor wallets about to transfer tokens are eligibl
 wallet funds their shortfall to 0.5 test USDC while retaining 1 test USDC; a database-session lock
 serializes balance checks, transfers and readback. Confirmed receipts are timestamped in the
 existing agent-run ledger. It grants no authority to fund unknown wallets or another network.
+
+## Accepted city source settings
+
+Newly accepted parcel-source configuration is stored in `world-parcels/cities/<WUP code>/settings.json`.
+The file binds the numeric WUP identity, explicit app-city identity and executable source descriptor;
+shared adapter code and focused fixtures preserve implementation knowledge. Research and qualification
+packets are temporary. An enabled city source establishes usable observed parcel geometry within its
+stated scope, not citywide completeness, cadastral title, ownership or survey accuracy.

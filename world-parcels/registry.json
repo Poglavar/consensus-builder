@@ -78855,20 +78855,24 @@
       "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
       "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
       "verifiedCityIds": [
-        "wup2025:2020"
+        "wup2025:2020",
+        "wup2025:3008"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "gqeberha"
+          "gqeberha",
+          "sisulu_village"
         ],
         "additionalCityEvidence": {
-          "gqeberha": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json"
+          "gqeberha": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
+          "sisulu_village": "cities/3008/settings.json"
         }
       },
       "appCityIds": [
-        "gqeberha"
+        "gqeberha",
+        "sisulu_village"
       ],
       "initialQualificationReviews": {
         "gqeberha": {
@@ -80200,6 +80204,93 @@
             "reason": "Deferred to second-pass review."
           }
         ]
+      }
+    },
+    {
+      "sourceId": "br-rio-pgeo3-imoveis-territoriais",
+      "name": "IMOVEIS_TERRITORIAIS / Polígonos Parcelamento",
+      "operator": "Prefeitura da Cidade do Rio de Janeiro",
+      "countryCode": "BR",
+      "scope": "Municipal cadastral-map parcelment subset. Three retained polygons in inner northern Rio; citywide completeness and legal-registry equivalence are not established.",
+      "endpoint": "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "verificationStatus": "verified_live_city_adapter",
+      "evidenceFile": "cities/7935/settings.json",
+      "verifiedCityIds": [
+        "wup2025:7935"
+      ],
+      "appCityIds": [
+        "rio_de_janeiro"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "rio_de_janeiro"
+        ],
+        "additionalCityEvidence": {
+          "rio_de_janeiro": "cities/7935/settings.json"
+        }
+      }
+    },
+    {
+      "sourceId": "in-tg-tgrac-hydra-fourth-window-cadastral-parcels",
+      "name": "TGRAC Hydra Fourth Window cadastral parcels",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Official cadastral survey parcels; initial exact-ID evidence is limited to three full Khairatabad polygons. Neither the layer extent nor sampled cells establish Hyderabad-wide coverage.",
+      "endpoint": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "verificationStatus": "verified_live_city_adapter",
+      "evidenceFile": "cities/9913/settings.json",
+      "verifiedCityIds": [
+        "wup2025:9913"
+      ],
+      "appCityIds": [
+        "hyderabad"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "hyderabad"
+        ],
+        "additionalCityEvidence": {
+          "hyderabad": "cities/9913/settings.json"
+        }
+      }
+    },
+    {
+      "sourceId": "id-jakarta-satu-bpn-persil-2021-map",
+      "name": "Jakarta Satu BPN Persil 2021 — Jaksel",
+      "operator": null,
+      "countryCode": "ID",
+      "scope": "Selected Jaksel layer 9; three bounded Jakarta Selatan samples verified. District and citywide completeness are unknown.",
+      "endpoint": "https://jakartasatu.jakarta.go.id/server/rest/services/BPN/Persil_BPN_2021_map/MapServer",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "verificationStatus": "verified_live_city_adapter",
+      "evidenceFile": "cities/5590/settings.json",
+      "verifiedCityIds": [
+        "wup2025:5590"
+      ],
+      "appCityIds": [
+        "jakarta"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "jakarta"
+        ],
+        "additionalCityEvidence": {
+          "jakarta": "cities/5590/settings.json"
+        }
       }
     }
   ],
@@ -81824,10 +81915,13 @@
       "researchOrder": 35,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "br-rio-prefeitura-lotes-2013"
+        "br-rio-pgeo3-imoveis-territoriais"
       ],
-      "researchFile": "research/rio-de-janeiro.json",
-      "latestAttemptFile": "research/same-country-expansion-2026-10-07/brazil-research.json"
+      "population2025": 9500336,
+      "population2015": 9273974,
+      "appCityId": "rio_de_janeiro",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "researchFile": "cities/7935/settings.json"
     },
     {
       "cityId": "wup2025:2994",
@@ -81859,53 +81953,15 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 37,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
-      "sourceIds": [],
-      "researchFile": "research/hyderabad.json",
-      "previousResearchFile": "research/hyderabad.json",
-      "retryFile": "research/retry/cities/hyderabad.json",
-      "aliases": [
-        "wup2025:9913",
-        "Hyderabad"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tg-tgrac-hydra-fourth-window-cadastral-parcels"
       ],
-      "latestAssessmentFile": "research/india-africa-next10-2026-10-08/city-9913.json",
-      "dataFindings": {
-        "registryFound": null,
-        "registryBasis": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features.",
-        "reason": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features.",
-        "registryEvidenceUrls": []
-      },
-      "regionalResearch": {
-        "checkedAt": "2026-10-08",
-        "cohort": "india-africa",
-        "batch": "next10",
-        "evidenceFile": "research/india-africa-next10-2026-10-08/city-9913.json",
-        "resultCategory": "aggregate_geometry_not_parcel",
-        "freshVerifiedSample": false,
-        "geometryOnlyVerified": false,
-        "checkScope": "Independent city-specific request and research follow-up; no citywide absence inference.",
-        "technicalBlocker": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features.",
-        "nextStep": "Resolve the WUP center with an official Hyderabad urban survey locator or survey-number layer, then test a bounded parcel query; current result is not a parcel candidate."
-      },
-      "latestAttemptFile": "research/india-africa-next10-2026-10-08/city-9913.json",
-      "dataFindingsHistory": [
-        {
-          "registryFound": null,
-          "registryBasis": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
-          "reason": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target."
-        }
-      ],
-      "regionalResearchHistory": [
-        {
-          "checkedAt": "2026-10-08",
-          "cohort": "india-africa",
-          "evidenceFile": "research/india-africa-2026-10-08/india-city-9913.json",
-          "resultCategory": "no_verified_sample_candidate_citywide",
-          "freshVerifiedSample": false,
-          "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
-          "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier."
-        }
-      ]
+      "population2025": 9190795,
+      "population2015": 8304057.000000001,
+      "appCityId": "hyderabad",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "researchFile": "cities/9913/settings.json"
     },
     {
       "cityId": "wup2025:5264",
@@ -236875,6 +236931,50 @@
           "reason": "Deferred to second-pass review."
         }
       ]
+    },
+    {
+      "cityId": "wup2025:3008",
+      "wupCityCode": 3008,
+      "name": "Sisulu Village",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -32.9409772812421,
+        27.7340419384007
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-property-viewer-erven"
+      ],
+      "population2025": 157462,
+      "population2015": 148229,
+      "appCityId": "sisulu_village",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "researchFile": "cities/3008/settings.json"
+    },
+    {
+      "cityId": "wup2025:5590",
+      "wupCityCode": 5590,
+      "name": "Jakarta",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -6.32413937217468,
+        106.818948660662
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "id-jakarta-satu-bpn-persil-2021-map"
+      ],
+      "population2025": 41913860,
+      "population2015": 36098681,
+      "appCityId": "jakarta",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "researchFile": "cities/5590/settings.json"
     }
   ],
   "countryProbes": [
