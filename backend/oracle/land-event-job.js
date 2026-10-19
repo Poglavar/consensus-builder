@@ -5,7 +5,7 @@
 // Every step is injectable so the ordering and failure verdicts are unit-testable without RPC or
 // PostgreSQL.
 
-import { IDL_DIR, syncProposalLifecycleEvents } from './proposal-lifecycle.js';
+import { IDL_DIR, assertLifecycleNetwork, syncProposalLifecycleEvents } from './proposal-lifecycle.js';
 import { syncProposalConsentEvents } from './proposal-consent.js';
 import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
 import { runTransactionSync, timestampedLog } from '../solana/transaction-sync-job.js';
@@ -41,6 +41,15 @@ export async function runLandEventJob({
     syncConsent = defaultSyncConsent,
     log = timestampedLog
 } = {}) {
+    // All following stages label their evidence devnet, including the transaction top-up.
+    // Check before any stage may write; the lifecycle entrypoint also guards direct callers.
+    try {
+        await assertLifecycleNetwork(connection);
+    } catch (error) {
+        log(`land-event network check failed: ${error.message}`);
+        return { result: null, error, exitCode: 1,
+            transactionSync: { ...EMPTY_TRANSACTION_SYNC, skipped: true } };
+    }
     let transactionSyncSummary;
     if (!syncTransactionsFirst) {
         transactionSyncSummary = { ...EMPTY_TRANSACTION_SYNC, skipped: true };

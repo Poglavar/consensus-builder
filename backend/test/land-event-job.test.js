@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { runLandEventJob, transactionSyncProblem } from '../oracle/land-event-job.js';
+import { DEVNET_GENESIS_HASH } from '../oracle/proposal-lifecycle.js';
 
 const LIFECYCLE = Object.freeze({
     scanned: 3, invalidAccounts: [], terminal: 1, events: [{ proposalAccount: 'P1' }],
@@ -23,7 +24,7 @@ function harness({ txResult, txThrows, lifecycle = LIFECYCLE, lifecycleThrows, c
         lines,
         options: {
             pool: {},
-            connection: {},
+            connection: { getGenesisHash: async () => { calls.push('network'); return DEVNET_GENESIS_HASH; } },
             log: line => lines.push(line),
             transactionSync: async (options) => {
                 calls.push('transactions');
@@ -49,11 +50,20 @@ function harness({ txResult, txThrows, lifecycle = LIFECYCLE, lifecycleThrows, c
 }
 
 describe('runLandEventJob', () => {
+    it.each([false, true])('refuses an unverified network before any stage writes (dryRun %s)', async dryRun => {
+        const h = harness();
+        h.options.connection.getGenesisHash = async () => 'another-network';
+        const job = await runLandEventJob({ ...h.options, dryRun });
+        expect(h.calls).toEqual([]);
+        expect(job).toMatchObject({ exitCode: 1, result: null, transactionSync: { skipped: true, fetched: 0 } });
+        expect(job.error.message).toMatch(/requires Solana devnet/);
+    });
+
     it('syncs transactions before scanning terminal proposals, in live and dry-run', async () => {
         for (const dryRun of [false, true]) {
             const h = harness();
             const job = await runLandEventJob({ ...h.options, dryRun });
-            expect(h.calls).toEqual(['transactions', 'lifecycle', 'consent']);
+            expect(h.calls).toEqual(['network', 'transactions', 'lifecycle', 'consent']);
             expect(job.exitCode).toBe(0);
             expect(job.error).toBeNull();
             expect(job.result.dryRun).toBe(dryRun);
@@ -79,7 +89,7 @@ describe('runLandEventJob', () => {
     it('still scans when the transaction sync reports an RPC error, but fails the run', async () => {
         const h = harness({ txResult: { scanned: 4, newSignatures: 3, fetched: 0, failed: 0, error: '429 Too Many Requests' } });
         const job = await runLandEventJob(h.options);
-        expect(h.calls).toEqual(['transactions', 'lifecycle', 'consent']);
+        expect(h.calls).toEqual(['network', 'transactions', 'lifecycle', 'consent']);
         expect(job.result.inserted).toBe(1);
         expect(job.result.transactionSync.error).toBe('429 Too Many Requests');
         expect(job.error.message).toMatch(/transaction sync incomplete: 429/);
@@ -90,7 +100,7 @@ describe('runLandEventJob', () => {
     it('still scans when the transaction sync throws, and records the cause', async () => {
         const h = harness({ txThrows: 'connection refused' });
         const job = await runLandEventJob(h.options);
-        expect(h.calls).toEqual(['transactions', 'lifecycle', 'consent']);
+        expect(h.calls).toEqual(['network', 'transactions', 'lifecycle', 'consent']);
         expect(job.result.transactionSync).toMatchObject({ error: 'connection refused', fetched: 0, skipped: false });
         expect(job.exitCode).toBe(1);
     });
@@ -122,7 +132,7 @@ describe('runLandEventJob', () => {
     it('can skip the transaction sync explicitly', async () => {
         const h = harness();
         const job = await runLandEventJob({ ...h.options, syncTransactionsFirst: false });
-        expect(h.calls).toEqual(['lifecycle', 'consent']);
+        expect(h.calls).toEqual(['network', 'lifecycle', 'consent']);
         expect(job.result.transactionSync.skipped).toBe(true);
         expect(job.exitCode).toBe(0);
     });
