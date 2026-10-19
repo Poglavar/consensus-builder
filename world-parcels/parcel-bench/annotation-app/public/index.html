@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102824">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Autokatastar · image review</title>
+  <script type="module" src="app.mjs"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><img src="icon.svg" alt="" width="32" height="32"><div><strong data-text="title"></strong><small data-text="subtitle"></small></div></div>
+    <button type="button" class="action action-icon" id="open-pack" aria-label="Connection and saved reviews">☰</button>
+  </header>
+  <main>
+    <section id="unlock" class="panel welcome" hidden>
+      <p class="eyebrow">IMAGE REVIEW / FIELD NOTES</p><h1 data-text="unlock"></h1><p data-text="unlockHint"></p>
+      <form id="unlock-form"><label for="token" data-text="accessKey"></label><input id="token" type="password" autocomplete="current-password" required><button class="action action-primary" data-text="open"></button></form>
+    </section>
+    <section id="review" hidden>
+      <div class="review-heading"><span id="position" class="eyebrow"></span><span id="progress" class="badge"></span></div>
+      <label class="sr-only" for="task-select">Choose an image and pair</label><select id="task-select" class="task-select"></select>
+      <h1 data-text="question"></h1>
+      <div class="image-panel">
+        <svg id="viewer" role="img" aria-label="Aerial image with review points A and B" tabindex="0"></svg>
+        <p id="image-message" class="image-message" hidden></p>
+        <div class="image-controls"><button class="action action-map" id="zoom-out" aria-label="Zoom out">−</button><button class="action action-map" id="fit" data-text="fit"></button><button class="action action-map" id="zoom-in" aria-label="Zoom in">+</button></div>
+      </div>
+      <p id="gesture-hint" class="hint"></p>
+      <div class="toolbar"><button class="action action-secondary" id="anchors" data-text="anchors"></button><button class="action action-secondary" id="trace" data-text="trace"></button><button class="action action-secondary" id="undo" data-text="undo" hidden></button><button class="action action-secondary" id="done" data-text="done" hidden></button></div>
+      <details class="disclosure"><summary data-text="note"></summary><label class="sr-only" for="note" data-text="note"></label><textarea id="note" rows="2" maxlength="1000" data-placeholder="notePlaceholder"></textarea><button class="action action-text" id="clear-trace" data-text="clearTrace"></button></details>
+      <div id="conflict" class="notice notice-warning" hidden><p data-text="conflict"></p><pre id="remote-review"></pre><div class="toolbar"><button class="action action-secondary" id="keep-local" data-text="keepLocal"></button><button class="action action-secondary" id="keep-remote" data-text="keepRemote"></button></div></div>
+      <p id="current-answer" class="hint"></p>
+      <div class="decision-panel"><div class="decisions"><button class="action action-decision action-separate" data-relation="separate"><span aria-hidden="true">A | B</span><strong data-text="separate"></strong></button><button class="action action-decision action-same" data-relation="same_surface"><span aria-hidden="true">A + B</span><strong data-text="same_surface"></strong></button><button class="action action-decision action-unclear" data-relation="unclear"><span aria-hidden="true">?</span><strong data-text="unclear"></strong></button></div><p id="save-status" class="save-status" role="status" aria-live="polite"></p></div>
+      <nav class="toolbar navigation" aria-label="Review navigation"><button class="action action-text" id="previous" data-text="previous"></button><button class="action action-text" id="next" data-text="next"></button></nav>
+      <button class="action action-secondary action-wide" id="add-pair" data-text="add"></button>
+      <details class="disclosure"><summary data-text="instructions"></summary><p data-text="help"></p><p data-text="explanation"></p></details>
+      <details class="disclosure"><summary data-text="source"></summary><p id="source"></p></details>
+    </section>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+  </main>
+  <dialog id="pack-dialog" class="panel"><div class="dialog-heading"><h2 data-text="connection"></h2><button class="action action-icon" id="close-pack" aria-label="Close">×</button></div><p id="sync-status"></p><p id="offline-status"></p><div class="stack"><button id="download" class="action action-primary" data-text="trip"></button><button id="sync" class="action action-secondary" data-text="sync"></button><button id="backup" class="action action-secondary" data-text="backup"></button></div><p class="hint" data-text="privacy"></p><p class="hint" data-text="install"></p></dialog>
+</body>
+</html>
