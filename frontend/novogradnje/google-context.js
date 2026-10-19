@@ -23,14 +23,16 @@ function targetGroup(THREE,model){
  }
  return group;
 }
-async function mount(host,project,isCurrent){
- const modules=await loadLibrary();if(!isCurrent())return null;
+async function mount(host,project,isCurrent,options={}){
+ const elevation=Number.isFinite(options.groundZ)?Promise.resolve(options.groundZ):fetch(`/novogradnje/api/projects/${encodeURIComponent(project.id)}/context`,{signal:options.signal})
+  .then(response=>response.ok?response.json():null).then(context=>Number.isFinite(context?.groundZ)?context.groundZ:0).catch(()=>0);
+ const [modules,initialElevationM]=await Promise.all([loadLibrary(),elevation]);if(!isCurrent())return null;
  return root.__floorPlanReviewRenderer.preview(host,THREE=>targetGroup(THREE,project.model),isCurrent,{
   enablePan:false,enableZoom:true,minPolarAngle:.15,maxPolarAngle:Math.PI*.48,minDistance:25,maxDistance:260,
-  setup:internals=>attach(host,project,isCurrent,modules,internals)
+  setup:internals=>attach(host,project,isCurrent,modules,internals,initialElevationM)
  });
 }
-function attach(host,project,isCurrent,modules,{THREE,scene,camera,renderer,controls,render}){
+function attach(host,project,isCurrent,modules,{THREE,scene,group,camera,renderer,controls,render},initialElevationM=0){
  const [{TilesRenderer},{CesiumIonAuthPlugin,ReorientationPlugin,GLTFExtensionsPlugin,TileCompressionPlugin},{DRACOLoader}]=modules;
  const origin=root.__siteModelGeometry.localFrame(project.model).origin;
  const tiles=new TilesRenderer(),decoder=new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/libs/draco/gltf/');
@@ -42,6 +44,9 @@ function attach(host,project,isCurrent,modules,{THREE,scene,camera,renderer,cont
  frame.rotation.set(e.x,e.y,e.z,e.order);frame.add(tiles.group);seat.add(frame);scene.add(seat);tiles.group.visible=false;
  scene.background=new THREE.Color('#dcebf0');
  const direction=camera.position.clone().sub(controls.target).normalize();camera.position.copy(controls.target).addScaledVector(direction,170);camera.near=.5;camera.far=420;camera.updateProjectionMatrix();controls.update();
+ // Survey altitude is only a camera prior; it is not treated as an ellipsoid datum.
+ // Starting below the terrain makes coarse global triangles a misleading ground sample.
+ camera.position.z+=initialElevationM;controls.target.z+=initialElevationM;controls.update();group.visible=false;
  tiles.setCamera(camera);tiles.setResolutionFromRenderer(camera,renderer);
  const status=document.createElement('p');status.className='context-google-status';status.textContent='Učitavanje Google 3D prikaza…';status.setAttribute('role','status');
  const credit=document.createElement('div');credit.className='context-google-credit';
@@ -52,7 +57,8 @@ function attach(host,project,isCurrent,modules,{THREE,scene,camera,renderer,cont
  const onUnload=event=>{cached.delete(event.scene);revision++;};
  tiles.addEventListener('load-model',onLoad);tiles.addEventListener('dispose-model',onUnload);
  function seatGround(now){
-  if(locked||revision===probed||now-lastProbe<650||!cached.size)return;
+  if(locked||revision===probed||now-lastProbe<650||!cached.size||!tiles.visibleTiles.size
+   ||!root.__photorealGround.canFinalizeSeating(tiles.loadProgress,now-lastLoad))return;
   lastProbe=now;probed=revision;seat.updateMatrixWorld(true);
   const inverse=tiles.group.matrixWorld.clone().invert();
   // Detached cached models remain in ECEF, attached models are in the preview scene.
@@ -69,9 +75,11 @@ function attach(host,project,isCurrent,modules,{THREE,scene,camera,renderer,cont
   });
   const height=root.__photorealGround.selectBootstrapHeight(probes,seat.position.z);
   if(height===null)return;
-  seat.position.z-=height;seat.updateMatrixWorld(true);grounded=true;tiles.group.visible=true;status.hidden=true;
+  seat.position.z-=height;seat.updateMatrixWorld(true);
+  if(!grounded){camera.position.z-=initialElevationM;controls.target.z-=initialElevationM;controls.update();}
+  grounded=true;tiles.group.visible=true;group.visible=true;status.hidden=true;
   host.dataset.googleState='ready';
-  if(root.__photorealGround.canFinalizeSeating(tiles.loadProgress,now-lastLoad))locked=true;
+  locked=true;
  }
  function updateCredit(){copyrights.textContent=root.PhotorealAttribution.attributionText(tiles.getAttributions());}
  function tick(now){

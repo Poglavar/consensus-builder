@@ -7,7 +7,7 @@ const source = readFileSync(new URL('../../frontend/novogradnje/google-context.j
 const body = parse(source, { sourceType: 'script' }).program.body[0].expression.callee.body.body;
 const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'attach');
 
-function fixture() {
+function fixture(initialElevationM = 0) {
     const frames = new Map(), listeners = {}, timers = [];
     let sequence = 0, intersection;
     const element = () => ({ children: [], dataset: {}, append(...nodes) { this.children.push(...nodes); },
@@ -34,7 +34,7 @@ function fixture() {
     class Tiles {
         constructor() {
             tiles = this; this.group = new Group(); this.events = {}; this.plugins = [];
-            this.lruCache = {}; this.parseQueue = {}; this.downloadQueue = {};
+            this.lruCache = {}; this.parseQueue = {}; this.downloadQueue = {}; this.visibleTiles = new Set();
         }
         registerPlugin(plugin) { this.plugins.push(plugin); }
         addEventListener(name, callback) { this.events[name] = callback; }
@@ -61,16 +61,35 @@ function fixture() {
     });
     const attach = vm.runInContext(`(${source.slice(declaration.start, declaration.end)})`, context);
     const controls = { target: new Vector(), update: vi.fn() }, camera = { position: new Vector(), updateProjectionMatrix: vi.fn(), updateMatrixWorld: vi.fn() };
-    const scene = { add: vi.fn(), remove: vi.fn() }, render = vi.fn();
+    const scene = { add: vi.fn(), remove: vi.fn() }, render = vi.fn(), group = { visible: true };
     const dispose = attach(host, { model: {} }, () => true, [
         { TilesRenderer: Tiles }, { CesiumIonAuthPlugin: Plugin, ReorientationPlugin: Plugin, GLTFExtensionsPlugin: Plugin, TileCompressionPlugin: Plugin }, { DRACOLoader: Decoder }
-    ], { THREE: { Group, Color: class {} }, scene, camera, renderer: {}, controls, render });
-    return { tiles, host, frames, document, listeners, timers, observer, dispose, render, camera,
+    ], { THREE: { Group, Color: class {} }, scene, group, camera, renderer: {}, controls, render }, initialElevationM);
+    return { tiles, host, frames, document, listeners, timers, observer, dispose, render, camera, controls, group,
         visibility: visible => intersection([{ isIntersecting: visible }]),
         frame: now => { const [id, callback] = frames.entries().next().value; frames.delete(id); callback(now); } };
 }
 
 describe('bounded Google context streaming', () => {
+    it('uses survey elevation only for the initial camera and keeps the overlay hidden until the mesh is aligned', () => {
+        const f = fixture(125);
+        expect(f.camera.position.z).toBe(125);
+        expect(f.controls.target.z).toBe(125);
+        expect(f.group.visible).toBe(false);
+        f.dispose();
+    });
+
+    it('does not align against cached global triangles before tiles are visible', () => {
+        const f = fixture();
+        const model = { updateMatrixWorld: vi.fn() };
+        f.tiles.events['load-model']({ scene: model });
+        f.frame(2001);
+        expect(model.updateMatrixWorld).not.toHaveBeenCalled();
+        expect(f.host.dataset.googleState).toBe('loading');
+        expect(f.group.visible).toBe(false);
+        f.dispose();
+    });
+
     it('anchors at the footprint origin, caps camera reach and bounds streaming work', () => {
         const f = fixture();
         expect(f.tiles.plugins[1].options).toEqual({ lat: Math.PI / 4, lon: 16 * Math.PI / 180, height: 0 });

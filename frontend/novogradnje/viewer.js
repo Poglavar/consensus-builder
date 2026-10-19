@@ -102,7 +102,7 @@
             controller=new AbortController();
             try {
                 if(next==='google'){
-                    const result=await root.NovogradnjeGoogleContext.mount(view,project,current);
+                    const result=await root.NovogradnjeGoogleContext.mount(view,project,current,{groundZ:context?.groundZ,signal:controller.signal});
                     if(!current())result?.();else dispose=result;
                     return;
                 }
