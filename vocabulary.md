@@ -41,6 +41,12 @@ Identity has several layers: `proposal.id` is a database row key; API `proposalI
 
 The browser's `proposalId` is a stable local record key, which is not always the published authored ID. `buildUploadReadyProposal` assigns a content fingerprint to the upload copy's `proposalId` while leaving the author's local key intact; imported copies normally use the published authored ID as their local key. `serverProposalId` is the explicit link from either browser copy to the published row. Exact named-plan membership uses that link, never local-key equality or source ancestry.
 
+Publication sync attaches the returned positive numeric row ID to both `id` and `serverProposalId`
+on the exact local record. It preserves the local `proposalId` and its sole storage key; a chain
+token, authored ID or server-row alias cannot select a different local record for this update.
+Earlier experimental copies whose `id` contains a local key require a fresh sync or reimport;
+no compatibility reader or record migration is provided. [Sync boundary](frontend/js/proposals/server-sync.js).
+
 Mint confirmation takes a separate `localProposalId` for opening browser details and a complete
 `chainRef` for display. It labels the chain/network, contract/program and token/account separately;
 a bare token/account is never used as the browser navigation key. [Confirmation](frontend/js/proposals/chain.js),

@@ -337,6 +337,16 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(row).toContainText('Uploaded', { timeout: 30000 });
     const selectedUploadedRowIds = [...server.records.keys()].map(String);
     expect(selectedUploadedRowIds.length).toBeGreaterThan(0);
+    const publishedLocal = await page.evaluate(key => {
+      const store = (window as any).proposalStorage;
+      const record = store.getProposal(key);
+      return { proposalId: record.proposalId, id: record.id, serverProposalId: record.serverProposalId,
+        indexedKeys: [...store.proposals.entries()].filter(([, value]) => value === record).map(([key]) => key) };
+    }, id);
+    expect(publishedLocal.proposalId).toBe(id);
+    expect(publishedLocal.id).toBe(publishedLocal.serverProposalId);
+    expect(selectedUploadedRowIds).toContain(publishedLocal.id);
+    expect(publishedLocal.indexedKeys).toEqual([id]);
     const link = plan.locator('.share-modal-link');
     await expect(link).toHaveValue(/\/proposals\/\d+/);
     const url = await link.inputValue();

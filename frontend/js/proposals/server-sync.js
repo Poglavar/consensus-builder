@@ -443,31 +443,20 @@ if (typeof window !== 'undefined') {
 }
 
 function syncProposalWithServerId(proposal, serverProposalId) {
-    if (!serverProposalId || typeof proposalStorage === 'undefined') return null;
-    const oldProposalId = proposal.proposalId;
-    const proposalId = proposal.proposalId;
-    let storedProposal = oldProposalId ? proposalStorage.getProposal(oldProposalId) : null;
-    if (!storedProposal && proposalId) {
-        storedProposal = proposalStorage.getProposal(proposalId);
+    if (!/^[1-9]\d*$/.test(String(serverProposalId ?? ''))) {
+        throw new Error('Publication sync requires a database proposal row ID.');
     }
+    if (!proposal?.proposalId || typeof proposalStorage === 'undefined') return null;
+    const localProposalId = String(proposal.proposalId);
+    const storedProposal = proposalStorage.proposals?.get(localProposalId);
     if (!storedProposal) return null;
 
-    // Preserve local proposalId; store server reference separately
+    // Preserve the exact local key; both server fields identify the returned database row.
     storedProposal.serverProposalId = String(serverProposalId);
-    storedProposal.id = storedProposal.id || storedProposal.proposalId;
+    storedProposal.id = String(serverProposalId);
 
-    // Older versions indexed the same proposal under the server id key, which caused duplicates in getAllProposals().
-    // We resolve server ids via proposalStorage._resolveProposalId now, so ensure any legacy alias entry is removed.
-    if (proposalStorage.proposals) {
-        const serverKey = String(serverProposalId);
-        const canonicalKey = storedProposal.proposalId ? String(storedProposal.proposalId) : null;
-        if (serverKey && canonicalKey && serverKey !== canonicalKey) {
-            const aliased = proposalStorage.proposals.get(serverKey);
-            if (aliased === storedProposal) {
-                proposalStorage.proposals.delete(serverKey);
-            }
-        }
-    }
+    // Index only the local key. A server row or chain token must not select a different local
+    // record, and publication must not introduce another entry for this record.
 
     if (typeof proposalStorage._indexProposal === 'function') {
         proposalStorage._indexProposal(storedProposal);
