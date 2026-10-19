@@ -765,3 +765,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-19: Keep all omitted-gems work in the existing `omitted-gems-fixes` branch and matching worktree; do not create separate branches or worktrees for its follow-up fixes.
 
 - 2026-10-20: Configurable imagery uses the same area-specific source setup as parcels/buildings, beginning with public DGU 2022/2024 orthophotos; imagery remains visual context, independent of cadastral geometry.
+
+- 2026-10-20: Image generation must pick up unfinished work on its next run, using missing persisted image results as the retry candidates; do not add a separate recovery scheduler.
