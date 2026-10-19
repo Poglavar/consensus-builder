@@ -3,6 +3,10 @@
 // retained in a foreign member so desktop GIS tools can still consume the archive directly.
 
 import { stripLocalProposalState } from './serializer.js';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { structureKeys: STRUCTURE_KINDS } = require('../../frontend/js/proposals/design-goals.js');
 
 export const STRUCTURE_RECONSTRUCTION_GEOJSON_SCHEMA = 'consensus-builder.structure-reconstruction.v1';
 
@@ -15,7 +19,6 @@ const PROPOSAL_RUNTIME_KEYS = new Set([
     'structureProposal'
 ]);
 const STRUCTURE_GEOMETRY_KEYS = new Set(['geometry']);
-const STRUCTURE_KINDS = Object.freeze(['park', 'square', 'lake', 'station']);
 
 function assertStructureKind(structure) {
     if (!STRUCTURE_KINDS.includes(structure?.kind)) {

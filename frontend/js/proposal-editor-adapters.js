@@ -4,21 +4,10 @@
 
     const turfRef = global.turf || null;
 
-    const CREATABLE_PROPOSAL_GOALS = [
-        'as-is',
-        'square',
-        'park',
-        'lake',
-        'station',
-        'single',
-        'buildings',
-        'row',
-        'parcelBased',
-        'urban-rule',
-        'road-track',
-        'reparcellization',
-        'ownership-transfer'
-    ];
+    const designGoals = global.ProposalDesignGoals || (typeof require === 'function'
+        ? require('./proposals/design-goals.js') : null);
+    if (!designGoals) throw new Error('Proposal design goals are unavailable.');
+    const CREATABLE_PROPOSAL_GOALS = designGoals.keys;
 
     // Physical, material drafts may be explicitly moved to a new site. Parcel acts and
     // readjustments remain tied to their authored scope/deal, and the building rules (Block, Row,
