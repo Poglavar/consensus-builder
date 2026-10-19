@@ -124,7 +124,7 @@
             viewers.push(V.mountEnvelope(envelopeHost,project.model,null));
             const context=node('section','viewer-panel context-panel'),contextTitle=node('h3','','Kontekst zgrade'),contextHost=node('div','viewer-canvas');
             context.append(contextTitle,contextHost,node('p','viewer-copy',project.location?'Okolica prikazana prema dostupnim podacima. Novije promjene možda nisu uključene.':'Okolica se može prikazati kada utvrdimo lokaciju zgrade.'));
-            viewers.push(V.mountContext(contextHost,project));right.append(envelope,context);layout.append(apartmentColumn,right);card.append(layout);
+            viewers.push(V.mountContext(contextHost,project));right.append(context,envelope);layout.append(right,apartmentColumn);card.append(layout);
         }
         if(selected){
             const hasGeometry=Boolean(selected.architecture);

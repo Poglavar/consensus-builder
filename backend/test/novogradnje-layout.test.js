@@ -74,7 +74,9 @@ describe('Novogradnje detail layout', () => {
         expect(descendants(rows[0]).map(node => node.textContent).join(' ')).not.toMatch(/Tlocrt dostupan|Otvori izvor/);
         expect(descendants(detail).filter(node => node.className === 'detail-sources')).toHaveLength(0);
         expect(descendants(detail).filter(node => node.className === 'source-link')).toHaveLength(0);
-        expect(descendants(detail).filter(node => node.className.split(' ').includes('viewer-panel')).map(node => node.children[0].textContent)).toEqual(['Obris i katovi zgrade', 'Kontekst zgrade']);
+        expect(descendants(detail).filter(node => node.className.split(' ').includes('viewer-panel')).map(node => node.children[0].textContent)).toEqual(['Kontekst zgrade', 'Obris i katovi zgrade']);
+        const layout = descendants(detail).find(node => node.className === 'building-detail-layout');
+        expect(layout.children.map(node => node.className)).toEqual(['building-viewer-stack', 'building-apartment-column']);
     });
 
     it('lists floor plans separately and opens a floor detail with its source PDF page', () => {
@@ -102,5 +104,7 @@ describe('Novogradnje detail layout', () => {
         expect(css).toMatch(/\.viewer-grid\.apartment-viewer-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2/);
         expect(css).toMatch(/@media\(max-width:760px\)\s*\{[^}]*\.viewer-grid\.apartment-viewer-grid,\.building-detail-layout\s*\{grid-template-columns:minmax\(0,1fr\)/);
         expect(css).toMatch(/\.building-detail-layout\s*\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
+        expect(css).toMatch(/\.building-detail-layout\s*\{[^}]*grid-template-areas:"apartments viewers"/);
+        expect(css).toMatch(/@media\(max-width:760px\)[\s\S]*\.building-detail-layout\{grid-template-areas:"viewers" "apartments"\}/);
     });
 });

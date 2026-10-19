@@ -27,13 +27,13 @@
 .viewer-panel .view-toggle{align-self:flex-start;margin-top:auto}
 .viewer-panel .viewer-actions{margin-top:auto;padding-bottom:2px}
 .original-preview.original-unavailable{display:grid;place-items:center;padding:20px;color:var(--muted);font-size:.85rem}
-.building-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;margin-top:20px}
-.building-apartment-column{min-width:0}
+.building-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"apartments viewers";gap:18px;align-items:start;margin-top:20px}
+.building-apartment-column{grid-area:apartments;min-width:0}
 .detail-section-title{font:600 1.35rem Fraunces,Georgia,serif;margin:0 0 12px}
 .building-detail-layout .apartment-list{display:flex;flex-direction:column;gap:0;margin:0}
 .building-detail-layout .apartment-row{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:13px 8px;background:transparent}
 .building-detail-layout .apartment-row:first-child{border-top:1px solid var(--line)}
 .building-detail-layout .apartment-row:hover{background:#fffaf1}
-.building-viewer-stack{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
+.building-viewer-stack{grid-area:viewers;display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
 .building-viewer-stack .viewer-canvas{height:300px;min-height:260px}
-@media(max-width:760px){.viewer-grid.apartment-viewer-grid,.building-detail-layout{grid-template-columns:minmax(0,1fr)}.building-viewer-stack{grid-template-columns:minmax(0,1fr)}.viewer-panel{height:430px}.viewer-panel>.viewer-canvas,.viewer-panel>.viewer-host,.viewer-panel>.original-preview{height:280px;min-height:240px}.viewer-host>.viewer-canvas{height:280px}}
+@media(max-width:760px){.viewer-grid.apartment-viewer-grid,.building-detail-layout{grid-template-columns:minmax(0,1fr)}.building-detail-layout{grid-template-areas:"viewers" "apartments"}.building-viewer-stack{grid-template-columns:minmax(0,1fr)}.viewer-panel{height:430px}.viewer-panel>.viewer-canvas,.viewer-panel>.viewer-host,.viewer-panel>.original-preview{height:280px;min-height:240px}.viewer-host>.viewer-canvas{height:280px}}
