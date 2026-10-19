@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "workers": [
+    {
+      "worker": 1,
+      "pid": 1230663,
+      "startedAt": "2026-10-19T06:10:20.016235+00:00",
+      "finishedAt": "2026-10-19T06:10:22.347021+00:00",
+      "status": "complete",
+      "exitCode": 0,
+      "cityCount": 243,
+      "planSha256": "d2c527299d7e74a7f34abdf16b2a863b9e21e42cb56963beff47c63736ac233d"
+    },
+    {
+      "worker": 2,
+      "pid": 1230664,
+      "startedAt": "2026-10-19T06:10:20.018194+00:00",
+      "finishedAt": "2026-10-19T06:10:22.340146+00:00",
+      "status": "complete",
+      "exitCode": 0,
+      "cityCount": 242,
+      "planSha256": "f702aff5c09b1028cc3addb4b13ee93b5f5176023584d8d5a6f6774e24208d54"
+    },
+    {
+      "worker": 3,
+      "pid": 1230665,
+      "startedAt": "2026-10-19T06:10:20.019721+00:00",
+      "finishedAt": "2026-10-19T06:10:22.348210+00:00",
+      "status": "complete",
+      "exitCode": 0,
+      "cityCount": 242,
+      "planSha256": "7804ac99eed0f006427c70ec653feef0642efbad8c99e9308e9073f17e5ecd09"
+    },
+    {
+      "worker": 4,
+      "pid": 1230666,
+      "startedAt": "2026-10-19T06:10:20.020321+00:00",
+      "finishedAt": "2026-10-19T06:10:22.360498+00:00",
+      "status": "complete",
+      "exitCode": 0,
+      "cityCount": 242,
+      "planSha256": "5c87057942a0c282f386376e21043ceb67766d99432807ac2a60e8a351ecb853"
+    }
+  ],
+  "inputStateSha256": "0ebdbd9c21076db1aeb85a10b03ccb1f61a5fa69f5e55a959d5b0151e995655b",
+  "queueSha256": "fa0009b8c961ba45126cb6fa143d82c9774e11245cc802aacf2ee4496ccf7d9a"
+}
