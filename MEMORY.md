@@ -773,3 +773,5 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-19: The user approved a ten-building private Stanovanje.plus LLM feasibility trial using subscription Codex; full-archive processing and public incorporation remain separate from that trial.
 
 - 2026-10-19: The user chose plural Novogradnje detail URLs before public adoption: zgrade/stanovi/tlocrti; keep IDs and remove singular routes instead of adding aliases. Continue refining the ten private Stanovanje.plus sources until drawings are practically usable, rather than stopping at format validation.
+
+- 2026-10-19: The user requested a mobile annotation pipeline for public-transport trips. Groundwork in ParcelBench uses immutable image packs, phone-first saving, explicit downloads for offline review, revision-safe synchronization and a separate human observation export; uncertain pairs remain unscored and evaluation roles stay unassigned.
