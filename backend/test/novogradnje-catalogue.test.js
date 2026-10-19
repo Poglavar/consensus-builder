@@ -136,3 +136,44 @@ describe('public pages and metadata', () => {
         await request(app).get('/novogradnje/legacy?plan=unread-plan').expect(301).expect('Location','/novogradnje/');
     });
 });
+
+describe('project building thumbnails', () => {
+    const envelope = { ...model.envelope, storeys: [
+        { level: 0, elevationM: 0, heightM: 3 }, { level: 1, elevationM: 3, heightM: 3 },
+    ] };
+    const first = { ...row, model: { ...model, envelope } };
+    const second = { ...row, site_key: 'permit:taller', model: { ...model, siteKey: 'permit:taller',
+        envelope: { ...envelope, storeys: [...envelope.storeys, { level: 2, elevationM: 6, heightM: 3 }] } } };
+    const app = express();
+    setupNovogradnjeRoute(app, { query: async sql => ({ rows: sql.includes('floor_plan.site_model') ? [first, second, originalRow, lead] : [] }) });
+
+    it('advertises per-project thumbnail URLs only for actual building envelopes', async () => {
+        const catalogue = await request(app).get('/novogradnje/api/projects').expect(200);
+        const project = catalogue.body.projects.find(p => p.id === projectId(first.site_key));
+        expect(project.thumbnailUrl).toBe(`/novogradnje/api/projects/${project.id}/thumbnail.svg`);
+        expect(project).not.toHaveProperty('model');
+        expect(publicProject(row).thumbnailUrl).toBeNull();
+    });
+
+    it('serves different SVG views for different building geometry', async () => {
+        const one = await request(app).get(publicProject(first).thumbnailUrl).expect(200);
+        const two = await request(app).get(publicProject(second).thumbnailUrl).expect(200);
+        expect(one.headers['content-type']).toContain('image/svg+xml');
+        const text = response => response.text ?? response.body.toString('utf8');
+        expect(text(one)).toContain('<svg');
+        expect(text(one)).not.toBe(text(two));
+    });
+
+    it('does not invent thumbnails for missing or non-public projects', async () => {
+        await request(app).get('/novogradnje/api/projects/missing/thumbnail.svg').expect(404);
+        await request(app).get(`/novogradnje/api/projects/${projectId(lead.site_key)}/thumbnail.svg`).expect(404);
+        await request(app).get(`/novogradnje/api/projects/${projectId(originalRow.site_key)}/thumbnail.svg`).expect(404);
+    });
+
+    it('includes the building image in server-rendered cards before JavaScript', async () => {
+        const page = await request(app).get('/novogradnje/?kind=all').expect(200);
+        expect(page.text).toContain('<img class="building-thumbnail"');
+        expect(page.text).toContain(`src="${publicProject(first).thumbnailUrl}"`);
+        expect(page.text).not.toContain('window-grid');
+    });
+});

@@ -1,6 +1,7 @@
 // Public, source-backed project catalogue. Stable IDs survive changed titles; payloads omit the
 // raw archive and expose only residential projects, apartment facts and available reconstructions.
 import { createHash } from 'node:crypto';
+import { buildingThumbnailSvg } from './building-thumbnail.js';
 
 export const PUBLIC_ORIGIN = 'https://zagreb.lol';
 export const BASE_PATH = '/novogradnje/';
@@ -39,6 +40,7 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
     const value = { id, slug, url, label, name: inventory.name || label, address: label,
         availability: 'ready',
         kind: inventory.kind, constructionYear: inventory.constructionYear, completionYear: inventory.completionYear,
+        thumbnailUrl: buildingThumbnailSvg(model) ? `${BASE_PATH}api/projects/${id}/thumbnail.svg` : null,
         titles: inventory.titles || [], location: location(model), apartments,
         sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length,
         updatedAt: row.built_at || null };

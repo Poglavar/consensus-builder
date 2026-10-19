@@ -40,8 +40,10 @@
     }
     function makeCard(project){
         const article=node('article','project-card'),link=node('a','card-link');link.href=projectPath(project);link.setAttribute('aria-label',`${project.name||project.label||'Projekt'} — otvori projekt`);
-        const visual=node('div','card-visual'),tag=node('span','building-tag',text.kinds[project.kind]||text.kinds.unknown),windows=node('span','window-grid');for(let i=0;i<6;i++)windows.append(node('i'));
-        visual.append(tag,windows);const body=node('div','card-body'),title=node('h3','card-title',project.name||project.label||project.slug||'Stambeni projekt'),address=node('p','card-address',project.address||text.noAddress);body.append(title,address);
+        const visual=node('div','card-visual'),tag=node('span','building-tag',text.kinds[project.kind]||text.kinds.unknown),thumbnail=safePath(project.thumbnailUrl,null);
+        if(thumbnail){const image=node('img','building-thumbnail');image.src=thumbnail;image.alt=`3D obris zgrade ${project.name||project.label||''}`;image.width=320;image.height=180;image.loading='lazy';image.decoding='async';visual.append(image);}
+        else visual.append(node('span','thumbnail-unavailable','3D obris još nije dostupan'));
+        visual.append(tag);const body=node('div','card-body'),title=node('h3','card-title',project.name||project.label||project.slug||'Stambeni projekt'),address=node('p','card-address',project.address||text.noAddress);body.append(title,address);
         const chips=node('div','card-chips');chips.append(node('span','chip',text.year(project)));if(project.kind==='new_build')chips.append(node('span','chip amber','Novogradnja'));if(project.kind==='unknown')chips.append(node('span','chip','Vrsta nije utvrđena'));
         const facts=node('div','card-count'),count=node('strong','',(project.apartments||[]).length?text.project(project.apartments.length):'Broj stanova nije naveden'),planCount=node('span','',text.plans(project.planCount||0));facts.append(count,planCount);body.append(chips,facts);link.append(visual,body);article.append(link);
         const pills=node('div','plan-pills');(project.apartments||[]).slice(0,4).forEach(apartment=>{if(!apartment.hasPlan)return;const a=node('a','plan-pill',apartment.label||'Tlocrt stana');a.href=apartmentPath(project,apartment);a.addEventListener('click',ev=>ev.stopPropagation());pills.append(a);});if(pills.childNodes.length)article.append(pills);
