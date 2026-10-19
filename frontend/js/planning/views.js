@@ -80,8 +80,9 @@
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
         if (!items.length) return t('empty');
-        if (payload.omitted) return t('partial', { count: items.length });
-        return t('loaded', { count: items.length });
+        const text = t(payload.omitted ? 'partial' : 'loaded', { count: items.length });
+        const pending = (payload.summaries || []).reduce((sum, entry) => sum + (entry.awaitingRefresh || 0), 0);
+        return pending ? `${text} · ${t('refreshCount', { count: pending })}` : text;
     }
     function renderInspector() {
         const item = selected();
@@ -99,8 +100,14 @@
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t('obligatory')), element('span', 'cb-badge cb-badge--warning',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : 'approximate')));
+        if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         inspector.append(badges, element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate' : 'oneOption')));
+        if (item.assessment.refresh) {
+            const key = `planningViews.refreshCause.${item.assessment.refresh.code}`;
+            const reason = root.i18n.t(key);
+            inspector.append(element('p', 'planning-inspector__description', `${t('refreshNote')} ${reason === key ? t('refreshFailed') : reason}`));
+        }
         const metrics = element('dl', 'planning-metrics');
         const unitLimit = item.constraints?.find(constraint => constraint.quantity === 'dwellings')?.value;
         for (const [label, value] of [[t('floorArea'), area(item.metrics.floorAreaM2)],

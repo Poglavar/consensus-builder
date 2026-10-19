@@ -42,6 +42,14 @@ describe('planning source adapters', () => {
         const after = gupRepresentation(input);
         expect(after.id).toBe(before.id); expect(after.source.version).not.toBe(before.source.version);
     });
+    it('keeps a pending-refresh massing and its original calculation provenance visible', () => {
+        const input = row(); input.refresh_pending = { code: 'LOCAL_SYNC_PENDING', requestedAt: '2026-10-19T00:00:00Z' };
+        const result = gupRepresentation(input);
+        expect(result.assessment.refresh).toEqual(input.refresh_pending);
+        expect(result.source.solverVersion).toBe('v44'); expect(result.source.computedAt).toBe(input.computed_at);
+        expect(result.metrics.floorAreaM2).toBe(150); expect(result.volumes).toHaveLength(2);
+        expect(gupRepresentation(row()).assessment.refresh).toBeNull();
+    });
     it('does not turn missing quantities into zero capacity or scalar quantities into geometry', () => {
         const input = row(); input.gbp_m2 = null; input.max_units = null;
         const result = gupRepresentation(input);
@@ -76,13 +84,16 @@ describe('planning source adapters', () => {
     });
     it('reads the sole cache by viewport, bounds geometry and retains non-geometric result counts', async () => {
         const invalid = row(); invalid.floors[0].height_m = 0;
-        const pool = { query: vi.fn().mockResolvedValue(response([row(), invalid, row()])) };
+        const pool = { query: vi.fn().mockResolvedValue(response([row(), invalid, row()], { refresh_count: 2 })) };
         const result = await queryZagrebGup(pool, { bbox: [10, 40, 10.01, 40.01], limit: 2 });
         expect(result.items).toHaveLength(1); expect(result.omitted).toBe(1); expect(result.nextAfter).toBe('17');
         expect(result.summary).toMatchObject({ cachedResults: 20, withGeometry: 3, withoutGeometry: 17, statuses: { no_validated_candidate: 17 } });
+        expect(result.summary.awaitingRefresh).toBe(2);
         expect(pool.query).toHaveBeenCalledTimes(1);
         const [sql, parameters] = pool.query.mock.calls[0];
         expect(sql).toContain('FROM public.parcel_build_envelope'); expect(sql).toContain('e.current AND e.gup_id = 2025');
+        expect(sql).toContain('LEFT JOIN public.envelope_cache_error');
+        expect(sql).not.toContain('f.error_detail'); // Internal diagnostics are not a public source explanation.
         expect(sql).toContain('e.geom && ST_Transform'); expect(sql).toContain('ST_Intersects');
         expect(sql).not.toMatch(/\b(?:proposal|INSERT|UPDATE|DELETE|CREATE)\b/i);
         expect(parameters).toEqual([10, 40, 10.01, 40.01, 3, null]);

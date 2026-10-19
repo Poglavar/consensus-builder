@@ -44,7 +44,8 @@ export function gupRepresentation(row) {
         assessment: { geometry: row.geometry_status || 'unknown',
             meaning: stockEstimate ? 'existing-stock-estimate' : 'one-calculated-option',
             constraints: 'not-evaluated', status: row.result_status, reason: row.reason,
-            regime: row.build_regime, zeroCapacityBound: row.zero_capacity_bound },
+            regime: row.build_regime, zeroCapacityBound: row.zero_capacity_bound,
+            refresh: row.refresh_pending || null },
         metrics: { floorAreaM2: finite(row.gbp_m2) ? row.gbp_m2 : null,
             heightM: Math.max(...volumes.map(volume => volume.topM)) },
         constraints: finite(row.max_units) ? [{ quantity: 'dwellings', value: row.max_units, unit: 'count',
@@ -58,7 +59,10 @@ export function gupRepresentation(row) {
 // One spatial read provides both the viewport's result counts and a bounded set of drawable
 // profiles. Rows without geometry cannot consume the geometry limit or disappear from coverage.
 export const ZAGREB_CACHE_QUERY = `WITH visible AS MATERIALIZED (
-    SELECT e.* FROM public.parcel_build_envelope e
+    SELECT e.*, CASE WHEN f.cestica_id IS NOT NULL THEN jsonb_build_object(
+        'code',f.error_code,'requestedAt',f.updated_at) END AS refresh_pending
+    FROM public.parcel_build_envelope e
+    LEFT JOIN public.envelope_cache_error f ON f.gup_id=e.gup_id AND f.cestica_id=e.cestica_id
     WHERE e.current AND e.gup_id = 2025
       AND e.geom && ST_Transform(ST_MakeEnvelope($1,$2,$3,$4,4326),3765)
       AND ST_Intersects(e.geom, ST_Transform(ST_MakeEnvelope($1,$2,$3,$4,4326),3765))
@@ -69,6 +73,7 @@ export const ZAGREB_CACHE_QUERY = `WITH visible AS MATERIALIZED (
     ORDER BY cestica_id LIMIT $5
 )
 SELECT (SELECT count(*)::int FROM visible) AS cached_count,
+    (SELECT count(*)::int FROM visible WHERE refresh_pending IS NOT NULL) AS refresh_count,
     (SELECT count(*)::int FROM profiles) AS profile_count,
     (SELECT coalesce(jsonb_object_agg(status, count), '{}'::jsonb) FROM (
         SELECT coalesce(result_status, 'unknown') AS status, count(*)::int AS count
@@ -92,6 +97,7 @@ export async function queryZagrebGup(pool, { bbox, limit, after = null }) {
     const nextAfter = result.profiles.length > limit ? String(candidates.at(-1).cestica_id) : null;
     return { items, nextAfter, omitted: candidates.length - items.length,
         summary: { sourceId: zagrebGupSource.id, cachedResults: result.cached_count,
+            awaitingRefresh: result.refresh_count || 0,
             withGeometry: result.profile_count, withoutGeometry: result.cached_count - result.profile_count,
             statuses: result.status_counts } };
 }

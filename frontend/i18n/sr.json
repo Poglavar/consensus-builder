@@ -7588,6 +7588,20 @@
         }
     },
   "planningViews": {
+    "refreshPending": "Čeka osvežavanje",
+    "refreshCount": {
+      "one": "{{count}} rezultat čeka osvežavanje",
+      "few": "{{count}} rezultata čeka osvežavanje",
+      "other": "{{count}} rezultata čeka osvežavanje"
+    },
+    "refreshNote": "Prikazuje se poslednji sačuvani proračun s izvornom verzijom i datumom.",
+    "refreshFailed": "Poslednje osvežavanje nije završeno.",
+    "refreshCause": {
+      "LOCAL_SYNC_PENDING": "Lokalna kopija čeka sinhronizaciju.",
+      "SOURCE_INPUT_CHANGED": "Izvorni podaci su promenjeni; čeka se novi proračun.",
+      "UNREVIEWED_CAPACITY_LOSS": "Zamenski proračun smanjio bi prethodnu procenu i čeka proveru.",
+      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "Promenjeni obuhvat proračuna čeka proveru."
+    },
     "title": "Zgrade i građevinske mase",
     "detailsLabel": "Podaci o planskom izvoru",
     "permitted": "Dozvoljeno",

@@ -7527,6 +7527,19 @@
         }
     },
   "planningViews": {
+    "refreshPending": "Awaiting refresh",
+    "refreshCount": {
+      "one": "{{count}} result awaiting refresh",
+      "other": "{{count}} results awaiting refresh"
+    },
+    "refreshNote": "Showing the last saved calculation with its original version and date.",
+    "refreshFailed": "The latest refresh did not complete.",
+    "refreshCause": {
+      "LOCAL_SYNC_PENDING": "The local copy is awaiting synchronization.",
+      "SOURCE_INPUT_CHANGED": "Source data changed; recalculation is pending.",
+      "UNREVIEWED_CAPACITY_LOSS": "The replacement would reduce the previous estimate and is awaiting review.",
+      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "The changed calculation coverage is awaiting review."
+    },
     "title": "Buildings and massing",
     "detailsLabel": "Planning source details",
     "permitted": "Permitted",

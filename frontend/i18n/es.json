@@ -7578,6 +7578,19 @@
         }
     },
   "planningViews": {
+    "refreshPending": "Pendiente de actualización",
+    "refreshCount": {
+      "one": "{{count}} resultado pendiente de actualización",
+      "other": "{{count}} resultados pendientes de actualización"
+    },
+    "refreshNote": "Se muestra el último cálculo guardado con su versión y fecha originales.",
+    "refreshFailed": "La última actualización no se completó.",
+    "refreshCause": {
+      "LOCAL_SYNC_PENDING": "La copia local está pendiente de sincronización.",
+      "SOURCE_INPUT_CHANGED": "Los datos de origen cambiaron; el nuevo cálculo está pendiente.",
+      "UNREVIEWED_CAPACITY_LOSS": "El cálculo de reemplazo reduciría la estimación anterior y está pendiente de revisión.",
+      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "El cambio de cobertura del cálculo está pendiente de revisión."
+    },
     "title": "Edificios y volúmenes",
     "detailsLabel": "Detalles de la fuente de planificación",
     "permitted": "Permitido",
