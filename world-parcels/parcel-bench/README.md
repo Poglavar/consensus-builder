@@ -6,6 +6,10 @@ and growth areas. Cadastre supplies boundary examples and a secondary check; exa
 parcel recovery is not the sole product objective. The next experiment needs imagery-based plot
 annotations and a separate frozen evaluation. Boundary learning, SAM 3 proposals and plot
 reconstruction are candidates to compare; their effectiveness under this target is still untested.
+**Error priority:** preserve real divisions and avoid merging distinct plots. Extra subdivisions
+such as separate house, courtyard and vegetable-bed regions are acceptable even within one
+cadastral parcel. Evaluate false merges and visible-boundary recall first; track fragmentation as
+a secondary cost. Final regions must still have coherent, non-overlapping geometry.
 See [the current product contract and proposed next work](PLAN.md#current-product-target-plausible-plots-where-cadastre-is-unavailable).
 
 The cadastral benchmark, principles and results below document the historical experiments. Keep

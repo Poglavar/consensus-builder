@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (product clarified as plausible imagery-derived plots; historical cadastral trials remain frozen). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (plausible imagery-derived plots; missed divisions and false merges take priority over extra subdivisions). Status values: todo · running · done · dropped (with the reason).
 
 ## Current product target: plausible plots where cadastre is unavailable
 
@@ -15,12 +15,20 @@ product requirement. Cadastre was intended to supply examples of boundaries, not
 visible enclosure to reproduce a registered parcel. This clarification supersedes cadastral parcel
 F1 as the sole product objective; it does not relabel or invalidate frozen historical experiments.
 
+Further user clarification: **joining two distinct plots across a missed boundary is much worse
+than subdividing one plot into several plausible regions**. Separate vegetable beds, a courtyard
+and a house can remain separate selectable plots even when they share an owner or cadastral parcel.
+The segmentation need not infer their common ownership or consolidate them into one compound.
+Preserving discernible physical/use divisions is the priority; extra subdivisions are a secondary
+editing burden. Disjoint subdivision is distinct from overlapping masks that assign the same ground
+to several plots, which still require resolution.
+
 Proposed next work, before further model tuning or rental:
 
-1. Define the annotation unit on imagery: residential compounds, visible land-use plots and their
-   outer divisions, with rules for internal garden/farm subdivisions, multi-building compounds,
-   empty plots and unresolved open land. Record multiple plausible interpretations where necessary.
-   The precise granularity is to be frozen before an experiment, not inferred from model outputs.
+1. Annotate discernible physical/use divisions and areas that must remain separated in the imagery.
+   Accept finer garden, courtyard, house and field subdivisions within a larger enclosure; an exact
+   compound count is not required. Record ambiguous/occluded boundaries and multiple plausible
+   subdivisions separately. Freeze annotation rules and matching tolerances before an experiment.
 2. Create a small human-reviewed imagery benchmark across independent target settlements,
    prioritizing African/Asian villages and growth edges and retaining Croatian diagnostic controls.
    Label visible divisions, plausible plot groupings and ambiguous/occluded portions separately.
@@ -40,18 +48,23 @@ Proposed next work, before further model tuning or rental:
    cadastral spike does not settle performance on this reframed target. Reuse existing saved maps
    only where the image/crop/recipe are compatible; do not silently apply old cadastral gates to
    choose the new winner. Freeze the actual model/checkpoint, prompts and output handling per trial.
-5. Reconstruct plots with shared edges and larger surrounding context. Permit multiple buildings
-   in one compound and plots with no building; use roads, tracks, entrances and plausible access as
-   soft contextual evidence, not a requirement that every polygon touches a mapped road. Resolve
-   overlapping proposals, joins across crop edges and small-region cleanup against visible evidence.
-   Leave unresolved ground unassigned or explicitly uncertain rather than inventing a supported
-   boundary. Test whether building-per-seed and the fixed 120 m² merge cause inappropriate splits
-   or joins before retaining them in a new recipe.
-6. Evaluate image-supported boundary precision/recall, unnecessary divisions and merges,
-   building cuts/grouping, valid shared-edge geometry, confident coverage and human editing effort
-   against the new annotations. Report ambiguous cases and uncovered area; geometric validity or a
-   visually tidy tiling alone does not establish plausible plots. Cadastral overlap remains a
-   secondary diagnostic where available. Keep held-out settlements for generalization evidence.
+5. Reconstruct a fine-grained, non-overlapping partition with shared edges and larger surrounding
+   context. Preserve supported candidate divisions; require evidence before removing a divider to
+   join regions. Use roads, tracks, entrances and plausible access as soft contextual evidence, not
+   a requirement that every polygon touches a mapped road. Resolve overlaps and crop joins without
+   silently erasing a real separation. Explicitly compare removal of the automatic 120 m² merge:
+   small regions alone are not an error under this product objective. Building count does not fix
+   plot count, and common ownership must not be inferred from a proposed grouping. Leave unresolved
+   ground unassigned or explicitly uncertain rather than force a confident join or division.
+6. Make false merges across annotated real divisions the primary error, measured on the final
+   polygons, alongside recall of visible boundaries. Report how often annotated neighbouring areas
+   are joined and the area affected. Boundary-length recall alone is insufficient: a short gap can
+   connect two otherwise well-outlined plots. Track excess subdivisions, unsupported edge length,
+   building cuts, overlaps, geometric validity, covered area and editing effort as secondary checks.
+   Select an operating point that emphasizes preventing false merges while bounding fragmentation;
+   freeze any numeric cost weights/thresholds before scoring instead of inventing an error ratio.
+   An arbitrary pixel grid must not win through perfect separation. Report abstentions/uncertainty
+   and whole-settlement variation. Cadastral overlap remains secondary; retain held-out settlements.
 
 Candidate application output is an inferred, editable plot layer with imagery/model provenance and
 boundary support/uncertainty, separate from sourced cadastral records and ownership. This is a
@@ -63,6 +76,13 @@ explicitly distinguishes visible and non-visible cadastral boundaries. [SAM 3](h
 supports concept and visual prompting and returns instance masks; using those masks as plot proposals
 still requires a grouping and reconstruction policy. Neither source establishes performance in our
 target villages or makes arbitrary segmentation equivalent to plausible physical plots.
+
+The [CadastreVision repository](https://github.com/jeroengrift/cadastrevision), inspected 2026-10-19,
+provides benchmark-preparation and cadastral/topographic overlap-analysis workflows in FME, plus
+sample extents and dataset links. Its overlap analysis is directly relevant to identifying which
+cadastral lines have physical support. It is a research/data preparation resource, not an already
+integrated village plot segmenter. Its README flags unpublished 8 cm imagery and classified-reference
+outputs; actual availability must be checked at the linked data release before depending on them.
 
 ## Product priority: suburban and village communities
 
