@@ -596,9 +596,9 @@ function sortProposalDataset(dataset) {
             case 'parcels-asc':
                 return am.parcelCount - bm.parcelCount;
             case 'area-desc':
-                return bm.area - am.area;
+                return window.ProposalArea.compareAreas(am.area, bm.area);
             case 'area-asc':
-                return am.area - bm.area;
+                return window.ProposalArea.compareAreas(am.area, bm.area, true);
             case 'author-asc':
                 return am.authorLower.localeCompare(bm.authorLower);
             case 'author-desc':

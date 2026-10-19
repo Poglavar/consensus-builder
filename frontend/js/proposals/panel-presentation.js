@@ -13,23 +13,5 @@
         if (replacedInModel) return 'replaced';
         return hasGeometry ? 'available' : 'unloaded';
     }
-    function sourceAreaM2(feature, measureGeometry) {
-        const stored = feature?.properties?.calculatedArea ?? feature?.properties?.calculated_area;
-        if (Number.isFinite(stored) && stored > 0) return stored;
-        if (!feature?.geometry || typeof measureGeometry !== 'function') return null;
-        const measured = measureGeometry(feature.geometry);
-        return Number.isFinite(measured) && measured > 0 ? measured : null;
-    }
-    function areaSummary({ hasSite = false, siteAreaM2 = null, sourceAreas = [], declaredCount = 0 } = {}) {
-        const knownAreas = sourceAreas.filter(area => Number.isFinite(area) && area > 0);
-        return {
-            hasSite,
-            siteAreaM2: hasSite && Number.isFinite(siteAreaM2) && siteAreaM2 > 0 ? siteAreaM2 : null,
-            sourceAreaM2: knownAreas.length ? knownAreas.reduce((sum, area) => sum + area, 0) : null,
-            sourceCount: knownAreas.length,
-            declaredCount,
-            sourceComplete: declaredCount > 0 && knownAreas.length === declaredCount
-        };
-    }
-    return Object.freeze({ resolve, parcelReferenceState, sourceAreaM2, areaSummary });
+    return Object.freeze({ resolve, parcelReferenceState });
 });

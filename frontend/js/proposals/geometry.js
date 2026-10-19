@@ -1172,30 +1172,16 @@ function calculateProposalBounds(parcelIds, options = {}) {
 }
 
 function computeProposalArea(proposal) {
-    if (!proposal) return 0;
-
     // A proposal's area is its site's when it has one (drawn sites need not follow parcels).
-    if (proposal.site && window.__siteDraft && typeof window.__siteDraft.siteAreaM2 === 'function') {
-        const siteArea = window.__siteDraft.siteAreaM2(proposal.site);
-        if (siteArea > 0) return siteArea;
+    // Measurement failure leaves an unknown extent; no building footprint substitutes for it.
+    let siteAreaM2 = null;
+    if (proposal?.site) {
+        try { siteAreaM2 = window.__siteDraft?.siteAreaM2(proposal.site) ?? null; }
+        catch (error) { console.warn('[computeProposalArea] Could not measure the proposal site:', error); }
     }
-
-    if (Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0) {
-        return proposal.cadastreParcelIds.reduce((sum, id) => sum + getParcelAreaById(id), 0);
-    }
-
-    try {
-        if (proposal.structureProposal?.geometry && typeof turf !== 'undefined' && typeof turf.area === 'function') {
-            return turf.area(proposal.structureProposal.geometry);
-        }
-        if (proposal.buildingProposal?.buildingFeature && typeof turf !== 'undefined' && typeof turf.area === 'function') {
-            return turf.area(proposal.buildingProposal.buildingFeature);
-        }
-    } catch (_) {
-        // fall back silently when turf measurement fails
-    }
-
-    return 0;
+    const sources = proposal?.site ? {} : getProposalAreaMap(proposal);
+    return window.ProposalArea.primaryArea({ ...sources, hasSite: !!proposal?.site,
+        siteAreaM2: Number.isFinite(siteAreaM2) && siteAreaM2 > 0 ? siteAreaM2 : null });
 }
 
 function computeProposalMetrics(proposal) {

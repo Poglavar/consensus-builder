@@ -167,11 +167,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         try { siteAreaM2 = window.__siteDraft.siteAreaM2(fullProposal.site); }
         catch (error) { console.warn('[showProposalInfo] Could not measure the proposal site:', error); }
     }
-    const areaSummary = window.ProposalPanelPresentation.areaSummary({
+    const areaSummary = window.ProposalArea.areaSummary({
         hasSite: !!fullProposal.site, siteAreaM2,
         declaredCount: new Set(cadastreParcelIds).size,
         sourceAreas: sourceFeatures.map(feature => {
-            try { return window.ProposalPanelPresentation.sourceAreaM2(feature, window.__siteDraft?.siteAreaM2); }
+            try { return window.ProposalArea.sourceAreaM2(feature, window.__siteDraft?.siteAreaM2); }
             catch (error) {
                 console.warn('[showProposalInfo] Could not measure a source parcel:', feature.properties?.parcelId, error);
                 return null;

@@ -111,33 +111,17 @@ function isParcelReplacedByChildren(parcelId) {
 }
 
 function getProposalAreaMap(proposal) {
-    if (!proposal) return { areaMap: new Map(), totalArea: 0 };
-
-    const areaMap = new Map();
-    let totalArea = 0;
-    const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+    const parcelIds = normalizeParcelIdList(proposal?.cadastreParcelIds);
     const repository = window.CadastralParcelRepository;
-
-    parcelIds.forEach(id => {
-        const key = id?.toString ? id.toString() : String(id || '');
-        if (!key) return;
-
-        let area = 0;
-
-        const feature = repository?.get?.(key) || null;
-        const props = feature?.properties;
-        if (props) {
-            area = Number(props.calculatedArea || props.area || props.parcelArea || 0) || 0;
+    const measureGeometry = geometry => {
+        try { return window.__siteDraft?.siteAreaM2(geometry) ?? null; }
+        catch (error) {
+            console.warn('[getProposalAreaMap] Could not measure a source parcel:', error);
+            return null;
         }
-        if (!area && feature && typeof turf !== 'undefined' && typeof turf.area === 'function') {
-            try { area = Number(turf.area(feature)) || 0; } catch (_) { }
-        }
-
-        areaMap.set(key, area);
-        totalArea += area;
-    });
-
-    return { areaMap, totalArea };
+    };
+    // A partial sum cannot be a denominator for owner payout estimates.
+    return window.ProposalArea.sourceAreaMap(parcelIds, repository?.peekMany?.(parcelIds) || [], measureGeometry);
 }
 
 function resolveProposalIdKey(idOrHash) {

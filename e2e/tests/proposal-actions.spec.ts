@@ -176,6 +176,17 @@ test.describe('Proposal actions @features', () => {
         unknown: w.proposalStorage.addProposal({ ...base, title: 'Unknown source area', cadastreParcelIds: ['area-unloaded'] })
       };
     }, PARCEL_ID);
+    const areas = await page.evaluate(({ partial, unknown }) => {
+      const w = window as any;
+      const partialProposal = w.proposalStorage.getProposal(partial);
+      const sources = w.getProposalAreaMap(partialProposal);
+      return { sourceTotal: sources.totalArea, sourceCount: sources.sourceCount, declaredCount: sources.declaredCount,
+        primary: w.computeProposalMetrics(partialProposal).area,
+        unknown: w.computeProposalMetrics(w.proposalStorage.getProposal(unknown)).area,
+        withoutSite: w.computeProposalMetrics({ ...partialProposal, site: null }).area };
+    }, ids);
+    expect(areas).toMatchObject({ sourceTotal: null, sourceCount: 1, declaredCount: 2, unknown: null, withoutSite: null });
+    expect(areas.primary).toBeGreaterThan(12000);
     await showProposal(page, ids.partial);
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
