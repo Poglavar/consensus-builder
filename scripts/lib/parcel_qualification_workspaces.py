@@ -146,10 +146,7 @@ def _resolve_base_revision(root: Path, revision: str | None, parent_head: str) -
     resolved = _git(root, "rev-parse", "--verify", f"{revision.strip()}^{{commit}}", check=False)
     if resolved.returncode or not re.fullmatch(r"[0-9a-f]{40,64}", resolved.stdout.strip()):
         raise ValueError("qualification base revision is not a commit in this Git repository")
-    commit = resolved.stdout.strip()
-    if _git(root, "merge-base", "--is-ancestor", parent_head, commit, check=False).returncode:
-        raise ValueError("qualification base revision must descend from the parent checkout HEAD")
-    return commit
+    return resolved.stdout.strip()
 
 
 def _ignored_inventory(root: Path) -> set[str]:

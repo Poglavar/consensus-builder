@@ -178,7 +178,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
                          "export const failedAttempt = true;\n")
         self.assertTrue(next_workspace["stateDir"].is_dir())
 
-    def test_selected_base_ahead_of_parent_head_is_not_rearchived_as_overlay(self):
+    def test_divergent_selected_base_preserves_parent_head_and_is_not_rearchived(self):
         old_head = run_git(self.parent, "rev-parse", "HEAD")
         big = self.parent / "frontend/runtime-bundle.js"
         big.parent.mkdir()
@@ -189,6 +189,11 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         canonical = run_git(self.parent, "rev-parse", "HEAD")
         run_git(self.parent, "tag", "canonical-runtime", canonical)
         run_git(self.parent, "reset", "--hard", old_head)
+        (self.parent / "parent-only.txt").write_text("parent branch\n")
+        run_git(self.parent, "add", "parent-only.txt")
+        run_git(self.parent, "commit", "-m", "divergent parent commit")
+        parent_head = run_git(self.parent, "rev-parse", "HEAD")
+        self.assertNotEqual(run_git(self.parent, "merge-base", canonical, parent_head), parent_head)
         big.parent.mkdir(exist_ok=True)
         big.write_text(payload)
 
@@ -197,7 +202,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertNotIn("frontend/runtime-bundle.js", untracked)
         workspace = self.prepare(base_revision=canonical)
         child = workspace["root"]
-        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), old_head)
+        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), parent_head)
         self.assertEqual(run_git(child, "rev-parse", "HEAD"), canonical)
         self.assertEqual((child / "frontend/runtime-bundle.js").read_text(), payload)
         workspaces.finish_workspace(workspace)
@@ -206,7 +211,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         history = self.state_dir / "qualification-workspaces/history" / workspace["runId"]
         manifest = json.loads((history / "manifest.json").read_text())
         self.assertNotIn("frontend/runtime-bundle.js", {row["path"] for row in manifest["entries"]})
-        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), old_head)
+        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), parent_head)
 
     def test_unexpected_post_finish_drift_refuses_reuse_without_overwriting_it(self):
         workspace = self.prepare()
