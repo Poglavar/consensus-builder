@@ -85,6 +85,9 @@ starts that exact release. It never switches or deploys the shared map checkout.
 bundle and private access key must already be installed; later code deployments preserve both and
 all accumulated reviews. `current` names the last deployed release, and each release has a `RELEASE`
 receipt. The release branch contains this app's changes without merging diverged map work.
+Deployment replaces only the `autokatastar-review` PM2 registration before starting the release:
+PM2 reload was observed to retain the old executable/cwd despite the changed ecosystem definition.
+This gives a short server interruption; pending phone reviews stay available for later sync.
 
 The nginx location must preserve the `/autokatastar/pregled/` prefix when proxying to `http://localhost:8791`:
 
@@ -98,7 +101,7 @@ location ^~ /autokatastar/pregled/ {
 }
 ```
 
-Run `nginx -t` before reload. Start/restart via the ecosystem file with `--update-env`, then verify
+Run `nginx -t` before reload. Launch via the deployment script and ecosystem file, then verify
 the actual process settings and `GET /autokatastar/pregled/api/health`. Check unauthenticated API/image
 requests are refused and authenticated writes work at the public origin. The pinned origin accepts
 no cross-origin writes; HTTPS cookies are HttpOnly, Secure and SameSite Strict. Rotating the access
