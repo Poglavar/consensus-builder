@@ -1,5 +1,5 @@
 // The same GDI survey meshes used in Consensus Builder, restricted to one public project's neighbours.
-export const CONTEXT_RADIUS_M = 65;
+export const CONTEXT_RADIUS_M = 100;
 export const CONTEXT_LIMIT = 100;
 
 export async function readBuildingContext(db, project) {

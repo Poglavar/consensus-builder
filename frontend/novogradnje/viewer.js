@@ -82,6 +82,11 @@
         return group;
     }
     function mountContext(host, project) {
+        if (!Number.isFinite(project?.location?.lng) || !Number.isFinite(project?.location?.lat) ||
+            !['Polygon', 'MultiPolygon'].includes(project?.model?.envelope?.footprint?.type)) {
+            host.replaceChildren(Object.assign(el('p','viewer-copy'),{textContent:'Nepoznata lokacija — okolica se ne može prikazati.'}));
+            return {dispose(){host.replaceChildren();}};
+        }
         host.replaceChildren(Object.assign(el('p','viewer-copy'),{textContent:'Učitavanje neposredne okolice…'}));
         const controller = new AbortController(); let cancelled=false, dispose=null;
         (async()=>{
@@ -92,7 +97,7 @@
                 if(cancelled)return;
                 if(!context.buildings?.length || !Number.isFinite(context.groundZ))throw new Error('No surveyed neighbours');
                 const fn=await root.__floorPlanReviewRenderer.preview(host,THREE=>contextGroup(THREE,project.model,context),()=>!cancelled,
-                    {enablePan:false,enableZoom:false,minPolarAngle:.15,maxPolarAngle:Math.PI*.48,focusName:'context-project'});
+                    {enablePan:false,enableZoom:true,minPolarAngle:.15,maxPolarAngle:Math.PI*.48,focusName:'context-project'});
                 if(cancelled)fn?.();else dispose=fn;
             } catch(error) {
                 if(!cancelled)host.replaceChildren(Object.assign(el('p','viewer-copy'),{textContent:'3D prikaz okolice trenutačno nije dostupan.'}));

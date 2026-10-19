@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const viewerSource = readFileSync(fileURLToPath(new URL('../../frontend/novogradnje/viewer.js', import.meta.url)), 'utf8');
+const locatedProject = { location: { lng: 16, lat: 45 }, model: { envelope: { footprint: { type: 'Polygon', coordinates: [[[16,45],[16.001,45],[16.001,45.001],[16,45]]] } } } };
 
 function makeElement(tag) {
     return {
@@ -67,15 +68,15 @@ describe('Novogradnje viewer mounts', () => {
         expect(disposeRenderer).toHaveBeenCalledOnce();
     });
 
-    it('requests context by project id and constrains navigation to rotate only', async () => {
+    it('requests context by project id and allows zoom without panning', async () => {
         const root = loadViewer();
         root.fetch.mockResolvedValue({ ok: true, json: async () => ({ buildings: [{ id: 'b' }], groundZ: 10 }) });
         const host = makeElement('host');
-        root.NovogradnjeViewer.mountContext(host, { id: 'proj 1', model: {} });
+        root.NovogradnjeViewer.mountContext(host, { ...locatedProject, id: 'proj 1' });
         await new Promise(resolve => setImmediate(resolve));
         expect(root.fetch).toHaveBeenCalledWith('/novogradnje/api/projects/proj%201/context', expect.objectContaining({ signal: expect.any(AbortSignal) }));
         expect(root.__floorPlanReviewRenderer.preview.mock.calls[0][3]).toEqual({
-            enablePan: false, enableZoom: false, minPolarAngle: .15, maxPolarAngle: Math.PI * .48, focusName: 'context-project'
+            enablePan: false, enableZoom: true, minPolarAngle: .15, maxPolarAngle: Math.PI * .48, focusName: 'context-project'
         });
     });
 
@@ -83,9 +84,24 @@ describe('Novogradnje viewer mounts', () => {
         const root = loadViewer();
         root.fetch.mockReturnValue(new Promise(() => {}));
         const host = makeElement('host');
-        const view = root.NovogradnjeViewer.mountContext(host, { id: 'project', model: {} });
+        const view = root.NovogradnjeViewer.mountContext(host, { ...locatedProject, id: 'project' });
         const signal = root.fetch.mock.calls[0][1].signal;
         view.dispose();
         expect(signal.aborted).toBe(true);
+    });
+
+    it.each([
+        { ...locatedProject, location: null },
+        { ...locatedProject, location: { lng: null, lat: null } },
+        { ...locatedProject, model: {} }
+    ])('shows an explicit unknown-location state without requesting context: %j', project => {
+        const root = loadViewer();
+        const host = makeElement('host');
+        const view = root.NovogradnjeViewer.mountContext(host, project);
+        expect(host.children[0].textContent).toBe('Nepoznata lokacija — okolica se ne može prikazati.');
+        expect(root.fetch).not.toHaveBeenCalled();
+        expect(root.__floorPlanReviewRenderer.preview).not.toHaveBeenCalled();
+        view.dispose();
+        expect(host.children).toHaveLength(0);
     });
 });
