@@ -1,0 +1,219 @@
+{
+  "purpose": "Unchanged safe-field polygons from five first-party Masetjhaba View township probes.",
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "defaultForCity": true,
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "idBatchSize": 80,
+    "cityIds": [
+      "masetjhaba_view"
+    ],
+    "evidenceFile": "evidence/source-classification.json",
+    "scope": "Bounded cadastral reference polygons in Masetjhaba View proper and extensions 1–4; not the full WUP agglomeration, legal title, currentness or survey accuracy."
+  },
+  "response": {
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 5733787,
+          "PRCL_KEY": "GEKUT0IR090100000590000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.38713761100007,
+                -26.389605876999948
+              ],
+              [
+                28.387116603000035,
+                -26.389577871999965
+              ],
+              [
+                28.387075596000045,
+                -26.389520869999956
+              ],
+              [
+                28.387087602000065,
+                -26.38944487399994
+              ],
+              [
+                28.387218602000075,
+                -26.389461871999977
+              ],
+              [
+                28.38719459700008,
+                -26.389613874999956
+              ],
+              [
+                28.38713761100007,
+                -26.389605876999948
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 4744108,
+          "PRCL_KEY": "GEKUT0IR090100001166000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.39531960800008,
+                -26.390273879999945
+              ],
+              [
+                28.39529661000006,
+                -26.390421881999945
+              ],
+              [
+                28.39518560400006,
+                -26.390407882999973
+              ],
+              [
+                28.395209605000048,
+                -26.39025987599997
+              ],
+              [
+                28.39531960800008,
+                -26.390273879999945
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 6121651,
+          "PRCL_KEY": "GEKUT0IR090100005004000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.387425993000083,
+                -26.39452400099998
+              ],
+              [
+                28.387418997000058,
+                -26.39463200599993
+              ],
+              [
+                28.38719900600006,
+                -26.39461899399992
+              ],
+              [
+                28.387205999000052,
+                -26.394512000999953
+              ],
+              [
+                28.387425993000083,
+                -26.39452400099998
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 5522084,
+          "PRCL_KEY": "GEKUT0IR090100003580000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.398161998000035,
+                -26.39557499899995
+              ],
+              [
+                28.39820699700004,
+                -26.395474000999968
+              ],
+              [
+                28.398393001000045,
+                -26.395540998999934
+              ],
+              [
+                28.398348007000042,
+                -26.395641999999956
+              ],
+              [
+                28.398161998000035,
+                -26.39557499899995
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 6198357,
+          "PRCL_KEY": "GEKUT0IR090100005628000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.394105709000026,
+                -26.387666655999972
+              ],
+              [
+                28.39408257900004,
+                -26.387797962999972
+              ],
+              [
+                28.39388671500006,
+                -26.387758093999945
+              ],
+              [
+                28.393910212000037,
+                -26.387624786999936
+              ],
+              [
+                28.394105709000026,
+                -26.387666655999972
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "evidenceSha256": {
+    "probe-proper.json": "ab090af8d173a9d1ece074cc28341cbde9d58fb3bd14f2af797aca82440389bc",
+    "probe-ext-1.json": "4051a191326f2f26b6c0688e2f9bfa72d4ad111967cc259577f67b366867cbb7",
+    "probe-ext-2.json": "713b2f2f5b3aa8cd9a82a3d7ad3cbab00f4071d930e4d0aa219af13990f64e28",
+    "probe-ext-3.json": "0092818206f7dc4dca8a706d496b1e30dd065c16a88b051ae641c668c5ec64f0",
+    "probe-ext-4.json": "fb8b3a0d620ead9d153fd015abeed9f77ceffa375af2ccdc5faadb8605d40b8c"
+  }
+}

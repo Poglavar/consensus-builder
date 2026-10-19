@@ -5,6 +5,7 @@ import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
+import { createOgunWfsSchemaGuard } from './ogun-wfs-schema.js';
 
 const sourceRequestQueues = new Map();
 
@@ -42,10 +43,12 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const idType = descriptor.idType;
     const minRequestIntervalMs = descriptor.minRequestIntervalMs;
     const featureIdMode = descriptor.nativeIdMode === 'feature-id';
+    const schemaGuard = descriptor.unfilteredSchemaProfile === undefined ? null
+        : createOgunWfsSchemaGuard(descriptor, { fetchImpl });
     const featureIdParameter = descriptor.featureIdParameter ?? (version === '2.0.0' ? 'resourceId' : 'featureID');
     // XML NCNames permit Unicode letters, digits and combining marks, excluding CQL operators.
     const identifier = /^[\p{L}_][\p{L}\p{N}\p{M}_]*$/u;
-    if (!id || !idPrefix || (featureIdMode ? idField !== null || idType !== 'string' || requestProperties !== true
+    if (!id || !idPrefix || (featureIdMode ? idField !== null || idType !== 'string' || (requestProperties !== true && !schemaGuard)
         || !['resourceId', 'featureID'].includes(featureIdParameter)
         || (version === '1.1.0' && featureIdParameter !== 'featureID')
         || !Array.isArray(outFields) || outFields.length !== 0
@@ -142,6 +145,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     }
 
     async function query(params) {
+        // Ogun's reviewed non-personal schema is checked before any unfiltered read.
+        if (schemaGuard) await schemaGuard.verify();
         const byId = new Map();
         const seenObjects = new Set();
         let offset = 0;
@@ -189,7 +194,7 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                     ? 'WFS parcel provider omitted or changed its projected response CRS.'
                     : 'WFS parcel provider declared an unsupported or mismatched response CRS.');
             }
-            const page = payload.features;
+            const page = schemaGuard ? payload.features.map(feature => schemaGuard.minimize(feature)) : payload.features;
             if (page.length > pageSize) throw upstreamError('WFS parcel provider returned more features than the configured page limit.');
             const pageMatched = version !== '2.0.0' ? payload.totalFeatures : payload.numberMatched;
             if (!Number.isSafeInteger(pageMatched) || pageMatched < 0

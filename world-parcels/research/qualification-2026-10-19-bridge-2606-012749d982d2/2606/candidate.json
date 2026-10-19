@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "2606",
+    "name": "Divo",
+    "point": [
+      -5.36038273330132,
+      5.83156567218637
+    ],
+    "country": "Côte d'Ivoire",
+    "countryCode": "CI",
+    "currency": {
+      "locale": "fr-CI",
+      "code": "XOF"
+    }
+  },
+  "descriptor": {
+    "id": "ci-divo-ecommunes-parcellaire",
+    "name": "Commune de Divo — Parcellaire",
+    "adapter": "divo-ecommunes-xml",
+    "endpoint": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query",
+    "layer": "Parcellaire",
+    "idPrefix": "ci-divo-ecommunes/Parcellaire/feature-id/",
+    "idField": "Feature/@ID",
+    "identityKind": "native-feature-id",
+    "outFields": [],
+    "sourceCrs": "EPSG:32630",
+    "responseSrid": 32630,
+    "boundsSrid": 32630,
+    "metricSrid": 32630,
+    "nativeAxisOrder": "east-north",
+    "outputCrs": "EPSG:4326",
+    "nativeExtent": [
+      235273.332702637,
+      641461.552490234,
+      241422.261697762,
+      648094.669921875
+    ],
+    "nativeTileSizeM": 500,
+    "maxNativeQueries": 64,
+    "maxFeatures": 10000,
+    "maxResponseBytes": 16777216,
+    "maxBboxKm2": 4,
+    "maxConcurrentQueries": 1,
+    "timeoutMs": 45000,
+    "idLookupBoundsNative": {
+      "0F31FA63A2934DC99FF02CDC0F31A9DF": [
+        238125.82,
+        644632.78,
+        239125.82,
+        645632.78
+      ],
+      "E18CBD07CCEB4212A0DA05942DADD590": [
+        236400,
+        646400,
+        237400,
+        647400
+      ],
+      "0C2F922F36E845858FA24A68864E40E3": [
+        239300,
+        642000,
+        240300,
+        643000
+      ]
+    },
+    "capabilities": {
+      "bbox": true,
+      "exactId": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84",
+      "explicitAbsence": false
+    },
+    "exactIdMethod": "fresh-native-spatial-query-and-feature-id-match",
+    "exactIdScope": "Known GUID locators from configuration or previous bounds queries. Unknown/unmatched GUIDs remain incomplete; no permanent identity or global absence guarantee.",
+    "countryCode": "CI",
+    "cityIds": [
+      "2606"
+    ],
+    "defaultForCity": false,
+    "operator": "Commune de Divo / E-Commune",
+    "attribution": "Commune de Divo / E-Commune; CNTIG platform.",
+    "licenceNote": "Anonymous municipal viewer access; no explicit reuse licence found. Publisher terms remain a follow-up.",
+    "scope": "Municipal parcel fabric around Divo. Distributed discovery windows and these exact reads are bounded observations; no citywide completeness or legal-title/currentness claim.",
+    "catalogueUrl": "https://divo.ecommunes.ci/Communication/Index",
+    "metadataUrl": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx",
+    "evidenceFile": "evidence/source-metadata.json"
+  },
+  "sampleIds": [
+    "ci-divo-ecommunes/Parcellaire/feature-id/0F31FA63A2934DC99FF02CDC0F31A9DF",
+    "ci-divo-ecommunes/Parcellaire/feature-id/E18CBD07CCEB4212A0DA05942DADD590",
+    "ci-divo-ecommunes/Parcellaire/feature-id/0C2F922F36E845858FA24A68864E40E3"
+  ],
+  "metricEpsg": 32630,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/municipal-purpose.json",
+      "evidence/source-metadata.json",
+      "evidence/client-query-contract.json"
+    ],
+    "reason": "The first-party DIVO municipal CARTE publishes the Parcellaire Polygon layer for Lot records, distinct from the projects section. Native parcel features returned in reviewed city windows; not listings or planning proposals."
+  },
+  "alignmentEvidence": {
+    "file": "evidence/native-alignment-evidence.json",
+    "sha256": "7cd6f6cf71007560d45354a0eabf1b24a60866eff405d35d27b436563b6e4d30"
+  },
+  "followUps": [
+    "Unadvertised transfer limits and area completeness; no 13-cell or citywide completeness claim.",
+    "Unknown IDs need locator discovery; local misses do not establish global absence.",
+    "Feature/@ID is used instead of duplicate native Id/Cntig attributes; long-term lifecycle/currentness remains unpublished.",
+    "Reuse licence is uncertain; no production admission or catalog/city config changes performed.",
+    "Survey accuracy, datum realization, epoch and app binding remain follow-ups."
+  ],
+  "inputBinding": {
+    "cityIdentitySha256": "245ba47700e009e239d0ebad60f451552e48b04163aa25c0c2bbaf5b399e81af",
+    "receiptCanonicalSha256": "1942b747a4bd3452237c1c4f0e92c794ee26a5ca67f0d4165e1be938e1b0e6ac"
+  }
+}

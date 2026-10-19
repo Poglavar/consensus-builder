@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "2606",
+  "cityName": "Divo",
+  "sourceId": "ci-divo-ecommunes-parcellaire",
+  "candidateSha256": "37399eecc6437224f728fe0fde1b2fed850e9d0b135967f7e7f739b760aadaee",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32630",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": true,
+      "sourceId": "ci-divo-ecommunes-parcellaire",
+      "cityCode": "2606",
+      "contractSha256": "4a22c99d3b07f97790b764a23444e969b49c71c7b6adbe19fa8c8387aadde27a",
+      "evidenceSha256": "e35892ed2d641409ab60a89322b9b0bb8a5333dac45d48ab83455743836ef69c",
+      "metadataSha256": "b7c6229c79f896437e52f6c4543ae81c401b5880644c594668e0bcc7e5f988b1",
+      "nativeSha256": "4052e5a2b437cbc95475de3b32be7e5e0f2fe1eb058000b227c38b6ec9503ab5",
+      "cacheSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+      "nativeCrs": "EPSG:32630",
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "coordinateOperation": "Inverse of UTM zone 30N + axis order change (2D)",
+      "operationPipeline": "proj=pipeline step inv proj=utm zone=30 ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+      "operationAccuracyM": 0,
+      "bestOperationAvailable": true,
+      "ballparkAllowed": false,
+      "toleranceM": 0.25,
+      "maxVertexDifferenceM": 1.6814143734660337e-9,
+      "featureCount": 3,
+      "samples": [
+        {
+          "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/0F31FA63A2934DC99FF02CDC0F31A9DF",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 1.2787128955098617e-9,
+          "maxBoundaryDifferenceM": 1.2399962574502509e-9
+        },
+        {
+          "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/E18CBD07CCEB4212A0DA05942DADD590",
+          "nativeVertexCount": 34,
+          "adapterVertexCount": 34,
+          "maxVertexDifferenceM": 1.6814143734660337e-9,
+          "maxBoundaryDifferenceM": 1.6587789259867026e-9
+        },
+        {
+          "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/0C2F922F36E845858FA24A68864E40E3",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 1.1836918664486923e-9,
+          "maxBoundaryDifferenceM": 1.4131116175921948e-9
+        }
+      ],
+      "maxBoundaryDifferenceM": 1.6587789259867026e-9,
+      "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+      "operationChoiceUnresolved": false,
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "limitations": [
+        "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+        "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+      ],
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+  "featureCount": 3,
+  "sampleIds": [
+    "ci-divo-ecommunes/Parcellaire/feature-id/0F31FA63A2934DC99FF02CDC0F31A9DF",
+    "ci-divo-ecommunes/Parcellaire/feature-id/E18CBD07CCEB4212A0DA05942DADD590",
+    "ci-divo-ecommunes/Parcellaire/feature-id/0C2F922F36E845858FA24A68864E40E3"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "divo.ecommunes.ci",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:22:10.651Z",
+      "queryHash": "809d82a17b993989a9cd2cee0cd41a3dd8860265cf7b6eff27dc5cf35242e47e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1856
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "divo.ecommunes.ci",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:22:12.725Z",
+      "queryHash": "809d82a17b993989a9cd2cee0cd41a3dd8860265cf7b6eff27dc5cf35242e47e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 381
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "divo.ecommunes.ci",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:22:13.134Z",
+      "queryHash": "809d82a17b993989a9cd2cee0cd41a3dd8860265cf7b6eff27dc5cf35242e47e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 453
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "divo.ecommunes.ci",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:22:13.603Z",
+      "queryHash": "809d82a17b993989a9cd2cee0cd41a3dd8860265cf7b6eff27dc5cf35242e47e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1551
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "divo.ecommunes.ci",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:22:15.325Z",
+      "queryHash": "809d82a17b993989a9cd2cee0cd41a3dd8860265cf7b6eff27dc5cf35242e47e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "divo.ecommunes.ci",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:22:15.716Z",
+      "queryHash": "809d82a17b993989a9cd2cee0cd41a3dd8860265cf7b6eff27dc5cf35242e47e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 456
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

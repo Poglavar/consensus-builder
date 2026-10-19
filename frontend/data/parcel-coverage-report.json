@@ -5,27 +5,29 @@
     "asOf": "2026-10-19",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 3182,
+    "cityCount": 3190,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 3055,
+    "checkedCityCount": 3063,
     "uncheckedCityCount": 127,
-    "cityRegistryFoundCount": 2448,
-    "verifiedCitySampleCount": 1796,
+    "cityRegistryFoundCount": 2466,
+    "verifiedCitySampleCount": 1815,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 2577,
-    "growthMatchedCount": 1600,
-    "checkedCitiesMissingDate": 0,
+    "populationMatchedCount": 2594,
+    "growthMatchedCount": 1617,
+    "checkedCitiesMissingDate": 8,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 1720,
+    "configuredAppCityCount": 1742,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
       "population": 2
     },
     "warnings": [
-      "Zagreb guess-spike records were not available at report build time"
+      "Zagreb guess-spike records were not available at report build time",
+      "Missing referenced evidence file: world-parcels/evidence/source-item.json",
+      "Missing referenced evidence file: world-parcels/evidence/source-purpose.json"
     ]
   },
   "world": {
@@ -439,6 +441,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=5.10115&mlon=7.35051#map=12/5.10115/7.35051",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=5.10115%2C7.35051",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:8153",
+      "name": "Abak",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "latitude": 4.98542874500456,
+      "longitude": 7.78822366120289,
+      "registryCityIds": [
+        "wup2025:8153"
+      ],
+      "appCityIds": [
+        "abak"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 8153,
+      "wupName": "Abak",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 166043,
+      "population2025": 248528,
+      "annualGrowthPct2015To2025": 4.033087,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ng-akwaibom-akwagis-surveymap-parcel-drafter"
+      ],
+      "evidenceUrls": [
+        "https://akwagis.xyz/server/rest/services/SurveyMap/mainDrafter/FeatureServer/3"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/qualification.json",
+        "evidence/source-purpose.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=4.98543&mlon=7.78822#map=12/4.98543/7.78822",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=4.98543%2C7.78822",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -1614,10 +1671,13 @@
       "registryCityIds": [
         "wup2025:6353"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "adis_beba_addis_ababa"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 6353,
       "wupName": "Ādīs Ᾱbeba (Addis Ababa)",
@@ -1635,21 +1695,26 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-08",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-08",
-        "path": "research/india-africa-batch3-2026-10-08/city-6353.json",
-        "field": "$.checkedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "A city-government cadastre advertises parcel mapping, but access is through OTP-based user registration/online service workflows. No public anonymous parcel geometry endpoint was identified or sampled.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Verified 3 parcel outlines at the recorded sample location using Addis Ababa e-Land published cadastral parcels. Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "et-addis-eland-geoserver-parcel-publish"
+      ],
+      "evidenceUrls": [
+        "https://geos.addiscadaster.gov.et/geoserver/ows"
+      ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json",
         "research/addis-ababa.json",
         "research/retry/cities/addis-ababa.json",
         "research/india-africa-batch3-2026-10-08/city-6353.json"
@@ -30002,10 +30067,13 @@
       "registryCityIds": [
         "wup2025:378"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bobo_dioulasso"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 378,
       "wupName": "Bobo-Dioulasso",
@@ -30031,7 +30099,7 @@
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
+      "registryBasis": "The official commune site publishes a city-plan page as a static image. National DGI sources document a cadastral office for Bobo-Dioulasso and cadastral-extract workflows; official government sources identify SyC@D/sif.bf as the integrated cadastre/domain procedure platform. The inspected app exposes an Angular shell and authenticated workflow routes, not an anonymous parcel feature/schema contract. No data form or parcel lookup was used.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
@@ -30042,7 +30110,7 @@
           "sources": [
             {
               "id": "bf-dgi-ecadastre-public-geojson",
-              "name": "Burkina Faso DGI public cadastral plot footprints"
+              "name": "Burkina Faso DGI eCadastre public cadastral map GeoJSON"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
@@ -30067,9 +30135,8 @@
         "https://ecadastre.dgi.bf/api/locations/geojson"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
-        "research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
-        "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json"
+        "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json",
+        "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.18472&mlon=-4.28975#map=12/11.18472/-4.28975",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.18472%2C-4.28975",
@@ -37624,21 +37691,30 @@
       "countryCode": "ZA",
       "latitude": -25.8615434012902,
       "longitude": 28.1594620019195,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4359"
+      ],
+      "appCityIds": [
+        "centurion"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 4359,
-      "wupName": null,
+      "wupName": "Centurion",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 192513,
+      "population2025": 255900,
+      "annualGrowthPct2015To2025": 2.846231,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-11",
       "checkedDateEvidence": {
@@ -37646,10 +37722,10 @@
         "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
         "field": "$.cities[246].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -37666,9 +37742,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-csggis-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+        "evidence/source-purpose.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.86154&mlon=28.15946#map=12/-25.86154/28.15946",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.86154%2C28.15946",
       "wikipediaUrl": null,
@@ -42790,21 +42873,30 @@
       "countryCode": "ZA",
       "latitude": -26.1276446337782,
       "longitude": 28.442109859765,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4544"
+      ],
+      "appCityIds": [
+        "chief_albert_luthuli_park"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 4544,
-      "wupName": null,
+      "wupName": "Chief Albert Luthuli Park",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 353334,
+      "population2025": 441204,
+      "annualGrowthPct2015To2025": 2.220936,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-10",
       "checkedDateEvidence": {
@@ -42812,10 +42904,10 @@
         "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
         "field": "$.cities[257].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -42832,9 +42924,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-dffe-national-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/qualification.json",
+        "evidence/source-layer.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.12764&mlon=28.44211#map=12/-26.12764/28.44211",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.12764%2C28.44211",
       "wikipediaUrl": null,
@@ -55190,21 +55289,30 @@
       "countryCode": "ZA",
       "latitude": -25.9317614563184,
       "longitude": 28.0108704187243,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4161"
+      ],
+      "appCityIds": [
+        "diepsloot"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 4161,
-      "wupName": null,
+      "wupName": "Diepsloot",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 157367,
+      "population2025": 196763,
+      "annualGrowthPct2015To2025": 2.234193,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-18",
       "checkedDateEvidence": {
@@ -55212,10 +55320,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[6].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -55225,7 +55333,7 @@
           "sources": [
             {
               "id": "za-csggis-erven",
-              "name": "za-csggis-erven"
+              "name": "Chief Surveyor General CSGSearch Erven"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
@@ -55237,9 +55345,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csggis-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/qualification.json",
+        "evidence/source-metadata.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.93176&mlon=28.01087#map=12/-25.93176/28.01087",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.93176%2C28.01087",
       "wikipediaUrl": null,
@@ -55946,21 +56061,30 @@
       "countryCode": "CI",
       "latitude": 5.83156567218637,
       "longitude": -5.36038273330132,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2606"
+      ],
+      "appCityIds": [
+        "divo"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 2606,
-      "wupName": null,
+      "wupName": "Divo",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 155664,
+      "population2025": 191745,
+      "annualGrowthPct2015To2025": 2.084665,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-18",
       "checkedDateEvidence": {
@@ -55968,10 +56092,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[4].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -55981,7 +56105,7 @@
           "sources": [
             {
               "id": "ci-divo-ecommunes-parcellaire",
-              "name": "ci-divo-ecommunes-parcellaire"
+              "name": "Commune de Divo — Parcellaire"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
@@ -55993,9 +56117,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "ci-divo-ecommunes-parcellaire"
+      ],
+      "evidenceUrls": [
+        "https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json",
+        "evidence/source-metadata.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=5.83157&mlon=-5.36038#map=12/5.83157/-5.36038",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=5.83157%2C-5.36038",
       "wikipediaUrl": null,
@@ -56419,21 +56550,30 @@
       "countryCode": "TZ",
       "latitude": -6.16336934279916,
       "longitude": 35.7436551366206,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2954"
+      ],
+      "appCityIds": [
+        "dodoma"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 2954,
-      "wupName": null,
+      "wupName": "Dodoma",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 203520,
+      "population2025": 269047,
+      "annualGrowthPct2015To2025": 2.791218,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-18",
       "checkedDateEvidence": {
@@ -56441,10 +56581,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[5].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -56454,7 +56594,7 @@
           "sources": [
             {
               "id": "tz-mlhhds-eardhi-taspro-spatial-units36",
-              "name": "tz-mlhhds-eardhi-taspro-spatial-units36"
+              "name": "Tanzania MLHHSD e-Ardhi Dodoma cadastral spatial units"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
@@ -56466,9 +56606,15 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "tz-mlhhds-eardhi-taspro-spatial-units36"
+      ],
+      "evidenceUrls": [
+        "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-6.16337&mlon=35.74366#map=12/-6.16337/35.74366",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-6.16337%2C35.74366",
       "wikipediaUrl": null,
@@ -58102,6 +58248,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.98901&mlon=86.02513#map=12/23.98901/86.02513",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.98901%2C86.02513",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:4073",
+      "name": "Dundo",
+      "country": "Angola",
+      "countryCode": "AO",
+      "latitude": -7.38899838568561,
+      "longitude": 20.8251501574014,
+      "registryCityIds": [
+        "wup2025:4073"
+      ],
+      "appCityIds": [
+        "dundo"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 4073,
+      "wupName": "Dundo",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 189239,
+      "population2025": 259341,
+      "annualGrowthPct2015To2025": 3.15133,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ao-agt-lunda-norte-agt-layer-0"
+      ],
+      "evidenceUrls": [
+        "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Lunda_Norte_AGT_gdb/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/qualification.json",
+        "evidence/source-review.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-7.38900&mlon=20.82515#map=12/-7.38900/20.82515",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-7.38900%2C20.82515",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -60498,21 +60699,30 @@
       "countryCode": "ZA",
       "latitude": -25.8893325235088,
       "longitude": 29.2170617320474,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4836"
+      ],
+      "appCityIds": [
+        "emalahleni"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 4836,
-      "wupName": null,
+      "wupName": "eMalahleni",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 146881,
+      "population2025": 220586,
+      "annualGrowthPct2015To2025": 4.066649,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-18",
       "checkedDateEvidence": {
@@ -60520,10 +60730,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[8].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -60545,9 +60755,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/qualification.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.88933&mlon=29.21706#map=12/-25.88933/29.21706",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.88933%2C29.21706",
       "wikipediaUrl": null,
@@ -65256,6 +65473,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-24.65810&mlon=25.91220#map=12/-24.65810/25.91220",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-24.65810%2C25.91220",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:428",
+      "name": "Gaborone",
+      "country": "Botswana",
+      "countryCode": "BW",
+      "latitude": -24.6105783487141,
+      "longitude": 25.8754886810294,
+      "registryCityIds": [
+        "wup2025:428"
+      ],
+      "appCityIds": [
+        "gaborone_bw"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 428,
+      "wupName": "Gaborone",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 199877,
+      "population2025": 254517,
+      "annualGrowthPct2015To2025": 2.416655,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "bw-bofinet-botswana-lapcas-plots"
+      ],
+      "evidenceUrls": [
+        "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json",
+        "evidence/source-purpose.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-24.61058&mlon=25.87549#map=12/-24.61058/25.87549",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-24.61058%2C25.87549",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -70953,10 +71225,13 @@
       "registryCityIds": [
         "wup2025:2020"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "gqeberha"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 2020,
       "wupName": "Gqeberha",
@@ -70983,7 +71258,7 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "The Chief Surveyor General identifies its spatial component as a computerized map of land parcels and administrative boundaries across South Africa. Official government ArcGIS metadata identifies a nationwide polygon layer named Erven, with geometry and non-owner parcel-reference fields. A point query at the unchanged Gqeberha WUP locator did not complete before the transport timeout, so no sample or point coverage is claimed.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -70993,7 +71268,7 @@
           "sources": [
             {
               "id": "za-csg-property-viewer-erven",
-              "name": "za-csg-property-viewer-erven"
+              "name": "Chief Surveyor-General Property Viewer Erven"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
@@ -71018,17 +71293,22 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "za-csg-property-viewer-erven"
+      ],
       "evidenceUrls": [
         "https://csg.dlrrd.gov.za/data.htm",
         "https://csg.dlrrd.gov.za/",
         "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
         "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
         "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
-        "https://eservices.evaluations.co.za/nmbm/index.aspx"
+        "https://eservices.evaluations.co.za/nmbm/index.aspx",
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-2020-gqeberha.json"
+        "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
+        "research/overnight-cities-2026-10-08/city-2020-gqeberha.json",
+        "evidence/source-purpose.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.88538&mlon=25.55029#map=12/-33.88538/25.55029",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.88538%2C25.55029",
@@ -83421,9 +83701,12 @@
       "registryCityIds": [
         "wup2025:3172"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ijebu_ode"
+      ],
       "cohorts": [
         "growth200",
+        "app",
         "registry"
       ],
       "wupCityCode": 3172,
@@ -83448,16 +83731,22 @@
         "path": "research/india-africa-2026-10-08/africa-ws-city-3172.json",
         "field": "$.checkedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "ng-ogun-sdi-geonode-parcels"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.ogunstate.gov.ng/geoserver/ows"
+      ],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-3172.json"
+        "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/qualification.json",
+        "research/india-africa-2026-10-08/africa-ws-city-3172.json",
+        "evidence/source-metadata.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=6.82168&mlon=3.92937#map=12/6.82168/3.92937",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.82168%2C3.92937",
@@ -102779,20 +103068,27 @@
       "registryCityIds": [
         "wup2025:580"
       ],
-      "appCityIds": [],
-      "cohorts": [
-        "registry"
+      "appCityIds": [
+        "kigali"
       ],
-      "wupCityCode": null,
-      "wupName": null,
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 580,
+      "wupName": "Kigali",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 979717,
+      "population2025": 1483711,
+      "annualGrowthPct2015To2025": 4.150379,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
@@ -102814,7 +103110,7 @@
           "sources": [
             {
               "id": "rw-nla-rsdi-kigali-parcels",
-              "name": "Rwanda NLA / RSDI — Kigali LAIS parcels"
+              "name": "Kigali Parcels (LAIS)"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
@@ -102833,7 +103129,9 @@
         "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11"
       ],
       "evidenceFiles": [
-        "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json"
+        "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/qualification.json",
+        "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+        "evidence/source-purpose.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-1.95092&mlon=30.09455#map=12/-1.95092/30.09455",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-1.95092%2C30.09455",
@@ -127361,10 +127659,13 @@
       "registryCityIds": [
         "wup2025:4507"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "masetjhaba_view"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "wupCityCode": 4507,
       "wupName": "Masetjhaba View",
@@ -127408,15 +127709,20 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
       "evidenceUrls": [
         "https://csg.dlrrd.gov.za/data.htm",
         "https://csg.dlrrd.gov.za/",
         "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
-        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
       ],
       "evidenceFiles": [
-        "research/overnight-followon-2026-10-09/city-4507-masetjhaba-view.json"
+        "world-parcels/research/qualification-2026-10-18-bridge-4507-30557dd39256/4507/qualification.json",
+        "research/overnight-followon-2026-10-09/city-4507-masetjhaba-view.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-26.34491&mlon=28.38915#map=12/-26.34491/28.38915",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.34491%2C28.38915",
@@ -130560,6 +130866,61 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3806",
+      "name": "Menongue",
+      "country": "Angola",
+      "countryCode": "AO",
+      "latitude": -14.6595609096696,
+      "longitude": 17.6861353100988,
+      "registryCityIds": [
+        "wup2025:3806"
+      ],
+      "appCityIds": [
+        "menongue"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3806,
+      "wupName": "Menongue",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 286319,
+      "population2025": 299802,
+      "annualGrowthPct2015To2025": 0.460157,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ao-ggpen-cubango-agt-layer-0"
+      ],
+      "evidenceUrls": [
+        "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cubango_AGT_gdb/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/qualification.json",
+        "evidence/source-review.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-14.65956&mlon=17.68614#map=12/-14.65956/17.68614",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-14.65956%2C17.68614",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2775",
       "name": "Merca",
       "country": "Somalia",
@@ -131349,21 +131710,30 @@
       "countryCode": "ZA",
       "latitude": -25.7630669966059,
       "longitude": 29.4394487589585,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4940"
+      ],
+      "appCityIds": [
+        "middelburg"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 4940,
-      "wupName": null,
+      "wupName": "Middelburg",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 172266,
+      "population2025": 209906,
+      "annualGrowthPct2015To2025": 1.9762,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-18",
       "checkedDateEvidence": {
@@ -131371,10 +131741,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[9].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -131396,9 +131766,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-4940-b955dd76465e/4940/qualification.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.76307&mlon=29.43945#map=12/-25.76307/29.43945",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.76307%2C29.43945",
       "wikipediaUrl": null,
@@ -147166,6 +147543,61 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3345",
+      "name": "Ondjiva",
+      "country": "Angola",
+      "countryCode": "AO",
+      "latitude": -17.0691708465801,
+      "longitude": 15.7237660210887,
+      "registryCityIds": [
+        "wup2025:3345"
+      ],
+      "appCityIds": [
+        "ondjiva"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3345,
+      "wupName": "Ondjiva",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 234793,
+      "population2025": 347591,
+      "annualGrowthPct2015To2025": 3.923222,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ao-agt-cunene-agt-layer-0"
+      ],
+      "evidenceUrls": [
+        "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json",
+        "evidence/source-review.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-17.06917&mlon=15.72377#map=12/-17.06917/15.72377",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-17.06917%2C15.72377",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5069",
       "name": "Ondo",
       "country": "Nigeria",
@@ -158418,21 +158850,30 @@
       "countryCode": "ZA",
       "latitude": -23.8681459171116,
       "longitude": 29.4132145590407,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:5041"
+      ],
+      "appCityIds": [
+        "polokwane"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app"
       ],
       "wupCityCode": 5041,
-      "wupName": null,
+      "wupName": "Polokwane",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
-      "annualGrowthPct2015To2025": null,
+      "population2015": 312098,
+      "population2025": 451786,
+      "annualGrowthPct2015To2025": 3.698914,
       "populationPlausibility2025": null,
-      "populationMatch": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
       "checked": true,
       "checkedDate": "2026-10-10",
       "checkedDateEvidence": {
@@ -158440,10 +158881,10 @@
         "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
         "field": "$.cities[286].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -158460,9 +158901,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-polokwane-municipal-land-information-polokwane-properties"
+      ],
+      "evidenceUrls": [
+        "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/qualification.json",
+        "evidence/source-metadata.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-23.86815&mlon=29.41321#map=12/-23.86815/29.41321",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-23.86815%2C29.41321",
       "wikipediaUrl": null,
@@ -171753,6 +172201,62 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.91176&mlon=28.09419#map=12/-25.91176/28.09419",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.91176%2C28.09419",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:112",
+      "name": "Rubavu",
+      "country": "Rwanda",
+      "countryCode": "RW",
+      "latitude": -1.6920227940991,
+      "longitude": 29.2892956900186,
+      "registryCityIds": [
+        "wup2025:112"
+      ],
+      "appCityIds": [
+        "rubavu"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 112,
+      "wupName": "Rubavu",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 268084,
+      "population2025": 337963,
+      "annualGrowthPct2015To2025": 2.316361,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "rw-nla-lais-rubavu-parcels"
+      ],
+      "evidenceUrls": [
+        "https://geodata.rw/server/rest/services/LAISData/Rubavu_Parcels/FeatureServer/24/query"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/qualification.json",
+        "world-parcels/evidence/source-purpose.json",
+        "evidence/source-purpose.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-1.69202&mlon=29.28930#map=12/-1.69202/29.28930",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-1.69202%2C29.28930",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -192724,6 +193228,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.25846&mlon=82.07081#map=12/26.25846/82.07081",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.25846%2C82.07081",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:1936",
+      "name": "Sumbe",
+      "country": "Angola",
+      "countryCode": "AO",
+      "latitude": -11.2178706676586,
+      "longitude": 13.8457791803372,
+      "registryCityIds": [
+        "wup2025:1936"
+      ],
+      "appCityIds": [
+        "sumbe"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 1936,
+      "wupName": "Sumbe",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 174743,
+      "population2025": 186184,
+      "annualGrowthPct2015To2025": 0.634191,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons"
+      ],
+      "evidenceUrls": [
+        "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/CuanzaSul_AGT_Oficial_gdb/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json",
+        "evidence/source-review.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-11.21787&mlon=13.84578#map=12/-11.21787/13.84578",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-11.21787%2C13.84578",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -214746,6 +215305,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:411",
+      "name": "Windhoek",
+      "country": "Namibia",
+      "countryCode": "NA",
+      "latitude": -22.5253108270478,
+      "longitude": 17.0442106526956,
+      "registryCityIds": [
+        "wup2025:411"
+      ],
+      "appCityIds": [
+        "windhoek"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 411,
+      "wupName": "Windhoek",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 323433,
+      "population2025": 409758,
+      "annualGrowthPct2015To2025": 2.365748,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "na-windhoek-cadastral1-public-arcgis"
+      ],
+      "evidenceUrls": [
+        "https://services9.arcgis.com/gWyguONsWr81ViQt/arcgis/rest/services/Cadastral1/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/qualification.json",
+        "world-parcels/evidence/source-item.json",
+        "evidence/classification.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-22.52531&mlon=17.04421#map=12/-22.52531/17.04421",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-22.52531%2C17.04421",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2067",
       "name": "Winnipeg",
       "country": "Canada",
@@ -221457,8 +222072,8 @@
       "population": 39040038,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 13,
-      "citiesWithRegistry": 4,
+      "citiesChecked": 17,
+      "citiesWithRegistry": 8,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -222392,8 +223007,8 @@
       "population": 2562122,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -223473,7 +224088,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 4,
-      "citiesWithRegistry": 2,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -224036,7 +224651,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 7,
-      "citiesWithRegistry": 2,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -227091,8 +227706,8 @@
       "population": 3092816,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -227326,8 +227941,8 @@
       "population": 237527782,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 45,
-      "citiesWithRegistry": 29,
+      "citiesChecked": 46,
+      "citiesWithRegistry": 31,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -228061,8 +228676,8 @@
       "population": 14569340,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -228942,7 +229557,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 81,
-      "citiesWithRegistry": 30,
+      "citiesWithRegistry": 36,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -230038,7 +230653,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 10,
-      "citiesWithRegistry": 5,
+      "citiesWithRegistry": 6,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,

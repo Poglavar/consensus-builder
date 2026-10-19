@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "3172",
+  "cityName": "Ijebu-Ode",
+  "sourceId": "ng-ogun-sdi-geonode-parcels",
+  "candidateSha256": "5295f05c87ef807766551f8b6ec9524d414503e38e3c9d6ceda6fa788e1e2917",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 5,
+      "returnedCount": 5
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 5
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "634aa9ca06faee609e82f304f005a100c062e36f367500a397ff9fe8f55d2dc0",
+      "featureCount": 5,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32631",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "634aa9ca06faee609e82f304f005a100c062e36f367500a397ff9fe8f55d2dc0",
+  "featureCount": 5,
+  "sampleIds": [
+    "NG-OGUN-parcels.95",
+    "NG-OGUN-parcels.340",
+    "NG-OGUN-parcels.601",
+    "NG-OGUN-parcels.623",
+    "NG-OGUN-parcels.716"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 4,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "geoserver.ogunstate.gov.ng",
+      "method": "GET",
+      "startedAt": "2026-10-18T22:38:41.710Z",
+      "queryHash": "b578e9dc3cb6b147913cf5dbbd47c44f7aa416724ebf683f0d5de5bb5f9f487e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 798
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "geoserver.ogunstate.gov.ng",
+      "method": "GET",
+      "startedAt": "2026-10-18T22:38:42.525Z",
+      "queryHash": "ec1ebab251c4fef8f02c93392041dbdc2e616f717517c7fa47ac541c951c6d5f",
+      "safeParamNames": [
+        "count",
+        "resourceId"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 250,
+      "httpStatus": 200,
+      "elapsedMs": 264
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "geoserver.ogunstate.gov.ng",
+      "method": "GET",
+      "startedAt": "2026-10-18T22:38:42.803Z",
+      "queryHash": "b578e9dc3cb6b147913cf5dbbd47c44f7aa416724ebf683f0d5de5bb5f9f487e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "geoserver.ogunstate.gov.ng",
+      "method": "GET",
+      "startedAt": "2026-10-18T22:38:43.021Z",
+      "queryHash": "ec1ebab251c4fef8f02c93392041dbdc2e616f717517c7fa47ac541c951c6d5f",
+      "safeParamNames": [
+        "count",
+        "resourceId"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 250,
+      "httpStatus": 200,
+      "elapsedMs": 249
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

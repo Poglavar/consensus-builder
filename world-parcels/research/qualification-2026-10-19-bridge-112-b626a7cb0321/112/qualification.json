@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "112",
+  "cityName": "Rubavu",
+  "sourceId": "rw-nla-lais-rubavu-parcels",
+  "candidateSha256": "be410ed360888cc8a5f7567de07adc9ccc5b2deeb83ce61d5f7ed25de8a32332",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 5
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": false,
+      "reason": "native CRS must be a published EPSG code",
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "native CRS must be a published EPSG code"
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+  "featureCount": 3,
+  "sampleIds": [
+    "RW-LAIS-RUBAVU-3/03/11/07/68",
+    "RW-LAIS-RUBAVU-3/03/12/03/7360",
+    "RW-LAIS-RUBAVU-3/03/04/03/359"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "geodata.rw",
+      "method": "GET",
+      "startedAt": "2026-10-19T00:09:54.557Z",
+      "queryHash": "1e6dfe97b838a2a9158f0972588d2a3db9ba8fcc3ea7748eee6e03062be9bcd9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1211
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "geodata.rw",
+      "method": "GET",
+      "startedAt": "2026-10-19T00:09:55.775Z",
+      "queryHash": "1e6dfe97b838a2a9158f0972588d2a3db9ba8fcc3ea7748eee6e03062be9bcd9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 403
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

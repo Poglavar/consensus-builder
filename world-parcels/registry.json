@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-14",
+  "updatedAt": "2026-10-19",
   "queueSource": "UN DESA WUP 2025 city identifiers; qualification-admission-2026-10-12.json",
   "sources": [
     {
@@ -13841,7 +13841,10 @@
         "wup2025:5476",
         "wup2025:3126",
         "wup2025:3855",
-        "wup2025:4800"
+        "wup2025:4800",
+        "wup2025:4507",
+        "wup2025:4836",
+        "wup2025:4940"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
@@ -13865,7 +13868,10 @@
           "matsulu",
           "khuma",
           "lenasia",
-          "vosman"
+          "vosman",
+          "masetjhaba_view",
+          "emalahleni",
+          "middelburg"
         ],
         "evidenceFile": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json",
         "verifiedAt": "2026-10-11",
@@ -13891,7 +13897,10 @@
         },
         "additionalCityEvidence": {
           "lenasia": "world-parcels/research/qualification-2026-10-12/lenasia/qualification.json",
-          "vosman": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json"
+          "vosman": "world-parcels/research/qualification-2026-10-12/vosman/qualification.json",
+          "masetjhaba_view": "world-parcels/research/qualification-2026-10-18-bridge-4507-30557dd39256/4507/qualification.json",
+          "emalahleni": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/qualification.json",
+          "middelburg": "world-parcels/research/qualification-2026-10-19-bridge-4940-b955dd76465e/4940/qualification.json"
         }
       },
       "cityScopes": {
@@ -13932,8 +13941,177 @@
         "matsulu",
         "khuma",
         "lenasia",
-        "vosman"
-      ]
+        "vosman",
+        "masetjhaba_view",
+        "emalahleni",
+        "middelburg"
+      ],
+      "initialQualificationReviews": {
+        "masetjhaba_view": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "emalahleni": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "middelburg": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "masetjhaba_view": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "emalahleni": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "middelburg": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
     },
     {
       "sourceId": "za-ekurhuleni-stands",
@@ -21739,12 +21917,87 @@
       ],
       "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
       "liveIntegration": {
-        "status": "held_quality_review",
+        "status": "enabled",
         "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
         "technicalBlockers": [
           "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+        ],
+        "cityIds": [
+          "kigali"
+        ],
+        "additionalCityEvidence": {
+          "kigali": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/qualification.json"
+        }
+      },
+      "initialQualificationReviews": {
+        "kigali": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "metric",
+              "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "kigali": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "metric",
+            "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
         ]
-      }
+      },
+      "appCityIds": [
+        "kigali"
+      ]
     },
     {
       "sourceId": "in-br-ncog-tiles",
@@ -78473,23 +78726,1481 @@
     },
     {
       "sourceId": "bf-dgi-ecadastre-public-geojson",
-      "name": "Burkina Faso DGI public cadastral plot footprints",
-      "operator": "Direction générale des Impôts du Burkina Faso",
+      "name": "Burkina Faso DGI eCadastre public cadastral map GeoJSON",
+      "operator": "Direction générale des Impôts du Burkina Faso (DGI)",
       "countryCode": "BF",
-      "scope": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
+      "scope": "Native-ID parcel availability in four declared Bobo-Dioulasso diagnostic windows only. Three distributed west/east/south reads support spatial spread; they and the near-WUP window are not a municipal boundary, coverage manifest, or citywide-completeness proof.",
       "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
-      "method": "Bounded safe ID and unchanged geometry reads; independent metric audit and primary review",
-      "responseFormat": "Public bounded GeoJSON PLOT route",
-      "crs": "EPSG:4326 declared JSON wire frame; native/storage coordinate operation unverified. Metric EPSG:32630.",
-      "reuseStatus": "Anonymous public geometry and publisher attribution verified; explicit reuse conditions, legal title and survey accuracy remain informational and unconfirmed.",
-      "evidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json",
       "verifiedCityIds": [
         "wup2025:378"
       ],
-      "verificationStatus": "verified_sample_partial_coverage",
+      "verificationStatus": "verified_live_city_adapter",
       "runtimeReadiness": "held_source_contract_preflight",
-      "appCityIds": [],
-      "sourceContractEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/source-profile.json"
+      "appCityIds": [
+        "bobo_dioulasso"
+      ],
+      "sourceContractEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/source-profile.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bobo_dioulasso"
+        ],
+        "additionalCityEvidence": {
+          "bobo_dioulasso": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json"
+        }
+      },
+      "initialQualificationReviews": {
+        "bobo_dioulasso": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "native CRS must be a published EPSG code"
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "bobo_dioulasso": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "et-addis-eland-geoserver-parcel-publish",
+      "name": "Addis Ababa e-Land published cadastral parcels",
+      "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+      "countryCode": "ET",
+      "scope": "Official Addis city cadastral parcel publish layer; bounded qualification only, no citywide completeness claim.",
+      "endpoint": "https://geos.addiscadaster.gov.et/geoserver/ows",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:6353"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "adis_beba_addis_ababa"
+        ],
+        "additionalCityEvidence": {
+          "adis_beba_addis_ababa": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "adis_beba_addis_ababa"
+      ]
+    },
+    {
+      "sourceId": "za-csg-property-viewer-erven",
+      "name": "Chief Surveyor-General Property Viewer Erven",
+      "operator": "Chief Surveyor-General, South Africa",
+      "countryCode": "ZA",
+      "scope": "Anonymous surveyed and approved urban Erven polygons in separated bounded Gqeberha sectors. Full unchanged geometries are referenced by native key plus full-geometry hash. Citywide completeness, legal title, survey accuracy, current-ground status and cross-service synchronization remain unestablished.",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:2020"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "gqeberha"
+        ],
+        "additionalCityEvidence": {
+          "gqeberha": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "gqeberha"
+      ],
+      "initialQualificationReviews": {
+        "gqeberha": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "gqeberha": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ng-ogun-sdi-geonode-parcels",
+      "name": "Ogun SDI / BLS cadastral parcels",
+      "operator": null,
+      "countryCode": "NG",
+      "scope": "Official Ogun cadastral land-ownership/status layer; this initial qualification proves repeatable exact access to five dispersed Ijebu-Ode native parcel records. Citywide completeness and current/historic semantics remain unverified.",
+      "endpoint": "https://geoserver.ogunstate.gov.ng/geoserver/ows",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:3172"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "ijebu_ode"
+        ],
+        "additionalCityEvidence": {
+          "ijebu_ode": "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "ijebu_ode"
+      ],
+      "initialQualificationReviews": {
+        "ijebu_ode": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "ijebu_ode": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "za-polokwane-municipal-land-information-polokwane-properties",
+      "name": "City of Polokwane municipal Land Information / Polokwane Properties",
+      "operator": null,
+      "countryCode": "ZA",
+      "scope": "Municipal cadastral property records observed across the urban area. Bounded distributed discovery and five exact samples do not establish whole-city or municipality completeness. Rural gaps remain in the reviewed packet.",
+      "endpoint": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:5041"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "polokwane"
+        ],
+        "additionalCityEvidence": {
+          "polokwane": "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "polokwane"
+      ],
+      "initialQualificationReviews": {
+        "polokwane": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "polokwane": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "za-csg-dffe-national-erven",
+      "name": "Chief Surveyor-General national Erven polygons (DFFE host)",
+      "operator": "Chief Surveyor-General; DFFE public ArcGIS host",
+      "countryCode": "ZA",
+      "scope": "National cadastral Erven service; initial exact-read qualification for Chief Albert Luthuli Park only. No citywide completeness claim.",
+      "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:4544"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "chief_albert_luthuli_park"
+        ],
+        "additionalCityEvidence": {
+          "chief_albert_luthuli_park": "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "chief_albert_luthuli_park"
+      ],
+      "initialQualificationReviews": {
+        "chief_albert_luthuli_park": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "chief_albert_luthuli_park": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "na-windhoek-cadastral1-public-arcgis",
+      "name": "Windhoek Cadastral1 public cadastral copy",
+      "operator": "Public ArcGIS publisher; provider asserts municipal data origin",
+      "countryCode": "NA",
+      "scope": "Hosted cadastral copy with Windhoek urban-sector discovery evidence. Initial qualification uses three exact parcels only; no citywide completeness or currentness claim.",
+      "endpoint": "https://services9.arcgis.com/gWyguONsWr81ViQt/arcgis/rest/services/Cadastral1/FeatureServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/evidence/source-item.json",
+      "verifiedCityIds": [
+        "wup2025:411"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "windhoek"
+        ],
+        "additionalCityEvidence": {
+          "windhoek": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "windhoek"
+      ],
+      "initialQualificationReviews": {
+        "windhoek": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "windhoek": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ao-agt-cunene-agt-layer-0",
+      "name": "ANGOLA_GGPEN Cunene AGT property-registration polygons",
+      "operator": null,
+      "countryCode": "AO",
+      "scope": "Cunene AGT property-registration parcels. Reviewed positive reads span central, northwest and southeast Ondjiva; full city coverage and legal-title authority are unestablished.",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:3345"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "ondjiva"
+        ],
+        "additionalCityEvidence": {
+          "ondjiva": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "ondjiva"
+      ],
+      "initialQualificationReviews": {
+        "ondjiva": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "ondjiva": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "rw-nla-lais-rubavu-parcels",
+      "name": "Rubavu Parcels (LAIS)",
+      "operator": "Rwanda National Land Authority / Rwanda Spatial Data Infrastructure / LAIS Data Service",
+      "countryCode": "RW",
+      "scope": "Rubavu district cadastral parcel layer with distributed Rubavu/Gisenyi observations. Initial exact sample reads do not establish citywide completeness or currentness.",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Rubavu_Parcels/FeatureServer/24/query",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/evidence/source-purpose.json",
+      "verifiedCityIds": [
+        "wup2025:112"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "rubavu"
+        ],
+        "additionalCityEvidence": {
+          "rubavu": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "rubavu"
+      ],
+      "initialQualificationReviews": {
+        "rubavu": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "native CRS must be a published EPSG code"
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "rubavu": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ao-ggpen-cubango-agt-layer-0",
+      "name": "ANGOLA_GGPEN Cubango AGT property-registration polygons",
+      "operator": null,
+      "countryCode": "AO",
+      "scope": "Cubango AGT property-registration parcel polygons. Accepted discovery and three fresh native-ID samples span central, northwest and southeast Menongue; partial urban coverage only, with no municipal boundary or full-city completeness claim.",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cubango_AGT_gdb/FeatureServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:3806"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "menongue"
+        ],
+        "additionalCityEvidence": {
+          "menongue": "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "menongue"
+      ],
+      "initialQualificationReviews": {
+        "menongue": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "menongue": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "name": "Tanzania MLHHSD e-Ardhi Dodoma cadastral spatial units",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+      "countryCode": "TZ",
+      "scope": "Substantial partial Dodoma urban coverage evidenced in three separated windows; bounded qualification does not establish municipal completeness.",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:2954"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "dodoma"
+        ],
+        "additionalCityEvidence": {
+          "dodoma": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "dodoma"
+      ],
+      "initialQualificationReviews": {
+        "dodoma": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "dodoma": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ao-agt-lunda-norte-agt-layer-0",
+      "name": "ANGOLA_GGPEN Lunda Norte AGT property-registration parcels",
+      "operator": null,
+      "countryCode": "AO",
+      "scope": "Lunda Norte AGT property-registration parcels, with positive central, south and east Dundo samples. Substantial sampled urban availability; complete city coverage and legal-title authority are unestablished.",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Lunda_Norte_AGT_gdb/FeatureServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:4073"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "dundo"
+        ],
+        "additionalCityEvidence": {
+          "dundo": "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "dundo"
+      ],
+      "initialQualificationReviews": {
+        "dundo": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "dundo": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "za-csg-csggis-property-viewer-erven",
+      "name": "Chief Surveyor-General Property Viewer Erven",
+      "operator": "Chief Surveyor-General, South Africa",
+      "countryCode": "ZA",
+      "scope": "Public surveyed and approved urban cadastral Erven. Bounded Centurion evidence only; citywide completeness, registration, legal title, survey accuracy and current-ground status are unestablished.",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:4359"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "centurion"
+        ],
+        "additionalCityEvidence": {
+          "centurion": "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "centurion"
+      ],
+      "initialQualificationReviews": {
+        "centurion": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "centurion": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "bw-bofinet-botswana-lapcas-plots",
+      "name": "BoFiNet Botswana LAPCAS plots",
+      "operator": null,
+      "countryCode": "BW",
+      "scope": "National published Botswana LAPCAS plot layer with reviewed substantial Gaborone coverage. This initial qualification retains three exact-ID samples and does not establish citywide or national completeness, currentness, legal title or survey accuracy.",
+      "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:428"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "gaborone_bw"
+        ],
+        "additionalCityEvidence": {
+          "gaborone_bw": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "gaborone_bw"
+      ],
+      "initialQualificationReviews": {
+        "gaborone_bw": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "gaborone_bw": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+      "name": "AkwaGIS Parcel_Drafter",
+      "operator": "AkwaGIS / Akwa Ibom State Government",
+      "countryCode": "NG",
+      "scope": "Akwa Ibom state survey/registry parcel layer; bounded distributed partial Abak access, completeness unverified.",
+      "endpoint": "https://akwagis.xyz/server/rest/services/SurveyMap/mainDrafter/FeatureServer/3",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8153"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "abak"
+        ],
+        "additionalCityEvidence": {
+          "abak": "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "abak"
+      ],
+      "initialQualificationReviews": {
+        "abak": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "abak": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "za-csggis-erven",
+      "name": "Chief Surveyor General CSGSearch Erven",
+      "operator": "Office of the Chief Surveyor General, Department of Land Reform and Rural Development",
+      "countryCode": "ZA",
+      "scope": "National surveyed urban cadastral-reference layer; initial qualification concerns five exact parcel reads in distributed Diepsloot windows only. Discovery windows and any later 13-cell sample do not establish citywide completeness. No legal title, survey accuracy or currentness claim.",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:4161"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "diepsloot"
+        ],
+        "additionalCityEvidence": {
+          "diepsloot": "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "diepsloot"
+      ],
+      "initialQualificationReviews": {
+        "diepsloot": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "diepsloot": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ci-divo-ecommunes-parcellaire",
+      "name": "Commune de Divo — Parcellaire",
+      "operator": "Commune de Divo / E-Commune",
+      "countryCode": "CI",
+      "scope": "Municipal parcel fabric around Divo. Distributed discovery windows and these exact reads are bounded observations; no citywide completeness or legal-title/currentness claim.",
+      "endpoint": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:2606"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "divo"
+        ],
+        "additionalCityEvidence": {
+          "divo": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "divo"
+      ],
+      "initialQualificationReviews": {
+        "divo": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "divo": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "name": "GGPEN/AGT Cuanza Sul official property-registration parcels — Sumbe",
+      "operator": null,
+      "countryCode": "AO",
+      "scope": "Cuanza Sul provincial property-registration polygons. Reviewed discovery supports substantial partial Sumbe coverage, not completeness. No municipal or temporal filter is inferred.",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/CuanzaSul_AGT_Oficial_gdb/FeatureServer/0",
+      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:1936"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "sumbe"
+        ],
+        "additionalCityEvidence": {
+          "sumbe": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "sumbe"
+      ],
+      "initialQualificationReviews": {
+        "sumbe": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        }
+      },
+      "qualificationWarningsByCity": {
+        "sumbe": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      }
     }
   ],
   "countryCoverage": [
@@ -80970,9 +82681,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 59,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/addis-ababa.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "et-addis-eland-geoserver-parcel-publish"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json",
       "previousResearchFile": "research/addis-ababa.json",
       "retryFile": "research/retry/cities/addis-ababa.json",
       "aliases": [
@@ -81017,7 +82730,13 @@
       ],
       "latestResearchFiles": [
         "research/india-africa-batch3-2026-10-08/city-6353.json"
-      ]
+      ],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/metric-report.json",
+      "population2025": 6705705,
+      "population2015": 4577126,
+      "appCityId": "adis_beba_addis_ababa",
+      "note": "Passed all nine parcel qualification gates, including independently verified native CRS handling, at the recorded sample location for this settlement. Survey and basemap accuracy and wider coverage remain unverified."
     },
     {
       "cityId": "wup2025:3439",
@@ -91259,14 +92978,16 @@
       ],
       "largestRank": null,
       "growthRank": 174,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/africa-ws-city-3172.json",
+      "sourceIds": [
+        "ng-ogun-sdi-geonode-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/qualification.json",
       "aliases": [
         "wup2025:3172",
         "Ijebu-Ode"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/africa-ws-city-3172.json",
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
@@ -91280,7 +93001,67 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
         "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/metric-report.json",
+      "population2025": 500036,
+      "population2015": 305870,
+      "appCityId": "ijebu_ode",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "cityId": "wup2025:282",
@@ -106061,29 +107842,28 @@
       "sourceIds": [
         "bf-dgi-ecadastre-public-geojson"
       ],
-      "researchFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
-      "latestAssessmentFile": "research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json",
+      "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
       "aliases": [
         "wup2025:378",
         "Bobo-Dioulasso",
         "bobo dioulasso"
       ],
-      "runtimeReadiness": "held_source_contract_preflight",
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
       "dataFindings": {
         "registryFound": true,
-        "registryBasis": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
+        "registryBasis": "The official commune site publishes a city-plan page as a static image. National DGI sources document a cadastral office for Bobo-Dioulasso and cadastral-extract workflows; official government sources identify SyC@D/sif.bf as the integrated cadastre/domain procedure platform. The inspected app exposes an Angular shell and authenticated workflow routes, not an anonymous parcel feature/schema contract. No data form or parcel lookup was used.",
         "registryEvidenceUrls": [
           "https://mairie-bobo.bf/plan-de-la-ville/",
           "https://dgi.bf/contacts/",
           "https://dgi.bf/faq/",
           "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/",
           "https://dgi.impots.gov.bf/",
-          "https://sif.bf/",
-          "https://ecadastre.dgi.bf/api/locations/geojson"
+          "https://sif.bf/"
         ],
-        "verifiedSample": true,
-        "publicParcelGeometryFound": true,
-        "reason": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence."
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "reason": "The publicly indexed Cadastre Burkina host currently returns a default nginx page by anonymous HTTPS, and its www hostname fails standard certificate hostname verification. No TLS bypass was attempted. The official Syc@D portal returns an application shell; static client routes include authentication, geoserver and parcel-procedure APIs, but no public anonymous geometry/schema contract was established. No login or API data call was made."
       },
       "populationResearch": {
         "cohort": "overnight-top1000",
@@ -106095,8 +107875,66 @@
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
       },
-      "qualificationEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
-      "metricReportFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/metric-report.json"
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/metric-report.json",
+      "population2025": 1125023,
+      "population2015": 801246,
+      "appCityId": "bobo_dioulasso",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "native CRS must be a published EPSG code"
+        }
+      ]
     },
     {
       "cityId": "wup2025:7228",
@@ -122393,9 +124231,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 891,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-2020-gqeberha.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-property-viewer-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-2020-gqeberha.json",
       "aliases": [
         "wup2025:2020",
@@ -122427,7 +124267,67 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-2020-gqeberha.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/metric-report.json",
+      "population2025": 661220,
+      "population2015": 569367,
+      "appCityId": "gqeberha",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "cityId": "wup2025:6625",
@@ -133294,8 +135194,10 @@
       "verifiedSample": true,
       "publicParcelGeometryFound": true,
       "registryGeometryFound": true,
-      "sourceIds": [],
-      "researchFile": "research/overnight-followon-2026-10-09/city-4507-masetjhaba-view.json",
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-4507-30557dd39256/4507/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-4507-masetjhaba-view.json",
       "aliases": [
         "wup2025:4507",
@@ -133315,7 +135217,7 @@
       },
       "resultCategory": "verified_public_geometry_runtime_held",
       "technicalBlocker": "335 full native parcels passed bounded querying and fresh-ID equality, but independent GEOS audit found58 positive-area overlapping pairs totaling88.80118m². The largest overlap is3.27782m²,1.2611%of the smaller parcel, with rectangle width0.26894m. These material conflicting boundaries are preserved without repair or selective exclusion; runtime remains held.",
-      "population2025": 522402,
+      "population2025": 522402.00000000006,
       "populationUnit": "persons",
       "populationPlausibility2025": "High",
       "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
@@ -133355,7 +135257,66 @@
           "rootReviewedAt": "2026-10-09T06:00:16.709739+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-4507-30557dd39256/4507/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-4507-30557dd39256/4507/metric-report.json",
+      "population2015": 417544,
+      "appCityId": "masetjhaba_view",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "cityId": "wup2025:2087",
@@ -153762,9 +155723,9 @@
       "sourceIds": [
         "rw-nla-rsdi-kigali-parcels"
       ],
-      "researchFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/qualification.json",
       "latestAssessmentFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
-      "qualificationEvidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/qualification.json",
       "runtimeReadiness": "held_quality_review",
       "dataFindings": {
         "registryFound": true,
@@ -153782,7 +155743,74 @@
         "technicalBlockers": [
           "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
         ]
-      }
+      },
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/metric-report.json",
+      "population2025": 1483711,
+      "population2015": 979717,
+      "appCityId": "kigali",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "metric",
+            "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "metric",
+          "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "cityId": "wup2025:665",
@@ -233612,6 +235640,1238 @@
         },
         {
           "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:5041",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 5041,
+      "name": "Polokwane",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -23.8681459171116,
+        29.4132145590407
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-polokwane-municipal-land-information-polokwane-properties"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/metric-report.json",
+      "population2025": 451786,
+      "population2015": 312098,
+      "appCityId": "polokwane",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:4544",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4544,
+      "name": "Chief Albert Luthuli Park",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -26.1276446337782,
+        28.442109859765
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-dffe-national-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/metric-report.json",
+      "population2025": 441204,
+      "population2015": 353334,
+      "appCityId": "chief_albert_luthuli_park",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:411",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 411,
+      "name": "Windhoek",
+      "country": "Namibia",
+      "countryCode": "NA",
+      "centerLatLon": [
+        -22.5253108270478,
+        17.0442106526956
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "na-windhoek-cadastral1-public-arcgis"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/metric-report.json",
+      "population2025": 409758,
+      "population2015": 323433,
+      "appCityId": "windhoek",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:3345",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 3345,
+      "name": "Ondjiva",
+      "country": "Angola",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -17.0691708465801,
+        15.7237660210887
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ao-agt-cunene-agt-layer-0"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/metric-report.json",
+      "population2025": 347591,
+      "population2015": 234793,
+      "appCityId": "ondjiva",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:112",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 112,
+      "name": "Rubavu",
+      "country": "Rwanda",
+      "countryCode": "RW",
+      "centerLatLon": [
+        -1.6920227940991,
+        29.2892956900186
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "rw-nla-lais-rubavu-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/metric-report.json",
+      "population2025": 337963,
+      "population2015": 268084,
+      "appCityId": "rubavu",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "native CRS must be a published EPSG code"
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:3806",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 3806,
+      "name": "Menongue",
+      "country": "Angola",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -14.6595609096696,
+        17.6861353100988
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ao-ggpen-cubango-agt-layer-0"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/metric-report.json",
+      "population2025": 299802,
+      "population2015": 286319,
+      "appCityId": "menongue",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:2954",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 2954,
+      "name": "Dodoma",
+      "country": "Tanzania",
+      "countryCode": "TZ",
+      "centerLatLon": [
+        -6.16336934279916,
+        35.7436551366206
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "tz-mlhhds-eardhi-taspro-spatial-units36"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/metric-report.json",
+      "population2025": 269047,
+      "population2015": 203520,
+      "appCityId": "dodoma",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:4073",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4073,
+      "name": "Dundo",
+      "country": "Angola",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -7.38899838568561,
+        20.8251501574014
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ao-agt-lunda-norte-agt-layer-0"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/metric-report.json",
+      "population2025": 259341,
+      "population2015": 189239,
+      "appCityId": "dundo",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:4359",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4359,
+      "name": "Centurion",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.8615434012902,
+        28.1594620019195
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-csggis-property-viewer-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/metric-report.json",
+      "population2025": 255900,
+      "population2015": 192513,
+      "appCityId": "centurion",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:428",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 428,
+      "name": "Gaborone",
+      "country": "Botswana",
+      "countryCode": "BW",
+      "centerLatLon": [
+        -24.6105783487141,
+        25.8754886810294
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bw-bofinet-botswana-lapcas-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/metric-report.json",
+      "population2025": 254517,
+      "population2015": 199877,
+      "appCityId": "gaborone_bw",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:8153",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 8153,
+      "name": "Abak",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        4.98542874500456,
+        7.78822366120289
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ng-akwaibom-akwagis-surveymap-parcel-drafter"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/metric-report.json",
+      "population2025": 248528,
+      "population2015": 166043,
+      "appCityId": "abak",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:4836",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4836,
+      "name": "eMalahleni",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.8893325235088,
+        29.2170617320474
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/metric-report.json",
+      "population2025": 220586,
+      "population2015": 146881,
+      "appCityId": "emalahleni",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:4940",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4940,
+      "name": "Middelburg",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.7630669966059,
+        29.4394487589585
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-4940-b955dd76465e/4940/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4940-b955dd76465e/4940/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-4940-b955dd76465e/4940/metric-report.json",
+      "population2025": 209906,
+      "population2015": 172266,
+      "appCityId": "middelburg",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:4161",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 4161,
+      "name": "Diepsloot",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.9317614563184,
+        28.0108704187243
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "za-csggis-erven"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/metric-report.json",
+      "population2025": 196763,
+      "population2015": 157367,
+      "appCityId": "diepsloot",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:2606",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 2606,
+      "name": "Divo",
+      "country": "Côte d’Ivoire",
+      "countryCode": "CI",
+      "centerLatLon": [
+        5.83156567218637,
+        -5.36038273330132
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ci-divo-ecommunes-parcellaire"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/metric-report.json",
+      "population2025": 191745,
+      "population2015": 155664,
+      "appCityId": "divo",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "cityId": "wup2025:1936",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 1936,
+      "name": "Sumbe",
+      "country": "Angola",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -11.2178706676586,
+        13.8457791803372
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/metric-report.json",
+      "population2025": 186184,
+      "population2015": 174743,
+      "appCityId": "sumbe",
+      "note": "Initial qualification verified parcel classification, exact-ID reads and stable geometry at the recorded sample location. Detailed source quality, completeness and coordinate alignment remain subject to follow-up.",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
           "reason": "Deferred to second-pass review."
         }
       ]

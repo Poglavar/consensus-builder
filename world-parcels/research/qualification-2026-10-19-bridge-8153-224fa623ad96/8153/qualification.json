@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "8153",
+  "cityName": "Abak",
+  "sourceId": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+  "candidateSha256": "02b10192728de15e2cae9a3377dfba8cd9bf55bc769015bca129593eb80fc859",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "60f3d0e8d0f2279b78532a4853067169e4bbb2f97358e4ce5d7a2d8217a00956",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": false,
+      "sourceId": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+      "cityCode": "8153",
+      "contractSha256": "8839ba51b5e5e778e6c07704639052eb4abe8ded6ac051ce8614fc083238af97",
+      "evidenceSha256": "7bbb194ddda9e6de4b7704107c3b7d9a354ff084f2a5a05963ea764f401fec38",
+      "metadataSha256": "db761c820aaeba7c0a5775fe7fc19e4706bc4434b3eb1d28ba1c627474f7af2a",
+      "nativeSha256": "b1f66ff59753ebfa88d0845d1ec6a21572ea7fde7f952eeda3c2f0981eb89ddc",
+      "cacheSha256": "60f3d0e8d0f2279b78532a4853067169e4bbb2f97358e4ce5d7a2d8217a00956",
+      "nativeCrs": "EPSG:26332",
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "coordinateOperation": "Inverse of UTM zone 32N + Minna to WGS 84 (13) + axis order change (2D)",
+      "operationPipeline": "proj=pipeline step inv proj=utm zone=32 a=6378249.145 rf=293.465 step inv proj=longlat a=6378249.145 rf=293.465 step proj=push v_3 step proj=cart a=6378249.145 rf=293.465 step proj=helmert x=-93.6 y=-83.7 z=113.8 step inv proj=cart ellps=WGS84 step proj=pop v_3 step proj=unitconvert xy_in=rad xy_out=deg",
+      "operationAccuracyM": 7,
+      "bestOperationAvailable": true,
+      "ballparkAllowed": false,
+      "toleranceM": 0.25,
+      "maxVertexDifferenceM": 12.458596748543409,
+      "featureCount": 3,
+      "samples": [
+        {
+          "parcelId": "NG-AKWAGIS-{6F1BDD22-8AB2-412C-AE5E-05BE26146156}",
+          "nativeVertexCount": 14,
+          "adapterVertexCount": 14,
+          "maxVertexDifferenceM": 12.458308267595065,
+          "maxBoundaryDifferenceM": 12.458308267440534
+        },
+        {
+          "parcelId": "NG-AKWAGIS-{B2A4A528-36E9-4791-A257-AB5912F2865E}",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 12.458596748543409,
+          "maxBoundaryDifferenceM": 12.45859674846429
+        },
+        {
+          "parcelId": "NG-AKWAGIS-{751B4105-19FC-4711-BB5D-8B36F77AA96F}",
+          "nativeVertexCount": 7,
+          "adapterVertexCount": 7,
+          "maxVertexDifferenceM": 12.45826884039056,
+          "maxBoundaryDifferenceM": 12.458268840402813
+        }
+      ],
+      "maxBoundaryDifferenceM": 12.45859674846429,
+      "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+      "operationChoiceUnresolved": true,
+      "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction.",
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "limitations": [
+        "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+        "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+      ],
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "60f3d0e8d0f2279b78532a4853067169e4bbb2f97358e4ce5d7a2d8217a00956",
+  "featureCount": 3,
+  "sampleIds": [
+    "NG-AKWAGIS-{6F1BDD22-8AB2-412C-AE5E-05BE26146156}",
+    "NG-AKWAGIS-{B2A4A528-36E9-4791-A257-AB5912F2865E}",
+    "NG-AKWAGIS-{751B4105-19FC-4711-BB5D-8B36F77AA96F}"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 8,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "akwagis.akwaibomstate.gov.ng",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:43.855Z",
+      "queryHash": "70a717c4cc41dbc17890537d8295614a488b0a5d2ad0b787ec8fc46343f5edd3",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 999
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "akwagis.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:44.860Z",
+      "queryHash": "9b966418860c6597359e5a15f499053166ace8d02c3d91fbd7af44736cb8f4c9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1052
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "akwagis.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:45.916Z",
+      "queryHash": "9b966418860c6597359e5a15f499053166ace8d02c3d91fbd7af44736cb8f4c9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 918
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "akwagis.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:46.837Z",
+      "queryHash": "aa416dacc42819e6a6a1c7d3031a71a6c8c83fab3c37533f3324ec830e33cc64",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1106
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "akwagis.akwaibomstate.gov.ng",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:47.945Z",
+      "queryHash": "70a717c4cc41dbc17890537d8295614a488b0a5d2ad0b787ec8fc46343f5edd3",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 135
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "akwagis.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:48.081Z",
+      "queryHash": "9b966418860c6597359e5a15f499053166ace8d02c3d91fbd7af44736cb8f4c9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1071
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "akwagis.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:49.154Z",
+      "queryHash": "9b966418860c6597359e5a15f499053166ace8d02c3d91fbd7af44736cb8f4c9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 44
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "akwagis.xyz",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:49.200Z",
+      "queryHash": "aa416dacc42819e6a6a1c7d3031a71a6c8c83fab3c37533f3324ec830e33cc64",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 52
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

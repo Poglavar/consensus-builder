@@ -1,0 +1,235 @@
+{
+  "purpose": "Unchanged safe-field CSG Erven polygons for Chief Albert Luthuli Park production adapter regression",
+  "responseSha256": "438f1d42425ffe9ed07c848d6264c251862a4295c64fea2efd44e0305176eac9",
+  "descriptor": {
+    "id": "za-csg-dffe-national-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "name": "Chief Surveyor-General national Erven polygons (DFFE host)",
+    "operator": "Chief Surveyor-General; DFFE public ArcGIS host",
+    "countryCode": "ZA",
+    "cityIds": [
+      "chief_albert_luthuli_park"
+    ],
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 1,
+    "metricSrid": 32735,
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "evidenceFile": "evidence/source-layer.json",
+    "attribution": "Chief Surveyor-General; DFFE hosted Erven; provider output in WGS84.",
+    "scope": "National cadastral Erven service; initial exact-read qualification for Chief Albert Luthuli Park only. No citywide completeness claim.",
+    "licenceNote": "Public service; explicit reuse permission unestablished. Item licenceInfo and accessInformation are empty."
+  },
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR095600001026000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR095600005694000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR095600004191000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR077300007352000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR077300007605000000"
+  ],
+  "response": {
+    "displayFieldName": "SS_NAME",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "PRCL_KEY": "PRCL_KEY"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "PRCL_KEY",
+        "type": "esriFieldTypeString",
+        "alias": "PRCL_KEY",
+        "length": 50
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 4437100,
+          "PRCL_KEY": "GEKUT0IR077300007352000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.438449519000077,
+                -26.128428695999965
+              ],
+              [
+                28.43849931200003,
+                -26.12832866799994
+              ],
+              [
+                28.43870293300006,
+                -26.128415423999964
+              ],
+              [
+                28.438649329000047,
+                -26.128515743999973
+              ],
+              [
+                28.438449519000077,
+                -26.128428695999965
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 5343685,
+          "PRCL_KEY": "GEKUT0IR077300007605000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.44539161000005,
+                -26.125877881999926
+              ],
+              [
+                28.445515622000073,
+                -26.12581603399997
+              ],
+              [
+                28.445613456000046,
+                -26.12597792099996
+              ],
+              [
+                28.445489965000036,
+                -26.126039311999936
+              ],
+              [
+                28.44539161000005,
+                -26.125877881999926
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 4982841,
+          "PRCL_KEY": "GEKUT0IR095600001026000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.377537551000042,
+                -26.162447866999972
+              ],
+              [
+                28.377636854000055,
+                -26.162516408999977
+              ],
+              [
+                28.377515332000034,
+                -26.16265979199995
+              ],
+              [
+                28.37741602800003,
+                -26.16259125099998
+              ],
+              [
+                28.377537551000042,
+                -26.162447866999972
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 6219002,
+          "PRCL_KEY": "GEKUT0IR095600004191000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.39037293600006,
+                -26.14302737399993
+              ],
+              [
+                28.390421497000034,
+                -26.14296999099997
+              ],
+              [
+                28.390580431000046,
+                -26.14307956399995
+              ],
+              [
+                28.39050151900005,
+                -26.143172809999957
+              ],
+              [
+                28.39038231900002,
+                -26.143090630999957
+              ],
+              [
+                28.39037293600006,
+                -26.14302737399993
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 6211589,
+          "PRCL_KEY": "GEKUT0IR095600005694000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.387651328000064,
+                -26.15362754299997
+              ],
+              [
+                28.387545740000064,
+                -26.153679276999984
+              ],
+              [
+                28.38749802400002,
+                -26.153599956999976
+              ],
+              [
+                28.387603613000067,
+                -26.153548222999984
+              ],
+              [
+                28.387651328000064,
+                -26.15362754299997
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

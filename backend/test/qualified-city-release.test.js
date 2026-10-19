@@ -21,7 +21,29 @@ const manifests = [
     json('world-parcels/research/qualification-admission-2026-10-14-india-overlap-ground.json'),
     json('world-parcels/research/qualification-admission-2026-10-14-india-tiles.json'),
     json('world-parcels/research/qualification-admission-2026-10-19-initial-policy.json'),
-    json('world-parcels/research/qualification-admission-2026-10-19-qualified-bulk.json')
+    json('world-parcels/research/qualification-admission-2026-10-19-qualified-bulk.json'),
+    json('world-parcels/research/qualification-admission-2026-10-15-bridge-6353-164f91332df3.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-2020-c3b5b7abcfe7.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-3172-e986838a92f5.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-3345-f7a009a0f500.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-378-cfe79f10f326.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-411-188993873a10.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-4507-30557dd39256.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-4544-a2ced8d197d2.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-5041-7e4dd0339878.json'),
+    json('world-parcels/research/qualification-admission-2026-10-18-bridge-580-b402ca443ee5.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-112-b626a7cb0321.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-1936-723ee628ed63.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-2606-012749d982d2.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-2954-e12affbb88f6.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-3806-21b1a21a6611.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-4073-e6a0ad3de7a1.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-4161-35668a9da2d3.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-428-9b541158b1dc.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-4359-4c1a9ad4bfc5.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-4836-353c74b9f446.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-4940-b955dd76465e.json'),
+    json('world-parcels/research/qualification-admission-2026-10-19-bridge-8153-224fa623ad96.json'),
 ];
 // A later admission that switched a live city to a newly qualified source (switchedFrom) replaces
 // its earlier binding; the earlier one stays in its manifest as history.
@@ -119,7 +141,9 @@ describe('qualified city production admission', () => {
             }
         } else {
             // Historical releases keep their stricter original evidence contract.
-            expect(Object.values(qualification.checks).filter(gate => gate.passed).length).toBe(8);
+            for (const key of ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric']) {
+                expect(qualification.checks[key]?.passed).toBe(true);
+            }
             expect(independent.geometryPass).toBe(true);
             for (const field of blockers) expect(independent[field]).toBe(0);
         }

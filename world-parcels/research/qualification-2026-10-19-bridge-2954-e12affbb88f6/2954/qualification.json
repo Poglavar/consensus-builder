@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "2954",
+  "cityName": "Dodoma",
+  "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+  "candidateSha256": "e03f14597e2d048d29b5fb51e6738db825cc6188e2094f1477298f46403ca850",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 4
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32736",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": true,
+      "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "cityCode": "2954",
+      "contractSha256": "ae982b5cb5b02e2d711bc1b9b639803f16d853b80396ff95f1246029c3c4cfeb",
+      "evidenceSha256": "ccd0f89471e548d8c133902bb52491e04c3adf54a715d0ace2738469ee49c630",
+      "metadataSha256": "d32752a9c5f8407dd655ee70a7d5bc9a4d4562d63676d3c74af14f9d3b006326",
+      "nativeSha256": "e308ea03e5878d92241d102d43a0a9c07cc78da1995c481c6afb62c81bfe333c",
+      "cacheSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+      "nativeCrs": "EPSG:32736",
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "coordinateOperation": "Inverse of UTM zone 36S + axis order change (2D)",
+      "operationPipeline": "proj=pipeline step inv proj=utm zone=36 south ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+      "operationAccuracyM": 0,
+      "bestOperationAvailable": true,
+      "ballparkAllowed": false,
+      "toleranceM": 0.25,
+      "maxVertexDifferenceM": 0.0006312237393160968,
+      "featureCount": 3,
+      "samples": [
+        {
+          "parcelId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/39473acf-0b36-480e-bb3e-53c7870238fc",
+          "nativeVertexCount": 9,
+          "adapterVertexCount": 9,
+          "maxVertexDifferenceM": 0.0006312237393160968,
+          "maxBoundaryDifferenceM": 0.0006312239401009229
+        },
+        {
+          "parcelId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/788297a6-c19f-441f-957e-baf38eee928e",
+          "nativeVertexCount": 6,
+          "adapterVertexCount": 6,
+          "maxVertexDifferenceM": 0.0005593373052755757,
+          "maxBoundaryDifferenceM": 0.0005315430550614842
+        },
+        {
+          "parcelId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/a07592c3-0dc4-4c34-9a46-12162f6e6b94",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 0.0005647586529875022,
+          "maxBoundaryDifferenceM": 0.0005647587570367286
+        }
+      ],
+      "maxBoundaryDifferenceM": 0.0006312239401009229,
+      "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+      "operationChoiceUnresolved": false,
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "limitations": [
+        "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+        "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+      ],
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+  "featureCount": 3,
+  "sampleIds": [
+    "tz-mlhhds-eardhi-taspro-spatial-units36/uid/a07592c3-0dc4-4c34-9a46-12162f6e6b94",
+    "tz-mlhhds-eardhi-taspro-spatial-units36/uid/39473acf-0b36-480e-bb3e-53c7870238fc",
+    "tz-mlhhds-eardhi-taspro-spatial-units36/uid/788297a6-c19f-441f-957e-baf38eee928e"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "eardhi.lands.go.tz",
+      "method": "GET",
+      "startedAt": "2026-10-19T00:43:34.652Z",
+      "queryHash": "8a7b8bf687137b85c5c7b5e67379eb1a0d48838ed3a6eea575b77fb42b77e608",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 733
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "eardhi.lands.go.tz",
+      "method": "GET",
+      "startedAt": "2026-10-19T00:43:35.394Z",
+      "queryHash": "8a7b8bf687137b85c5c7b5e67379eb1a0d48838ed3a6eea575b77fb42b77e608",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 229
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

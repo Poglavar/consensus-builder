@@ -20517,6 +20517,204 @@
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
             buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        abak: {
+            id: 'abak', wupCityCode: '8153',
+            label: translateCityText('city.labels.abak', 'Abak, Nigeria'),
+            currency: { locale: 'en-NG', code: 'NGN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [4.98542874500456, 7.78822366120289], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [4.98542874500456, 7.78822366120289], fallbackDataset: [7.78822366120289, 4.98542874500456] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ng-akwaibom-akwagis-surveymap-parcel-drafter', idPrefix: 'NG-AKWAGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'AkwaGIS / Akwa Ibom State Government, Ministry of Lands and Office of the State Surveyor-General.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        adis_beba_addis_ababa: {
+            id: 'adis_beba_addis_ababa', wupCityCode: '6353',
+            label: translateCityText('city.labels.adis_beba_addis_ababa', 'Ādīs Ᾱbeba (Addis Ababa), Ethiopia'),
+            currency: { locale: 'am-ET', code: 'ETB' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [9.00578119930776, 38.7494189124444], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [9.00578119930776, 38.7494189124444], fallbackDataset: [38.7494189124444, 9.00578119930776] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'et-addis-eland-geoserver-parcel-publish', idPrefix: 'ET-ADDIS-ELAND-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Addis Ababa City Administration Landholding Registration and Information Agency, e-Land cadastral parcels' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bobo_dioulasso: {
+            id: 'bobo_dioulasso', wupCityCode: '378',
+            label: translateCityText('city.labels.bobo_dioulasso', 'Bobo-Dioulasso, Burkina Faso'),
+            currency: { locale: 'fr-BF', code: 'XOF' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.1847197779143, -4.28974790525362], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.1847197779143, -4.28974790525362], fallbackDataset: [-4.28974790525362, 11.1847197779143] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'bf-dgi-ecadastre-public-geojson', idPrefix: 'BF-ECADASTRE:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Direction générale des Impôts du Burkina Faso — eCadastre' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        centurion: {
+            id: 'centurion', wupCityCode: '4359',
+            label: translateCityText('city.labels.centurion', 'Centurion, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-25.8615434012902, 28.1594620019195], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-25.8615434012902, 28.1594620019195], fallbackDataset: [28.1594620019195, -25.8615434012902] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-csggis-property-viewer-erven', idPrefix: 'ZA-CSG-CSGGIS-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chief_albert_luthuli_park: {
+            id: 'chief_albert_luthuli_park', wupCityCode: '4544',
+            label: translateCityText('city.labels.chief_albert_luthuli_park', 'Chief Albert Luthuli Park, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-26.1276446337782, 28.442109859765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-26.1276446337782, 28.442109859765], fallbackDataset: [28.442109859765, -26.1276446337782] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-national-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General; DFFE hosted Erven; provider output in WGS84.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        diepsloot: {
+            id: 'diepsloot', wupCityCode: '4161',
+            label: translateCityText('city.labels.diepsloot', 'Diepsloot, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-25.9317614563184, 28.0108704187243], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-25.9317614563184, 28.0108704187243], fallbackDataset: [28.0108704187243, -25.9317614563184] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csggis-erven', idPrefix: 'ZA-CSGGIS-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        divo: {
+            id: 'divo', wupCityCode: '2606',
+            label: translateCityText('city.labels.divo', 'Divo, Côte d’Ivoire'),
+            currency: { locale: 'fr-CI', code: 'XOF' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [5.83156567218637, -5.36038273330132], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [5.83156567218637, -5.36038273330132], fallbackDataset: [-5.36038273330132, 5.83156567218637] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ci-divo-ecommunes-parcellaire', idPrefix: 'ci-divo-ecommunes/Parcellaire/feature-id/', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Commune de Divo / E-Commune; CNTIG platform.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dodoma: {
+            id: 'dodoma', wupCityCode: '2954',
+            label: translateCityText('city.labels.dodoma', 'Dodoma, Tanzania'),
+            currency: { locale: 'sw-TZ', code: 'TZS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-6.16336934279916, 35.7436551366206], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-6.16336934279916, 35.7436551366206], fallbackDataset: [35.7436551366206, -6.16336934279916] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'tz-mlhhds-eardhi-taspro-spatial-units36', idPrefix: 'tz-mlhhds-eardhi-taspro-spatial-units36/uid/', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dundo: {
+            id: 'dundo', wupCityCode: '4073',
+            label: translateCityText('city.labels.dundo', 'Dundo, Angola'),
+            currency: { locale: 'pt-AO', code: 'AOA' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-7.38899838568561, 20.8251501574014], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-7.38899838568561, 20.8251501574014], fallbackDataset: [20.8251501574014, -7.38899838568561] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ao-agt-lunda-norte-agt-layer-0', idPrefix: 'AO-LUNDA-NORTE-AGT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        emalahleni: {
+            id: 'emalahleni', wupCityCode: '4836',
+            label: translateCityText('city.labels.emalahleni', 'eMalahleni, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-25.8893325235088, 29.2170617320474], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-25.8893325235088, 29.2170617320474], fallbackDataset: [29.2170617320474, -25.8893325235088] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gaborone_bw: {
+            id: 'gaborone_bw', wupCityCode: '428',
+            label: translateCityText('city.labels.gaborone_bw', 'Gaborone (428), Botswana'),
+            currency: { locale: 'en-BW', code: 'BWP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-24.6105783487141, 25.8754886810294], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-24.6105783487141, 25.8754886810294], fallbackDataset: [25.8754886810294, -24.6105783487141] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'bw-bofinet-botswana-lapcas-plots', idPrefix: 'bofinet:Botswana_PLOTS:FID:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'BoFiNet public ArcGIS BOTSWANA_PLOTS layer 0 (PLOTS); described by the publisher as Botswana LAPCAS plots.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gqeberha: {
+            id: 'gqeberha', wupCityCode: '2020',
+            label: translateCityText('city.labels.gqeberha', 'Gqeberha, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-33.8853793668229, 25.5502896875663], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-33.8853793668229, 25.5502896875663], fallbackDataset: [25.5502896875663, -33.8853793668229] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-property-viewer-erven', idPrefix: 'ZA-CSG-PV-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ijebu_ode: {
+            id: 'ijebu_ode', wupCityCode: '3172',
+            label: translateCityText('city.labels.ijebu_ode', 'Ijebu-Ode, Nigeria'),
+            currency: { locale: 'en-NG', code: 'NGN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [6.82182062949707, 3.93868739084507], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [6.82182062949707, 3.93868739084507], fallbackDataset: [3.93868739084507, 6.82182062949707] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ng-ogun-sdi-geonode-parcels', idPrefix: 'NG-OGUN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kigali: {
+            id: 'kigali', wupCityCode: '580',
+            label: translateCityText('city.labels.kigali', 'Kigali, Rwanda'),
+            currency: { locale: 'en-RW', code: 'RWF' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-1.95092395958257, 30.0945497299371], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-1.95092395958257, 30.0945497299371], fallbackDataset: [30.0945497299371, -1.95092395958257] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'rw-nla-rsdi-kigali-parcels', idPrefix: 'RW-LAIS-KGL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Land Authority (NLA), Rwanda Spatial Data Infrastructure (RSDI), Kigali Parcels (LAIS).' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        masetjhaba_view: {
+            id: 'masetjhaba_view', wupCityCode: '4507',
+            label: translateCityText('city.labels.masetjhaba_view', 'Masetjhaba View, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-26.3449086556998, 28.3891524973703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-26.3449086556998, 28.3891524973703], fallbackDataset: [28.3891524973703, -26.3449086556998] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        menongue: {
+            id: 'menongue', wupCityCode: '3806',
+            label: translateCityText('city.labels.menongue', 'Menongue, Angola'),
+            currency: { locale: 'pt-AO', code: 'AOA' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-14.6595609096696, 17.6861353100988], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-14.6595609096696, 17.6861353100988], fallbackDataset: [17.6861353100988, -14.6595609096696] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ao-ggpen-cubango-agt-layer-0', idPrefix: 'AO-CUBANGO-AGT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'ANGOLA_GGPEN — Cubango_AGT_gdb / Cubango_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN custodian relationship remains unverified.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        middelburg: {
+            id: 'middelburg', wupCityCode: '4940',
+            label: translateCityText('city.labels.middelburg', 'Middelburg, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-25.7630669966059, 29.4394487589585], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-25.7630669966059, 29.4394487589585], fallbackDataset: [29.4394487589585, -25.7630669966059] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ondjiva: {
+            id: 'ondjiva', wupCityCode: '3345',
+            label: translateCityText('city.labels.ondjiva', 'Ondjiva, Angola'),
+            currency: { locale: 'pt-AO', code: 'AOA' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-17.0691708465801, 15.7237660210887], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-17.0691708465801, 15.7237660210887], fallbackDataset: [15.7237660210887, -17.0691708465801] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ao-agt-cunene-agt-layer-0', idPrefix: 'AO-CUNENE-AGT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        polokwane: {
+            id: 'polokwane', wupCityCode: '5041',
+            label: translateCityText('city.labels.polokwane', 'Polokwane, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-23.8681459171116, 29.4132145590407], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-23.8681459171116, 29.4132145590407], fallbackDataset: [29.4132145590407, -23.8681459171116] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-polokwane-municipal-land-information-polokwane-properties', idPrefix: 'ZA-POLOKWANE-LIM-SG32-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'City of Polokwane Local Municipality GIS / Land Information Management / Polokwane Properties. Provider WGS84 output; complete returned polygon rings retained.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rubavu: {
+            id: 'rubavu', wupCityCode: '112',
+            label: translateCityText('city.labels.rubavu', 'Rubavu, Rwanda'),
+            currency: { locale: 'en-RW', code: 'RWF' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-1.6920227940991, 29.2892956900186], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-1.6920227940991, 29.2892956900186], fallbackDataset: [29.2892956900186, -1.6920227940991] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'rw-nla-lais-rubavu-parcels', idPrefix: 'RW-LAIS-RUBAVU-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Land Authority, Rwanda Spatial Data Infrastructure; LAIS Rubavu Parcels.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sumbe: {
+            id: 'sumbe', wupCityCode: '1936',
+            label: translateCityText('city.labels.sumbe', 'Sumbe, Angola'),
+            currency: { locale: 'pt-AO', code: 'AOA' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-11.2178706676586, 13.8457791803372], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-11.2178706676586, 13.8457791803372], fallbackDataset: [13.8457791803372, -11.2178706676586] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ao-ggpen-agt-cuanza-sul-official-sumbe-polygons', idPrefix: 'AO-SUMBE-AGT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        windhoek: {
+            id: 'windhoek', wupCityCode: '411',
+            label: translateCityText('city.labels.windhoek', 'Windhoek, Namibia'),
+            currency: { locale: 'en-NA', code: 'NAD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-22.5253108270478, 17.0442106526956], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-22.5253108270478, 17.0442106526956], fallbackDataset: [17.0442106526956, -22.5253108270478] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'na-windhoek-cadastral1-public-arcgis', idPrefix: 'NA-WINDHOEK-CADASTRAL1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Windhoek municipality (origin claimed by Cadastral1 publisher); public hosted copy attributed to 2013, with positional and attribute inaccuracies.' },
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
     };
 
     function ensureProjectionDefinitions() {

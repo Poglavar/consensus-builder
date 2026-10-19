@@ -4946,11 +4946,14 @@
       "registryCityIds": [
         "wup2025:6353"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "adis_beba_addis_ababa"
+      ],
       "wupCityCode": 6353,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 4577126,
       "population2025": 6705705,
@@ -5014,7 +5017,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "et-addis-eland-geoserver-parcel-publish",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json"
     },
     {
       "id": "wup2025:3439",
@@ -25720,10 +25726,13 @@
       "latitude": 6.82167614479482,
       "longitude": 3.92936584827927,
       "registryCityIds": [],
-      "appCityIds": [],
+      "appCityIds": [
+        "ijebu_ode"
+      ],
       "wupCityCode": 3172,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "app"
       ],
       "population2015": 305870,
       "population2025": 500036,
@@ -25757,7 +25766,64 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "attempted_no_verified_article"
+      "wikipediaLookupStatus": "attempted_no_verified_article",
+      "parcelSourceId": "ng-ogun-sdi-geonode-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-3172-e986838a92f5/3172/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:3996",
@@ -39323,10 +39389,13 @@
       "registryCityIds": [
         "wup2025:378"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bobo_dioulasso"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39344,7 +39413,64 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "bf-dgi-ecadastre-public-geojson",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "native CRS must be a published EPSG code"
+        }
+      ]
     },
     {
       "id": "wup2025:7228",
@@ -50738,10 +50864,13 @@
       "registryCityIds": [
         "wup2025:2020"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "gqeberha"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -50759,7 +50888,64 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "za-csg-property-viewer-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-2020-c3b5b7abcfe7/2020/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:6625",
@@ -57638,10 +57824,13 @@
       "registryCityIds": [
         "wup2025:4507"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "masetjhaba_view"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -57661,7 +57850,64 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
-      }
+      },
+      "parcelSourceId": "za-csg-dffe-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-4507-30557dd39256/4507/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2087",
@@ -157541,6 +157787,1444 @@
         },
         {
           "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:580",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Kigali",
+      "countryCode": "RW",
+      "latitude": -1.95092395958257,
+      "longitude": 30.0945497299371,
+      "wupLatitude": -1.95092395958257,
+      "wupLongitude": 30.0945497299371,
+      "wupName": "Kigali",
+      "wupCityCode": 580,
+      "appCityIds": [
+        "kigali"
+      ],
+      "population2025": 1483711,
+      "population2015": 979717,
+      "annualGrowthPct2015To2025": 4.150379,
+      "registryCityIds": [
+        "wup2025:580"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "rw-nla-rsdi-kigali-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "metric",
+            "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "metric",
+          "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:5041",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Polokwane",
+      "countryCode": "ZA",
+      "latitude": -23.8681459171116,
+      "longitude": 29.4132145590407,
+      "wupLatitude": -23.8681459171116,
+      "wupLongitude": 29.4132145590407,
+      "wupName": "Polokwane",
+      "wupCityCode": 5041,
+      "appCityIds": [
+        "polokwane"
+      ],
+      "population2025": 451786,
+      "population2015": 312098,
+      "annualGrowthPct2015To2025": 3.698914,
+      "registryCityIds": [
+        "wup2025:5041"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "za-polokwane-municipal-land-information-polokwane-properties",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-5041-7e4dd0339878/5041/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4544",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Chief Albert Luthuli Park",
+      "countryCode": "ZA",
+      "latitude": -26.1276446337782,
+      "longitude": 28.442109859765,
+      "wupLatitude": -26.1276446337782,
+      "wupLongitude": 28.442109859765,
+      "wupName": "Chief Albert Luthuli Park",
+      "wupCityCode": 4544,
+      "appCityIds": [
+        "chief_albert_luthuli_park"
+      ],
+      "population2025": 441204,
+      "population2015": 353334,
+      "annualGrowthPct2015To2025": 2.220936,
+      "registryCityIds": [
+        "wup2025:4544"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "za-csg-dffe-national-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-4544-a2ced8d197d2/4544/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:411",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Windhoek",
+      "countryCode": "NA",
+      "latitude": -22.5253108270478,
+      "longitude": 17.0442106526956,
+      "wupLatitude": -22.5253108270478,
+      "wupLongitude": 17.0442106526956,
+      "wupName": "Windhoek",
+      "wupCityCode": 411,
+      "appCityIds": [
+        "windhoek"
+      ],
+      "population2025": 409758,
+      "population2015": 323433,
+      "annualGrowthPct2015To2025": 2.365748,
+      "registryCityIds": [
+        "wup2025:411"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "na-windhoek-cadastral1-public-arcgis",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:3345",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Ondjiva",
+      "countryCode": "AO",
+      "latitude": -17.0691708465801,
+      "longitude": 15.7237660210887,
+      "wupLatitude": -17.0691708465801,
+      "wupLongitude": 15.7237660210887,
+      "wupName": "Ondjiva",
+      "wupCityCode": 3345,
+      "appCityIds": [
+        "ondjiva"
+      ],
+      "population2025": 347591,
+      "population2015": 234793,
+      "annualGrowthPct2015To2025": 3.923222,
+      "registryCityIds": [
+        "wup2025:3345"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "ao-agt-cunene-agt-layer-0",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:112",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Rubavu",
+      "countryCode": "RW",
+      "latitude": -1.6920227940991,
+      "longitude": 29.2892956900186,
+      "wupLatitude": -1.6920227940991,
+      "wupLongitude": 29.2892956900186,
+      "wupName": "Rubavu",
+      "wupCityCode": 112,
+      "appCityIds": [
+        "rubavu"
+      ],
+      "population2025": 337963,
+      "population2015": 268084,
+      "annualGrowthPct2015To2025": 2.316361,
+      "registryCityIds": [
+        "wup2025:112"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "rw-nla-lais-rubavu-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "native CRS must be a published EPSG code"
+        }
+      ]
+    },
+    {
+      "id": "wup2025:3806",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Menongue",
+      "countryCode": "AO",
+      "latitude": -14.6595609096696,
+      "longitude": 17.6861353100988,
+      "wupLatitude": -14.6595609096696,
+      "wupLongitude": 17.6861353100988,
+      "wupName": "Menongue",
+      "wupCityCode": 3806,
+      "appCityIds": [
+        "menongue"
+      ],
+      "population2025": 299802,
+      "population2015": 286319,
+      "annualGrowthPct2015To2025": 0.460157,
+      "registryCityIds": [
+        "wup2025:3806"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "ao-ggpen-cubango-agt-layer-0",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-3806-21b1a21a6611/3806/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:2954",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Dodoma",
+      "countryCode": "TZ",
+      "latitude": -6.16336934279916,
+      "longitude": 35.7436551366206,
+      "wupLatitude": -6.16336934279916,
+      "wupLongitude": 35.7436551366206,
+      "wupName": "Dodoma",
+      "wupCityCode": 2954,
+      "appCityIds": [
+        "dodoma"
+      ],
+      "population2025": 269047,
+      "population2015": 203520,
+      "annualGrowthPct2015To2025": 2.791218,
+      "registryCityIds": [
+        "wup2025:2954"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4073",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Dundo",
+      "countryCode": "AO",
+      "latitude": -7.38899838568561,
+      "longitude": 20.8251501574014,
+      "wupLatitude": -7.38899838568561,
+      "wupLongitude": 20.8251501574014,
+      "wupName": "Dundo",
+      "wupCityCode": 4073,
+      "appCityIds": [
+        "dundo"
+      ],
+      "population2025": 259341,
+      "population2015": 189239,
+      "annualGrowthPct2015To2025": 3.15133,
+      "registryCityIds": [
+        "wup2025:4073"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "ao-agt-lunda-norte-agt-layer-0",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-4073-e6a0ad3de7a1/4073/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4359",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Centurion",
+      "countryCode": "ZA",
+      "latitude": -25.8615434012902,
+      "longitude": 28.1594620019195,
+      "wupLatitude": -25.8615434012902,
+      "wupLongitude": 28.1594620019195,
+      "wupName": "Centurion",
+      "wupCityCode": 4359,
+      "appCityIds": [
+        "centurion"
+      ],
+      "population2025": 255900,
+      "population2015": 192513,
+      "annualGrowthPct2015To2025": 2.846231,
+      "registryCityIds": [
+        "wup2025:4359"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "za-csg-csggis-property-viewer-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:428",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Gaborone",
+      "countryCode": "BW",
+      "latitude": -24.6105783487141,
+      "longitude": 25.8754886810294,
+      "wupLatitude": -24.6105783487141,
+      "wupLongitude": 25.8754886810294,
+      "wupName": "Gaborone",
+      "wupCityCode": 428,
+      "appCityIds": [
+        "gaborone_bw"
+      ],
+      "population2025": 254517,
+      "population2015": 199877,
+      "annualGrowthPct2015To2025": 2.416655,
+      "registryCityIds": [
+        "wup2025:428"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "bw-bofinet-botswana-lapcas-plots",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:8153",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Abak",
+      "countryCode": "NG",
+      "latitude": 4.98542874500456,
+      "longitude": 7.78822366120289,
+      "wupLatitude": 4.98542874500456,
+      "wupLongitude": 7.78822366120289,
+      "wupName": "Abak",
+      "wupCityCode": 8153,
+      "appCityIds": [
+        "abak"
+      ],
+      "population2025": 248528,
+      "population2015": 166043,
+      "annualGrowthPct2015To2025": 4.033087,
+      "registryCityIds": [
+        "wup2025:8153"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-8153-224fa623ad96/8153/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Provider output does not reproduce the selected PROJ operation, whose published geodetic accuracy exceeds the check tolerance. The publisher's operation and reference-frame realization must be established before inferring a defect or correction."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4836",
+      "cohorts": [
+        "app"
+      ],
+      "name": "eMalahleni",
+      "countryCode": "ZA",
+      "latitude": -25.8893325235088,
+      "longitude": 29.2170617320474,
+      "wupLatitude": -25.8893325235088,
+      "wupLongitude": 29.2170617320474,
+      "wupName": "eMalahleni",
+      "wupCityCode": 4836,
+      "appCityIds": [
+        "emalahleni"
+      ],
+      "population2025": 220586,
+      "population2015": 146881,
+      "annualGrowthPct2015To2025": 4.066649,
+      "registryCityIds": [
+        "wup2025:4836"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "za-csg-dffe-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4940",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Middelburg",
+      "countryCode": "ZA",
+      "latitude": -25.7630669966059,
+      "longitude": 29.4394487589585,
+      "wupLatitude": -25.7630669966059,
+      "wupLongitude": 29.4394487589585,
+      "wupName": "Middelburg",
+      "wupCityCode": 4940,
+      "appCityIds": [
+        "middelburg"
+      ],
+      "population2025": 209906,
+      "population2015": 172266,
+      "annualGrowthPct2015To2025": 1.9762,
+      "registryCityIds": [
+        "wup2025:4940"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "za-csg-dffe-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-4940-b955dd76465e/4940/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4161",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Diepsloot",
+      "countryCode": "ZA",
+      "latitude": -25.9317614563184,
+      "longitude": 28.0108704187243,
+      "wupLatitude": -25.9317614563184,
+      "wupLongitude": 28.0108704187243,
+      "wupName": "Diepsloot",
+      "wupCityCode": 4161,
+      "appCityIds": [
+        "diepsloot"
+      ],
+      "population2025": 196763,
+      "population2015": 157367,
+      "annualGrowthPct2015To2025": 2.234193,
+      "registryCityIds": [
+        "wup2025:4161"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "za-csggis-erven",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-4161-35668a9da2d3/4161/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:2606",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Divo",
+      "countryCode": "CI",
+      "latitude": 5.83156567218637,
+      "longitude": -5.36038273330132,
+      "wupLatitude": 5.83156567218637,
+      "wupLongitude": -5.36038273330132,
+      "wupName": "Divo",
+      "wupCityCode": 2606,
+      "appCityIds": [
+        "divo"
+      ],
+      "population2025": 191745,
+      "population2015": 155664,
+      "annualGrowthPct2015To2025": 2.084665,
+      "registryCityIds": [
+        "wup2025:2606"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "ci-divo-ecommunes-parcellaire",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:1936",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Sumbe",
+      "countryCode": "AO",
+      "latitude": -11.2178706676586,
+      "longitude": 13.8457791803372,
+      "wupLatitude": -11.2178706676586,
+      "wupLongitude": 13.8457791803372,
+      "wupName": "Sumbe",
+      "wupCityCode": 1936,
+      "appCityIds": [
+        "sumbe"
+      ],
+      "population2025": 186184,
+      "population2015": 174743,
+      "annualGrowthPct2015To2025": 0.634191,
+      "registryCityIds": [
+        "wup2025:1936"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
           "reason": "Deferred to second-pass review."
         }
       ]

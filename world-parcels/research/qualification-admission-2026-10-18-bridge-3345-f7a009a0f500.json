@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-18",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "3345",
+      "appCityId": "ondjiva",
+      "cityName": "Ondjiva",
+      "qualificationCityName": "Ondjiva",
+      "cityId": "wup2025:3345",
+      "countryCode": "AO",
+      "country": "Angola",
+      "sourceId": "ao-agt-cunene-agt-layer-0",
+      "appCenterLatLon": [
+        -17.0691708465801,
+        15.7237660210887
+      ],
+      "wupPointLatLon": [
+        -17.0691708465801,
+        15.7237660210887
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "1093175131c89deae2b4220cd97b602d9dc6656f01254d2bf22c6074ebf1d3e8",
+        "evidenceOriginalSha256": "1093175131c89deae2b4220cd97b602d9dc6656f01254d2bf22c6074ebf1d3e8",
+        "evidenceExportSha256": "1093175131c89deae2b4220cd97b602d9dc6656f01254d2bf22c6074ebf1d3e8"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "483c4a28b941f15feeb140df23e7ac16349f2f73cf926540b639950410444c6c",
+        "evidenceExportSha256": "7d5f4e71e0de17dd36722563e32cee3ba7802c2c7110d43f90b929590b943fbd",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": false
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "independent alignment qualification check is missing or false"
+            }
+          ],
+          "candidateSha256": "1093175131c89deae2b4220cd97b602d9dc6656f01254d2bf22c6074ebf1d3e8",
+          "cacheSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+          "qualificationSha256": "483c4a28b941f15feeb140df23e7ac16349f2f73cf926540b639950410444c6c"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "AO-CUNENE-AGT-1902d7521152e1453c52e0faf4b5663eba9b",
+          "AO-CUNENE-AGT-19024cc94eaf308b648104928a52e46b6242",
+          "AO-CUNENE-AGT-1902da1883a53a95e7cc9d5fc302254de5b9"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "e9bead6e7b6579fbbfa867bb11b02687d811cccda4e5a2f2bee58c4b7a93ec4e",
+        "evidenceExportSha256": "843898d08081761e1251485d6e547bec4c0bb5c47b1c5fa12356452a2a3f40b5",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32733",
+        "inputSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+        "evidenceOriginalSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+        "evidenceExportSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/full-safe.geojson",
+        "initialReview": "world-parcels/research/qualification-2026-10-18-bridge-3345-f7a009a0f500/3345/initial-review.json"
+      },
+      "alignment": {
+        "status": "follow-up-required",
+        "followUp": "Deferred to second-pass review."
+      },
+      "independentMetricAudit": {
+        "sha256": "843898d08081761e1251485d6e547bec4c0bb5c47b1c5fa12356452a2a3f40b5",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+        "metricCrs": "EPSG:32733",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "ao-agt-cunene-agt-layer-0",
+        "adapter": "arcgis",
+        "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0",
+        "idField": "ID_GGPEN",
+        "idFields": null,
+        "idPrefix": "AO-CUNENE-AGT-",
+        "metricSrid": 32733,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "geojson",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": null,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-18",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

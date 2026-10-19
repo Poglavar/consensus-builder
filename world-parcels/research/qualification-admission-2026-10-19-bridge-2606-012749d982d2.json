@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-19",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "2606",
+      "appCityId": "divo",
+      "cityName": "Divo",
+      "qualificationCityName": "Divo",
+      "cityId": "wup2025:2606",
+      "countryCode": "CI",
+      "country": "Côte d’Ivoire",
+      "sourceId": "ci-divo-ecommunes-parcellaire",
+      "appCenterLatLon": [
+        5.83156567218637,
+        -5.36038273330132
+      ],
+      "wupPointLatLon": [
+        5.83156567218637,
+        -5.36038273330132
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "37399eecc6437224f728fe0fde1b2fed850e9d0b135967f7e7f739b760aadaee",
+        "evidenceOriginalSha256": "37399eecc6437224f728fe0fde1b2fed850e9d0b135967f7e7f739b760aadaee",
+        "evidenceExportSha256": "37399eecc6437224f728fe0fde1b2fed850e9d0b135967f7e7f739b760aadaee"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "04105d8789b973ed7f8ffb5459b8cf4fc9007a86f2d866043eca128c0d125db1",
+        "evidenceExportSha256": "bd0f6196ca834f9abdb6f3e95f0eaf030abec9a63e6ca4c736d7ae796b730db6",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": true
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ],
+          "candidateSha256": "37399eecc6437224f728fe0fde1b2fed850e9d0b135967f7e7f739b760aadaee",
+          "cacheSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+          "qualificationSha256": "04105d8789b973ed7f8ffb5459b8cf4fc9007a86f2d866043eca128c0d125db1"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "ci-divo-ecommunes/Parcellaire/feature-id/0F31FA63A2934DC99FF02CDC0F31A9DF",
+          "ci-divo-ecommunes/Parcellaire/feature-id/E18CBD07CCEB4212A0DA05942DADD590",
+          "ci-divo-ecommunes/Parcellaire/feature-id/0C2F922F36E845858FA24A68864E40E3"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "9e8846f2581514fcea8afb12c779f3804d45a61443de3bbefe06f6f254e745ca",
+        "evidenceExportSha256": "59a71faa9da1fae0ec0487f0f68cee35d7cb732dcb1e4d9d460b30e064cf9a9b",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32630",
+        "inputSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+        "evidenceOriginalSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+        "evidenceExportSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/full-safe.geojson",
+        "alignment": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/alignment-report.json",
+        "independentAlignment": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/independent-alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/alignment-native.json",
+        "initialReview": "world-parcels/research/qualification-2026-10-19-bridge-2606-012749d982d2/2606/initial-review.json"
+      },
+      "alignment": {
+        "status": "verified",
+        "report": {
+          "schemaVersion": 1,
+          "passed": true,
+          "sourceId": "ci-divo-ecommunes-parcellaire",
+          "cityCode": "2606",
+          "contractSha256": "4a22c99d3b07f97790b764a23444e969b49c71c7b6adbe19fa8c8387aadde27a",
+          "evidenceSha256": "e35892ed2d641409ab60a89322b9b0bb8a5333dac45d48ab83455743836ef69c",
+          "metadataSha256": "b7c6229c79f896437e52f6c4543ae81c401b5880644c594668e0bcc7e5f988b1",
+          "nativeSha256": "4052e5a2b437cbc95475de3b32be7e5e0f2fe1eb058000b227c38b6ec9503ab5",
+          "cacheSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+          "nativeCrs": "EPSG:32630",
+          "nativeAxisOrder": "east-north",
+          "outputCrs": "EPSG:4326",
+          "coordinateOperation": "Inverse of UTM zone 30N + axis order change (2D)",
+          "operationPipeline": "proj=pipeline step inv proj=utm zone=30 ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+          "operationAccuracyM": 0,
+          "bestOperationAvailable": true,
+          "ballparkAllowed": false,
+          "toleranceM": 0.25,
+          "maxVertexDifferenceM": 1.6814143734660337e-9,
+          "featureCount": 3,
+          "samples": [
+            {
+              "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/0F31FA63A2934DC99FF02CDC0F31A9DF",
+              "nativeVertexCount": 5,
+              "adapterVertexCount": 5,
+              "maxVertexDifferenceM": 1.2787128955098617e-9,
+              "maxBoundaryDifferenceM": 1.2399962574502509e-9
+            },
+            {
+              "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/E18CBD07CCEB4212A0DA05942DADD590",
+              "nativeVertexCount": 34,
+              "adapterVertexCount": 34,
+              "maxVertexDifferenceM": 1.6814143734660337e-9,
+              "maxBoundaryDifferenceM": 1.6587789259867026e-9
+            },
+            {
+              "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/0C2F922F36E845858FA24A68864E40E3",
+              "nativeVertexCount": 5,
+              "adapterVertexCount": 5,
+              "maxVertexDifferenceM": 1.1836918664486923e-9,
+              "maxBoundaryDifferenceM": 1.4131116175921948e-9
+            }
+          ],
+          "maxBoundaryDifferenceM": 1.6587789259867026e-9,
+          "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+          "operationChoiceUnresolved": false,
+          "sourceGeometryChanged": false,
+          "fittedOffsetApplied": false,
+          "sourceGeoreferencing": "unverified",
+          "limitations": [
+            "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+            "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+          ]
+        },
+        "evidenceExportSha256": "17103fe998b677c25dee0e1aec656de0413f01f0ddaa8693ab01a9cf15ac3b49"
+      },
+      "independentMetricAudit": {
+        "sha256": "59a71faa9da1fae0ec0487f0f68cee35d7cb732dcb1e4d9d460b30e064cf9a9b",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+        "metricCrs": "EPSG:32630",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "ci-divo-ecommunes-parcellaire",
+        "adapter": "divo-ecommunes-xml",
+        "endpoint": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query",
+        "idField": "Feature/@ID",
+        "idFields": null,
+        "idPrefix": "ci-divo-ecommunes/Parcellaire/feature-id/",
+        "metricSrid": 32630,
+        "queryContract": {
+          "identityKind": "native-feature-id",
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": null,
+          "idsQueryMode": null,
+          "boundsSrid": 32630,
+          "boundsProjection": null,
+          "queryFormat": null,
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": "Parcellaire",
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": false,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-19",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

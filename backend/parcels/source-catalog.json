@@ -6677,7 +6677,10 @@
         "matsulu",
         "khuma",
         "lenasia",
-        "vosman"
+        "vosman",
+        "masetjhaba_view",
+        "emalahleni",
+        "middelburg"
       ],
       "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
       "scope": "Public Chief Surveyor-General Erven reference polygons hosted by DFFE; separately qualified bounded Klipgat and Evaton settlement views. Complete native PRCL_KEY identity and Esri straight-ring geometry are preserved. Each city retains its own extent and geometry-quality evidence; wider coverage, current legal title and survey accuracy remain unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
@@ -6739,7 +6742,10 @@
         "matsulu": 32736,
         "khuma": 32735,
         "lenasia": 32735,
-        "vosman": 32735
+        "vosman": 32735,
+        "masetjhaba_view": 32735,
+        "emalahleni": 32735,
+        "middelburg": 32735
       },
       "qualificationEvidence": [
         {
@@ -15801,6 +15807,815 @@
         "palasa_kasibugga": 32645
       },
       "metricSrid": 32644
+    },
+    {
+      "id": "et-addis-eland-geoserver-parcel-publish",
+      "name": "Addis Ababa e-Land published cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geos.addiscadaster.gov.et/geoserver/ows",
+      "featureType": "ncrprs_cadaster:v_1_parcel_cadaster_publish",
+      "version": "1.0.0",
+      "idField": "uniqueparcelid",
+      "idType": "string",
+      "idPattern": "^AA[0-9]{12}$",
+      "idPrefix": "ET-ADDIS-ELAND-",
+      "geometryField": "geometry",
+      "requestProperties": true,
+      "outFields": [
+        "uniqueparcelid"
+      ],
+      "pageSize": 25,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "responseSrid": 20137,
+      "projection": "+proj=utm +zone=37 +a=6378249.145 +rf=293.465 +towgs84=-166,-15,204 +units=m +no_defs",
+      "metricSrid": 32637,
+      "countryCode": "ET",
+      "cityIds": [
+        "adis_beba_addis_ababa"
+      ],
+      "scope": "Official Addis city cadastral parcel publish layer; bounded qualification only, no citywide completeness claim.",
+      "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+      "catalogueUrl": "https://eland.addiscadaster.gov.et/",
+      "attribution": "Addis Ababa City Administration Landholding Registration and Information Agency, e-Land cadastral parcels",
+      "licenceNote": "Public read access observed; explicit geometry reuse terms not established.",
+      "defaultForCity": true
+    },
+    {
+      "id": "rw-nla-rsdi-kigali-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+      "idField": "upi",
+      "idType": "string",
+      "idPrefix": "RW-LAIS-KGL-",
+      "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+      "objectIdField": "objectid",
+      "outFields": [
+        "objectid",
+        "upi"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "scope": "Kigali LAIS cadastral parcels returned by bounded and exact-UPI queries; completeness across the City of Kigali is unverified.",
+      "licenceNote": "Public anonymous access observed. Explicit reuse and redistribution terms are unverified; public readability is not a reuse licence.",
+      "attribution": "National Land Authority (NLA), Rwanda Spatial Data Infrastructure (RSDI), Kigali Parcels (LAIS).",
+      "queryFormat": "esri-json",
+      "name": "Kigali Parcels (LAIS)",
+      "operator": "National Land Authority through Rwanda Spatial Data Infrastructure",
+      "countryCode": "RW",
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32736,
+      "cityIds": [
+        "kigali"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "evidenceFile": "evidence/source-purpose.json",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "RW",
+          "basis": "NLA/RSDI publishes the Kigali-specific LAIS cadastral parcel layer. Receipt probes establish substantial-city discovery coverage, not exhaustive coverage.",
+          "evidence": [
+            "evidence/source-purpose.json",
+            "evidence/portal-item.json",
+            "evidence/layer-metadata.json"
+          ]
+        }
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "bf-dgi-ecadastre-public-geojson",
+      "name": "Burkina Faso DGI eCadastre public cadastral map GeoJSON",
+      "adapter": "bf-dgi-geojson",
+      "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+      "countryCode": "BF",
+      "cityIds": [
+        "bobo_dioulasso"
+      ],
+      "idPrefix": "BF-ECADASTRE:",
+      "idField": "FID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]{1,64}$",
+      "geometryField": "geometry",
+      "outFields": [
+        "FID"
+      ],
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "metricSrid": 32630,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 8388608,
+      "maxFeatures": 1000,
+      "maxConcurrentQueries": 1,
+      "lookupBounds": [
+        [
+          -4.29474790525362,
+          11.1797197779143,
+          -4.28474790525362,
+          11.1897197779143
+        ],
+        [
+          -4.34,
+          11.175,
+          -4.334,
+          11.181
+        ],
+        [
+          -4.248,
+          11.18,
+          -4.242,
+          11.186
+        ],
+        [
+          -4.292,
+          11.137,
+          -4.286,
+          11.143
+        ]
+      ],
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "authoritativeAbsence": false,
+        "areaCompleteness": false
+      },
+      "operator": "Direction générale des Impôts du Burkina Faso (DGI)",
+      "catalogueUrl": "https://ecadastre.dgi.bf/",
+      "attribution": "Direction générale des Impôts du Burkina Faso — eCadastre",
+      "licenceNote": "Public anonymous map access observed. Explicit redistribution/reuse permission and required attribution terms remain unverified.",
+      "scope": "Native-ID parcel availability in four declared Bobo-Dioulasso diagnostic windows only. Three distributed west/east/south reads support spatial spread; they and the near-WUP window are not a municipal boundary, coverage manifest, or citywide-completeness proof.",
+      "identityPolicy": "Native feature.id must equal properties.FID; canonical BF-ECADASTRE:<native-id>. Exact reads independently scan the declared lookup windows and return only requested full polygons. No process-local cache, geometry-derived ID or false absent-ID claim.",
+      "defaultForCity": true
+    },
+    {
+      "id": "za-csg-property-viewer-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "name": "Chief Surveyor-General Property Viewer Erven",
+      "operator": "Chief Surveyor-General, South Africa",
+      "countryCode": "ZA",
+      "catalogueUrl": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted",
+      "idPrefix": "ZA-CSG-PV-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "metricSrid": 32735,
+      "cityIds": [
+        "gqeberha"
+      ],
+      "defaultForCity": true,
+      "evidenceFile": "evidence/source-purpose.json",
+      "scope": "Anonymous surveyed and approved urban Erven polygons in separated bounded Gqeberha sectors. Full unchanged geometries are referenced by native key plus full-geometry hash. Citywide completeness, legal title, survey accuracy, current-ground status and cross-service synchronization remain unestablished.",
+      "licenceNote": "Public anonymous access; explicit parcel-geometry redistribution licence remains unestablished.",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      }
+    },
+    {
+      "id": "ng-ogun-sdi-geonode-parcels",
+      "name": "Ogun SDI / BLS cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.ogunstate.gov.ng/geoserver/ows",
+      "version": "2.0.0",
+      "featureType": "geonode:parcels",
+      "geometryField": "geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "resourceId",
+      "idField": null,
+      "idType": "string",
+      "idPattern": "^parcels\\.[0-9]+$",
+      "idPrefix": "NG-OGUN-",
+      "outFields": [],
+      "requestProperties": false,
+      "unfilteredSchemaProfile": "ng-ogun-parcels-v1",
+      "pageSize": 250,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 8388608,
+      "minRequestIntervalMs": 250,
+      "countryCode": "NG",
+      "cityIds": [
+        "ijebu_ode"
+      ],
+      "metricSrid": 32631,
+      "nativeCrs": "EPSG:26331",
+      "responseCrs": "CRS:84",
+      "returnsWGS84": true,
+      "scope": "Official Ogun cadastral land-ownership/status layer; this initial qualification proves repeatable exact access to five dispersed Ijebu-Ode native parcel records. Citywide completeness and current/historic semantics remain unverified.",
+      "attribution": "Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.",
+      "licence": "public_domain (first-party catalogue metadata)",
+      "licenceUrl": "https://gis.ogunstate.gov.ng/api/v2/resources/339",
+      "catalogueUrl": "https://gis.ogunstate.gov.ng/catalogue/#/dataset/339",
+      "evidenceFile": "evidence/source-metadata.json",
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "za-polokwane-municipal-land-information-polokwane-properties",
+      "name": "City of Polokwane municipal Land Information / Polokwane Properties",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+      "countryCode": "ZA",
+      "cityIds": [
+        "polokwane"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "ZA-POLOKWANE-LIM-SG32-",
+      "idField": "SG32",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{32}$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "SG32"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32735,
+      "sourceCrs": "EPSG:4148",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "attribution": "City of Polokwane Local Municipality GIS / Land Information Management / Polokwane Properties. Provider WGS84 output; complete returned polygon rings retained.",
+      "licenceNote": "Anonymous public access is verified. No explicit reusable licence was established; permission and attribution terms require second-pass review.",
+      "scope": "Municipal cadastral property records observed across the urban area. Bounded distributed discovery and five exact samples do not establish whole-city or municipality completeness. Rural gaps remain in the reviewed packet.",
+      "evidenceFile": "evidence/source-metadata.json"
+    },
+    {
+      "id": "za-csg-dffe-national-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+      "name": "Chief Surveyor-General national Erven polygons (DFFE host)",
+      "operator": "Chief Surveyor-General; DFFE public ArcGIS host",
+      "countryCode": "ZA",
+      "cityIds": [
+        "chief_albert_luthuli_park"
+      ],
+      "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 32735,
+      "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+      "evidenceFile": "evidence/source-layer.json",
+      "attribution": "Chief Surveyor-General; DFFE hosted Erven; provider output in WGS84.",
+      "scope": "National cadastral Erven service; initial exact-read qualification for Chief Albert Luthuli Park only. No citywide completeness claim.",
+      "licenceNote": "Public service; explicit reuse permission unestablished. Item licenceInfo and accessInformation are empty.",
+      "defaultForCity": true
+    },
+    {
+      "id": "na-windhoek-cadastral1-public-arcgis",
+      "name": "Windhoek Cadastral1 public cadastral copy",
+      "adapter": "arcgis",
+      "endpoint": "https://services9.arcgis.com/gWyguONsWr81ViQt/arcgis/rest/services/Cadastral1/FeatureServer/0",
+      "idField": "PRCL_KEY",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "objectIdField": "FID",
+      "idPrefix": "NA-WINDHOEK-CADASTRAL1-",
+      "outFields": [
+        "FID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "NA",
+      "metricSrid": 32733,
+      "cityIds": [
+        "windhoek"
+      ],
+      "operator": "Public ArcGIS publisher; provider asserts municipal data origin",
+      "scope": "Hosted cadastral copy with Windhoek urban-sector discovery evidence. Initial qualification uses three exact parcels only; no citywide completeness or currentness claim.",
+      "evidenceFile": "evidence/classification.json",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=5dcc166070374390858de60bc8852fb1",
+      "attribution": "Windhoek municipality (origin claimed by Cadastral1 publisher); public hosted copy attributed to 2013, with positional and attribute inaccuracies.",
+      "licenceNote": "Item licenseInfo is null. Municipal endorsement, explicit reuse rights and redistribution authority remain unverified.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "NA",
+          "basis": "Provider item identifies Windhoek municipal cadastral information; official City Geomatics confirms municipal survey/mapping function but does not authenticate this copy.",
+          "evidence": [
+            "evidence/source-item.json",
+            "evidence/source-layer.json",
+            "evidence/municipal-purpose.json"
+          ]
+        }
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "ao-agt-cunene-agt-layer-0",
+      "adapter": "arcgis",
+      "name": "ANGOLA_GGPEN Cunene AGT property-registration polygons",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0",
+      "idField": "ID_GGPEN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-CUNENE-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{36}$",
+      "outFields": [
+        "OBJECTID",
+        "ID_GGPEN"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "ondjiva"
+      ],
+      "scope": "Cunene AGT property-registration parcels. Reviewed positive reads span central, northwest and southeast Ondjiva; full city coverage and legal-title authority are unestablished.",
+      "evidenceFile": "evidence/source-review.json",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/c93d6a26dd4b49b689719523f0723c0d?f=pjson",
+      "licenceNote": "Public query access is verified; publisher metadata has no explicit parcel-data reuse licence. Redistribution and attribution terms require second-pass review.",
+      "attribution": "ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified.",
+      "defaultForCity": true
+    },
+    {
+      "id": "rw-nla-lais-rubavu-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Rubavu_Parcels/FeatureServer/24/query",
+      "name": "Rubavu Parcels (LAIS)",
+      "operator": "Rwanda National Land Authority / Rwanda Spatial Data Infrastructure / LAIS Data Service",
+      "countryCode": "RW",
+      "cityIds": [
+        "rubavu"
+      ],
+      "idPrefix": "RW-LAIS-RUBAVU-",
+      "idField": "upi",
+      "idType": "string",
+      "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+      "objectIdField": "objectid",
+      "outFields": [
+        "objectid",
+        "upi"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 32735,
+      "sourceCrs": "PROJCRS[\"ITRF_2005\",BASEGEOGCRS[\"GCS_ITRF_2005\",DATUM[\"D_ITRF_2005\",ELLIPSOID[\"GRS_1980\",6378137.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",5000000.0,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",30.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",0.9999,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+      "catalogueUrl": "https://geodata.rw/portal/sharing/rest/content/items/1012ccedce054d2da74df7a47994f6c9?f=pjson",
+      "attribution": "National Land Authority, Rwanda Spatial Data Infrastructure; LAIS Rubavu Parcels.",
+      "licenceNote": "Anonymous read access is verified. Portal licenseInfo is null; reuse/redistribution permission remains unverified.",
+      "scope": "Rubavu district cadastral parcel layer with distributed Rubavu/Gisenyi observations. Initial exact sample reads do not establish citywide completeness or currentness.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "evidenceFile": "evidence/source-purpose.json",
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "RW",
+          "basis": "First-party RSDI portal names LAIS Rubavu Parcels and publishes a district extent spanning the unchanged WUP locator; district extent and bounded samples do not prove full urban coverage.",
+          "evidence": [
+            "evidence/source-purpose.json",
+            "evidence/portal-item.json",
+            "evidence/layer-metadata.json",
+            "evidence/coverage-review.json"
+          ]
+        }
+      },
+      "identityNote": "UPI is retained as the native key for repeatable exact reads. Source-wide uniqueness is unproven: the observed repeated objectid/UPI is rejected by the strict adapter, without suppression, geometry union, clipping or repair."
+    },
+    {
+      "id": "ao-ggpen-cubango-agt-layer-0",
+      "adapter": "arcgis",
+      "name": "ANGOLA_GGPEN Cubango AGT property-registration polygons",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cubango_AGT_gdb/FeatureServer/0",
+      "idField": "ID_GGPEN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-CUBANGO-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{36}$",
+      "outFields": [
+        "OBJECTID",
+        "ID_GGPEN"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "menongue"
+      ],
+      "scope": "Cubango AGT property-registration parcel polygons. Accepted discovery and three fresh native-ID samples span central, northwest and southeast Menongue; partial urban coverage only, with no municipal boundary or full-city completeness claim.",
+      "evidenceFile": "evidence/source-review.json",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/69546ec440934e6b8efe6a2d26307e27?f=pjson",
+      "licenceNote": "Public query access is verified; publisher metadata has no explicit parcel-data reuse licence. Redistribution and attribution terms require second-pass review.",
+      "attribution": "ANGOLA_GGPEN — Cubango_AGT_gdb / Cubango_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN custodian relationship remains unverified.",
+      "defaultForCity": true
+    },
+    {
+      "id": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "name": "Tanzania MLHHSD e-Ardhi Dodoma cadastral spatial units",
+      "adapter": "wfs",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+      "featureType": "taspro:spatial_units36",
+      "version": "1.0.0",
+      "idField": "uid",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "uid"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "minRequestIntervalMs": 500,
+      "countryCode": "TZ",
+      "cityIds": [
+        "dodoma"
+      ],
+      "scope": "Substantial partial Dodoma urban coverage evidenced in three separated windows; bounded qualification does not establish municipal completeness.",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+      "catalogueUrl": "https://eardhi.lands.go.tz/",
+      "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units",
+      "licenceNote": "Anonymous official WFS reads observed. Explicit geometry redistribution/reuse licence not established.",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "metricSridByCity": {
+        "dodoma": 32736
+      },
+      "metricSrid": 32736
+    },
+    {
+      "id": "ao-agt-lunda-norte-agt-layer-0",
+      "adapter": "arcgis",
+      "name": "ANGOLA_GGPEN Lunda Norte AGT property-registration parcels",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Lunda_Norte_AGT_gdb/FeatureServer/0",
+      "idField": "ID_GGPEN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-LUNDA-NORTE-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{36}$",
+      "outFields": [
+        "OBJECTID",
+        "ID_GGPEN"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AO",
+      "metricSrid": 32734,
+      "cityIds": [
+        "dundo"
+      ],
+      "scope": "Lunda Norte AGT property-registration parcels, with positive central, south and east Dundo samples. Substantial sampled urban availability; complete city coverage and legal-title authority are unestablished.",
+      "evidenceFile": "evidence/source-review.json",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/38daf097350942519bb7775e5daff7cc?f=pjson",
+      "licenceNote": "Anonymous public query access verified. Item licenseInfo and accessInformation are null. Reuse, redistribution and attribution terms remain second-pass follow-ups.",
+      "attribution": "ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified.",
+      "defaultForCity": true
+    },
+    {
+      "id": "za-csg-csggis-property-viewer-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "name": "Chief Surveyor-General Property Viewer Erven",
+      "operator": "Chief Surveyor-General, South Africa",
+      "countryCode": "ZA",
+      "catalogueUrl": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted",
+      "idPrefix": "ZA-CSG-CSGGIS-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "metricSrid": 32735,
+      "cityIds": [
+        "centurion"
+      ],
+      "defaultForCity": true,
+      "evidenceFile": "evidence/source-purpose.json",
+      "scope": "Public surveyed and approved urban cadastral Erven. Bounded Centurion evidence only; citywide completeness, registration, legal title, survey accuracy and current-ground status are unestablished.",
+      "licenceNote": "Anonymous access is verified. Explicit geometry reuse and redistribution terms remain unestablished; attribution is Chief Surveyor-General.",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      }
+    },
+    {
+      "id": "bw-bofinet-botswana-lapcas-plots",
+      "adapter": "arcgis",
+      "name": "BoFiNet Botswana LAPCAS plots",
+      "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+      "idPrefix": "bofinet:Botswana_PLOTS:FID:",
+      "idField": "FID",
+      "objectIdField": "FID",
+      "idType": "integer",
+      "outFields": [
+        "FID"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 80,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "cityIds": [
+        "gaborone_bw"
+      ],
+      "countryCode": "BW",
+      "defaultForCity": true,
+      "metricSrid": 32735,
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "scope": "National published Botswana LAPCAS plot layer with reviewed substantial Gaborone coverage. This initial qualification retains three exact-ID samples and does not establish citywide or national completeness, currentness, legal title or survey accuracy.",
+      "evidenceFile": "evidence/source-purpose.json",
+      "catalogueUrl": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+      "attribution": "BoFiNet public ArcGIS BOTSWANA_PLOTS layer 0 (PLOTS); described by the publisher as Botswana LAPCAS plots.",
+      "licenceNote": "Anonymous public query access verified; item licenseInfo and accessInformation are empty. Explicit reuse/redistribution conditions and custodian lineage remain second-pass follow-ups."
+    },
+    {
+      "id": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+      "name": "AkwaGIS Parcel_Drafter",
+      "operator": "AkwaGIS / Akwa Ibom State Government",
+      "adapter": "arcgis",
+      "endpoint": "https://akwagis.xyz/server/rest/services/SurveyMap/mainDrafter/FeatureServer/3",
+      "publicTokenUrl": "https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-token",
+      "idField": "globalid",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "NG-AKWAGIS-",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}\\}$",
+      "outFields": [
+        "objectid",
+        "globalid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "countryCode": "NG",
+      "stateCode": "AK",
+      "cityIds": [
+        "abak"
+      ],
+      "metricSrid": 32632,
+      "sourceCrs": "EPSG:26332",
+      "scope": "Akwa Ibom state survey/registry parcel layer; bounded distributed partial Abak access, completeness unverified.",
+      "attribution": "AkwaGIS / Akwa Ibom State Government, Ministry of Lands and Office of the State Surveyor-General.",
+      "licence": "No explicit reuse or redistribution licence established; permission requires second-pass review.",
+      "catalogueUrl": "https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-drafter-config",
+      "evidenceFile": "evidence/source-purpose.json",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "za-csggis-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2",
+      "idPrefix": "ZA-CSGGIS-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 1,
+      "name": "Chief Surveyor General CSGSearch Erven",
+      "operator": "Office of the Chief Surveyor General, Department of Land Reform and Rural Development",
+      "countryCode": "ZA",
+      "cityIds": [
+        "diepsloot"
+      ],
+      "metricSrid": 32735,
+      "sourceCrs": "EPSG:4148",
+      "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+      "attribution": "Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development",
+      "evidenceFile": "evidence/source-metadata.json",
+      "scope": "National surveyed urban cadastral-reference layer; initial qualification concerns five exact parcel reads in distributed Diepsloot windows only. Discovery windows and any later 13-cell sample do not establish citywide completeness. No legal title, survey accuracy or currentness claim.",
+      "licenceNote": "Anonymous public service. Saved first-party portal metadata gives attribution and a disclaimer, but no explicit reusable licence was established. Redistribution permission remains a second-pass question.",
+      "defaultForCity": true
+    },
+    {
+      "id": "ci-divo-ecommunes-parcellaire",
+      "name": "Commune de Divo — Parcellaire",
+      "adapter": "divo-ecommunes-xml",
+      "endpoint": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query",
+      "layer": "Parcellaire",
+      "idPrefix": "ci-divo-ecommunes/Parcellaire/feature-id/",
+      "idField": "Feature/@ID",
+      "identityKind": "native-feature-id",
+      "outFields": [],
+      "sourceCrs": "EPSG:32630",
+      "responseSrid": 32630,
+      "boundsSrid": 32630,
+      "metricSrid": 32630,
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "nativeExtent": [
+        235273.332702637,
+        641461.552490234,
+        241422.261697762,
+        648094.669921875
+      ],
+      "nativeTileSizeM": 500,
+      "maxNativeQueries": 64,
+      "maxFeatures": 10000,
+      "maxResponseBytes": 16777216,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 45000,
+      "idLookupBoundsNative": {
+        "0F31FA63A2934DC99FF02CDC0F31A9DF": [
+          238125.82,
+          644632.78,
+          239125.82,
+          645632.78
+        ],
+        "E18CBD07CCEB4212A0DA05942DADD590": [
+          236400,
+          646400,
+          237400,
+          647400
+        ],
+        "0C2F922F36E845858FA24A68864E40E3": [
+          239300,
+          642000,
+          240300,
+          643000
+        ]
+      },
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84",
+        "explicitAbsence": false
+      },
+      "exactIdMethod": "fresh-native-spatial-query-and-feature-id-match",
+      "exactIdScope": "Known GUID locators from configuration or previous bounds queries. Unknown/unmatched GUIDs remain incomplete; no permanent identity or global absence guarantee.",
+      "countryCode": "CI",
+      "cityIds": [
+        "divo"
+      ],
+      "defaultForCity": true,
+      "operator": "Commune de Divo / E-Commune",
+      "attribution": "Commune de Divo / E-Commune; CNTIG platform.",
+      "licenceNote": "Anonymous municipal viewer access; no explicit reuse licence found. Publisher terms remain a follow-up.",
+      "scope": "Municipal parcel fabric around Divo. Distributed discovery windows and these exact reads are bounded observations; no citywide completeness or legal-title/currentness claim.",
+      "catalogueUrl": "https://divo.ecommunes.ci/Communication/Index",
+      "metadataUrl": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx",
+      "evidenceFile": "evidence/source-metadata.json"
+    },
+    {
+      "id": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "adapter": "arcgis",
+      "name": "GGPEN/AGT Cuanza Sul official property-registration parcels — Sumbe",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/CuanzaSul_AGT_Oficial_gdb/FeatureServer/0",
+      "idField": "GlobalID_2",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-SUMBE-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID_2"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "sumbe"
+      ],
+      "scope": "Cuanza Sul provincial property-registration polygons. Reviewed discovery supports substantial partial Sumbe coverage, not completeness. No municipal or temporal filter is inferred.",
+      "evidenceFile": "evidence/source-review.json",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/479b8f41f794492abc0d95aa16737400?f=pjson",
+      "licenceNote": "Public anonymous reads verified. Item licenseInfo and accessInformation are null; redistribution permission and final attribution terms remain second-pass follow-ups.",
+      "attribution": "Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow.",
+      "defaultForCity": true
     }
   ],
   "databaseSources": [

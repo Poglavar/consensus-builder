@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "4940",
+  "cityName": "Middelburg",
+  "sourceId": "za-csg-dffe-erven",
+  "candidateSha256": "92dd80c3c4d870203951abc691aa643f05666da319e584077df4dd6d7126556a",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 4
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 4,
+      "returnedCount": 4
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 4
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "6c0d1d6ec94ec42da4dea0f15a840830550f5b6f7671af2ffbe90207ca228c35",
+      "featureCount": 4,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6c0d1d6ec94ec42da4dea0f15a840830550f5b6f7671af2ffbe90207ca228c35",
+  "featureCount": 4,
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-M313T0JS004500006108000000",
+    "ZA-CSG-DFFE-ERVEN-M313T0JS004500003846000000",
+    "ZA-CSG-DFFE-ERVEN-M313T0JS000100002492000000",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS002300003384000000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:29.962Z",
+      "queryHash": "acfc451bb9a73b2c9499160d65d9cb495fbf5ac3f71439689477706ed3a985a0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2226
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:32.194Z",
+      "queryHash": "acfc451bb9a73b2c9499160d65d9cb495fbf5ac3f71439689477706ed3a985a0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1092
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:33.289Z",
+      "queryHash": "371acea0c6ec652ad620294c2f5dfd9c991b5b00b9f53d2a2e707a7816b27bdd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 374
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:33.668Z",
+      "queryHash": "acfc451bb9a73b2c9499160d65d9cb495fbf5ac3f71439689477706ed3a985a0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1704
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:35.373Z",
+      "queryHash": "acfc451bb9a73b2c9499160d65d9cb495fbf5ac3f71439689477706ed3a985a0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1344
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "dffeportal.environment.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:36.718Z",
+      "queryHash": "bb0de9be12910015f35752f030af05d384212dc2a6381e90ad9a163e9d110413",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 557
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

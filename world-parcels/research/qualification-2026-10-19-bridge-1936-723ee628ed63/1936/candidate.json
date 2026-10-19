@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "1936",
+    "name": "Sumbe",
+    "country": "Angola",
+    "countryCode": "AO",
+    "point": [
+      13.8457791803372,
+      -11.2178706676586
+    ],
+    "currency": {
+      "locale": "pt-AO",
+      "code": "AOA"
+    }
+  },
+  "descriptor": {
+    "id": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+    "adapter": "arcgis",
+    "name": "GGPEN/AGT Cuanza Sul official property-registration parcels — Sumbe",
+    "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/CuanzaSul_AGT_Oficial_gdb/FeatureServer/0",
+    "idField": "GlobalID_2",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "AO-SUMBE-AGT-",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "outFields": [
+      "OBJECTID",
+      "GlobalID_2"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "AO",
+    "metricSrid": 32733,
+    "cityIds": [
+      "1936"
+    ],
+    "scope": "Cuanza Sul provincial property-registration polygons. Reviewed discovery supports substantial partial Sumbe coverage, not completeness. No municipal or temporal filter is inferred.",
+    "evidenceFile": "evidence/source-review.json",
+    "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/479b8f41f794492abc0d95aa16737400?f=pjson",
+    "licenceNote": "Public anonymous reads verified. Item licenseInfo and accessInformation are null; redistribution permission and final attribution terms remain second-pass follow-ups.",
+    "attribution": "Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow."
+  },
+  "sampleIds": [
+    "AO-SUMBE-AGT-2ceed370-8f73-4f77-9c3b-9b6682db0650",
+    "AO-SUMBE-AGT-7770b89a-91b5-40b2-a90f-c8a97d49d8ab",
+    "AO-SUMBE-AGT-6a4bc6bd-bcec-4fae-afe6-d9796363ff19"
+  ],
+  "metricEpsg": 32733,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Official MinFin/AGT Inscreva Já property-registration application routes its map broker to GGPEN (evidence/official-portal-excerpts.json); current GGPEN province 08 configuration selects the exact reviewed Cuanza Sul layer (evidence/official-layers.json).",
+      "Public first-party ArcGIS item owner ANGOLA_GGPEN and exact layer metadata establish the official urban-property polygon registry workflow, with provider GlobalID_2 identity and real unchanged polygons (evidence/source-item.json, evidence/source-layer.json, evidence/sample-output.geojson).",
+      "Property-registration parcel records, not sale listings, development proposals or zoning overlays. Legal-title equivalence and currentness are not established; see evidence/source-review.json."
+    ]
+  },
+  "coverage": {
+    "scope": "substantial-city",
+    "completeness": "unestablished",
+    "basis": "Accepted discovery has four distributed positive urban windows; initial qualification rereads three known IDs. Neither this initial pass nor 13 bounded cells establishes citywide completeness."
+  },
+  "followUpEvidence": "evidence/follow-ups.json",
+  "alignmentEvidence": {
+    "file": "evidence/service-alignment-input.json",
+    "sha256": "1897c30c784a675bff179fcfe3b180b409defc1f8da33c88e94a9183df86c4b4"
+  }
+}

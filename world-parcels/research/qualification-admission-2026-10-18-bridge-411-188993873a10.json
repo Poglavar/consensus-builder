@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-18",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "411",
+      "appCityId": "windhoek",
+      "cityName": "Windhoek",
+      "qualificationCityName": "Windhoek",
+      "cityId": "wup2025:411",
+      "countryCode": "NA",
+      "country": "Namibia",
+      "sourceId": "na-windhoek-cadastral1-public-arcgis",
+      "appCenterLatLon": [
+        -22.5253108270478,
+        17.0442106526956
+      ],
+      "wupPointLatLon": [
+        -22.5253108270478,
+        17.0442106526956
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "e2b5ed432a5ff6bfbcea41c22a4a9cce0efca1e3ee91acdcc6a929d67603e1fe",
+        "evidenceOriginalSha256": "e2b5ed432a5ff6bfbcea41c22a4a9cce0efca1e3ee91acdcc6a929d67603e1fe",
+        "evidenceExportSha256": "e2b5ed432a5ff6bfbcea41c22a4a9cce0efca1e3ee91acdcc6a929d67603e1fe"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "00a6ab90f1ef731488fa1419e46e9a6c28c59577ffee929f80665a18178be25b",
+        "evidenceExportSha256": "90249eeebe46908c4b605cb84773d6f36524f9620861c9f00ad3decbbc678b5b",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": false
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "independent alignment qualification check is missing or false"
+            }
+          ],
+          "candidateSha256": "e2b5ed432a5ff6bfbcea41c22a4a9cce0efca1e3ee91acdcc6a929d67603e1fe",
+          "cacheSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+          "qualificationSha256": "00a6ab90f1ef731488fa1419e46e9a6c28c59577ffee929f80665a18178be25b"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "NA-WINDHOEK-CADASTRAL1-00000003800000000330000000",
+          "NA-WINDHOEK-CADASTRAL1-00000003800000000302000000",
+          "NA-WINDHOEK-CADASTRAL1-00000003800000002789000000"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "247b4c5133a819b786e1babc61c6e4d208f0c3e8d7e345ffc5b23a5ee836f80b",
+        "evidenceExportSha256": "0c4558e8987ee1b35ca70fe4a349a6de4497cad255cfb758a2ea603e809beaf2",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32733",
+        "inputSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+        "evidenceOriginalSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+        "evidenceExportSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/full-safe.geojson",
+        "initialReview": "world-parcels/research/qualification-2026-10-18-bridge-411-188993873a10/411/initial-review.json"
+      },
+      "alignment": {
+        "status": "follow-up-required",
+        "followUp": "Deferred to second-pass review."
+      },
+      "independentMetricAudit": {
+        "sha256": "0c4558e8987ee1b35ca70fe4a349a6de4497cad255cfb758a2ea603e809beaf2",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+        "metricCrs": "EPSG:32733",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "na-windhoek-cadastral1-public-arcgis",
+        "adapter": "arcgis",
+        "endpoint": "https://services9.arcgis.com/gWyguONsWr81ViQt/arcgis/rest/services/Cadastral1/FeatureServer/0",
+        "idField": "PRCL_KEY",
+        "idFields": null,
+        "idPrefix": "NA-WINDHOEK-CADASTRAL1-",
+        "metricSrid": 32733,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "geojson",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [
+          "Provider item identifies Windhoek municipal cadastral information; official City Geomatics confirms municipal survey/mapping function but does not authenticate this copy."
+        ],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": null,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-18",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

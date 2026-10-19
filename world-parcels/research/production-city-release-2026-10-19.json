@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Combined production publication of completed parcel city drafts; detailed quality follow-ups remain attached to their admission evidence.",
+  "preparedAt": "2026-10-19T06:42:51.735204+00:00",
+  "productionBase": "332e00b3137cc820a71d2125f9808950bde1703e",
+  "configuredCityCount": 1742,
+  "previousProductionCityCount": 650,
+  "addedCityCount": 1092,
+  "cohorts": {
+    "initialPolicy": 101,
+    "qualifiedBulk": 969,
+    "africa": 22
+  },
+  "africaCities": [
+    {
+      "cityCode": "6353",
+      "appCityId": "adis_beba_addis_ababa",
+      "sourceId": "et-addis-eland-geoserver-parcel-publish",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-15-bridge-6353-164f91332df3.json"
+    },
+    {
+      "cityCode": "2020",
+      "appCityId": "gqeberha",
+      "sourceId": "za-csg-property-viewer-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-2020-c3b5b7abcfe7.json"
+    },
+    {
+      "cityCode": "3172",
+      "appCityId": "ijebu_ode",
+      "sourceId": "ng-ogun-sdi-geonode-parcels",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-3172-e986838a92f5.json"
+    },
+    {
+      "cityCode": "3345",
+      "appCityId": "ondjiva",
+      "sourceId": "ao-agt-cunene-agt-layer-0",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-3345-f7a009a0f500.json"
+    },
+    {
+      "cityCode": "378",
+      "appCityId": "bobo_dioulasso",
+      "sourceId": "bf-dgi-ecadastre-public-geojson",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-378-cfe79f10f326.json"
+    },
+    {
+      "cityCode": "411",
+      "appCityId": "windhoek",
+      "sourceId": "na-windhoek-cadastral1-public-arcgis",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-411-188993873a10.json"
+    },
+    {
+      "cityCode": "4507",
+      "appCityId": "masetjhaba_view",
+      "sourceId": "za-csg-dffe-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-4507-30557dd39256.json"
+    },
+    {
+      "cityCode": "4544",
+      "appCityId": "chief_albert_luthuli_park",
+      "sourceId": "za-csg-dffe-national-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-4544-a2ced8d197d2.json"
+    },
+    {
+      "cityCode": "5041",
+      "appCityId": "polokwane",
+      "sourceId": "za-polokwane-municipal-land-information-polokwane-properties",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-5041-7e4dd0339878.json"
+    },
+    {
+      "cityCode": "580",
+      "appCityId": "kigali",
+      "sourceId": "rw-nla-rsdi-kigali-parcels",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-18-bridge-580-b402ca443ee5.json"
+    },
+    {
+      "cityCode": "112",
+      "appCityId": "rubavu",
+      "sourceId": "rw-nla-lais-rubavu-parcels",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-112-b626a7cb0321.json"
+    },
+    {
+      "cityCode": "1936",
+      "appCityId": "sumbe",
+      "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-1936-723ee628ed63.json"
+    },
+    {
+      "cityCode": "2606",
+      "appCityId": "divo",
+      "sourceId": "ci-divo-ecommunes-parcellaire",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-2606-012749d982d2.json"
+    },
+    {
+      "cityCode": "2954",
+      "appCityId": "dodoma",
+      "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-2954-e12affbb88f6.json"
+    },
+    {
+      "cityCode": "3806",
+      "appCityId": "menongue",
+      "sourceId": "ao-ggpen-cubango-agt-layer-0",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-3806-21b1a21a6611.json"
+    },
+    {
+      "cityCode": "4073",
+      "appCityId": "dundo",
+      "sourceId": "ao-agt-lunda-norte-agt-layer-0",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-4073-e6a0ad3de7a1.json"
+    },
+    {
+      "cityCode": "4161",
+      "appCityId": "diepsloot",
+      "sourceId": "za-csggis-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-4161-35668a9da2d3.json"
+    },
+    {
+      "cityCode": "428",
+      "appCityId": "gaborone_bw",
+      "sourceId": "bw-bofinet-botswana-lapcas-plots",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-428-9b541158b1dc.json"
+    },
+    {
+      "cityCode": "4359",
+      "appCityId": "centurion",
+      "sourceId": "za-csg-csggis-property-viewer-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-4359-4c1a9ad4bfc5.json"
+    },
+    {
+      "cityCode": "4836",
+      "appCityId": "emalahleni",
+      "sourceId": "za-csg-dffe-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-4836-353c74b9f446.json"
+    },
+    {
+      "cityCode": "4940",
+      "appCityId": "middelburg",
+      "sourceId": "za-csg-dffe-erven",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-4940-b955dd76465e.json"
+    },
+    {
+      "cityCode": "8153",
+      "appCityId": "abak",
+      "sourceId": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+      "admissionManifest": "world-parcels/research/qualification-admission-2026-10-19-bridge-8153-224fa623ad96.json"
+    }
+  ],
+  "researchContinues": {
+    "africaWorkers": 2,
+    "outsideAfricaNewSourceWorkers": 2,
+    "outsideAfricaAdmissionsAtSnapshot": 0
+  },
+  "verification": {
+    "type": "targeted headless unit tests",
+    "uniquePassingTests": 1861,
+    "vitestFiles": 10,
+    "nodeTestFiles": 22,
+    "initialRun": {
+      "files": 5,
+      "passed": 1581,
+      "failed": 1,
+      "reason": "Historical Addis admission has an additional passing alignment gate; assertions now name the eight required historical gates.",
+      "rerun": {
+        "files": 1,
+        "passed": 1521,
+        "failed": 0
+      }
+    },
+    "sharedAdapters": {
+      "files": 5,
+      "initialPassed": 159,
+      "initialFailed": 2,
+      "reason": "Binding checks require backend cwd for their projection dependency.",
+      "bindingReruns": [
+        {
+          "cwd": "repository root",
+          "passed": 9,
+          "failed": 2
+        },
+        {
+          "cwd": "backend",
+          "passed": 11,
+          "failed": 0
+        }
+      ]
+    },
+    "africaAdapters": {
+      "files": 22,
+      "passed": 118,
+      "failed": 0
+    },
+    "finalCoverage": {
+      "files": 2,
+      "passed": 46,
+      "failed": 0
+    },
+    "stoppedRuns": 0,
+    "fullSuitesRun": 0
+  },
+  "coverageArtifactSha256": {
+    "frontend/data/world-coverage.json": "aa3772c94127893a115e934eec18ad4b47308aacbdd0e5f8b4f6678faf9ebafd",
+    "frontend/data/boot-coverage.js": "acad5330ba76d7a31ecc60d48d4548ba13ccb8ae30d6d7bf68c9923e0e3e48aa",
+    "frontend/data/parcel-coverage-report.json": "6af847c6abde188ed85fe94350fba6e0bb15dbdf9a46acce3dea2e51022caa09"
+  }
+}

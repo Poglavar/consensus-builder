@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "411",
+  "cityName": "Windhoek",
+  "sourceId": "na-windhoek-cadastral1-public-arcgis",
+  "candidateSha256": "e2b5ed432a5ff6bfbcea41c22a4a9cce0efca1e3ee91acdcc6a929d67603e1fe",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 4
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32733",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "0c917e1acf51e5a4310b8b371e1ec55bf95989370f0151a54c857010653c88a4",
+  "featureCount": 3,
+  "sampleIds": [
+    "NA-WINDHOEK-CADASTRAL1-00000003800000000330000000",
+    "NA-WINDHOEK-CADASTRAL1-00000003800000000302000000",
+    "NA-WINDHOEK-CADASTRAL1-00000003800000002789000000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:14:39.742Z",
+      "queryHash": "c55c41e9c8bc1a8d898bdf3a1979bda06d57f208fd73a02b8c09962c6afd1bda",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 470
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:14:40.223Z",
+      "queryHash": "c55c41e9c8bc1a8d898bdf3a1979bda06d57f208fd73a02b8c09962c6afd1bda",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 231
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:14:40.457Z",
+      "queryHash": "66081785a6cb51d35b8520e23e4292249356798f15a779f7224bb06f86ce20c5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 488
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:14:40.950Z",
+      "queryHash": "c55c41e9c8bc1a8d898bdf3a1979bda06d57f208fd73a02b8c09962c6afd1bda",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 64
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:14:41.015Z",
+      "queryHash": "c55c41e9c8bc1a8d898bdf3a1979bda06d57f208fd73a02b8c09962c6afd1bda",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 62
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:14:41.079Z",
+      "queryHash": "66081785a6cb51d35b8520e23e4292249356798f15a779f7224bb06f86ce20c5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 65
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}
