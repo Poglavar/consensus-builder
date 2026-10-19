@@ -20,18 +20,18 @@ function element(tag) {
     };
 }
 
-function renderDetail({ selected = false } = {}) {
+function renderDetail({ selected = false, fallbackPaths = false } = {}) {
     const ids = ['detail','novogradnje-boot','q','kind','minArea','maxArea','rooms','orientation','clear-search','filters','reset','include-older','catalogue-error','results','catalogue-count','result-summary','empty-state','project-map'];
     const nodes = Object.fromEntries(ids.map(id => [id, element(id)]));
     nodes['novogradnje-boot'].textContent = JSON.stringify({
         catalogue: { projects: [] },
         project: {
             id: 'project-a', name: 'Projekt A', address: 'Ulica 1', kind: 'new_build', constructionYear: 2028,
-            url: '/novogradnje/zgrada/projekt-a/',
+            url: fallbackPaths ? undefined : '/novogradnje/zgrade/projekt-a/',
             sources: [{ url: 'https://example.test/project', label: 'Oglas projekta' }],
             model: { envelope: { footprint: [{}], storeys: [{ level: 1, elevationM: 3 }] } },
             apartments: [{ id: 'apt-1', label: 'Stan 1', hasPlan: true, postingUrl: 'https://example.test/apartment', architecture: { dimensionsM: [4, 5] }, source: { assetUrl: 'https://example.test/plan.png', url: 'https://example.test/plan' } }],
-            floorPlans: [{ id: 'floor-2', label: 'Tlocrt drugog kata', scope: 'floor', levels: [2], url: '/novogradnje/zgrada/projekt-a/tlocrt/floor-2/', architecture: { dimensionsM: [20, 12] }, source: { assetUrl: 'https://example.test/floor.pdf', mediaType: 'application/pdf', page: 4, url: 'https://example.test/floor' } }]
+            floorPlans: [{ id: 'floor-2', label: 'Tlocrt drugog kata', scope: 'floor', levels: [2], url: fallbackPaths ? undefined : '/novogradnje/zgrade/projekt-a/tlocrti/floor-2/', architecture: { dimensionsM: [20, 12] }, source: { assetUrl: 'https://example.test/floor.pdf', mediaType: 'application/pdf', page: 4, url: 'https://example.test/floor' } }]
         },
         apartmentId: selected === true ? 'apt-1' : null,
         floorPlanId: selected === 'floor' ? 'floor-2' : null
@@ -80,12 +80,22 @@ describe('Novogradnje detail layout', () => {
     it('lists floor plans separately and opens a floor detail with its source PDF page', () => {
         const building = renderDetail().detail;
         const floorRow = descendants(building).find(node => node.className.split(' ').includes('floor-plan-row'));
-        expect(floorRow.children[0].href).toBe('/novogradnje/zgrada/projekt-a/tlocrt/floor-2/');
+        expect(floorRow.children[0].href).toBe('/novogradnje/zgrade/projekt-a/tlocrti/floor-2/');
         expect(floorRow.children[0].children[1].textContent).toBe('Katovi 2');
 
         const floorDetail = renderDetail({ selected: 'floor' }).detail;
         expect(descendants(floorDetail).filter(node => node.className.split(' ').includes('viewer-panel'))).toHaveLength(4);
         expect(descendants(floorDetail).find(node => node.tag === 'iframe').src).toBe('https://example.test/floor.pdf#page=4');
+    });
+
+    it('builds plural detail links when the payload omits URLs', () => {
+        const building = renderDetail({ fallbackPaths: true }).detail;
+        const apartmentRow = descendants(building).find(node => node.className === 'apartment-row');
+        const floorRow = descendants(building).find(node => node.className.split(' ').includes('floor-plan-row'));
+        expect(apartmentRow.children[0].href).toBe('/novogradnje/zgrade/project-a/stanovi/apt-1/');
+        expect(floorRow.children[0].href).toBe('/novogradnje/zgrade/project-a/tlocrti/floor-2/');
+        const detail = renderDetail({ selected: true, fallbackPaths: true }).detail;
+        expect(descendants(detail).some(node => node.href === '/novogradnje/zgrade/project-a/')).toBe(true);
     });
 
     it('defines desktop two-column panels and a single-column mobile layout', () => {

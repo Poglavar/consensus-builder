@@ -31,8 +31,8 @@ describe('novogradnje search metadata', () => {
     });
 
     it('extends the breadcrumb through the project to the apartment on deep pages', () => {
-        const project = { name: 'Primjer 12', url: '/novogradnje/zgrada/primjer-12-abc/', address: 'Primjer 12', apartments: [] };
-        const apartment = { label: 'Stan A1', url: '/novogradnje/zgrada/primjer-12-abc/stan/a1/' };
+        const project = { name: 'Primjer 12', url: '/novogradnje/zgrade/primjer-12-abc/', address: 'Primjer 12', apartments: [] };
+        const apartment = { label: 'Stan A1', url: '/novogradnje/zgrade/primjer-12-abc/stanovi/a1/' };
         const ld = structuredData({ projects: [] }, project, apartment, { name: 'Stan A1 · Primjer 12', description: 'Opis.' });
         const page = ld['@graph'].find(node => node['@type'] === 'WebPage');
         expect(page.url).toBe(`https://zagreb.lol${apartment.url}`);

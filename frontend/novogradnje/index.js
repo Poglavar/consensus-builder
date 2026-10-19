@@ -13,9 +13,9 @@
     const byId=id=>document.getElementById(id), node=(tag,cls,content)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n;};
     const safePath=(value,fallback)=>typeof value==='string'&&value.startsWith('/novogradnje/')?value:fallback;
     const safeHref=value=>{if(typeof value!=='string'||!value.trim())return null;if(value.startsWith('/'))return value;try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:null;}catch{return null;}};
-    const projectPath=p=>safePath(p.url,`/novogradnje/zgrada/${encodeURIComponent(p.slug||p.id)}/`);
-    const apartmentPath=(p,a)=>safePath(a.url,`${projectPath(p).replace(/\/$/,'')}/stan/${encodeURIComponent(a.id)}/`);
-    const floorPlanPath=(p,f)=>safePath(f.url,`${projectPath(p).replace(/\/$/,'')}/tlocrt/${encodeURIComponent(f.id)}/`);
+    const projectPath=p=>safePath(p.url,`/novogradnje/zgrade/${encodeURIComponent(p.slug||p.id)}/`);
+    const apartmentPath=(p,a)=>safePath(a.url,`${projectPath(p).replace(/\/$/,'')}/stanovi/${encodeURIComponent(a.id)}/`);
+    const floorPlanPath=(p,f)=>safePath(f.url,`${projectPath(p).replace(/\/$/,'')}/tlocrti/${encodeURIComponent(f.id)}/`);
     let boot={},catalogue={projects:[],counts:{}},detail=null,activeApartmentId=null,map=null,markerLayer=null,viewers=[],catalogueError='',detailError='';
     try { const raw=byId('novogradnje-boot').textContent.trim(); if(raw&&raw!=='__NOVOGRADNJE_BOOT__')boot=JSON.parse(raw); } catch { /* A missing server payload falls through to the public API. */ }
     if(boot.project){document.body.classList.add('detail-page');}
