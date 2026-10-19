@@ -30,7 +30,6 @@
     }
     const buildingDisplayPolicy = (typeof window !== 'undefined') ? window.__threeBuildingDisplay : null;
     if (!buildingDisplayPolicy
-        || typeof buildingDisplayPolicy.displayStatesForKind !== 'function'
         || typeof buildingDisplayPolicy.resolveBuiltDisplayPolicy !== 'function'
         || typeof buildingDisplayPolicy.resolveBuildingRenderParts !== 'function') {
         console.error('[3D] Building display policy is unavailable. Skipping 3D mode initialization.');
@@ -430,19 +429,9 @@
     //   both     — the example inside a translucent envelope (the classic planning drawing)
     // A proposal that stores no rule (an imported shape, a single building) has no variation to
     // derive and draws identically in all three.
-    const PLANNED_REPRESENTATIONS = ['massing', 'buildout', 'both'];
-    const PLANNED_REPRESENTATION_KEY = 'cb_3d_planned_representation';
     let plannedRepresentation = 'both';
-    // Re-rolls every example build-out WITHOUT touching a single stored proposal: the salt only
-    // reaches the derivation, so Randomize is a view control and not a data mutation. The counter
-    // starts somewhere random so the first roll of a session isn't the same city every time, and
-    // only ever increments — two clicks can never land on the same salt.
     let buildOutDisplaySalt = '';
-    let buildOutDisplayRoll = Math.floor(Math.random() * 1e9);
     let buildingModeControlsEl = null;
-    let representationSelect = null;
-    let rerollBtn = null;
-    let rerollBusy = false;
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
     // Parcel selection emphasizes the clicked ground while keeping the city and camera in place.
@@ -507,24 +496,6 @@
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
     }
 
-    function loadPlannedRepresentation() {
-        try {
-            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
-                const stored = PersistentStorage.getItem(PLANNED_REPRESENTATION_KEY);
-                if (PLANNED_REPRESENTATIONS.includes(stored)) return stored;
-            }
-        } catch (_) { }
-        return 'both';
-    }
-
-    function setPlannedRepresentation(mode) {
-        if (!PLANNED_REPRESENTATIONS.includes(mode) || mode === plannedRepresentation) return;
-        plannedRepresentation = mode;
-        try { PersistentStorage.setItem(PLANNED_REPRESENTATION_KEY, mode); } catch (_) { }
-        updateRepresentationControls();
-        rebuild3DBuildingsOnly({ family: 'planned' });
-    }
-
     function setFacadeAppearance(enabled, style = facadeStyle, savePreference = true) {
         facadesEnabled = !!enabled;
         facadeStyle = buildingFacades.STYLES.some(preset => preset.id === style) ? style : 'mixed';
@@ -547,46 +518,6 @@
         invalidateThreeView();
     }
 
-    function setRerollBusy(busy) {
-        rerollBusy = !!busy;
-        if (!rerollBtn) return;
-        rerollBtn.disabled = rerollBusy;
-        rerollBtn.classList.toggle('is-busy', rerollBusy);
-        rerollBtn.setAttribute('aria-busy', rerollBusy ? 'true' : 'false');
-    }
-
-    // Shuffle every example build-out in view. Nothing is written: the salt feeds the derivation,
-    // so a reload comes back to each proposal's own stored variation.
-    //
-    // Re-deriving and re-extruding every proposal blocks the main thread, and it all happens in one
-    // synchronous task — so the spinning state has to be given an actual painted frame first, or the
-    // button would go straight from idle to done with nothing visible in between. Two frames: the
-    // first commits the class, the second guarantees it reached the screen.
-    function rerollBuildOutDisplay() {
-        if (rerollBusy) return;
-        setRerollBusy(true);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            try {
-                buildOutDisplaySalt = String(++buildOutDisplayRoll);
-                // From Massing there is nothing varied on screen to shuffle, so a roll means
-                // "show me a variation" — switch to Both, which rebuilds on its own.
-                if (plannedRepresentation === 'massing') setPlannedRepresentation('both');
-                else rebuild3DBuildingsOnly({ family: 'planned' });
-            } finally {
-                setRerollBusy(false);
-            }
-        }));
-    }
-
-    function updateRepresentationControls() {
-        if (!representationSelect) return;
-        try {
-            representationSelect.value = plannedRepresentation;
-            const option = representationSelect.options[representationSelect.selectedIndex];
-            representationSelect.title = option?.dataset?.tooltip || option?.textContent || '';
-        } catch (_) { }
-    }
-
     // Source massing is a representation of an obligatory proposal, never an applied building.
     // Reuse the scene's polygon extrusion and resource ownership without slicing the live cadastre.
     function rebuildPlanningSources3D() {
@@ -600,9 +531,9 @@
         for (const item of window.PlanningViews.getItems()) {
             for (const feature of window.PlanningScene.volumeFeatures(item)) {
                 const selected = item.id === selectedId;
-                const material = new THREE.MeshBasicMaterial({ color, transparent: true,
-                    opacity: selected ? 0.42 : view.permitted === 'solid' ? 0.28 : 0.12,
-                    depthWrite: false, side: THREE.DoubleSide, polygonOffset: true,
+                const material = new THREE.MeshPhongMaterial({ color, emissive: selected ? color : 0, emissiveIntensity: selected ? 0.15 : 0,
+                    transparent: view.permitted === 'ghost', opacity: view.permitted === 'solid' ? 1 : 0.25,
+                    depthWrite: view.permitted === 'solid', side: THREE.FrontSide, polygonOffset: true,
                     polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
                 const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
                 if (!meshes.length) { material.dispose(); continue; }
@@ -626,10 +557,16 @@
     function syncPlanningView3D() {
         const policy = window.PlanningViews?.getPolicy();
         if (!policy) return;
+        const state = window.PlanningViews.getState();
+        const geometryChanged = plannedRepresentation !== state.proposedForm || buildOutDisplaySalt !== state.variation;
         builtDisplay = policy.existing;
         plannedDisplay = policy.proposed;
+        plannedRepresentation = state.proposedForm;
+        buildOutDisplaySalt = state.variation;
         if (isActive) {
-            if (!applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();
+            const retained = applyRetainedBuildingDisplay();
+            if (!retained) rebuild3DBuildingsOnly();
+            else if (geometryChanged) rebuild3DBuildingsOnly({ family: 'planned' });
             applyModeVisibility();
             rebuildPlanningSources3D();
         } else buildingViewDirty = true;
@@ -1365,53 +1302,7 @@
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
 
-        // Existing / Permitted / Proposed / Compare owns visibility in both map and model.
-
-        // Massing vs example build-out, plus the dice that re-rolls every example at once.
-        const representationRow = document.createElement('div');
-        representationRow.className = 'three-mode-emphasis-row three-mode-representation-row';
-        const representationLabel = document.createElement('label');
-        representationLabel.className = 'three-mode-emphasis-label';
-        representationLabel.textContent = threeI18n('threeMode.controls.plannedAs', 'Planned as');
-        representationLabel.title = threeI18n('threeMode.controls.plannedAsTooltip',
-            'Draw the permitted volume, one example of what could be built under it, or both');
-        representationLabel.htmlFor = 'three-mode-planned-representation';
-        representationRow.appendChild(representationLabel);
-
-        representationSelect = document.createElement('select');
-        representationSelect.id = 'three-mode-planned-representation';
-        representationSelect.className = 'three-mode-display-select';
-        [
-            ['massing', threeI18n('threeMode.controls.representationMassing', 'Massing'),
-                threeI18n('threeMode.controls.representationMassingTooltip', 'The volume the rule permits')],
-            ['buildout', threeI18n('threeMode.controls.representationBuildOut', 'Build-out'),
-                threeI18n('threeMode.controls.representationBuildOutTooltip', 'One example of what could be built under the rule')],
-            ['both', threeI18n('threeMode.controls.representationBoth', 'Both'),
-                threeI18n('threeMode.controls.representationBothTooltip', 'The example inside the permitted volume')]
-        ].forEach(([value, label, tooltip]) => {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = label;
-            option.dataset.tooltip = tooltip;
-            representationSelect.appendChild(option);
-        });
-        representationSelect.addEventListener('change', () => setPlannedRepresentation(representationSelect.value));
-        representationRow.appendChild(representationSelect);
-
-        rerollBtn = document.createElement('button');
-        rerollBtn.type = 'button';
-        rerollBtn.className = 'btn btn-icon three-mode-reroll-btn';
-        // The die is its own icon so only the glyph spins, not the button's border.
-        rerollBtn.innerHTML = '<i class="fa-solid fa-dice three-mode-reroll-die" aria-hidden="true"></i>';
-        rerollBtn.title = threeI18n('threeMode.controls.reroll',
-            'Randomize every example build-out (changes nothing in the proposals)');
-        rerollBtn.setAttribute('aria-label', rerollBtn.title);
-        rerollBtn.addEventListener('click', () => rerollBuildOutDisplay());
-        representationRow.appendChild(rerollBtn);
-        setRerollBusy(false);
-
-        buildingModeControlsEl.appendChild(representationRow);
-        updateRepresentationControls();
+        // Building visibility and representation choices live in the shared planning controls.
 
         const facadeRow = document.createElement('div');
         facadeRow.className = 'three-mode-emphasis-row';
@@ -2760,7 +2651,7 @@
             }
             if (!root.children.length) return;
             existingTransitAlignmentGroup = root;
-            const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
+            const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
             existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail
                 && isolatedParcelId === null
                 && isolatedProposalId === null;
@@ -6989,7 +6880,7 @@
     function applyRetainedBuildingDisplay() {
         if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayEnabled
             || BUILDING_GHOST_STYLE !== 'smooth' || !existingBuildingsGroup || !proposedBuildingsGroup) return false;
-        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
+        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
         const existingVisible = builtPolicy.visible && !realisticLayerActive;
         const proposedVisible = realisticLayerActive || plannedDisplay !== 'off';
         const previous = buildingDisplaySnapshot;
@@ -7033,7 +6924,7 @@
         const generation = ++buildingsWorkGeneration;
         const signal = sceneAbort?.signal;
         const isCurrent = () => isActive && !signal?.aborted && generation === buildingsWorkGeneration;
-        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
+        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
         const showExisting = builtPolicy.visible && !realisticLayerActive;
         const showProposed = realisticLayerActive || plannedDisplay !== 'off';
         existingBuildingsGroup.visible = showExisting;
@@ -7187,7 +7078,8 @@
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
         waterEnabled = loadWaterEnabledPref();
-        plannedRepresentation = loadPlannedRepresentation();
+        plannedRepresentation = window.PlanningViews.getState().proposedForm;
+        buildOutDisplaySalt = window.PlanningViews.getState().variation;
         try {
             setFacadeAppearance(PersistentStorage.getItem(FACADE_PREF_KEY) === '1',
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);
@@ -7759,7 +7651,6 @@
         isolationResetEl = null;
         isolationBannerEl = null;
         parcelInfoPanelEl = null;
-        representationSelect = null;
         facadeCheckbox = null;
         facadeStyleSelect = null;
         facadeNote = null;
@@ -7767,8 +7658,6 @@
         xrayNote = null;
         floorCutawayControl = null;
         floorCutawaySelect = null;
-        rerollBtn = null;
-        rerollBusy = false;
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }

@@ -6381,11 +6381,9 @@
             "stateOff": "Off",
             "built": "Built",
             "both": "Both",
-            "planned": "Planned",
             "radius": "Radius",
             "radiusTooltip": "Radius — how wide a band of surrounding real buildings is loaded and shown as context",
             "builtTooltip": "Built — the existing real buildings standing on the ground today",
-            "plannedTooltip": "Planned — proposed structures and grounds (parks, squares, water and their decorations)",
             "stateSolidTooltip": "Solid — drawn fully opaque",
             "stateGhostTooltip": "Transparent — drawn semi-transparent so you can see through it",
             "stateSurvivingTooltip": "Surviving — existing buildings shown solid, but the ones the plan demolishes are hidden (the after-the-plan state)",
@@ -6398,7 +6396,6 @@
             "life": "People and traffic",
             "lifeTooltip": "Show or hide schematic people and vehicles moving through the 3D view",
             "water": "Water",
-            "plannedAs": "Planned as",
             "facades": "Facades",
             "facadeStyle": "Facade style",
             "facadesTooltip": "Illustrative windows and materials on proposed buildings. Each building keeps its design.",
@@ -6433,7 +6430,6 @@
                 "stone": "Pale stone",
                 "plaster": "Plaster"
             },
-            "plannedAsTooltip": "Planned as — draw the volume the rule permits, one example of what could be built under it, or both",
             "representationMassing": "Massing",
             "representationMassingTooltip": "Massing — the volume the rule permits, which is what the proposal asserts",
             "representationBuildOut": "Build-out",
@@ -7532,21 +7528,16 @@
     },
   "planningViews": {
     "title": "Buildings and massing",
-    "viewLabel": "Planning view",
     "detailsLabel": "Planning source details",
-    "existing": "Existing",
     "permitted": "Permitted",
-    "existingNote": "The city as recorded by building sources.",
-    "proposedNote": "Your applied building proposals, with the existing city for context.",
-    "noProposals": "No building proposals applied yet. Browse Proposals to explore alternatives.",
     "loading": "Loading permitted massing…",
     "zoom": "Zoom in to explore permitted massing.",
     "unavailable": "No permitted-massing source is connected for this city yet.",
     "empty": "No represented massing in this area. This does not mean building is prohibited.",
     "error": "The planning source could not be loaded.",
     "loaded": {
-      "one": "{{count}} calculated option · source coverage is partial",
-      "other": "{{count}} calculated options · source coverage is partial"
+      "one": "{{count}} imported massing in view · partial coverage",
+      "other": "{{count}} imported massings in view · partial coverage"
     },
     "truncated": {
       "one": "Showing {{count}} option · zoom in to see a smaller area",
@@ -7575,8 +7566,19 @@
       "floorArea": "Maximum floor area",
       "naturalGround": "Minimum natural ground"
     },
-    "inspect": "Inspect a massing option…",
     "photoNote": "Explore permitted massing in the map or 3D model view.",
-    "openModel": "Open 3D model view"
+    "openModel": "Open 3D model view",
+    "displayLabel": "{{role}} appearance",
+    "existingScope": "Built building selection",
+    "proposedForm": "Proposed representation",
+    "permittedMap": "Permitted massing on the map",
+    "footprint": "Footprint",
+    "steps": "Height steps",
+    "permittedOff": "Permitted massing is hidden.",
+    "coverageTitle": "Why only some parcels?",
+    "coverageNote": "Only imported calculated options are shown. Missing results and unsupported forms leave gaps; a blank parcel has unknown capacity. Height steps shows the parts of one massing at different heights.",
+    "inspectHint": "Click a massing to inspect its source and limits.",
+    "inspectMassing": "Inspect permitted massing on {{parcel}}",
+    "heightParts": "Height parts: {{heights}}"
   }
 }

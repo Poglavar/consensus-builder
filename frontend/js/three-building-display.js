@@ -1,4 +1,4 @@
-// Defines the Built/Planned display-state model independently from Three.js rendering and controls.
+// Defines the Built/Proposed display-state model independently from Three.js rendering and controls.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -6,59 +6,12 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    const BUILT_STATES = Object.freeze(['solid', 'ghost', 'surviving', 'removed', 'off']);
-    const PLANNED_STATES = Object.freeze(['solid', 'ghost', 'off']);
-
-    function displayStatesForKind(kind) {
-        if (kind === 'built') return [...BUILT_STATES];
-        if (kind === 'planned') return [...PLANNED_STATES];
-        return [];
-    }
-
-    function resolveBuiltDisplayPolicy(state) {
-        switch (state) {
-            case 'ghost':
-                return {
-                    visible: true,
-                    material: 'ghost',
-                    showSurviving: true,
-                    showDemolished: true,
-                    showExistingRail: true
-                };
-            case 'surviving':
-                return {
-                    visible: true,
-                    material: 'solid',
-                    showSurviving: true,
-                    showDemolished: false,
-                    showExistingRail: true
-                };
-            case 'removed':
-                return {
-                    visible: true,
-                    material: 'solid',
-                    showSurviving: false,
-                    showDemolished: true,
-                    showExistingRail: false
-                };
-            case 'off':
-                return {
-                    visible: false,
-                    material: 'solid',
-                    showSurviving: false,
-                    showDemolished: false,
-                    showExistingRail: false
-                };
-            case 'solid':
-            default:
-                return {
-                    visible: true,
-                    material: 'solid',
-                    showSurviving: true,
-                    showDemolished: true,
-                    showExistingRail: true
-                };
-        }
+    function resolveBuiltDisplayPolicy(state, selection = 'all') {
+        const visible = state !== 'off';
+        return { visible, material: state === 'ghost' ? 'ghost' : 'solid',
+            showSurviving: visible && selection !== 'removed',
+            showDemolished: visible && selection !== 'surviving',
+            showExistingRail: visible && selection !== 'removed' };
     }
 
     function resolveBuildingRenderParts(carve, visibility = {}) {
@@ -151,5 +104,5 @@
         return updated;
     }
 
-    return { displayStatesForKind, resolveBuiltDisplayPolicy, resolveBuildingRenderParts, updateRetainedBuildingMaterials };
+    return { resolveBuiltDisplayPolicy, resolveBuildingRenderParts, updateRetainedBuildingMaterials };
 });

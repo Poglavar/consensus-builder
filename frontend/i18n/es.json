@@ -6432,11 +6432,9 @@
             "stateOff": "Apagado",
             "built": "Construido",
             "both": "Ambos",
-            "planned": "Planificado",
             "radius": "Radio",
             "radiusTooltip": "Radio — qué tan ancha es la franja de edificios reales del entorno que se carga y se muestra como contexto",
             "builtTooltip": "Construido — los edificios reales existentes que hay hoy en el terreno",
-            "plannedTooltip": "Planificado — estructuras y terrenos propuestos (parques, plazas, agua y sus decoraciones)",
             "stateSolidTooltip": "Sólido — dibujado totalmente opaco",
             "stateGhostTooltip": "Transparente — dibujado semitransparente para poder ver a través",
             "stateSurvivingTooltip": "Restantes — los edificios existentes se muestran sólidos, pero los que el plan demuele se ocultan (el estado posterior al plan)",
@@ -6449,7 +6447,6 @@
             "life": "Personas y tráfico",
             "lifeTooltip": "Muestra u oculta personas y vehículos esquemáticos que se mueven por la vista 3D",
             "water": "Agua",
-            "plannedAs": "Planificado como",
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Ejemplos de ventanas y materiales en los edificios propuestos. Cada edificio conserva su diseño.",
@@ -6484,7 +6481,6 @@
                 "stone": "Piedra clara",
                 "plaster": "Revoco"
             },
-            "plannedAsTooltip": "Planificado como — dibuja el volumen que permite la norma, un ejemplo de lo que podría construirse, o ambos",
             "representationMassing": "Volumen",
             "representationMassingTooltip": "Volumen — el volumen que permite la norma, que es lo que la propuesta establece",
             "representationBuildOut": "Edificación",
@@ -7583,21 +7579,16 @@
     },
   "planningViews": {
     "title": "Edificios y volúmenes",
-    "viewLabel": "Vista de planificación",
     "detailsLabel": "Detalles de la fuente de planificación",
-    "existing": "Existente",
     "permitted": "Permitido",
-    "existingNote": "La ciudad según las fuentes de edificios disponibles.",
-    "proposedNote": "Tus propuestas de edificios aplicadas, con la ciudad existente como contexto.",
-    "noProposals": "Aún no hay propuestas de edificios aplicadas. Explora alternativas en Propuestas.",
     "loading": "Cargando volúmenes permitidos…",
     "zoom": "Acerca el mapa para explorar los volúmenes permitidos.",
     "unavailable": "Esta ciudad aún no tiene una fuente de volúmenes permitidos conectada.",
     "empty": "No hay volúmenes representados en esta zona. Esto no significa que esté prohibido construir.",
     "error": "No se pudo cargar la fuente de planificación.",
     "loaded": {
-      "one": "{{count}} opción calculada · cobertura parcial de la fuente",
-      "other": "{{count}} opciones calculadas · cobertura parcial de la fuente"
+      "one": "{{count}} volumen importado visible · cobertura parcial",
+      "other": "{{count}} volúmenes importados visibles · cobertura parcial"
     },
     "truncated": {
       "one": "Se muestra {{count}} opción · acerca el mapa para reducir el área",
@@ -7626,8 +7617,19 @@
       "floorArea": "Superficie construida máxima",
       "naturalGround": "Terreno natural mínimo"
     },
-    "inspect": "Inspeccionar una opción de volumen…",
     "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
-    "openModel": "Abrir el modelo 3D"
+    "openModel": "Abrir el modelo 3D",
+    "displayLabel": "Apariencia: {{role}}",
+    "existingScope": "Selección de edificios existentes",
+    "proposedForm": "Representación propuesta",
+    "permittedMap": "Volumen permitido en el mapa",
+    "footprint": "Huella",
+    "steps": "Niveles de altura",
+    "permittedOff": "Los volúmenes permitidos están ocultos.",
+    "coverageTitle": "¿Por qué solo algunas parcelas?",
+    "coverageNote": "Solo se muestran opciones calculadas e importadas. Los resultados ausentes y las formas no compatibles dejan huecos; la capacidad de una parcela vacía es desconocida. Los niveles de altura muestran partes de un mismo volumen a distintas alturas.",
+    "inspectHint": "Haz clic en un volumen para consultar su fuente y límites.",
+    "inspectMassing": "Inspeccionar el volumen permitido en {{parcel}}",
+    "heightParts": "Alturas de las partes: {{heights}}"
   }
 }

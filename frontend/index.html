@@ -448,11 +448,12 @@
 
         <!-- Content is shared across map and model; changing view never applies a source proposal. -->
         <section id="planning-views" class="planning-views" aria-label="Buildings and massing" data-i18n-key="planningViews.title" data-i18n-attr="aria-label" hidden>
-            <p class="planning-eyebrow"></p>
-            <div class="cb-segmented" role="group" aria-label="Planning view" data-i18n-key="planningViews.viewLabel" data-i18n-attr="aria-label"></div>
+            <div class="planning-control-heading"><p class="planning-eyebrow"></p><button type="button" class="btn btn-icon planning-reroll"><i class="fa-solid fa-dice" aria-hidden="true"></i></button></div>
+            <div class="planning-layer-controls"></div>
             <p class="planning-view-status" role="status" aria-live="polite"></p>
             <button type="button" class="cb-link planning-view-retry" hidden></button>
-            <select class="planning-source-picker" hidden></select>
+            <p class="planning-inspect-hint"></p>
+            <details class="planning-coverage"><summary></summary><p></p></details>
             <button type="button" class="cb-link planning-open-model" hidden></button>
         </section>
         <aside id="planning-inspector" class="planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>

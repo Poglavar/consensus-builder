@@ -3,10 +3,14 @@
 (function (root) {
     'use strict';
     const core = root.PlanningScene;
-    const sharedLabels = { proposed: 'threeMode.parcelPanel.proposed', compare: 'parcelCompare.bar.compare', retry: 'bets.retry' };
+    const sharedLabels = { existing: 'threeMode.controls.built', proposed: 'threeMode.parcelPanel.proposed',
+        solid: 'threeMode.controls.stateSolid', ghost: 'threeMode.controls.stateGhost', off: 'threeMode.controls.stateOff',
+        surviving: 'threeMode.controls.stateSurviving', removed: 'threeMode.controls.stateRemoved',
+        massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
+        both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', reroll: 'threeMode.controls.reroll', retry: 'bets.retry' };
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0, loadedKey = '';
-    let panel, inspector, lastMode = null, lastSelectedId = null, ready = false;
+    let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false;
     const number = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
     const area = value => typeof value === 'number' && Number.isFinite(value)
@@ -20,7 +24,7 @@
     function color(role) {
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
-    function policy() { return core.displayPolicy(store?.get().mode); }
+    function policy() { return core.displayPolicy(store?.get()); }
     function selected() { return items.find(item => item.id === store?.get().selectedId) || null; }
     function notifyGeometry() { root.dispatchEvent(new CustomEvent('planninggeometrychange')); }
     function select(id) {
@@ -38,27 +42,38 @@
         layer.clearLayers();
         if (policy().permitted === 'off') return;
         for (const item of items) {
-            for (const feature of core.volumeFeatures(item)) {
+            let features;
+            try { features = core.mapFeatures(item, store.get().permittedMap, root.turf); }
+            catch (error) { console.error('[planning] Could not project massing', item.id, error); continue; }
+            for (const feature of features) {
                 const active = item.id === store.get().selectedId;
                 const shape = root.L.geoJSON(feature, { pane: 'planningSources',
                     style: { color: color('permitted'), weight: active ? 3 : 1.5,
-                        fillColor: color('permitted'), fillOpacity: active ? 0.36 : policy().permitted === 'solid' ? 0.23 : 0.1,
-                        opacity: active ? 1 : 0.8, dashArray: active ? null : '5 3' } });
-                shape.bindTooltip(item.title, { sticky: true, direction: 'top' });
-                shape.on('click', event => {
-                    if (root.__mapEditLock?.isHeld()) return;
-                    root.L.DomEvent.stopPropagation(event);
-                    select(item.id);
-                });
+                        fillColor: color('permitted'), fillOpacity: policy().permitted === 'solid' ? 1 : 0.18,
+                        opacity: 1 } });
+                const height = feature.properties.height;
+                const label = item.source.parcel || item.title;
+                const tooltip = height ? `${label} · ${root.CbFormat.formatLength(height)}` : label;
+                shape.bindTooltip(tooltip, { sticky: true, direction: 'top' });
+                const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
+                shape.on('click', event => { root.L.DomEvent.stopPropagation(event); inspect(); });
                 shape.addTo(layer);
+                shape.eachLayer(part => {
+                    const node = part.getElement?.();
+                    if (!node) return;
+                    node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
+                    node.setAttribute('aria-label', t('inspectMassing', { parcel: label }));
+                    node.addEventListener('keydown', event => {
+                        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
+                    });
+                });
             }
         }
     }
     function isPhoto() { return root.__mapModeState?.desired === 'photo'; }
     function stateText() {
         if (isPhoto()) return t('photoNote');
-        if (store.get().mode === 'existing') return t('existingNote');
-        if (store.get().mode === 'proposed') return t(root.proposedBuildings?.length ? 'proposedNote' : 'noProposals');
+        if (policy().permitted === 'off') return t('permittedOff');
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
         if (!items.length) return t('empty');
@@ -76,7 +91,7 @@
         heading.append(element('p', 'planning-eyebrow', t('sourceProposal')), element('h2', '', item.title));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
-        close.addEventListener('click', () => { select(null); panel.querySelector('[aria-pressed="true"]')?.focus(); });
+        close.addEventListener('click', () => { select(null); panel.querySelector('[data-planning-setting="permitted"]')?.focus(); });
         header.append(heading, close);
         inspector.append(header);
         const badges = element('div', 'planning-inspector__badges');
@@ -90,6 +105,8 @@
             const entry = element('div'); entry.append(element('dt', '', label), element('dd', '', value)); metrics.append(entry);
         }
         inspector.append(metrics);
+        const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
+        if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
         inspector.append(assessment);
@@ -122,21 +139,30 @@
     function render() {
         if (!ready) return;
         panel.querySelector('.planning-eyebrow').textContent = t('title');
-        panel.querySelectorAll('[data-planning-mode]').forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.planningMode === store.get().mode));
-            button.querySelector('span:last-child').textContent = t(button.dataset.planningMode);
+        const reroll = panel.querySelector('.planning-reroll');
+        reroll.title = t('reroll'); reroll.setAttribute('aria-label', t('reroll'));
+        reroll.disabled = policy().proposed === 'off';
+        for (const role of core.roles) {
+            panel.querySelector(`[data-role-label="${role}"]`).textContent = t(role);
+            const select = panel.querySelector(`[data-planning-setting="${role}"]`);
+            select.setAttribute('aria-label', t('displayLabel', { role: t(role) }));
+        }
+        panel.querySelectorAll('[data-planning-setting]').forEach(select => {
+            select.value = store.get()[select.dataset.planningSetting];
+            for (const option of select.options) option.textContent = t(option.value);
         });
+        for (const key of ['existingScope', 'proposedForm', 'permittedMap']) {
+            panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
+        }
+        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto();
         panel.querySelector('.planning-view-status').textContent = stateText();
-        panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
+        panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading' && policy().permitted !== 'off'));
         const retry = panel.querySelector('.planning-view-retry');
-        retry.hidden = status !== 'error'; retry.textContent = t('retry');
-        const picker = panel.querySelector('.planning-source-picker');
-        picker.hidden = !items.length || policy().permitted === 'off' || isPhoto();
-        picker.setAttribute('aria-label', t('inspect'));
-        const options = [new Option(t('inspect'), '')];
-        for (const item of items) options.push(new Option(`${item.title} · ${item.source.parcel || item.proposalId}`, item.id));
-        picker.replaceChildren(...options);
-        picker.value = store.get().selectedId || '';
+        retry.hidden = status !== 'error' || policy().permitted === 'off'; retry.textContent = t('retry');
+        panel.querySelector('.planning-coverage summary').textContent = t('coverageTitle');
+        panel.querySelector('.planning-coverage p').textContent = t('coverageNote');
+        panel.querySelector('.planning-inspect-hint').textContent = t('inspectHint');
+        panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length || isPhoto();
         const model = panel.querySelector('.planning-open-model');
         model.hidden = !isPhoto(); model.textContent = t('openModel');
         renderInspector();
@@ -144,27 +170,34 @@
     function syncView() {
         const state = store.get();
         const view = policy();
-        document.body.dataset.planningView = state.mode;
         document.body.dataset.planningProposed = view.proposed;
         document.body.dataset.planningExisting = view.existing;
-        const modeChanged = lastMode !== state.mode;
-        if (modeChanged) {
-            lastMode = state.mode;
-            try { root.PersistentStorage.setItem('cb_planning_view', state.mode); } catch (_) { }
-            const url = new URL(location.href); url.searchParams.set('planning', state.mode);
+        document.body.dataset.planningExistingScope = state.existingScope;
+        const signature = JSON.stringify({ ...core.settings(state), variation: state.variation });
+        const settingsChanged = lastSettings !== signature;
+        if (settingsChanged) {
+            const previous = lastSettings ? JSON.parse(lastSettings) : {};
+            lastSettings = signature;
+            try { root.PersistentStorage.setItem('cb_planning_display', JSON.stringify(core.settings(state))); } catch (_) { }
+            const url = new URL(location.href); url.searchParams.delete('planning');
+            for (const [key, value] of Object.entries(core.settings(state))) url.searchParams.set(key, value);
             history.replaceState(history.state, '', url);
             const proposed = document.getElementById('showProposedBuildings');
             if (proposed && !proposed.checked && view.proposed !== 'off') { proposed.checked = true; root.toggleLayer?.('proposedBuildings'); }
             const existing = document.getElementById('showBuildings');
-            if (existing && !existing.checked) { existing.checked = true; root.toggleLayer?.('buildings'); }
-            root.dispatchEvent(new CustomEvent('planningviewchange', { detail: { mode: state.mode, policy: view } }));
+            if (existing && !existing.checked && view.existing !== 'off') { existing.checked = true; root.toggleLayer?.('buildings'); }
+            if (previous.existingScope !== state.existingScope) root.rebuildBuildingLayerFromPool?.();
+            if (previous.proposedForm !== state.proposedForm || previous.variation !== state.variation) {
+                root.updateProposedBuildingsLayer?.({ announce: false });
+            }
+            root.dispatchEvent(new CustomEvent('planningviewchange', { detail: { settings: core.settings(state), policy: view } }));
         }
         drawMap(); render();
         if (lastSelectedId !== state.selectedId) {
             lastSelectedId = state.selectedId;
             root.dispatchEvent(new CustomEvent('planningselectionchange', { detail: { id: state.selectedId } }));
         }
-        if (modeChanged && view.permitted !== 'off') refresh();
+        if (settingsChanged && view.permitted !== 'off') refresh();
     }
     async function refresh({ force = false } = {}) {
         if (!ready || policy().permitted === 'off') return;
@@ -208,25 +241,37 @@
     }
     function init() {
         if (ready) return;
-        const saved = root.PersistentStorage.getItem('cb_planning_view');
-        store = core.createStore({ mode: new URLSearchParams(location.search).get('planning') || saved });
+        let saved = {};
+        try { saved = JSON.parse(root.PersistentStorage.getItem('cb_planning_display') || '{}'); } catch (_) { }
+        const params = new URLSearchParams(location.search);
+        for (const key of Object.keys(core.defaults)) if (params.has(key)) saved[key] = params.get(key);
+        store = core.createStore(saved);
         panel = document.getElementById('planning-views');
         inspector = document.getElementById('planning-inspector');
-        const controls = panel.querySelector('.cb-segmented');
-        for (const mode of core.modes) {
-            const button = element('button', 'cb-segmented__option');
-            button.type = 'button'; button.dataset.planningMode = mode;
-            const swatch = element('span', `planning-swatch planning-swatch--${mode}`); swatch.setAttribute('aria-hidden', 'true');
-            button.append(swatch, element('span', '', t(mode)));
-            button.addEventListener('click', () => store.setMode(mode)); controls.append(button);
+        const controls = panel.querySelector('.planning-layer-controls');
+        const details = { existing: 'existingScope', permitted: 'permittedMap', proposed: 'proposedForm' };
+        function control(key) {
+            const input = element('select', 'planning-layer-select'); input.dataset.planningSetting = key;
+            for (const value of core.choices[key]) input.add(new Option(t(value), value));
+            input.addEventListener('change', () => store.configure(key, input.value));
+            return input;
         }
-        panel.querySelector('.planning-source-picker').addEventListener('change', event => select(event.target.value || null));
+        for (const role of core.roles) {
+            const row = element('div', 'planning-layer-row');
+            const label = element('span', 'planning-layer-label'); label.dataset.roleLabel = role;
+            const swatch = element('span', `planning-swatch planning-swatch--${role}`); swatch.setAttribute('aria-hidden', 'true');
+            const name = element('div', 'planning-layer-name'); name.append(swatch, label);
+            row.append(name, control(role), control(details[role])); controls.append(row);
+        }
+        panel.querySelector('.planning-reroll').addEventListener('click', () => store.reroll());
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
         panel.querySelector('.planning-view-retry').addEventListener('click', () => refresh({ force: true }));
         root.map.createPane('planningSources');
         root.map.getPane('planningSources').classList.add('planning-sources-pane');
         layer = root.L.featureGroup().addTo(root.map);
         ready = true; panel.hidden = false;
+        // Keep the phone sheet below these controls even when coverage text expands or wraps.
+        new ResizeObserver(() => document.documentElement.style.setProperty('--planning-panel-height', `${panel.offsetHeight}px`)).observe(panel);
         store.subscribe(syncView);
         root.map.on('moveend', () => refresh());
         root.map.on('click', () => select(null));
@@ -243,7 +288,7 @@
         root.whenAppBooted().then(() => root.ProposalSelection?.subscribe(proposal => { if (proposal) select(null); }));
         syncView();
     }
-    root.PlanningViews = { getState: () => store?.get(), getPolicy: policy, getItems: () => items,
-        getSelected: selected, select, color, refresh, setMode: mode => store?.setMode(mode) };
+    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: () => items,
+        getSelected: selected, select, color, refresh, configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
     root.whenMapCoreReady().then(init);
 })(window);

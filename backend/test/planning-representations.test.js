@@ -7,6 +7,7 @@ import { planningRepresentations } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const scene = require('../../frontend/js/planning/scene.js');
+const turf = require('../../frontend/vendor/turf-6.5.0/turf.min.js');
 const geometry = { type: 'Polygon', coordinates: [[[10, 40], [10.001, 40], [10.001, 40.001], [10, 40.001], [10, 40]]] };
 const row = () => ({ proposal_id: 'source-a', proposal_data: {
     source: { inputHash: 'version-a', zone: '2.4', gbpM2: 150, maxUnits: 0, applicability: 'unresolved',
@@ -103,17 +104,48 @@ describe('bounded planning route', () => {
 });
 
 describe('shared planning scene', () => {
-    it('keeps selection while switching views, ignores invalid modes and emits only changes', () => {
-        const store = scene.createStore({ mode: 'permitted' }), listener = vi.fn();
-        const off = store.subscribe(listener); store.select('a'); store.setMode('compare'); store.setMode('compare'); store.setMode('unknown');
-        expect(store.get()).toEqual({ mode: 'compare', selectedId: 'a', revision: 2 }); expect(listener).toHaveBeenCalledTimes(2);
+    it('changes one layer independently, retains selection and ignores invalid settings', () => {
+        const store = scene.createStore(), listener = vi.fn();
+        const off = store.subscribe(listener); store.select('a'); store.configure('permitted', 'solid');
+        store.configure('permitted', 'solid'); store.configure('permitted', 'unknown'); store.configure('bogus', 'solid');
+        expect(scene.displayPolicy(store.get())).toEqual({ existing: 'ghost', permitted: 'solid', proposed: 'solid' });
+        expect(store.get()).toMatchObject({ selectedId: 'a', revision: 2 }); expect(listener).toHaveBeenCalledTimes(2);
         off(); store.select(null); expect(listener).toHaveBeenCalledTimes(2);
     });
-    it('uses independent existing, permitted and proposed roles in every view', () => {
-        expect(scene.displayPolicy('existing')).toEqual({ existing: 'solid', permitted: 'off', proposed: 'off' });
-        expect(scene.displayPolicy('permitted')).toEqual({ existing: 'ghost', permitted: 'solid', proposed: 'off' });
-        expect(scene.displayPolicy('proposed')).toEqual({ existing: 'ghost', permitted: 'off', proposed: 'solid' });
-        expect(scene.displayPolicy('compare')).toEqual({ existing: 'ghost', permitted: 'ghost', proposed: 'solid' });
+    it('allows every combination of three independent display states', () => {
+        const store = scene.createStore();
+        for (const existing of scene.displayStates) for (const permitted of scene.displayStates) for (const proposed of scene.displayStates) {
+            store.configure('existing', existing); store.configure('permitted', permitted); store.configure('proposed', proposed);
+            expect(scene.displayPolicy(store.get())).toEqual({ existing, permitted, proposed });
+        }
+    });
+    it('keeps content choices orthogonal to visibility and rerolls only the proposed representation', () => {
+        const store = scene.createStore({ existing: 'off', permitted: 'solid', proposed: 'ghost' });
+        store.configure('existingScope', 'removed'); store.configure('proposedForm', 'massing'); store.reroll();
+        expect(store.get()).toMatchObject({ existingScope: 'removed', proposedForm: 'both', variation: '1' });
+        expect(scene.displayPolicy(store.get())).toEqual({ existing: 'off', permitted: 'solid', proposed: 'ghost' });
+        expect(scene.settings(store.get())).not.toHaveProperty('selectedId');
+        expect(scene.settings(store.get())).not.toHaveProperty('variation');
+    });
+    it('joins height components into one footprint while retaining explicit height steps', () => {
+        const inner = turf.polygon([[[10.0002,40.0002],[10.0008,40.0002],[10.0008,40.0008],[10.0002,40.0008],[10.0002,40.0002]]]);
+        const outer = turf.feature(geometry), ring = turf.difference(outer, inner);
+        const item = gupRepresentation(row()); item.volumes[0].geometry = ring.geometry; item.volumes[1].geometry = inner.geometry;
+        const footprints = scene.mapFeatures(item, 'footprint', turf);
+        expect(footprints).toHaveLength(1); expect(footprints[0].geometry.coordinates).toHaveLength(1);
+        expect(turf.area(footprints[0])).toBeCloseTo(turf.area(outer), 3);
+        expect(scene.mapFeatures(item, 'steps', turf).map(f=>f.properties.height)).toEqual([6,9]);
+        expect(item.volumes[0].geometry.coordinates).toHaveLength(2);
+    });
+    it('selects all, surviving and removed physical geometry without mutating evidence', () => {
+        const remainder = { ...geometry, tag: 'remainder' }, demolishedPart = { ...geometry, tag: 'demolished' };
+        const record = { remainder, demolishedPart, geometry };
+        expect(scene.builtGeometry(geometry, record, 'all')).toBe(geometry);
+        expect(scene.builtGeometry(geometry, record, 'surviving')).toBe(remainder);
+        expect(scene.builtGeometry(geometry, record, 'removed')).toBe(demolishedPart);
+        expect(scene.builtGeometry(geometry, null, 'removed')).toBeNull();
+        expect(scene.builtGeometry(geometry, { geometry }, 'surviving')).toBeNull();
+        expect(record).toEqual({ remainder, demolishedPart, geometry });
     });
     it('projects the same source geometry and stable part identity into map and model features', () => {
         const item = gupRepresentation(row()); item.volumes[1].baseM = 3;

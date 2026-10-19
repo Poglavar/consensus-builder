@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const planningScene = createRequire(import.meta.url)('../../frontend/js/planning/scene.js');
 import { parse } from '@babel/parser';
 import { describe, expect, it } from 'vitest';
 
@@ -69,6 +71,8 @@ function loadBuildingLayerRuntime() {
         collectDemolishedBuildingRecords: () => Array.from(fixture.state.demolishedById.values())
     });
     context.window = context;
+    context.PlanningScene = planningScene;
+    context.PlanningViews = { getState: () => ({ existingScope: fixture.existingScope || 'all' }) };
     context.collectTunnelledBuildingIds = () => fixture.state.tunnelledIds;
     context.buildingOutcomeStyle = outcome => ({ color: outcome || 'normal' });
     vm.runInContext('let buildingLayer = null; let buildingFeatureById = new Map(); let buildingRenderedLayersById = new Map(); let renderedBuildingOutcomeSignatures = new Map(); let renderedBuildingFeatureSignatures = new Map();', context);
@@ -231,6 +235,9 @@ describe('incremental building presentation model', () => {
         expect(context.getRenderedLayers().get('a')[0]).toBe(aLayer);
         expect(context.getRenderedLayers().get('b')).toHaveLength(1);
         expect(context.getRenderedLayers().get('b')[0]).not.toBe(bLayer);
+        expect(context.getRenderedLayers().get('b')[0].feature.geometry).toEqual(b.geometry);
+        fixture.existingScope = 'surviving';
+        context.rebuildBuildingLayerFromPool();
         expect(context.getRenderedLayers().get('b')[0].feature.geometry).toEqual(fixture.state.demolishedById.get('b').remainder);
         expect(context.getRenderedLayers().get('b')[0].style).toEqual({ color: 'cut' });
 

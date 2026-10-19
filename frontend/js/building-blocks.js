@@ -1258,19 +1258,21 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
         if (!building || !building.properties) continue;
         if (proposedBuildingKey(building.properties.proposalId) !== id) continue;
         try {
-            // Buildings are an overlay on top of parcels; keep parcels clickable.
-            L.geoJSON(building, {
-                style: window.PlanningViews ? { ...PROPOSED_BUILDING_STYLE,
-                    color: window.PlanningViews.color('proposed'), fillColor: window.PlanningViews.color('proposed') } : PROPOSED_BUILDING_STYLE,
-                interactive: false,
-                pane: 'proposedBuildingsPane',
-                renderer: proposedBuildingCanvas()
-            }).addTo(group);
+            // The same rule realization and salt drive the map and model; source records stay intact.
+            const state = window.PlanningViews.getState();
+            const plan = window.UrbanRuleVariation.plannedDrawPlan(building, state.proposedForm, { turf }, state.variation);
+            for (const [feature, envelope] of [[plan.massing, plan.massingStyle === 'envelope'], [plan.buildOut, false]]) {
+                if (!feature) continue;
+                L.geoJSON(feature, {
+                    style: { ...PROPOSED_BUILDING_STYLE, color: window.PlanningViews.color('proposed'),
+                        fillColor: window.PlanningViews.color('proposed'),
+                        fillOpacity: envelope ? 0.12 : 1 },
+                    interactive: false, pane: 'proposedBuildingsPane', renderer: proposedBuildingCanvas()
+                }).addTo(group);
+            }
         } catch (error) {
             console.error(`Error rendering proposed building at index ${index}:`, error, building);
-            // Drop the faulty building so it cannot fail again on every later refresh. Walking
-            // backwards is what makes removing during the walk safe.
-            list.splice(index, 1);
+            // A display failure cannot delete a proposal's source geometry.
             showErrorPopup(translateBuildingText(
                 'blockify.modal.messages.renderingFailed',
                 'Building block creation failed -- Error rendering the generated building shape. The parcel might be too complex.'
@@ -1290,7 +1292,7 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
 // Every proposal redrawn. Still needed — a removal, a state change or a boot has no single proposal
 // to redraw — but it is now expressed as "draw each one", so the incremental path and the full one
 // cannot drift apart.
-function updateProposedBuildingsLayer() {
+function updateProposedBuildingsLayer({ announce = true } = {}) {
     if (proposedBuildingsRefreshHeld) {
         proposedBuildingsRefreshMissed = true;
         return;
@@ -1304,7 +1306,7 @@ function updateProposedBuildingsLayer() {
     const list = ensureProposedBuildingsState();
     // Announce every refresh, including one that empties the layer: unapplying the last proposed
     // building has to reach 3D and the photoreal carve too, or their meshes go stale.
-    announceProposedBuildings();
+    if (announce) announceProposedBuildings();
 
     const ids = [];
     const seen = new Set();

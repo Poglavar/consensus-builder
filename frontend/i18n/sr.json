@@ -6433,11 +6433,9 @@
             "stateOff": "Isključeno",
             "built": "Izgrađeno",
             "both": "Oboje",
-            "planned": "Planirano",
             "radius": "Radijus",
             "radiusTooltip": "Radijus — koliko širok pojas okolnih stvarnih zgrada se učitava i prikazuje kao kontekst",
             "builtTooltip": "Izgrađeno — postojeće stvarne zgrade koje danas stoje na terenu",
-            "plannedTooltip": "Planirano — predložene građevine i površine (parkovi, trgovi, voda i njihove dekoracije)",
             "stateSolidTooltip": "Puno — iscrtano potpuno neprozirno",
             "stateGhostTooltip": "Providno — iscrtano poluprovidno da se vidi kroz njega",
             "stateSurvivingTooltip": "Preostale — postojeće zgrade prikazane puno, ali one koje plan ruši su skrivene (stanje nakon plana)",
@@ -6450,7 +6448,6 @@
             "life": "Ljudi i saobraćaj",
             "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću kroz 3D prikaz",
             "water": "Voda",
-            "plannedAs": "Planirano kao",
             "facades": "Fasade",
             "facadeStyle": "Stil fasade",
             "facadesTooltip": "Primeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",
@@ -6485,7 +6482,6 @@
                 "stone": "Svetli kamen",
                 "plaster": "Malter"
             },
-            "plannedAsTooltip": "Planirano kao — prikaži gabarit koji pravilo dozvoljava, jedan primer izgradnje po njemu, ili oboje",
             "representationMassing": "Gabarit",
             "representationMassingTooltip": "Gabarit — zapremina koju pravilo dozvoljava, ono što predlog zapravo propisuje",
             "representationBuildOut": "Izgradnja",
@@ -7593,22 +7589,17 @@
     },
   "planningViews": {
     "title": "Zgrade i građevinske mase",
-    "viewLabel": "Planski prikaz",
     "detailsLabel": "Podaci o planskom izvoru",
-    "existing": "Postojeće",
     "permitted": "Dozvoljeno",
-    "existingNote": "Grad prema dostupnim podacima o zgradama.",
-    "proposedNote": "Primenjeni predlozi zgrada u kontekstu postojećeg grada.",
-    "noProposals": "Nema primenjenih predloga zgrada. Istražite mogućnosti u Predlozima.",
     "loading": "Učitavanje dozvoljenih građevinskih masa…",
     "zoom": "Približite mapu za prikaz dozvoljenih građevinskih masa.",
     "unavailable": "Za ovaj grad još nije povezan izvor dozvoljenih građevinskih masa.",
     "empty": "U ovom području nema prikazanih masa. To ne znači da je gradnja zabranjena.",
     "error": "Planski izvor nije moguće učitati.",
     "loaded": {
-      "one": "{{count}} izračunata varijanta · pokrivenost izvora je delimična",
-      "few": "{{count}} izračunate varijante · pokrivenost izvora je delimična",
-      "other": "{{count}} izračunatih varijanti · pokrivenost izvora je delimična"
+      "one": "{{count}} uvezeni volumen u prikazu · delimična pokrivenost",
+      "few": "{{count}} uvezena volumena u prikazu · delimična pokrivenost",
+      "other": "{{count}} uvezenih volumena u prikazu · delimična pokrivenost"
     },
     "truncated": {
       "one": "Prikazana je {{count}} varijanta · približite za manje područje",
@@ -7639,8 +7630,19 @@
       "floorArea": "Najveća podna površina",
       "naturalGround": "Najmanji udeo prirodnog terena"
     },
-    "inspect": "Pregledaj varijantu volumena…",
     "photoNote": "Dozvoljene volumene pregledajte na karti ili u 3D modelu.",
-    "openModel": "Otvori 3D model"
+    "openModel": "Otvori 3D model",
+    "displayLabel": "Prikaz: {{role}}",
+    "existingScope": "Izbor postojećih zgrada",
+    "proposedForm": "Oblik prikaza predloga",
+    "permittedMap": "Dozvoljeni volumen na karti",
+    "footprint": "Osnova",
+    "steps": "Visinski delovi",
+    "permittedOff": "Dozvoljeni volumeni su skriveni.",
+    "coverageTitle": "Zašto samo neke parcele?",
+    "coverageNote": "Prikazane su samo uvezene izračunate varijante. Nedostajući rezultati i nepodržani oblici ostavljaju praznine; kapacitet prazne parcele nije poznat. Visinski delovi prikazuju delove jednog volumena na različitim visinama.",
+    "inspectHint": "Kliknite volumen za pregled izvora i ograničenja.",
+    "inspectMassing": "Pregledaj dozvoljeni volumen na parceli {{parcel}}",
+    "heightParts": "Visinski delovi: {{heights}}"
   }
 }
