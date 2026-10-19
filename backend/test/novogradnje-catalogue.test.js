@@ -1,10 +1,13 @@
+import {readPublicCatalogue,readPublicProject} from '../floor-plan-archive/public-catalogue.js';
 // Public IDs, alias grouping, metadata, HTTP deep links and actual filter decisions stay testable without a browser.
 import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import { constructionSummary, projectInventory, projectSources } from '../floor-plans/project-inventory.js';
 import { publicProject, projectId } from '../floor-plan-archive/public-catalogue.js';
-import { setupNovogradnjeRoute } from '../routes/novogradnje.js';
+import { setupNovogradnjeRoute as setupSharedNovogradnjeRoute } from '../routes/novogradnje.js';
+
+const setupNovogradnjeRoute=(app,pool)=>setupSharedNovogradnjeRoute(app,pool,{catalogue:{read:()=>readPublicCatalogue(pool),project:token=>readPublicProject(pool,token),sourceUrl:hash=>`https://shared.test/api/floor-plans/sources/${hash}`}});
 
 const facts = { title: 'Zagreb, trosoban stan, novogradnja', sourceId: '123456', areaM2: 70,
     propertyDetails: { propertyType: 'apartment', newBuild: true, constructionYear: 2026, completionYear: null, roomCount: 3, orientation: ['SE'], evidence: {} } };
@@ -28,13 +31,17 @@ const originalRow = { ...row, site_key: 'permit:original', model: { ...model, si
     inventory: originalInventory } };
 
 describe('source-backed residential catalogue', () => {
-    it.each(['ambiguous','unresolved',null])('keeps %s building locations private despite available plans', status => {
-        expect(publicProject({...row,model:{...model,location:{status}}})).toBeNull();
+    it.each(['ambiguous','unresolved','unknown',null])('publishes plans with %s location without mapping them', status => {
+        const project=publicProject({...row,model:{...model,location:{status}}},{detail:true});
+        expect(project).toMatchObject({location:null,locationAvailable:false,address:'Nepoznata lokacija',thumbnailUrl:null});
+        expect(project.apartments).toHaveLength(1);
+        expect(project.model).toMatchObject({envelope:null,footprint:null,placements:[]});
     });
-    it('requires a geographic footprint for public floor plans', () => {
-        expect(publicProject({...row,model:{...model,envelope:null}})).toBeNull();
+    it('does not map missing or projected footprints', () => {
+        expect(publicProject({...row,model:{...model,envelope:null}}).location).toBeNull();
         expect(publicProject({...row,model:{...model,envelope:{footprint:{type:'Polygon',
-            coordinates:[[[500000,5000000],[500001,5000000],[500001,5000001],[500000,5000000]]]}}}})).toBeNull();
+            coordinates:[[[500000,5000000],[500001,5000000],[500001,5000001],[500000,5000000]]]}}}}).location).toBeNull();
+        expect(publicProject({...noPlan,model:{...noPlan.model,location:{status:'unknown'}}})).toBeNull();
     });
     it('merges language aliases and keeps unknown values separate from zero', () => {
         expect(projectInventory(postings, []).apartments).toHaveLength(1);

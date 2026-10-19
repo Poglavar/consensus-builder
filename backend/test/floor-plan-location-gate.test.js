@@ -35,7 +35,26 @@ describe('location signal gate', () => {
         expect(listingQualifies({ ...evidence.listing, hasLocationSignal: true, sourceEvidenceStatus: 'not-a-listing' })).toBe(false);
     });
 
+    it('keeps an unknown-location owner with its own source drawing or document', () => {
+        for (const kind of ['floor-plan', 'document']) {
+            const input = { ...listing(), assets: [{ url: 'https://agency.test/plan.pdf', listingOwned: true, kind }] };
+            const evidence = qualifyPageEvidence(page('<p>Stan, 55 m2.</p>'), 'https://agency.test/n/5', input);
+            expect(evidence.listing.hasLocationSignal).toBe(false);
+            expect(evidence.listing.hasPlanAsset).toBe(true);
+            expect(listingQualifies(evidence.listing)).toBe(true);
+        }
+    });
+
+    it('does not treat foreign drawings or the photo gallery as an owned plan', () => {
+        for (const asset of [{ listingOwned: false, kind: 'floor-plan' }, { listingOwned: true, kind: 'photo' }]) {
+            const evidence = qualifyPageEvidence(page('<p>Stan, 55 m2.</p>'), 'https://agency.test/n/6', { ...listing(), assets: [asset] });
+            expect(evidence.listing.hasPlanAsset).toBe(false);
+            expect(listingQualifies(evidence.listing)).toBe(false);
+        }
+        expect(listingQualifies({ hasPlanAsset: true, sourceEvidenceStatus: 'excluded' })).toBe(false);
+    });
+
     it('the eligibility SQL accepts the signal flag as an alternative to an explicit address', () => {
-        expect(eligibleListingSql('l')).toMatch(/OR l\.facts->>'hasLocationSignal'='true'\)/);
+        expect(eligibleListingSql('l')).toMatch(/OR l\.facts->>'hasLocationSignal'='true'/);
     });
 });

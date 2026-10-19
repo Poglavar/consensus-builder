@@ -77,7 +77,7 @@ export const ORIGINAL_PLAN_SOURCES_SQL = `SELECT l.url AS listing_url,l.facts,l.
       AND e.model->'source'->>'listingUrl'=l.url
     ORDER BY e.updated_at DESC LIMIT 1) reviewed ON true
  WHERE l.url=ANY($1::text[]) AND a.asset->>'listingOwned'='true'
-   AND l.location_status IN ('located','probable') AND ${eligibleListingSql()}
+   AND ${eligibleListingSql()}
    AND l.facts->'propertyDetails'->>'propertyType'='apartment'
    AND COALESCE(l.facts->>'sourceType','') NOT IN ('developer-project','architecture-project')
    AND NOT EXISTS(SELECT 1 FROM floor_plan.exclusion x WHERE x.url=t.url OR x.identity=t.source_identity)
@@ -87,7 +87,7 @@ export function originalPlanSource(row) {
     const facts = row.facts || {}, asset = row.asset || {}, reviewed = row.reviewed_model, processed = row.processed_model;
     if (facts.propertyDetails?.propertyType !== 'apartment' || ['developer-project', 'architecture-project'].includes(facts.sourceType)
         || ['excluded', 'not-a-listing'].includes(facts.sourceEvidenceStatus)
-        || !['located', 'probable'].includes(row.location_status) || asset.listingOwned !== true
+        || asset.listingOwned !== true
         || asset.url !== row.source_url || !/^[a-f0-9]{64}$/.test(row.sha256 || '')
         || row.current_sha256 !== row.sha256 || row.bytes_available !== true) return null;
     const listingUnit = listingUnitId(facts, row.listing_url);

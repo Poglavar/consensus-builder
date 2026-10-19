@@ -744,3 +744,11 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-19: The user renamed the source archive to `restatements/`: existing situations and published plans expressed using the app’s proposal and plan tools, with dates and source provenance retained.
 - 2026-10-19: Novogradnje includes archived Pionir whole-floor layouts as separate deep-linked floor plans, never fabricated apartments; listing refreshes retire only listing-derived site identities, preserving models owned by the building-floor registry. Known completion years sort newest first, unknown years last.
 - 2026-10-19: The user requested a private Stanovanje.plus reconstruction trial and a permission-outreach draft before incorporating its archive with attribution; the email has not been sent and the trial is not publicly published.
+
+## Parcel research storage (2026-10-19)
+
+The user requires only per-city failed URL lists and working settings plus shared adapter code as permanent knowledge; stage evidence and worktrees are disposable to prevent disk growth.
+
+- 2026-10-19: The user reversed the location-required plan policy: retain, reconstruct and expose source-backed plans with **Nepoznata lokacija**; keep their geographic location, building placement and surroundings absent until evidence identifies the building. The shared worldwide geodata API owns published plans and retained original-source metadata, with Novogradnje and the Consensus Builder archive as consumers.
+- 2026-10-19: Keep the public name and collection path **Novogradnje /novogradnje**; context viewers permit tilt, rotation and zoom, with panning disabled and a bounded 100 m survey radius.
+- 2026-10-19: The user approved a ten-building private Stanovanje.plus LLM feasibility trial using subscription Codex; full-archive processing and public incorporation remain separate from that trial.

@@ -52,7 +52,7 @@ describe('current original plan eligibility', () => {
         { image_kind: 'uncertain' }, { image_status: 'needs_review' }, { reading: { kind: 'floor_plan', containsPlan: true, confidence: 'low' } },
         { reading: { kind: 'photo', containsPlan: true, confidence: 'high' } }, { reading: null },
         { asset: { url: sourceUrl, listingOwned: false } }, { asset: { url: 'https://example.test/other', listingOwned: true } },
-        { location_status: 'unlocated' }, { facts: { sourceEvidenceStatus: 'excluded', propertyDetails: { propertyType: 'apartment' } } },
+        { facts: { sourceEvidenceStatus: 'excluded', propertyDetails: { propertyType: 'apartment' } } },
         { facts: { sourceEvidenceStatus: 'not-a-listing', propertyDetails: { propertyType: 'apartment' } } },
         { facts: { sourceType: 'developer-project', propertyDetails: { propertyType: 'residential' } } },
         { facts: { sourceType: 'architecture-project', propertyDetails: { propertyType: 'apartment' } } },
@@ -79,6 +79,9 @@ describe('current original plan eligibility', () => {
             asset: { url: 'https://example.test/plan.png', listingOwned: true } });
         expect(originalPlanSource(row).model.unitId).toBeNull();
     });
+    it('retains a confirmed original apartment drawing without knowing its building location', () => {
+        expect(originalPlanSource(source({location_status:'unresolved'}))).toMatchObject({model:{scope:'unit'}});
+    });
     it('requires reviewed unit and explicit page evidence for PDFs', () => {
         const pdf = source({ media_type: 'application/pdf' });
         expect(originalPlanSource(pdf)).toBeNull();
@@ -93,13 +96,23 @@ describe('current original plan eligibility', () => {
         expect(calls).toHaveLength(0);
         expect(await currentOriginalPlans(db, [listingUrl])).toHaveLength(1);
         expect(calls[0][1]).toEqual([[listingUrl], 'listing-image-kind-v2']);
-        expect(calls[0][0]).toContain("l.location_status IN ('located','probable')");
+        expect(calls[0][0]).not.toContain("l.location_status IN ('located','probable')");
         expect(calls[0][0]).toContain('AND b.bytes_available');
         expect(calls[0][0]).toContain('floor_plan.exclusion');
     });
 });
 
 describe('original and geometry inventory selection', () => {
+    it('keeps resized original and reconstructed versions of one unnamed offer as one apartment', () => {
+        const url='https://example.test/apartment/123',original=originalPlanSource(source({listing_url:url,source_url:'https://example.test/drawing.png',
+            asset:{url:'https://example.test/drawing.png',listingOwned:true}}));
+        const vector={...geometry({unitId:'plan-1'}),listing_url:url,sha256:'b'.repeat(64)};
+        const inventory=projectInventory([{...posting,url}],[original,vector]);
+        expect(inventory.apartments).toHaveLength(1);
+        expect(inventory.apartments[0]).toMatchObject({unitId:null,hasGeometry:true});
+        expect(inventory.apartments[0].originalSources).toHaveLength(1);
+    });
+
     it('keeps an unnumbered alternate drawing of the same apartment offer with its sole identified unit', () => {
         const url = 'https://example.test/apartment/123';
         const original = originalPlanSource(source({ listing_url: url, source_url: 'https://example.test/plan.png',

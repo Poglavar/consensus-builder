@@ -23,9 +23,9 @@ function location(model) {
 
 export function publicProject(row, { detail = false, retained = new Set() } = {}) {
     const model = row.model, inventory = model?.inventory;
-    if (!inventory || inventory.excludedUse || !model.siteKey
-        || !['located','probable'].includes(model.location?.status) || !location(model)) return null;
-    const id = projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
+    if (!inventory || inventory.excludedUse || !model.siteKey) return null;
+    const located = ['located','probable'].includes(model.location?.status) && Boolean(location(model));
+    const id = row.public_id || projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
     const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrada/${slug}/`;
     // Facts-only postings stay private; geometry or a retained original drawing qualifies.
     const apartments = (inventory.apartments || []).map(a => ({ ...a, hasGeometry: Boolean(a.architecture) }))
@@ -48,15 +48,16 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
         return value;
     });
     if (!apartments.length && !floorPlans.length) return null;
-    const value = { id, slug, url, label, name: inventory.name || label, address: label,
+    const value = { id, slug, url, label, name: inventory.name || label, address: located ? label : 'Nepoznata lokacija',
+        locationAvailable: located,
         availability: 'ready',
         archiveEvidence:model.archiveEvidence||null,
         kind: inventory.kind, constructionYear: inventory.constructionYear, completionYear: inventory.completionYear,
-        thumbnailUrl: buildingThumbnailSvg(model) ? `${BASE_PATH}api/projects/${id}/thumbnail.svg` : null,
-        titles: inventory.titles || [], location: location(model), apartments, floorPlans,
+        thumbnailUrl: located && buildingThumbnailSvg(model) ? `${BASE_PATH}api/projects/${id}/thumbnail.svg` : null,
+        titles: inventory.titles || [], location: located ? location(model) : null, apartments, floorPlans,
         sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length + floorPlans.length,
         updatedAt: row.built_at || null };
-    if (detail) Object.assign(value, { model: { ...model, inventory: undefined },
+    if (detail) Object.assign(value, { model: { ...model, inventory: undefined, ...(located ? {} : { envelope: null, footprint: null, placements: [], location: { status: 'unknown' } }) },
         sources: (model.sources || []).map(s => ({ url: httpUrl(s.url), label: s.label })).filter(s => s.url),
         yearEvidence: inventory.yearEvidence || [], conflicts: inventory.conflicts || [] });
     return value;
