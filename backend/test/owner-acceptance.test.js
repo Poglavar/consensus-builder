@@ -75,21 +75,25 @@ describe('ensureOwnerAcceptanceEntry', () => {
         expect(entry.owners.real.displayName).toBe('Ivan Horvat');
     });
 
-    it('back-fills owner acceptances from acceptedParcelIds when syncing', () => {
-        const proposal = { acceptedParcelIds: ['42'], executedAt: '2026-01-01T00:00:00.000Z' };
+    it('does not infer owner decisions or event times from a parcel acceptance', () => {
+        const proposal = { acceptedParcelIds: ['42'], executedAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-02-01T00:00:00.000Z' };
         const entry = ensureOwnerAcceptanceEntry(proposal, '42', [
-            { key: 'a', displayName: 'Ana', type: 'private individual' }
+            { key: 'a', displayName: 'Owner A', type: 'private individual' },
+            { key: 'b', displayName: 'Owner B', type: 'private individual' }
         ]);
-        expect(entry.acceptedOwnerKeys).toContain('a');
-        expect(entry.acceptedBy.a.acceptedAt).toBe('2026-01-01T00:00:00.000Z');
+        expect(entry.ownerOrder).toEqual(['a', 'b']);
+        expect(entry.acceptedOwnerKeys).toEqual([]);
+        expect(entry.acceptedBy).toEqual({});
     });
 
-    it('does not back-fill when syncWithParcelAcceptance is false', () => {
-        const proposal = { acceptedParcelIds: ['42'] };
+    it('preserves explicit metadata without inventing a missing acceptance timestamp', () => {
+        const proposal = { acceptedParcelIds: ['42'], ownerAcceptances: normalizeOwnerAcceptances({
+            '42': { owners: {}, ownerOrder: ['a'], acceptedOwnerKeys: ['a'], acceptedBy: { a: { effectHash: 'e-terms' } } }
+        }) };
         const entry = ensureOwnerAcceptanceEntry(proposal, '42',
-            [{ key: 'a', displayName: 'Ana' }],
-            { syncWithParcelAcceptance: false });
-        expect(entry.acceptedOwnerKeys).toEqual([]);
+            [{ key: 'a', displayName: 'Owner A' }, { key: 'b', displayName: 'Owner B' }]);
+        expect(entry.acceptedOwnerKeys).toEqual(['a']);
+        expect(entry.acceptedBy).toEqual({ a: { effectHash: 'e-terms' } });
     });
 
     it('returns null for a missing proposal or parcel id', () => {

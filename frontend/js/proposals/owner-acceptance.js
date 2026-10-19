@@ -6,7 +6,7 @@
 // acceptedOwnerKeys / acceptedBy) and folds accepted keys back into the order. ensureOwnerAcceptance-
 // Entry adds/updates owner slots for one parcel, purges legacy placeholder owners once real slots
 // arrive (guarded by the placeholder-looking display name, so a real named owner is never dropped),
-// and — when asked — back-fills owner acceptances from proposal.acceptedParcelIds.
+// without inferring owner decisions or event times from the parcel-level tally.
 
 (function (global) {
     'use strict';
@@ -48,7 +48,7 @@
         return normalized;
     }
 
-    function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = [], options = {}) {
+    function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = []) {
         if (!proposal) {
             return null;
         }
@@ -137,26 +137,6 @@
 
         if (!entry.acceptedBy || typeof entry.acceptedBy !== 'object') {
             entry.acceptedBy = {};
-        }
-
-        const shouldSync = options.syncWithParcelAcceptance !== false;
-        const parcelAccepted = shouldSync
-            ? Array.isArray(proposal.acceptedParcelIds) && proposal.acceptedParcelIds.includes(normalizedParcelId)
-            : false;
-
-        if (parcelAccepted && entry.acceptedOwnerKeys.length === 0 && entry.ownerOrder.length > 0) {
-            entry.ownerOrder.forEach(key => {
-                if (!entry.acceptedOwnerKeys.includes(key)) {
-                    entry.acceptedOwnerKeys.push(key);
-                    if (!entry.acceptedBy[key]) {
-                        entry.acceptedBy[key] = {
-                            agentId: null,
-                            username: null,
-                            acceptedAt: proposal.executedAt || proposal.updatedAt || new Date().toISOString()
-                        };
-                    }
-                }
-            });
         }
 
         proposal.ownerAcceptances[normalizedParcelId] = entry;

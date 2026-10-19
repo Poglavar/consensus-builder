@@ -14,16 +14,15 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
             currentConsentBindingHash(proposal)) || { entries: [], ownershipResolved: false };
     }
 
-    refreshProposalAcceptanceValidity(proposal);
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
-    const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots, {
-        syncWithParcelAcceptance: !proposalRequiresDealConsent(proposal)
-    });
+    const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots);
+    refreshProposalAcceptanceValidity(proposal);
     if (!entry) {
         return { entries: [] };
     }
 
     const acceptedKeys = new Set(currentProposalOwnerAcceptanceKeys(proposal, entry));
+    const consentHash = currentConsentBindingHash(proposal);
     const currentUser = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
     const entries = (entry.ownerOrder || []).map(ownerKey => {
         const slot = entry.owners[ownerKey] || ownerSlots.find(s => s.key === ownerKey) || { key: ownerKey };
@@ -49,7 +48,8 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
             shareText: slot.shareText || '',
             shareDetail: slot.shareDetail || '',
             accepted: isAccepted,
-            termsChanged: !isAccepted && (entry.acceptedOwnerKeys || []).includes(ownerKey),
+            termsChanged: !isAccepted && !!acceptanceMeta.effectHash && !!consentHash
+                && acceptanceMeta.effectHash !== consentHash,
             acceptedAt: acceptanceMeta.acceptedAt || null,
             acceptedByName: acceptanceMeta.username || '',
             acceptedByAgentId: acceptanceMeta.agentId || null,
@@ -1297,9 +1297,9 @@ function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
 // proposals (an offer's "effect" is its terms). Both derive from STORED fields only, so the hash
 // is identical on every machine. An edit that changes the effect changes the hash and the stored
 // acceptances stop counting — automatically, with the records preserved (consent history is
-// immutable; an edit back to the accepted effect even revalidates them). Records from before this
-// mechanism carry no hash and stay valid for other proposal kinds. LR requires its complete deal
-// hash: an older footprint-only approval does not establish consent to the allocation and cash.
+// immutable; an edit back to the accepted effect even revalidates them). Every counted record
+// requires its current terms hash. LR uses the complete deal hash: a footprint-only approval
+// does not establish consent to the allocation and cash.
 function proposalRequiresDealConsent(proposal) {
     return !!proposal && (proposal.goal === 'reparcellization' || !!proposal.reparcellization);
 }
@@ -1369,10 +1369,9 @@ function currentProposalOwnerAcceptanceKeys(proposal, entry) {
         return keys.filter(key => entry?.ownerOrder?.includes(key));
     }
     const hash = currentConsentBindingHash(proposal);
-    const options = { requireHash: proposalRequiresDealConsent(proposal) };
     const api = window.__ownershipFlow;
     return (entry?.acceptedOwnerKeys || []).filter(key => (entry.ownerOrder || []).includes(key)
-        && (api ? api.isAcceptanceRecordValid(entry.acceptedBy?.[key], hash, options) : !options.requireHash));
+        && api?.isAcceptanceRecordValid(entry.acceptedBy?.[key], hash) === true);
 }
 
 function currentConsentBindingHash(proposal) {
@@ -1407,8 +1406,8 @@ function currentConsentBindingHash(proposal) {
 }
 
 // The validity logic itself is pure and lives in ownership-flow.js (isAcceptanceRecordValid,
-// refreshAcceptanceValidity); this wrapper supplies the current hash and tolerates the module
-// being absent (then nothing ever lapses, which is the pre-mechanism behaviour).
+// refreshAcceptanceValidity); this wrapper supplies the current hash. Without the evaluator,
+// no owner acceptance can count toward the parcel tally.
 function refreshProposalAcceptanceValidity(proposal) {
     const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
     if (!proposal) return { lapsedOwners: 0 };
@@ -1417,12 +1416,11 @@ function refreshProposalAcceptanceValidity(proposal) {
         proposal.acceptedParcelIds = [];
         return { lapsedOwners: 0, ownershipResolved: false };
     }
-    const requireHash = proposalRequiresDealConsent(proposal);
     if (!flowApi) {
-        if (requireHash) proposal.acceptedParcelIds = [];
+        proposal.acceptedParcelIds = [];
         return { lapsedOwners: 0 };
     }
-    const result = flowApi.refreshAcceptanceValidity(proposal, currentConsentBindingHash(proposal), { requireHash });
+    const result = flowApi.refreshAcceptanceValidity(proposal, currentConsentBindingHash(proposal));
     if (result.lapsedOwners > 0) {
         console.debug('[refreshProposalAcceptanceValidity] acceptances lapsed against the current effect', {
             proposalId: proposal.proposalId, lapsedOwners: result.lapsedOwners
@@ -1470,15 +1468,15 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         }
 
         const consentHash = currentConsentBindingHash(proposal);
-        if (proposalRequiresDealConsent(proposal) && !consentHash) {
-            notifyAcceptIssue('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+        if (!consentHash) {
+            notifyAcceptIssue('proposal_terms_unavailable', 'The current proposal terms could not be verified. Reload the proposal before accepting.');
             return null;
         }
         refreshProposalAcceptanceValidity(proposal);
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
 
         const ownerSlots = getOwnerSlotsForParcel(normalizedParcelId);
-        const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots, { syncWithParcelAcceptance: false });
+        const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots);
         if (!entry) {
             notifyAcceptIssue('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
             return null;
@@ -1779,7 +1777,7 @@ async function rejectProposal(proposalId, parcelId, ownerKey = null) {
         }
 
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
-        const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, getOwnerSlotsForParcel(normalizedParcelId), { syncWithParcelAcceptance: false });
+        const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, getOwnerSlotsForParcel(normalizedParcelId));
         if (!entry || !entry.acceptedOwnerKeys || entry.acceptedOwnerKeys.length === 0) {
             showProposalAlertMessage('this_parcel_has_not_accepted_the_proposal_yet', 'This parcel has not accepted the proposal yet.');
             return null;

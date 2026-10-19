@@ -1,0 +1,95 @@
+// Verify the browser's local owner-state adapter never promotes aggregate flags into decisions.
+import { describe, it, expect, vi } from 'vitest';
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { createContext, runInContext } from 'node:vm';
+
+const require = createRequire(import.meta.url);
+const bookkeeping = require('../../frontend/js/proposals/owner-acceptance.js');
+const flow = require('../../frontend/js/proposals/ownership-flow.js');
+const execution = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
+const core = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
+
+function fixture() {
+    const proposal = { proposalId: 'local-consent', goal: 'as-is', cadastreParcelIds: ['base-a'], acceptedParcelIds: ['base-a'] };
+    const alert = vi.fn();
+    const bridge = { acceptProposal: vi.fn() };
+    const context = createContext({
+        ...bookkeeping, __ownershipFlow: flow, console: { debug: vi.fn(), error: vi.fn() },
+        getOwnerSlotsForParcel: () => [{ key: 'owner-a', displayName: 'Owner A' }],
+        getCurrentUserAgent: () => ({ id: 'actor-a' }),
+        proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id),
+        proposalStorage: { getProposal: () => proposal, save: vi.fn() },
+        showProposalAlertMessage: alert, ProposalChainBridge: bridge,
+        getProposalNftInfo: () => ({ chain: 'evm', tokenId: '1', contract: 'fixture' })
+    });
+    context.window = context;
+    runInContext(core, context);
+    runInContext(execution, context);
+    context.showProposalAlertMessage = alert;
+    return { context, proposal, alert, bridge };
+}
+
+describe('local owner consent evidence', () => {
+    it('reading state drops unsupported aggregate flags without inventing an owner decision', () => {
+        const { context, proposal } = fixture();
+        const state = context.getProposalOwnerAcceptanceState(proposal, 'base-a');
+        expect(state.entries[0]).toMatchObject({ accepted: false, acceptedAt: null, canAccept: true });
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        expect(proposal.ownerAcceptances['base-a'].acceptedBy).toEqual({});
+    });
+
+    it('hashless records remain inspectable but do not count or acquire timestamps', () => {
+        const { context, proposal } = fixture();
+        proposal.ownerAcceptances = bookkeeping.normalizeOwnerAcceptances({
+            'base-a': { owners: {}, ownerOrder: ['owner-a'], acceptedOwnerKeys: ['owner-a'], acceptedBy: {} }
+        });
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries[0])
+            .toMatchObject({ accepted: false, acceptedAt: null, termsChanged: false });
+        expect(context.buildProposalOwnerAcceptanceSummaryFast(proposal).acceptedOwners).toBe(0);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        expect(proposal.ownerAcceptances['base-a'].acceptedOwnerKeys).toEqual(['owner-a']);
+    });
+
+    it('labels changed terms only when an earlier recorded commitment differs', () => {
+        const { context, proposal } = fixture();
+        proposal.ownerAcceptances = bookkeeping.normalizeOwnerAcceptances({
+            'base-a': { ownerOrder: ['owner-a'], acceptedOwnerKeys: ['owner-a'], acceptedBy: { 'owner-a': { effectHash: 'terms-before' } } }
+        });
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries[0])
+            .toMatchObject({ accepted: false, termsChanged: true });
+        context.proposalConsentFingerprint = () => null;
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries[0].termsChanged).toBe(false);
+    });
+
+    it('does not count even matching records when the validity evaluator is unavailable', () => {
+        const { context, proposal } = fixture();
+        proposal.ownerAcceptances = bookkeeping.normalizeOwnerAcceptances({
+            'base-a': { ownerOrder: ['owner-a'], acceptedOwnerKeys: ['owner-a'], acceptedBy: { 'owner-a': { effectHash: 'terms-a' } } }
+        });
+        delete context.__ownershipFlow;
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries[0].accepted).toBe(false);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+    });
+
+    it('refreshes the tally after adding an owner to the parcel roster', () => {
+        const { context, proposal } = fixture();
+        proposal.ownerAcceptances = bookkeeping.normalizeOwnerAcceptances({
+            'base-a': { ownerOrder: ['owner-a'], acceptedOwnerKeys: ['owner-a'], acceptedBy: { 'owner-a': { effectHash: 'terms-a' } } }
+        });
+        context.getOwnerSlotsForParcel = () => [{ key: 'owner-a' }, { key: 'owner-b' }];
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries.map(entry => entry.accepted)).toEqual([true, false]);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+    });
+
+    it('refuses missing current terms before a chain call or local receipt write', async () => {
+        const { context, proposal, alert, bridge } = fixture();
+        context.proposalConsentFingerprint = () => null;
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(bridge.acceptProposal).not.toHaveBeenCalled();
+        expect(alert).toHaveBeenCalledWith('proposal_terms_unavailable', expect.any(String));
+        expect(await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a')).toBeNull();
+        expect(proposal.ownerAcceptances).toBeUndefined();
+        expect(context.proposalStorage.save).not.toHaveBeenCalled();
+    });
+});

@@ -1234,10 +1234,14 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
-    // Validate the full LR deal before opening a wallet flow. The local receipt must bind to
+    // Validate the current terms before opening a wallet flow. The local receipt must bind to
     // exactly the reviewed terms; a malformed allocation must not reach a chain call first.
-    if (proposalRequiresDealConsent(proposal) && !currentConsentBindingHash(proposal)) {
-        showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+    if (!currentConsentBindingHash(proposal)) {
+        if (proposalRequiresDealConsent(proposal)) {
+            showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+        } else {
+            showProposalAlertMessage('proposal_terms_unavailable', 'The current proposal terms could not be verified. Reload the proposal before accepting.');
+        }
         return;
     }
 
@@ -1256,7 +1260,7 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
 
     // Ensure owner acceptance entry exists and get owner slots
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
-    const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots, { syncWithParcelAcceptance: false });
+    const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots);
     if (!entry) {
         showProposalAlertMessage('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
         return;

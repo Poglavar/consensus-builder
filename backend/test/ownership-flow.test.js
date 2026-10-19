@@ -222,15 +222,18 @@ describe('consent validity against the current effect (§12 step 4)', () => {
     const HASH = 'e-abc123';
     const OTHER = 'e-zzz999';
 
-    it('a record binds to its hash; pre-mechanism records always count', () => {
+    it('requires both the recorded and current terms, with an exact match', () => {
         expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, HASH)).toBe(true);
         expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, OTHER)).toBe(false);
-        expect(flowApi.isAcceptanceRecordValid({ acceptedAt: 'x' }, HASH)).toBe(true);
-        expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, null)).toBe(true);
+        expect(flowApi.isAcceptanceRecordValid({ acceptedAt: 'x' }, HASH)).toBe(false);
+        expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, null)).toBe(false);
+        expect(flowApi.isAcceptanceRecordValid(null, HASH)).toBe(false);
+        expect(flowApi.isAcceptanceRecordValid({ effectHash: '' }, '')).toBe(false);
     });
 
     const makeProposal = (hash) => ({
         proposalId: 'p1',
+        cadastreParcelIds: ['HR-1-A', 'HR-1-B', 'HR-1-LEGACY'],
         acceptedParcelIds: ['HR-1-A', 'HR-1-B', 'HR-1-LEGACY'],
         ownerAcceptances: {
             'HR-1-A': {
@@ -252,8 +255,8 @@ describe('consent validity against the current effect (§12 step 4)', () => {
         expect(result.lapsedOwners).toBe(1); // o3 accepted a different effect
         expect(proposal.acceptedParcelIds).toContain('HR-1-A');
         expect(proposal.acceptedParcelIds).not.toContain('HR-1-B');
-        // Not governed by any owner entry — the plain-path acceptance is untouched.
-        expect(proposal.acceptedParcelIds).toContain('HR-1-LEGACY');
+        // A parcel-level flag supplies no missing owner decision.
+        expect(proposal.acceptedParcelIds).not.toContain('HR-1-LEGACY');
         // The record itself is preserved: consent history is immutable.
         expect(proposal.ownerAcceptances['HR-1-B'].acceptedBy.o3.effectHash).toBe(OTHER);
     });
@@ -269,14 +272,32 @@ describe('consent validity against the current effect (§12 step 4)', () => {
         expect(proposal.acceptedParcelIds).not.toContain('HR-1-A');
     });
 
-    it('records without hashes keep the pre-mechanism behaviour: nothing ever lapses', () => {
+    it('records without hashes no longer count and remain available for inspection', () => {
         const proposal = makeProposal(HASH);
         delete proposal.ownerAcceptances['HR-1-B'].acceptedBy.o3.effectHash;
         delete proposal.ownerAcceptances['HR-1-A'].acceptedBy.o1.effectHash;
         delete proposal.ownerAcceptances['HR-1-A'].acceptedBy.o2.effectHash;
         const result = flowApi.refreshAcceptanceValidity(proposal, OTHER);
-        expect(result.lapsedOwners).toBe(0);
-        expect(proposal.acceptedParcelIds.sort()).toEqual(['HR-1-A', 'HR-1-B', 'HR-1-LEGACY']);
+        expect(result.lapsedOwners).toBe(3);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        expect(proposal.ownerAcceptances['HR-1-A'].acceptedOwnerKeys).toEqual(['o1', 'o2']);
+    });
+
+    it('requires a nonempty owner roster and current parcel membership', () => {
+        const proposal = makeProposal(HASH);
+        proposal.cadastreParcelIds = ['HR-1-A'];
+        proposal.ownerAcceptances['HR-1-A'].ownerOrder = [];
+        flowApi.refreshAcceptanceValidity(proposal, OTHER);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        proposal.ownerAcceptances['HR-1-A'].ownerOrder = ['o1', 'o2', 'new-owner'];
+        flowApi.refreshAcceptanceValidity(proposal, HASH);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+    });
+
+    it('clears unsubstantiated parcel flags when no owner records exist', () => {
+        const proposal = { cadastreParcelIds: ['base-a'], acceptedParcelIds: ['base-a'] };
+        flowApi.refreshAcceptanceValidity(proposal, HASH);
+        expect(proposal.acceptedParcelIds).toEqual([]);
     });
 });
 

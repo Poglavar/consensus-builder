@@ -122,6 +122,57 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('parcel flags and hashless owner records cannot manufacture acceptance', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const proposalId = await page.evaluate((parcelId) => {
+      const w = window as any;
+      const id = w.proposalStorage.addProposal({
+        title: 'Unsubstantiated parcel acceptance', goal: 'parcelBased', lifecycleStatus: 'Active',
+        funded: false, cadastreParcelIds: [parcelId],
+      });
+      const proposal = w.proposalStorage.getProposal(id);
+      proposal.acceptedParcelIds = [parcelId];
+      proposal.updatedAt = '2026-01-01T00:00:00.000Z';
+      w.proposalStorage.save();
+      return id;
+    }, PARCEL_ID);
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const ownerRow = page.locator('#proposal-details-panel .owner-acceptance-row').first();
+    await expect(ownerRow.getByRole('button', { name: 'Accept', exact: true })).toBeVisible();
+    expect((await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    expect((await proposalState(page, proposalId)).ownerAcceptances[PARCEL_ID].acceptedBy).toEqual({});
+
+    // Old synthesized records have no commitment; opening the UI must not revive them.
+    await page.evaluate(({ id, parcelId }) => {
+      const w = window as any;
+      const proposal = w.proposalStorage.getProposal(id);
+      const entry = proposal.ownerAcceptances[parcelId];
+      const key = entry.ownerOrder[0];
+      entry.acceptedOwnerKeys = [key];
+      entry.acceptedBy[key] = { acceptedAt: '2026-01-01T00:00:00.000Z' };
+      proposal.acceptedParcelIds = [parcelId];
+      w.proposalStorage.save();
+    }, { id: proposalId, parcelId: PARCEL_ID });
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    const land = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
+    if (!(await land.evaluate(node => (node as HTMLDetailsElement).open))) await openProposalSection(page, 'land');
+    await expect(ownerRow.getByRole('button', { name: 'Accept', exact: true })).toBeVisible();
+    await expect(ownerRow.locator('.owner-acceptance-changed')).toHaveCount(0);
+    expect((await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    await ownerRow.getByRole('button', { name: 'Accept', exact: true }).click();
+    await expect(ownerRow.getByRole('button', { name: 'Undo', exact: true })).toBeVisible();
+    const accepted = await proposalState(page, proposalId);
+    const entry = accepted.ownerAcceptances[PARCEL_ID];
+    expect(entry.acceptedBy[entry.ownerOrder[0]].effectHash).toBeTruthy();
+    expect(entry.acceptanceHistory[0].acceptedAt).toBe('2026-01-01T00:00:00.000Z');
+    expect(accepted.acceptedParcelIds).toEqual([PARCEL_ID]);
+  });
+
   test('parcel owner can accept and then withdraw an unexecuted proposal from its details panel', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);

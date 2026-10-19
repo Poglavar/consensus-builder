@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS proposal (
     
     -- Exact authored cadastral selection and consent
     cadastre_parcel_ids JSONB NOT NULL,
-    accepted_parcel_ids JSONB, -- Array of parcel IDs that have accepted the proposal
-    owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
+    accepted_parcel_ids JSONB, -- Stored parcel-level tally, not individual decision evidence; client uploads are stripped
+    owner_acceptances JSONB, -- Parcel ID -> { owners, ownerOrder, acceptedOwnerKeys, acceptedBy, acceptanceHistory? }; unsigned local records
     ownership_flow JSONB, -- Per crossed base cadastral parcel: ceded m2 + where the ownership goes, stamped at publish
     cadastre_frame JSONB, -- Which cadastre frame the publish-time stamps were computed against ({ capturedAt })
     site geometry(MultiPolygon, 4326), -- The ground the proposal occupies (PARCEL-OPTIONAL.md)
