@@ -58,6 +58,25 @@ function descendants(root) {
 }
 
 describe('Novogradnje detail layout', () => {
+    it('starts every detail card with return navigation and keeps plan returns outside the heading', () => {
+        for (const selected of [false, true, 'floor']) {
+            const { detail } = renderDetail({ selected });
+            const card = descendants(detail).find(node => node.tag === 'article' && node.className.split(' ').includes('detail-card'));
+            const navigation = card.children[0];
+            expect(navigation.tag).toBe('nav');
+            expect(navigation.className).toBe('detail-breadcrumb');
+            expect(navigation['aria-label']).toBe('Povratak');
+            const links = descendants(navigation).filter(node => node.tag === 'a');
+            expect(links.map(link => ({ href: link.href, text: link.textContent }))).toEqual([
+                { href: '/novogradnje/', text: '← Pretraga' },
+                ...(selected ? [{ href: '/novogradnje/zgrade/projekt-a/', text: '← Svi stanovi i tlocrti' }] : [])
+            ]);
+            const heading = card.children.find(node => node.className === 'detail-head');
+            expect(descendants(heading).filter(node => node.tag === 'a')).toHaveLength(0);
+            expect(card.className.split(' ').includes('plan-detail')).toBe(Boolean(selected));
+        }
+    });
+
     it('renders exactly four separate sibling panels for an apartment and keeps sources in the source panel', () => {
         const { detail } = renderDetail({ selected: true });
         const panels = descendants(detail).filter(node => node.className.split(' ').includes('viewer-panel'));

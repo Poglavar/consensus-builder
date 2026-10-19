@@ -33,7 +33,8 @@ export function projectMarkup(project) {
 function detailMarkup(project, apartment) {
     const chosen = apartment ? [apartment] : [...project.apartments,...(project.floorPlans||[])];
     const sources=apartment?(project.sources||[]):[];
-    return `<article class="detail-card"><h2>${escape(apartment?.label || project.name)}</h2><p>${escape(project.address)} · ${kindLabel(project.kind)} · ${yearLabel(project)}</p><div class="apartment-list">${chosen.map(a => `<a class="apartment-row" href="${escape(a.url)}"><strong>${escape(a.label)}</strong><span>${escape(a.scope==='floor'?`Katovi: ${(a.levels||[]).join(', ')}`:apartmentFacts(a)) || 'Podaci nisu navedeni'}</span></a>`).join('')}</div><p>Lokacija i geometrija prema dostupnim izvorima. Rekonstrukcije su označene prema stupnju provjere; dostupnost stana provjerite kod izvora.</p><ul>${sources.map(s => `<li><a href="${escape(s.url)}" rel="noopener noreferrer">${escape(s.label)}</a></li>`).join('')}</ul></article>`;
+    const back=`<nav class="detail-breadcrumb" aria-label="Povratak"><a href="/novogradnje/">← Pretraga</a>${apartment?`<a href="${escape(project.url)}">← Svi stanovi i tlocrti</a>`:''}</nav>`;
+    return `<article class="detail-card${apartment?' plan-detail':''}">${back}<div class="detail-head"><h1 class="detail-title">${escape(apartment?`${apartment.label} · ${project.name}`:project.name)}</h1></div><p>${escape(project.address)} · ${kindLabel(project.kind)} · ${yearLabel(project)}</p><div class="apartment-list">${chosen.map(a => `<a class="apartment-row" href="${escape(a.url)}"><strong>${escape(a.label)}</strong><span>${escape(a.scope==='floor'?`Katovi: ${(a.levels||[]).join(', ')}`:apartmentFacts(a)) || 'Podaci nisu navedeni'}</span></a>`).join('')}</div><p>Lokacija i geometrija prema dostupnim izvorima. Rekonstrukcije su označene prema stupnju provjere; dostupnost stana provjerite kod izvora.</p><ul>${sources.map(s => `<li><a href="${escape(s.url)}" rel="noopener noreferrer">${escape(s.label)}</a></li>`).join('')}</ul></article>`;
 }
 
 export function structuredData(catalogue, project = null, apartment = null, page = {}) {
@@ -71,7 +72,7 @@ export async function renderPublicPage({ catalogue, project = null, apartment = 
     const visible = filterProjects(catalogue.projects, decodeFilters(search));
     $('#results').html(visible.map(projectMarkup).join(''));
     if (project) {
-        $('body').attr('data-page', 'detail');
+        $('body').attr('data-page', 'detail').addClass('detail-page');
         $('h1').text(drawing ? `${drawing.label} · ${project.name}` : project.name);
         $('#detail').html(detailMarkup(project, drawing));
         // Detail URLs are useful without scripts and appear before the catalogue.

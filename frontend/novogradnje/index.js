@@ -82,15 +82,18 @@
         const selectedFloorPlan=selectedId?floorPlans.find(f=>String(f.id)===selectedId):null;
         const selected=selectedApartment||selectedFloorPlan||null,isFloorPlan=Boolean(selectedFloorPlan);
         const card=node('article','detail-card');
+        const breadcrumb=node('nav','detail-breadcrumb');breadcrumb.setAttribute('aria-label','Povratak');
+        const home=node('a','','← Pretraga');home.href='/novogradnje/';breadcrumb.append(home);
         if(selected){
-            const breadcrumb=node('nav','detail-breadcrumb');breadcrumb.setAttribute('aria-label','Putanja projekta');
-            const parent=node('a','',`← ${project.name||project.label||project.address||'Stambeni projekt'} · svi stanovi`);parent.href=projectPath(project);breadcrumb.append(parent);card.append(breadcrumb);
+            card.className+=' plan-detail';
+            const parent=node('a','','← Svi stanovi i tlocrti');parent.href=projectPath(project);breadcrumb.append(parent);
         }
+        card.append(breadcrumb);
         const head=node('div','detail-head'),left=node('div');
         const projectName=project.name||project.label||'Stambeni projekt',addressText=project.address||text.noAddress;
         const title=selected?`${selected.label||(isFloorPlan?'Tlocrt katova':'Stan')} · ${projectName}${projectName===addressText?'':` — ${addressText}`}`:projectName;
         const h=node('h1','detail-title',title),address=node('p','detail-address',addressText);left.append(h,address);
-        const links=node('div','detail-links'),home=node('a','', selected?'Povratak na pretragu':'← Povratak na pretragu');home.href='/novogradnje/';links.append(home);head.append(left,links);card.append(head);
+        head.append(left);card.append(head);
         if(!project.location)card.append(node('p','confidence-note','Nepoznata lokacija — tlocrt je dostupan, ali zgrada još nije povezana s kartom.'));
         card.append(node('p','confidence-note',`${text.kinds[project.kind]||text.kinds.unknown} · ${text.year(project)}. Oznake ovise o dostupnim izvorima.`));
         if(!apartments.length&&!floorPlans.length)card.append(node('p','confidence-note','Projekt je pronađen kod izvora. Još nemamo tlocrte za pregled.'));

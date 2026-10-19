@@ -1,6 +1,7 @@
 // The Novogradnje catalogue page must render complete search and social-preview metadata, with JSON-LD that places it under zagreb.lol.
 import { describe, it, expect } from 'vitest';
 import { renderPublicPage, structuredData } from '../routes/novogradnje.js';
+import * as cheerio from 'cheerio';
 
 const meta = (html, key) => html.match(new RegExp(`<meta[^>]*(?:name|property)="${key}"[^>]*content="([^"]*)"`))?.[1];
 
@@ -29,6 +30,20 @@ describe('novogradnje search metadata', () => {
         expect(page.description).toBe(meta(html, 'description'));
         expect(page.isPartOf.url).toBe('https://zagreb.lol/');
         expect(page.breadcrumb.itemListElement.map(c => c.item)).toEqual(['https://zagreb.lol/', 'https://zagreb.lol/novogradnje/']);
+    });
+
+    it('serves the same top back navigation and compact apartment heading before scripts run', async () => {
+        const project={name:'Projekt A',url:'/novogradnje/zgrade/projekt-a/',address:'Ulica 1',apartments:[],sources:[]};
+        const apartment={id:'a1',label:'Stan A1',url:`${project.url}stanovi/a1/`};
+        for(const selected of [null,apartment]){
+            const $=cheerio.load(await renderPublicPage({catalogue:{projects:[]},project,apartment:selected}));
+            const card=$('#detail > article');
+            expect(card.children().first().is('nav.detail-breadcrumb')).toBe(true);
+            expect(card.find('nav a').map((_i,a)=>$(a).attr('href')).get()).toEqual(selected?['/novogradnje/',project.url]:['/novogradnje/']);
+            expect(card.hasClass('plan-detail')).toBe(Boolean(selected));
+            expect(card.find('.detail-head h1.detail-title')).toHaveLength(1);
+            expect($('body').hasClass('detail-page')).toBe(true);
+        }
     });
 
     it('extends the breadcrumb through the project to the apartment on deep pages', () => {
