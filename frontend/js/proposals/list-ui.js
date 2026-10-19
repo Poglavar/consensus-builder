@@ -682,7 +682,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
     const metaLabels = {
         author: t('modal.roadWidth.proposalList.meta.author', 'Author:'),
         created: t('modal.roadWidth.proposalList.meta.created', 'Created:'),
-        acceptance: t('modal.roadWidth.proposalList.meta.acceptance', 'Acceptance:'),
         parcels: t('modal.roadWidth.proposalList.meta.parcels', 'Parcels:'),
         area: t('modal.roadWidth.proposalList.meta.area', 'Area:'),
         offer: t('modal.roadWidth.proposalList.meta.offer', 'Offer:'),
@@ -707,9 +706,9 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const serialProposalId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
         const color = typeof getProposalColor === 'function' ? getProposalColor(proposalId || '') : '#007bff';
         const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.goalKey));
-        const acceptanceText = metrics.parcelCount > 0
-            ? `${metrics.acceptedCount}/${metrics.parcelCount} ${t('modal.roadWidth.proposalList.meta.acceptedWord', 'accepted')}`
-            : '—';
+        const consentLabels = metrics.consentBasis && window.ProposalApprovalText.consentLabels(metrics.consentBasis, t,
+            { accepted: metrics.acceptedCount, total: metrics.parcelCount });
+        const acceptanceText = metrics.parcelCount > 0 && consentLabels ? consentLabels.parcelSummary : '';
         const areaText = formatAreaMetric(metrics.area);
         // No offer → no "—" placeholder in the meta line; the line simply has one fewer item.
         const offerText = (Number.isFinite(metrics.offerValue) && metrics.offerValue > 0)
@@ -789,7 +788,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             `<span>${safeAuthor}</span>`,
             `<span>${escapeHtml(createdDate)}</span>`,
             `<span>${escapeHtml(t('proposals.autoName.parcels', '{{count}} parcels', { count: metrics.parcelCount }))}</span>`,
-            `<span title="${escapeHtml(metaLabels.acceptance)}">${escapeHtml(acceptanceText)}</span>`
+            acceptanceText ? `<span data-consent-basis="${metrics.consentBasis}" title="${escapeHtml(consentLabels.hint)}">${escapeHtml(acceptanceText)}</span>` : ''
         ].filter(Boolean).join('<span class="proposal-card-dot">·</span>');
 
         return `

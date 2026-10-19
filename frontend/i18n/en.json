@@ -1682,6 +1682,22 @@
                 "undo": "Undo",
                 "accepted": "Accepted",
                 "pending": "Pending",
+                "local": {
+                    "parcelTitle": "Locally recorded parcel consent:",
+                    "ownerTitle": "Local owner-entry consent:",
+                    "accepted": "Consent recorded in this browser",
+                    "pending": "No current local consent record",
+                    "hint": "Unsigned records in this browser, matched to the current terms and owner roster. They do not verify signing authority or legal ownership.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcels with local consent"
+                },
+                "signed": {
+                    "parcelTitle": "Parcel consent from verified receipts:",
+                    "ownerTitle": "Owner approvals from verified receipts:",
+                    "accepted": "Verified approval for current terms",
+                    "pending": "No current verified approval",
+                    "hint": "Signed receipts verified against the current terms and declared approval context. They do not establish legal title or payment.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcels with verified receipts"
+                },
                 "recipient": "recipient",
                 "solanaLensHint": "Say yes in the Lens card",
                 "moneySchedule": "Money schedule",

@@ -818,8 +818,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const acceptanceLoadingLabel = tProposal('panel.proposal.rendering', 'Loading...');
-    const parcelAcceptanceLabel = tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:');
-    const ownerAcceptanceLabel = tProposalUI('panel.proposal.acceptance.ownerTitle', 'Owner Acceptance Status:');
+    const consentLabels = window.ProposalApprovalText.consentLabels(
+        hasApprovalSetup ? 'signed-receipts' : 'local-records', tProposalUI);
+    const parcelAcceptanceLabel = consentLabels.parcelTitle;
+    const ownerAcceptanceLabel = consentLabels.ownerTitle;
     const acceptanceSpinnerHtml = `
         <div class="acceptance-loading">
             <div class="spinner-circle" aria-hidden="true"></div>
@@ -1072,8 +1074,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${editApprovalButtonHtml}
             ${typeof proposalRequiresDealConsent === 'function' && proposalRequiresDealConsent(fullProposal || proposal)
                 ? buildReadjustmentCashReviewHtml(fullProposal || proposal) : ''}
-            ${hasApprovalSetup ? '' : parcelAcceptancePlaceholder}
-            ${hasApprovalSetup ? '' : ownerAcceptancePlaceholder}
+            ${hasApprovalSetup || isNonBindingProposal(fullProposal) ? '' : parcelAcceptancePlaceholder}
+            ${hasApprovalSetup || isNonBindingProposal(fullProposal) ? '' : ownerAcceptancePlaceholder}
 
             <hr class="proposal-details-divider">
             <div class="metric-group">

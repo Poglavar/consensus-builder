@@ -1716,6 +1716,22 @@
                 "undo": "Poništi",
                 "accepted": "Prihvaćeno",
                 "pending": "Na čekanju",
+                "local": {
+                    "parcelTitle": "Lokalno zabilježene suglasnosti za čestice:",
+                    "ownerTitle": "Lokalno zabilježena suglasnost za unos vlasnika:",
+                    "accepted": "Suglasnost zabilježena u ovom pregledniku",
+                    "pending": "Nema trenutačnog lokalnog zapisa suglasnosti",
+                    "hint": "Nepotpisani zapisi u ovom pregledniku, povezani s trenutačnim uvjetima i popisom vlasnika. Ne potvrđuju ovlast za potpisivanje ni pravno vlasništvo.",
+                    "parcelSummary": "{{accepted}}/{{total}} čestica s lokalnom suglasnošću"
+                },
+                "signed": {
+                    "parcelTitle": "Suglasnosti za čestice prema provjerenim potvrdama:",
+                    "ownerTitle": "Odobrenja vlasnika prema provjerenim potvrdama:",
+                    "accepted": "Provjereno odobrenje za trenutačne uvjete",
+                    "pending": "Nema trenutačnog provjerenog odobrenja",
+                    "hint": "Potpisane potvrde provjerene prema trenutačnim uvjetima i prijavljenom kontekstu odobravanja. Ne dokazuju pravno vlasništvo ni uplatu.",
+                    "parcelSummary": "{{accepted}}/{{total}} čestica s provjerenim potvrdama"
+                },
                 "recipient": "primatelj",
                 "solanaLensHint": "Recite da u kartici Leća",
                 "moneySchedule": "Novčani raspored",

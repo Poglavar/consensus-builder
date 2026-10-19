@@ -1716,6 +1716,22 @@
                 "undo": "Poništi",
                 "accepted": "Prihvaćeno",
                 "pending": "Na čekanju",
+                "local": {
+                    "parcelTitle": "Lokalno zabeležene saglasnosti za parcele:",
+                    "ownerTitle": "Lokalno zabeležena saglasnost za unos vlasnika:",
+                    "accepted": "Saglasnost zabeležena u ovom pregledaču",
+                    "pending": "Nema važećeg lokalnog zapisa saglasnosti",
+                    "hint": "Nepotpisani zapisi u ovom pregledaču, povezani sa trenutnim uslovima i spiskom vlasnika. Ne potvrđuju ovlašćenje za potpisivanje niti pravno vlasništvo.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcela sa lokalnom saglasnošću"
+                },
+                "signed": {
+                    "parcelTitle": "Saglasnosti za parcele prema proverenim potvrdama:",
+                    "ownerTitle": "Odobrenja vlasnika prema proverenim potvrdama:",
+                    "accepted": "Provereno odobrenje za trenutne uslove",
+                    "pending": "Nema važećeg proverenog odobrenja",
+                    "hint": "Potpisane potvrde proverene prema trenutnim uslovima i prijavljenom kontekstu odobravanja. Ne dokazuju pravno vlasništvo niti uplatu.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcela sa proverenim potvrdama"
+                },
                 "recipient": "primalac",
                 "solanaLensHint": "Recite da u kartici Sočivo",
                 "moneySchedule": "Raspored plaćanja",

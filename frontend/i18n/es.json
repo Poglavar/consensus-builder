@@ -1729,6 +1729,22 @@
                 "undo": "Deshacer",
                 "accepted": "Aceptada",
                 "pending": "Pendiente",
+                "local": {
+                    "parcelTitle": "Consentimiento de parcelas registrado localmente:",
+                    "ownerTitle": "Consentimiento para los registros locales de propietarios:",
+                    "accepted": "Consentimiento registrado en este navegador",
+                    "pending": "No hay un registro local vigente de consentimiento",
+                    "hint": "Registros sin firma en este navegador, vinculados a las condiciones actuales y al registro de propietarios. No verifican la autoridad para firmar ni la titularidad legal.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcelas con consentimiento local"
+                },
+                "signed": {
+                    "parcelTitle": "Consentimiento de parcelas según recibos verificados:",
+                    "ownerTitle": "Aprobaciones de propietarios según recibos verificados:",
+                    "accepted": "Aprobación verificada para las condiciones actuales",
+                    "pending": "No hay una aprobación verificada vigente",
+                    "hint": "Recibos firmados verificados frente a las condiciones actuales y al contexto de aprobación declarado. No acreditan la titularidad legal ni el pago.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcelas con recibos verificados"
+                },
                 "recipient": "destinatario",
                 "solanaLensHint": "Di sí en la tarjeta Lente",
                 "moneySchedule": "Calendario de pagos",

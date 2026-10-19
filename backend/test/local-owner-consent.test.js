@@ -10,6 +10,7 @@ const bookkeeping = require('../../frontend/js/proposals/owner-acceptance.js');
 const flow = require('../../frontend/js/proposals/ownership-flow.js');
 const status = require('../../frontend/js/proposals/status.js');
 const chainStatus = require('../../frontend/js/proposals/chain-status.js');
+const { normalizeParcelIdList } = require('../../frontend/js/proposals/parcel-id.js');
 const execution = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
 const core = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
 const agents = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
@@ -27,7 +28,11 @@ function fixture() {
         ...bookkeeping, ...status, __ownershipFlow: flow, setTimeout: vi.fn(), console: { debug: vi.fn(), error: vi.fn() },
         getOwnerSlotsForParcel: () => [{ key: 'owner-a', displayName: 'Owner A' }],
         getCurrentUserAgent: () => agent,
-        proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id), normalizeParcelIdList: ids => ids.map(String),
+        proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id), normalizeParcelIdList,
+        ProposalApprovalText: require('../../frontend/js/proposals/approval-text.js'),
+        ProposalKind: require('../../frontend/js/proposals/proposal-kind.js'),
+        escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
+        getProposalI18nHelper: () => (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g, (match, key) => params[key] ?? match),
         proposalStorage: { getProposal: () => proposal, save: vi.fn() },
         showProposalAlertMessage: alert, ProposalChainBridge: bridge,
         ProposalChainStatus: chainStatus,
@@ -59,6 +64,45 @@ function seedAcceptance(proposal) {
 }
 
 describe('local owner consent evidence', () => {
+    it('recomputes list metrics from current local records and counts each declared parcel once', () => {
+        const { context, proposal } = fixture();
+        const source = readFileSync(new URL('../../frontend/js/proposals/geometry.js', import.meta.url), 'utf8');
+        runInContext(source.slice(source.indexOf('function computeProposalMetrics('), source.indexOf('\nfunction buildProposalThumbHtml(')), context);
+        context.computeProposalArea = () => null;
+        context.resolveProposalGoalKey = () => 'as-is';
+        context.isProposalApplied = () => false;
+        proposal.cadastreParcelIds = ['base-a', 'base-a'];
+        proposal.acceptedParcelIds = ['base-a', 'outside', 'base-a'];
+        const before = structuredClone(proposal);
+        expect(context.computeProposalMetrics(proposal)).toMatchObject({
+            parcelCount: 1, acceptedCount: 0, acceptanceRatio: 0, consentBasis: 'local-records'
+        });
+        expect(proposal).toEqual(before);
+        seedAcceptance(proposal);
+        expect(context.computeProposalMetrics(proposal)).toMatchObject({ parcelCount: 1, acceptedCount: 1, acceptanceRatio: 1 });
+        expect(context.buildProposalOwnerAcceptanceSummaryFast(proposal)).toMatchObject({ totalOwners: 1, acceptedOwners: 1 });
+        expect(context.buildParcelAcceptanceStatusHtml(proposal)).toContain('Locally recorded parcel consent: (1/1)');
+        expect(context.buildOwnerAcceptanceStatusHtml(proposal)).toContain('Local owner-entry consent: (1/1)');
+        expect(context.buildParcelAcceptanceStatusHtml(proposal)).toContain('Consent recorded in this browser');
+        context.getOwnerSlotsForParcel = () => [];
+        const stored = structuredClone(proposal);
+        expect(context.computeProposalMetrics(proposal).acceptedCount).toBe(0);
+        expect(proposal).toEqual(stored);
+        expect(proposal.ownerAcceptances['base-a'].acceptedBy['owner-a'].effectHash).toBe('terms-a');
+    });
+
+    it.each(['community-vote', 'owner-vote'])('does not turn local owner records into %s consent or verified receipts', kind => {
+        const { context, proposal } = fixture();
+        seedAcceptance(proposal);
+        proposal.kind = kind;
+        expect(context.getProposalConsentMetrics(proposal)).toMatchObject({ acceptedCount: 0, consentBasis: null });
+        expect(context.buildParcelAcceptanceStatusHtml(proposal)).toBe('');
+        expect(context.buildOwnerAcceptanceStatusHtml(proposal)).toBe('');
+        proposal.kind = 'owner-deal';
+        proposal.approvalConfig = {};
+        expect(context.getProposalConsentMetrics(proposal)).toMatchObject({ acceptedCount: 0, consentBasis: 'signed-receipts' });
+    });
+
     it('the proposal adapter preserves missing ownership instead of inventing a Single owner', () => {
         const source = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
         const start = source.indexOf('function getOwnerSlotsForParcel(');

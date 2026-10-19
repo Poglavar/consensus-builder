@@ -68,6 +68,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalDisplayText: displayText,
         __proposalDisplayState: displayState,
         ProposalPanelPresentation: panelPresentation,
+        ProposalApprovalText: require('../../frontend/js/proposals/approval-text.js'),
         ProposalArea: require('../../frontend/js/proposals/area.js'),
         CadastralParcelRepository: {
             get: vi.fn(id => sourceFeatures ? sourceFeatures.find(feature => feature.properties.parcelId === id) : sourceFeature),

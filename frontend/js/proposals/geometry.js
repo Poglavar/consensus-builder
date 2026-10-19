@@ -1187,9 +1187,7 @@ function computeProposalArea(proposal) {
 function computeProposalMetrics(proposal) {
     const createdAt = Date.parse(proposal.createdAt) || 0;
     const executedAt = proposal.executedAt ? (Date.parse(proposal.executedAt) || 0) : 0;
-    const parcelCount = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds.length : 0;
-    const acceptedCount = Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds.length : 0;
-    const acceptanceRatio = parcelCount > 0 ? acceptedCount / parcelCount : 0;
+    const consent = getProposalConsentMetrics(proposal);
     const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
     const area = computeProposalArea(proposal);
     const goalKey = resolveProposalGoalKey(proposal, null) || 'other';
@@ -1200,10 +1198,7 @@ function computeProposalMetrics(proposal) {
     return {
         createdAt,
         executedAt,
-        parcelCount,
-        acceptedCount,
-        acceptanceRatio,
-        acceptancePercent: acceptanceRatio * 100,
+        ...consent,
         offerValue,
         area,
         goalKey,

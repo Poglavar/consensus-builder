@@ -124,6 +124,60 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('consent summaries identify local records, discard stale tallies and verify signed receipts separately', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] };
+      const local = w.proposalStorage.addProposal({ ...base, title: 'Local consent summary' });
+      const p = w.proposalStorage.getProposal(local);
+      const slots = w.getOwnerSlotsForParcel(parcelId);
+      const entry = w.ensureOwnerAcceptanceEntry(p, parcelId, slots);
+      entry.acceptedOwnerKeys = slots.map((slot: any) => slot.key);
+      entry.acceptedBy = Object.fromEntries(slots.map((slot: any) => [slot.key, { effectHash: w.currentConsentBindingHash(p) }]));
+      const signed = w.proposalStorage.addProposal({ ...base, title: 'Receipt-based consent summary', approvalConfig: {
+        schema: 'proposal-approval/v1', policy: { type: 'unanimous' }, rights: {
+          schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'consent-summary-fixture' },
+          parcels: [{ parcelId, complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/1' }] }]
+        }
+      } });
+      w.proposalStorage.getProposal(signed).acceptedParcelIds = [parcelId, parcelId];
+      const vote = w.proposalStorage.addProposal({ ...base, title: 'Non-binding owner vote', kind: 'owner-vote' });
+      w.proposalStorage.getProposal(vote).acceptedParcelIds = [parcelId];
+      return { local, signed, vote };
+    }, PARCEL_ID);
+    await page.locator('#proposals-button').click();
+    const localRow = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.local}"]`);
+    const signedRow = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.signed}"]`);
+    await expect(localRow.locator('[data-consent-basis="local-records"]')).toHaveText('1/1 parcels with local consent');
+    await expect(signedRow.locator('[data-consent-basis="signed-receipts"]')).toHaveText('0/1 parcels with verified receipts');
+    await expect(page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.vote}"] [data-consent-basis]`)).toHaveCount(0);
+    await localRow.locator('.proposal-list-details-btn').click();
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    await expect(page.locator('#proposal-parcel-acceptance-section .acceptance-label')).toHaveText('Locally recorded parcel consent: (1/1)');
+    await expect(page.locator('#proposal-owner-acceptance-section .acceptance-label')).toHaveText('Local owner-entry consent: (1/1)');
+    await page.evaluate(id => {
+      const w = window as any;
+      const proposal = w.proposalStorage.getProposal(id);
+      proposal.offer = 100;
+      w.updateProposalList();
+    }, ids.local);
+    // Opening details closes the list sheet; reopening performs the visible list refresh.
+    await page.locator('#proposals-button').click();
+    await expect(localRow.locator('[data-consent-basis="local-records"]')).toHaveText('0/1 parcels with local consent');
+    await localRow.locator('.proposal-list-details-btn').click();
+    await expandProposalDetails(page);
+    const land = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
+    if (!await land.evaluate(node => (node as HTMLDetailsElement).open)) await openProposalSection(page, 'land');
+    await expect(page.locator('#proposal-parcel-acceptance-section .acceptance-label')).toHaveText('Locally recorded parcel consent: (0/1)');
+    await showProposal(page, ids.vote);
+    await expect(page.locator('#proposal-parcel-acceptance-section')).toHaveCount(0);
+    await expect(page.locator('#proposal-owner-acceptance-section')).toHaveCount(0);
+  });
+
   test('payout terms describe the record without asserting funding or payment', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));

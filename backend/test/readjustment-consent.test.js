@@ -9,6 +9,7 @@ import { createContext, runInContext } from 'node:vm';
 const require = createRequire(import.meta.url);
 const deal = require('../../frontend/js/reparcellization-deal.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const { normalizeOwnerAcceptances } = require('../../frontend/js/proposals/owner-acceptance.js');
 const ownership = require('../../frontend/js/reparcellization-ownership.js');
 const turf = require('@turf/turf');
 const source = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
@@ -61,6 +62,8 @@ function fixture() {
     const bridge = { acceptProposal: vi.fn(async () => ({ accepted: true })) };
     const context = createContext({
         ...approval,
+        normalizeOwnerAcceptances,
+        ProposalApprovalText: require('../../frontend/js/proposals/approval-text.js'),
         TextEncoder,
         // Like storage.js getProposalI18nHelper without a loaded language: the fallback, interpolated.
         getProposalI18nHelper: () => (_key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (key in params ? params[key] : match)),
@@ -147,6 +150,9 @@ describe('fixed readjustment consent', () => {
         expect(firstReceipt).toMatchObject({ actorId: 'owner-a', decision: 'approve', effectHash: deal.fingerprint(proposal), providerId: 'test-lens-signer' });
         expect(firstReceipt).not.toHaveProperty('acceptedByAgentId');
         expect(context.ProposalApprovalAuthorities.verifyReceipt(proposal, firstReceipt)).toBe(true);
+        expect(context.getProposalConsentMetrics(proposal)).toMatchObject({ parcelCount: 2, acceptedCount: 1, consentBasis: 'signed-receipts' });
+        expect(context.buildParcelAcceptanceStatusHtml(proposal)).toContain('Parcel consent from verified receipts: (1/2)');
+        expect(context.buildOwnerAcceptanceStatusHtml(proposal)).toContain('Owner approvals from verified receipts: (1/2)');
         expect(context.buildProposalOwnerAcceptanceSummary(proposal)).toMatchObject({ acceptedOwners: 1, totalOwners: 2 });
         const reloaded = JSON.parse(JSON.stringify(proposal));
         expect(context.ProposalApprovalAuthorities.verifyReceipt(reloaded, reloaded.ownerApprovals['owner-a'])).toBe(true);
@@ -155,6 +161,9 @@ describe('fixed readjustment consent', () => {
         // Rebalance the per-owner cash while retaining the whole-agreement total.
         proposal.reparcellization.ownerShares[0].cashOffer = 20;
         proposal.reparcellization.ownerShares[1].cashOffer = 10;
+        const beforeMetrics = structuredClone(proposal);
+        expect(context.getProposalConsentMetrics(proposal).acceptedCount).toBe(0);
+        expect(proposal).toEqual(beforeMetrics);
         setActor({ id: 'owner-b', name: 'Bob Example' });
         const afterEdit = await context.acceptProposal(proposal.proposalId, 'base-b', 'owner-b');
         expect(afterEdit).toMatchObject({ ownerKey: 'owner-b', parcelAccepted: true });

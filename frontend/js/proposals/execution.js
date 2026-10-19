@@ -274,34 +274,44 @@ function buildReadjustmentCashReviewHtml(proposal) {
     </section>`;
 }
 
+// Evaluate a copy against the current roster and terms before presenting or sorting a tally.
+// Opening the list must not rewrite stored consent. Count only unique declared references;
+// neither non-binding votes nor a stored aggregate alone can establish owner consent.
+function getProposalConsentMetrics(proposal) {
+    const parcelIds = normalizeParcelIdList(proposal?.cadastreParcelIds);
+    const isVote = window.ProposalKind?.isNonBinding(proposal);
+    const signed = usesAbstractProposalApproval(proposal);
+    const evaluated = { ...proposal, ownerAcceptances: normalizeOwnerAcceptances(proposal?.ownerAcceptances), acceptedParcelIds: [] };
+    const summary = isVote ? null : buildProposalOwnerAcceptanceSummaryFast(evaluated);
+    const accepted = new Set(isVote || (signed && summary.ownershipResolved !== true)
+        ? [] : normalizeParcelIdList(evaluated.acceptedParcelIds));
+    const acceptedCount = parcelIds.filter(id => accepted.has(id)).length;
+    const acceptanceRatio = parcelIds.length ? acceptedCount / parcelIds.length : 0;
+    return { parcelCount: parcelIds.length, acceptedCount, acceptanceRatio,
+        acceptancePercent: acceptanceRatio * 100,
+        consentBasis: isVote ? null : signed ? 'signed-receipts' : 'local-records' };
+}
+
 function buildParcelAcceptanceStatusHtml(proposal) {
-    if (window.ProposalKind?.isCommunityVote(proposal)) return '';
-    refreshProposalAcceptanceValidity(proposal);
-    const tProposalUI = getProposalI18nHelper();
-    const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
-    const total = parcelIds.length;
+    const metrics = getProposalConsentMetrics(proposal);
+    if (!metrics.consentBasis) return '';
+    const total = metrics.parcelCount;
     if (!total) {
         return '';
     }
 
-    const acceptedCount = Math.min(
-        Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds.length : 0,
-        total
-    );
-
-    // For vote proposals this same bar reads as support: parcels where every owner voted yes.
-    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
-    const titleText = isVote
-        ? tProposalUI('panel.proposal.voting.parcelTitle', 'Parcel Support:')
-        : tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:');
-    const labelText = `${titleText} (${acceptedCount}/${total})`;
+    const acceptedCount = metrics.acceptedCount;
+    // Owner-consent records do not become a resident or on-chain vote count by changing kind.
+    const labels = window.ProposalApprovalText.consentLabels(metrics.consentBasis, getProposalI18nHelper());
+    const labelText = `${labels.parcelTitle} (${acceptedCount}/${total})`;
+    const evidenceAttrs = `data-consent-basis="${metrics.consentBasis}" title="${escapeHtml(labels.hint)}"`;
 
     // If more than 65 parcels, show progress bar instead of circles
     if (total > 65) {
         const percentage = total > 0 ? (acceptedCount / total) * 100 : 0;
         // The fill's width is the data; the bar's look is its class.
         return `
-            <div class="proposal-acceptance-status">
+            <div class="proposal-acceptance-status" ${evidenceAttrs}>
                 <div class="acceptance-label">${labelText}</div>
                 <div class="acceptance-progress-bar">
                     <div class="acceptance-progress-fill" style="width: ${percentage}%;"></div>
@@ -311,8 +321,8 @@ function buildParcelAcceptanceStatusHtml(proposal) {
 
     // For 65 or fewer parcels, show circles
     let circlesHtml = '';
-    const acceptedTitle = tProposalUI('panel.proposal.acceptance.accepted', 'Accepted');
-    const pendingTitle = tProposalUI('panel.proposal.acceptance.pending', 'Pending');
+    const acceptedTitle = escapeHtml(labels.accepted);
+    const pendingTitle = escapeHtml(labels.pending);
     for (let i = 0; i < acceptedCount; i++) {
         circlesHtml += `<div class="acceptance-circle accepted" title="${acceptedTitle}"></div>`;
     }
@@ -321,7 +331,7 @@ function buildParcelAcceptanceStatusHtml(proposal) {
     }
 
     return `
-        <div class="proposal-acceptance-status">
+        <div class="proposal-acceptance-status" ${evidenceAttrs}>
             <div class="acceptance-label">${labelText}</div>
             <div class="acceptance-circles">${circlesHtml}</div>
         </div>`;
@@ -341,12 +351,13 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
         return summary;
     }
 
-    proposal.cadastreParcelIds.forEach(parcelId => ensureOwnerAcceptanceEntry(proposal, parcelId, getOwnerSlotsForParcel(parcelId)));
+    const parcelIds = normalizeParcelIdList(proposal.cadastreParcelIds);
+    parcelIds.forEach(parcelId => ensureOwnerAcceptanceEntry(proposal, parcelId, getOwnerSlotsForParcel(parcelId)));
     refreshProposalAcceptanceValidity(proposal);
     const acceptances = proposal.ownerAcceptances || {};
     let includeEntries = true;
 
-    proposal.cadastreParcelIds.forEach(parcelId => {
+    parcelIds.forEach(parcelId => {
         const normalizedParcelId = parcelId !== undefined && parcelId !== null
             ? parcelId.toString()
             : '';
@@ -387,6 +398,7 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
 }
 
 function buildOwnerAcceptanceStatusHtml(proposal, summaryOverride) {
+    if (window.ProposalKind?.isNonBinding(proposal)) return '';
     const tProposalUI = getProposalI18nHelper();
     const ownerAcceptanceSummary = summaryOverride || buildProposalOwnerAcceptanceSummary(proposal);
     if (!ownerAcceptanceSummary.totalOwners) {
@@ -395,13 +407,16 @@ function buildOwnerAcceptanceStatusHtml(proposal, summaryOverride) {
     try {
         const total = ownerAcceptanceSummary.totalOwners;
         const acceptedCount = ownerAcceptanceSummary.acceptedOwners || 0;
-        const labelText = `${tProposalUI('panel.proposal.acceptance.ownerTitle', 'Owner Acceptance Status:')} (${acceptedCount}/${total})`;
+        const basis = usesAbstractProposalApproval(proposal) ? 'signed-receipts' : 'local-records';
+        const labels = window.ProposalApprovalText.consentLabels(basis, tProposalUI);
+        const labelText = `${labels.ownerTitle} (${acceptedCount}/${total})`;
+        const evidenceAttrs = `data-consent-basis="${basis}" title="${escapeHtml(labels.hint)}"`;
 
         // If more than 65 owners, show progress bar instead of circles
         if (total > 65) {
             const percentage = total > 0 ? (acceptedCount / total) * 100 : 0;
             return `
-                <div class="proposal-acceptance-status owner">
+                <div class="proposal-acceptance-status owner" ${evidenceAttrs}>
                     <div class="acceptance-label">${labelText}</div>
                     <div class="acceptance-progress-bar">
                         <div class="acceptance-progress-fill" style="width: ${percentage}%;"></div>
@@ -416,13 +431,13 @@ function buildOwnerAcceptanceStatusHtml(proposal, summaryOverride) {
             if (entry.displayName) parts.push(entry.displayName);
             if (entry.shareText) parts.push(entry.shareText);
             if (entry.parcelId) parts.push(tProposalUI('panel.proposal.parcels.label', 'Parcel {{id}}', { id: entry.parcelId }));
-            parts.push(entry.accepted ? tProposalUI('panel.proposal.acceptance.accepted', 'Accepted') : tProposalUI('panel.proposal.acceptance.pending', 'Pending'));
+            parts.push(entry.accepted ? labels.accepted : labels.pending);
             const title = parts.join(' • ');
             const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title;
             return `<div class="acceptance-circle ${entry.accepted ? 'accepted' : 'pending'}" title="${safeTitle}"></div>`;
         }).join('');
         return `
-            <div class="proposal-acceptance-status owner">
+            <div class="proposal-acceptance-status owner" ${evidenceAttrs}>
                 <div class="acceptance-label">${labelText}</div>
                 <div class="acceptance-circles">${circlesHtml}</div>
             </div>`;
@@ -444,7 +459,7 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
     }
 
     const entries = [];
-    proposal.cadastreParcelIds.forEach(parcelId => {
+    normalizeParcelIdList(proposal.cadastreParcelIds).forEach(parcelId => {
         const normalizedParcelId = parcelId !== undefined && parcelId !== null
             ? parcelId.toString()
             : '';
