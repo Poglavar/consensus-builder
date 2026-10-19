@@ -1718,6 +1718,7 @@
             "acceptance": {
                 "title": "Estado de aceptación de las parcelas:",
                 "parcelTitle": "Estado de aceptación de parcelas:",
+                "noRoster": "No hay una lista de propietarios disponible para esta parcela.",
                 "ownerTitle": "Estado de aceptación de propietarios:",
                 "cashOffers": "Ofertas monetarias de reparcelación",
                 "cashOffersScope": "Compensación propuesta para cada propietario por el acuerdo completo.",

@@ -218,6 +218,19 @@ ownership and approval projections remain under V06/V07.
 [source and lens labels](frontend/js/proposals/approval-text.js): `reviewBasisLines`,
 [evidence verification](frontend/js/proposals/approval-lens-authority.js).
 
+**Local roster correction, 2026-10-20:** unsigned local owner acceptance requires the current
+explicit, non-placeholder parcel-owner slots. Missing ownership and game placeholders no longer
+create a “Single owner” consent party, a 100% share, or an Accept action in proposal details.
+The acceptance entry's current owner list is replaced from that roster; decision keys never
+populate it. Previously recorded decision metadata remains local history and can count again
+only when the same owner is present and the current terms match. A placeholder cannot count
+even with a matching commitment. An unavailable roster is shown explicitly and blocks a wallet
+or local acceptance before submission. Real local owner declarations remain unsigned model data,
+separate from the signed party/actor authority path above. This changes the experimental local
+bookkeeping contract without a historical-data migration or a compatibility roster.
+[Roster adapter](frontend/js/proposals/storage.js): `getOwnerSlotsForParcel`,
+[bookkeeping](frontend/js/proposals/owner-acceptance.js), [consent](frontend/js/proposals/execution.js).
+
 There is also a completely different `owner_id` in the building floor-model registry: for source `proposal` it identifies the **containing proposal**, not a landowner. [Floor-model identities](backend/buildings/floor-models.js) (`validateModelIdentity`, `attachProposalFloorModels`).
 
 #### Identity scopes for parties, signers and allocations

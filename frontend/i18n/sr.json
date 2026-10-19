@@ -1705,6 +1705,7 @@
             "acceptance": {
                 "title": "Status prihvatanja parcele:",
                 "parcelTitle": "Status prihvatanja parcele:",
+                "noRoster": "Za ovu parcelu nije dostupan spisak vlasnika.",
                 "ownerTitle": "Status prihvatanja vlasnika:",
                 "cashOffers": "Novčane ponude preparcelacije",
                 "cashOffersScope": "Predložena naknada svakom vlasniku za ceo sporazum.",

@@ -123,27 +123,14 @@ function getProposalLensEntries(proposal, options = {}) {
 }
 
 function getOwnerSlotsForParcel(parcelId) {
-    const tProposalUI = getProposalI18nHelper();
     if (typeof getParcelOwnerSlots === 'function') {
         try {
-            const slots = getParcelOwnerSlots(parcelId);
-            if (Array.isArray(slots) && slots.length > 0) {
-                return slots;
-            }
+            return window.ProposalOwnerAcceptance.currentOwnerSlots(getParcelOwnerSlots(parcelId));
         } catch (error) {
             console.warn('getOwnerSlotsForParcel: failed to read slots from parcels module', error);
         }
     }
-    const normalizedParcelId = parcelId ? parcelId.toString() : 'parcel';
-    return [{
-        key: `parcel:${normalizedParcelId}:owner`,
-        displayName: tProposalUI('panel.parcel.owner.single', 'Single owner'),
-        shareText: '1',
-        shareDetail: '',
-        type: 'unknown',
-        agentId: null,
-        placeholder: true
-    }];
+    return [];
 }
 
 function getProposalI18nHelper() {

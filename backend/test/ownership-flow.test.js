@@ -294,6 +294,13 @@ describe('consent validity against the current effect (§12 step 4)', () => {
         expect(proposal.acceptedParcelIds).toEqual([]);
     });
 
+    it('a placeholder roster cannot count even a matching local decision', () => {
+        const proposal = makeProposal(HASH);
+        proposal.ownerAcceptances['HR-1-A'].owners.o1 = { placeholder: true };
+        flowApi.refreshAcceptanceValidity(proposal, HASH);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+    });
+
     it('clears unsubstantiated parcel flags when no owner records exist', () => {
         const proposal = { cadastreParcelIds: ['base-a'], acceptedParcelIds: ['base-a'] };
         flowApi.refreshAcceptanceValidity(proposal, HASH);

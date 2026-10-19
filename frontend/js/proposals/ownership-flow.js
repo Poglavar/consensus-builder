@@ -257,7 +257,8 @@
                 return valid;
             });
             const ownerOrder = Array.isArray(entry.ownerOrder) ? entry.ownerOrder : [];
-            const fullyAccepted = ownerOrder.length > 0 && ownerOrder.every(key => validKeys.includes(key));
+            const fullyAccepted = ownerOrder.length > 0
+                && ownerOrder.every(key => entry.owners?.[key]?.placeholder !== true && validKeys.includes(key));
             const inScope = scopedParcelIds.has(String(entryParcelId));
             if (fullyAccepted && inScope) validParcelIds.push(String(entryParcelId));
         });

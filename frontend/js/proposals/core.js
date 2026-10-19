@@ -1249,47 +1249,15 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     // Ensure owner acceptance entry exists and get owner slots
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
     const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots);
-    if (!entry) {
+    if (!entry?.ownerOrder.length) {
         showProposalAlertMessage('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
         return;
     }
 
-    // Determine the effective owner key
-    let effectiveOwnerKey = ownerKey;
-    let targetSlot = null;
-
-    if (effectiveOwnerKey) {
-        // If ownerKey is provided, check if it exists in the proposal's stored owner data
-        if (entry.owners[effectiveOwnerKey]) {
-            // Found in stored data, try to find in current slots for display, but use stored data if not found
-            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey) || entry.owners[effectiveOwnerKey];
-        } else if (entry.ownerOrder.includes(effectiveOwnerKey)) {
-            // Key exists in ownerOrder but not in owners, use it anyway
-            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey) || { key: effectiveOwnerKey };
-        } else {
-            // Key not found in stored data, try to find in current slots
-            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey);
-            if (targetSlot) {
-                // Found in current slots, add to stored data
-                entry.owners[effectiveOwnerKey] = {
-                    key: targetSlot.key,
-                    displayName: targetSlot.displayName || `Owner`,
-                    shareText: targetSlot.shareText || '',
-                    shareDetail: targetSlot.shareDetail || '',
-                    type: targetSlot.type || 'unknown',
-                    agentId: targetSlot.agentId || null
-                };
-            }
-        }
-    } else if (ownerSlots.length === 1) {
-        // No ownerKey provided, but only one slot available
-        targetSlot = ownerSlots[0];
-        effectiveOwnerKey = targetSlot.key;
-    } else if (entry.ownerOrder.length === 1) {
-        // No ownerKey provided, but only one owner in stored data
-        effectiveOwnerKey = entry.ownerOrder[0];
-        targetSlot = entry.owners[effectiveOwnerKey] || ownerSlots.find(slot => slot.key === effectiveOwnerKey) || { key: effectiveOwnerKey };
-    }
+    // Determine the effective owner key from the current roster only. A stored decision or an
+    // old ownerOrder entry is not a fallback owner; a single current slot can select itself.
+    const effectiveOwnerKey = ownerKey || (ownerSlots.length === 1 ? ownerSlots[0].key : null);
+    const targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey);
 
     if (!targetSlot || !effectiveOwnerKey) {
         showProposalAlertMessage('please_choose_which_owner_share_you_are_accepting_for', 'Please choose which owner share you are accepting for.');

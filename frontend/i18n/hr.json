@@ -1705,6 +1705,7 @@
             "acceptance": {
                 "title": "Status prihvaćanja čestice:",
                 "parcelTitle": "Status prihvaćanja čestice:",
+                "noRoster": "Za ovu česticu nije dostupan popis vlasnika.",
                 "ownerTitle": "Status prihvaćanja vlasnika:",
                 "cashOffers": "Novčane ponude preparcelacije",
                 "cashOffersScope": "Predložena naknada svakom vlasniku za cijeli sporazum.",

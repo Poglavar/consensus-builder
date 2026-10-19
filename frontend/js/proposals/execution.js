@@ -82,7 +82,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
     if (!entries.length) {
-        return '';
+        return `<p class="proposal-owner-roster-unavailable">${getProposalI18nHelper()('panel.proposal.acceptance.noRoster', 'No owner roster is available for this parcel.')}</p>`;
     }
     const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
     const skipParcelPanelFocus = options && options.skipParcelPanelFocus === true;
@@ -341,6 +341,7 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
         return summary;
     }
 
+    proposal.cadastreParcelIds.forEach(parcelId => ensureOwnerAcceptanceEntry(proposal, parcelId, getOwnerSlotsForParcel(parcelId)));
     refreshProposalAcceptanceValidity(proposal);
     const acceptances = proposal.ownerAcceptances || {};
     let includeEntries = true;
@@ -1221,6 +1222,7 @@ function currentProposalOwnerAcceptanceKeys(proposal, entry) {
     const hash = currentConsentBindingHash(proposal);
     const api = window.__ownershipFlow;
     return (entry?.acceptedOwnerKeys || []).filter(key => (entry.ownerOrder || []).includes(key)
+        && entry.owners?.[key]?.placeholder !== true
         && api?.isAcceptanceRecordValid(entry.acceptedBy?.[key], hash) === true);
 }
 
@@ -1331,7 +1333,7 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
 
         const ownerSlots = getOwnerSlotsForParcel(normalizedParcelId);
         const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots);
-        if (!entry) {
+        if (!entry?.ownerOrder.length) {
             notifyAcceptIssue('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
             return null;
         }

@@ -248,6 +248,9 @@ test.describe('Proposal actions @features', () => {
     await expect(source).toHaveAttribute('data-reference-state', 'unloaded');
     await expect(source.locator('.parcel-status')).toHaveText('Source geometry not loaded');
     await expect(source).not.toHaveAttribute('data-parcel-replaced', 'true');
+    await expect(source.locator('.proposal-owner-roster-unavailable')).toHaveText('No owner roster is available for this parcel.');
+    await expect(source.getByRole('button', { name: 'Accept', exact: true })).toHaveCount(0);
+    await expect(source).not.toContainText('Single owner');
     await expect(rows.filter({ hasText: 'Removed' })).toHaveCount(0);
     await expect(page.locator(`#proposal-details-panel .proposal-parcel-row[data-parcel-id="${PARCEL_ID}"]`))
       .toHaveAttribute('data-reference-state', 'available');

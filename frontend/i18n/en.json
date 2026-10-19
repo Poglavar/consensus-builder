@@ -1671,6 +1671,7 @@
             "acceptance": {
                 "title": "Parcel acceptance status:",
                 "parcelTitle": "Parcel acceptance status:",
+                "noRoster": "No owner roster is available for this parcel.",
                 "ownerTitle": "Owner acceptance status:",
                 "cashOffers": "Readjustment cash offers",
                 "cashOffersScope": "Proposed compensation for each owner across the whole agreement.",

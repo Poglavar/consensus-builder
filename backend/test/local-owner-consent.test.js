@@ -59,6 +59,37 @@ function seedAcceptance(proposal) {
 }
 
 describe('local owner consent evidence', () => {
+    it('the proposal adapter preserves missing ownership instead of inventing a Single owner', () => {
+        const source = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
+        const start = source.indexOf('function getOwnerSlotsForParcel(');
+        const end = source.indexOf('\nfunction getProposalI18nHelper(', start);
+        const scope = createContext({ window: { ProposalOwnerAcceptance: bookkeeping }, console,
+            getParcelOwnerSlots: () => [] });
+        runInContext(source.slice(start, end), scope);
+        expect(scope.getOwnerSlotsForParcel('missing')).toEqual([]);
+        scope.getParcelOwnerSlots = () => [{ key: 'placeholder', placeholder: true }];
+        expect(scope.getOwnerSlotsForParcel('missing')).toEqual([]);
+        scope.getParcelOwnerSlots = () => [{ key: 'declared', displayName: 'Local owner' }];
+        expect(scope.getOwnerSlotsForParcel('known')).toEqual([{ key: 'declared', displayName: 'Local owner' }]);
+    });
+
+    it('an unavailable current roster cannot render or accept a historical owner', async () => {
+        const { context, proposal, bridge, alert } = fixture();
+        seedAcceptance(proposal);
+        context.getOwnerSlotsForParcel = () => [];
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries).toEqual([]);
+        expect(context.buildProposalOwnerAcceptanceSummaryFast(proposal).totalOwners).toBe(0);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(bridge.acceptProposal).not.toHaveBeenCalled();
+        expect(await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a')).toBeNull();
+        expect(alert).toHaveBeenCalledWith('unable_to_determine_owner_shares_for_this_parcel', expect.any(String));
+        expect(context.proposalStorage.save).not.toHaveBeenCalled();
+        expect(proposal.ownerAcceptances['base-a'].acceptedBy['owner-a'].effectHash).toBe('terms-a');
+        context.getOwnerSlotsForParcel = () => [{ key: 'owner-a', displayName: 'Owner A' }];
+        expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries[0].accepted).toBe(true);
+    });
+
     it('refuses unknown lifecycle before a wallet or local acceptance and hides Accept', async () => {
         const { context, proposal, bridge, alert } = fixture();
         delete proposal.lifecycleStatus;

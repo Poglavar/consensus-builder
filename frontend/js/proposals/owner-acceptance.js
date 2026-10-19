@@ -2,11 +2,9 @@
 // order, which of them have accepted, and by whom. Pure over the proposal object — no DOM, no map —
 // so it is unit-tested headless and shared by proposals/core.js, data.js and execution.js.
 //
-// normalizeOwnerAcceptances rebuilds the record into its canonical shape (owners / ownerOrder /
-// acceptedOwnerKeys / acceptedBy) and folds accepted keys back into the order. ensureOwnerAcceptance-
-// Entry adds/updates owner slots for one parcel, purges legacy placeholder owners once real slots
-// arrive (guarded by the placeholder-looking display name, so a real named owner is never dropped),
-// without inferring owner decisions or event times from the parcel-level tally.
+// normalizeOwnerAcceptances keeps decisions separate from the declared roster. The current roster
+// comes only from explicit, non-placeholder slots passed to ensureOwnerAcceptanceEntry. Historical
+// decision metadata survives roster changes; it cannot create an owner or a parcel-level tally.
 
 (function (global) {
     'use strict';
@@ -21,31 +19,36 @@
                 return;
             }
             const normalizedParcelId = parcelId.toString();
-            const owners = entry && typeof entry.owners === 'object' ? entry.owners : {};
+            const owners = entry?.owners && typeof entry.owners === 'object' ? entry.owners : {};
             const ownerOrder = Array.isArray(entry && entry.ownerOrder)
                 ? entry.ownerOrder.filter(key => typeof key === 'string' && key.length > 0)
                 : Object.keys(owners);
             const acceptedOwnerKeys = Array.isArray(entry && entry.acceptedOwnerKeys)
                 ? Array.from(new Set(entry.acceptedOwnerKeys.map(key => key && key.toString()).filter(Boolean)))
                 : [];
-            const acceptedBy = entry && typeof entry.acceptedBy === 'object' ? entry.acceptedBy : {};
+            const acceptedBy = entry?.acceptedBy && typeof entry.acceptedBy === 'object' ? entry.acceptedBy : {};
 
-            // Ensure ownerOrder also contains any accepted keys
-            acceptedOwnerKeys.forEach(key => {
-                if (!ownerOrder.includes(key)) {
-                    ownerOrder.push(key);
-                }
-            });
+            // A decision key never supplies a missing owner declaration.
+            const currentOrder = [...new Set(ownerOrder)].filter(key => owners[key]?.placeholder !== true);
 
             normalized[normalizedParcelId] = {
                 owners,
-                ownerOrder,
+                ownerOrder: currentOrder,
                 acceptedOwnerKeys,
                 acceptedBy,
                 ...(Array.isArray(entry?.acceptanceHistory) ? { acceptanceHistory: entry.acceptanceHistory } : {})
             };
         });
         return normalized;
+    }
+
+    function currentOwnerSlots(slots) {
+        const seen = new Set();
+        return (Array.isArray(slots) ? slots : []).filter(slot => {
+            if (!slot || typeof slot.key !== 'string' || !slot.key.trim() || slot.placeholder === true || seen.has(slot.key)) return false;
+            seen.add(slot.key);
+            return true;
+        });
     }
 
     function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = []) {
@@ -71,70 +74,22 @@
         }
 
         const entry = proposal.ownerAcceptances[normalizedParcelId];
-        const ownerOrderSet = new Set(entry.ownerOrder || []);
-
-        const ownerSlotsArray = Array.isArray(ownerSlots) ? ownerSlots : [];
-        ownerSlotsArray.forEach(slot => {
-            if (!slot || !slot.key) {
-                return;
-            }
-            const normalizedOwner = {
-                key: slot.key,
-                displayName: slot.displayName || slot.name || `Owner ${ownerOrderSet.size + 1}`,
-                shareText: slot.shareText || '',
-                shareDetail: slot.shareDetail || '',
-                type: slot.type || 'unknown',
-                agentId: slot.agentId || null,
-                placeholder: !!slot.placeholder
-            };
-            entry.owners[slot.key] = {
-                ...(entry.owners[slot.key] || {}),
-                ...normalizedOwner
-            };
-            if (!ownerOrderSet.has(slot.key)) {
-                entry.ownerOrder.push(slot.key);
-                ownerOrderSet.add(slot.key);
-            }
-        });
-
-        const hasNonPlaceholderSlots = ownerSlotsArray.some(slot => slot && !slot.placeholder);
-        if (hasNonPlaceholderSlots) {
-            const placeholderKeys = Object.keys(entry.owners || {}).filter(key => {
-                const owner = entry.owners[key];
-                if (!owner) return false;
-                if (owner.placeholder) return true;
-                const display = (owner.displayName || '').toLowerCase();
-                const share = (owner.shareText || '').trim();
-                const looksLegacyPlaceholder = owner.type === 'unknown'
-                    && !owner.agentId
-                    && (!display || display.includes('parcel owner') || display.includes('unknown owner'))
-                    && (!share || share === '100%' || share === '1');
-                return looksLegacyPlaceholder;
-            });
-            if (placeholderKeys.length > 0) {
-                placeholderKeys.forEach(key => {
-                    delete entry.owners[key];
-                    if (entry.acceptedBy && entry.acceptedBy[key]) {
-                        delete entry.acceptedBy[key];
-                    }
-                });
-                entry.ownerOrder = (entry.ownerOrder || []).filter(key => !placeholderKeys.includes(key));
-                entry.acceptedOwnerKeys = (entry.acceptedOwnerKeys || []).filter(key => !placeholderKeys.includes(key));
-                placeholderKeys.forEach(key => ownerOrderSet.delete(key));
-            }
-        }
+        const currentSlots = currentOwnerSlots(ownerSlots);
+        entry.ownerOrder = currentSlots.map(slot => slot.key);
+        entry.owners = Object.fromEntries(currentSlots.map((slot, index) => [slot.key, {
+            key: slot.key,
+            displayName: slot.displayName || slot.name || `Owner ${index + 1}`,
+            shareText: slot.shareText || '',
+            shareDetail: slot.shareDetail || '',
+            type: slot.type || 'unknown',
+            agentId: slot.agentId || null,
+            placeholder: false
+        }]));
 
         if (!Array.isArray(entry.acceptedOwnerKeys)) {
             entry.acceptedOwnerKeys = [];
         }
         entry.acceptedOwnerKeys = Array.from(new Set(entry.acceptedOwnerKeys.map(key => key && key.toString()).filter(Boolean)));
-        entry.acceptedOwnerKeys.forEach(key => {
-            if (!ownerOrderSet.has(key)) {
-                entry.ownerOrder.push(key);
-                ownerOrderSet.add(key);
-            }
-        });
-
         if (!entry.acceptedBy || typeof entry.acceptedBy !== 'object') {
             entry.acceptedBy = {};
         }
@@ -143,7 +98,7 @@
         return entry;
     }
 
-    const api = { normalizeOwnerAcceptances, ensureOwnerAcceptanceEntry };
+    const api = { normalizeOwnerAcceptances, currentOwnerSlots, ensureOwnerAcceptanceEntry };
 
     if (typeof window !== 'undefined') {
         window.normalizeOwnerAcceptances = normalizeOwnerAcceptances;
