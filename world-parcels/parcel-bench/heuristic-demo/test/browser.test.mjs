@@ -59,7 +59,8 @@ async function exportCollection(page, sampleId) {
 function assertGeoJson(collection, example) {
   assert.equal(collection.type, 'FeatureCollection');
   assert(collection.features.length > 0, 'export contains plot polygons');
-  assert.equal(collection.demo.schema, 'illustrative-plots-v1');
+  assert.equal(collection.demo.schema, 'illustrative-plots-v2');
+  assert(collection.demo.straightening.output_vertices < collection.demo.straightening.input_vertices, 'shared borders were straightened');
   const positions = collection.features.flatMap(feature => feature.geometry.coordinates.flat(2));
   assert(positions.length > 0, 'export contains polygon coordinates');
   for (const [lon, lat] of positions) {
@@ -136,6 +137,8 @@ test('prepared locations load, export projected polygons, and remain editable on
       assert.equal(await page.locator('#export').isEnabled(), true);
       const collection = await exportCollection(page, example.id);
       assertGeoJson(collection, example);
+      assert.equal(await page.locator('#viewer .plot-face').count(), collection.features.length, 'the displayed vector plots match the export count');
+      assert((await page.locator('#viewer .plot-boundaries').getAttribute('d')).length > 0, 'shared straight borders are drawn as vector paths');
       exportedStats.push({ id: example.id, plots: collection.demo.stats.plots, buildings: collection.demo.stats.buildingSeeds,
         generatedSeeds: collection.demo.stats.generatedSeeds, features: collection.features.length });
     }
@@ -159,7 +162,7 @@ test('prepared locations load, export projected polygons, and remain editable on
     await tapImagePoint(page, 300, 300);
     await waitReady(page, 'Magoanine C west houses');
     const saved = await page.evaluate(() => Object.entries(localStorage)
-      .filter(([key]) => key.startsWith('browser-heuristic-v1:'))
+      .filter(([key]) => key.startsWith('browser-heuristic-v2:'))
       .map(([key, value]) => ({ key, value: JSON.parse(value) })));
     const savedEntry = saved.find(entry => entry.value.edits.seeds.length === 1);
     assert(savedEntry, 'one manual seed is stored in this browser');

@@ -1,6 +1,7 @@
 // Browser orchestration: prepared inputs, worker jobs, editable overlays, local drafts and GeoJSON downloads.
 import { ImageViewer } from '/shared/viewer.mjs';
 import { DEFAULTS, RECIPE } from './core.mjs';
+import { pointInPolygons } from './regularize.mjs';
 import { text } from './strings.mjs';
 const $ = id => document.getElementById(id), NS = 'http://www.w3.org/2000/svg';
 const clone = value => structuredClone(value);
@@ -74,14 +75,10 @@ function workerMessage({ data }) {
 function buildRasters() {
   const canvas = document.createElement('canvas'); canvas.width = result.width; canvas.height = result.height;
   const context = canvas.getContext('2d'), image = context.createImageData(result.width, result.height);
-  const palette = Array.from({ length: 10 }, (_, i) => rgb(color(`--plot-${i}`))), boundary = rgb(color('--boundary'));
   const water = rgb(color('--water')), road = rgb(color('--road'));
   for (let y = 0; y < result.height; y++) for (let x = 0; x < result.width; x++) {
-    const i = y * result.width + x, label = result.labels[i], hard = result.barrier[i];
-    if (label) {
-      const edge = (x && label !== result.labels[i - 1]) || (y && label !== result.labels[i - result.width]);
-      image.data.set([...(edge ? boundary : palette[label % palette.length]), edge ? 245 : 78], i * 4);
-    } else if (hard) image.data.set([...(hard === 2 ? water : road), hard === 3 ? 230 : 90], i * 4);
+    const i = y * result.width + x, hard = result.barrier[i];
+    if (hard) image.data.set([...(hard === 2 ? water : road), hard === 3 ? 230 : 90], i * 4);
   }
   context.putImageData(image, 0, 0); overlayUrl = canvas.toDataURL();
   const edgeColor = rgb(color('--edge'));
@@ -89,7 +86,16 @@ function buildRasters() {
   context.putImageData(image, 0, 0); edgeUrl = canvas.toDataURL();
 }
 function drawOverlays(view) {
-  if ($('show-plots').checked && overlayUrl) view.overlay.append(svgNode('image', { class: 'plot-layer', href: overlayUrl, width: sample.width, height: sample.height }));
+  if ($('show-plots').checked && overlayUrl) {
+    view.overlay.append(svgNode('image', { class: 'plot-layer', href: overlayUrl, width: sample.width, height: sample.height }));
+    const group = svgNode('g', { class: 'plot-geometry', transform: `scale(${sample.width / result.width} ${sample.height / result.height})` });
+    for (const plot of result.plots) {
+      const d = plot.polygons.flatMap(polygon => polygon.map(ring => `M${ring.map(p => p.join(',')).join('L')}Z`)).join('');
+      group.append(svgNode('path', { class: 'plot-face', 'data-plot-id': plot.id, 'data-palette': plot.id % 10, d }));
+    }
+    group.append(svgNode('path', { class: 'plot-boundaries', d: result.boundaries.map(arc => `M${arc.map(p => p.join(',')).join('L')}`).join('') }));
+    view.overlay.append(group);
+  }
   if ($('show-edges').checked && edgeUrl) view.overlay.append(svgNode('image', { class: 'edge-layer', href: edgeUrl, width: sample.width, height: sample.height }));
   if ($('show-features').checked) {
     const group = svgNode('g', { class: 'feature-layer' });
@@ -106,9 +112,8 @@ function drawOverlays(view) {
 function tap(point) {
   if (busy || !result) return;
   if (mode === 'inspect') {
-    const x = Math.min(result.width - 1, Math.floor(point[0] / sample.width * result.width));
-    const y = Math.min(result.height - 1, Math.floor(point[1] / sample.height * result.height));
-    const id = result.labels[y * result.width + x], region = result.regions.find(r => r.id === id);
+    const gridPoint = [point[0] / sample.width * result.width, point[1] / sample.height * result.height];
+    const id = result.plots.find(plot => pointInPolygons(gridPoint, plot.polygons))?.id, region = result.regions.find(r => r.id === id);
     $('selection').textContent = region ? text.ui.plotSelection(id, Math.round(region.area_m2).toLocaleString(), text.ui.kinds[region.kind]) : text.ui.noPlot;
   } else if (mode === 'seed') {
     history.push(clone(edits)); edits.seeds.push(point); regenerate();

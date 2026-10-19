@@ -767,6 +767,7 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 ## Parcel research storage (2026-10-19)
 
 - 2026-10-20: The user approved a quick illustrative plot demo using OSM, simple browser image processing and geometric growth, with explicit caveats and no LLM calls; keep it separate from trained models and human-review evaluation.
+- 2026-10-20: The user wants the demo's inferred property borders straightened into line segments near their existing positions; simplify shared borders together so the display and export use matching neighbouring polygons.
 
 The user requires only per-city failed URL lists and working settings plus shared adapter code as permanent knowledge; stage evidence and worktrees are disposable to prevent disk growth.
 

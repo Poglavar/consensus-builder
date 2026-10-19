@@ -1,10 +1,12 @@
-// Exact-cell export must preserve holes, disjoint areas, winding and geographic coordinates.
+// Displayed polygon export must preserve holes, disjoint areas, winding and geographic coordinates.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { vectorize, PROJECTIONS } from '../public/geometry.mjs';
+import { buildPlotGeometry } from '../public/regularize.mjs';
 const require = createRequire(new URL('../../../../backend/package.json', import.meta.url));
 const { union, intersection } = require('polygon-clipping'), project = require('proj4');
+const { topology } = require('topojson-server'), { feature } = require('topojson-client');
 const signedArea = ring => ring.slice(1).reduce((sum, p, i) => sum + ring[i][0] * p[1] - p[0] * ring[i][1], 0) / 2;
 
 for (const [crs, origin] of [['EPSG:32736', [460150, 7140500]], ['EPSG:32645', [334380, 3070550]], ['EPSG:3765', [396590, 4888620]]]) {
@@ -18,7 +20,8 @@ for (const [crs, origin] of [['EPSG:32736', [460150, 7140500]], ['EPSG:32645', [
       1, 1, 1, 2, 2,
       1, 1, 1, 2, 2,
     ]), regions: [{ id: 1, area_m2: 14 }, { id: 2, area_m2: 10 }], warnings: [], recipe: 'test' };
-    const collection = vectorize(result, sample, { sensitivity: 10 }, { seeds: [], dividers: [] }, { union, project });
+    const shaped = buildPlotGeometry(result, sample, { union, topology, feature });
+    const collection = vectorize(shaped, sample, { sensitivity: 10 }, { seeds: [], dividers: [] }, { project });
     const coordinates = collection.features.map(f => f.geometry.coordinates);
     assert.equal(coordinates[0][0].length, 2, 'a missing interior cell stays a polygon hole');
     assert(signedArea(coordinates[0][0][0]) > 0, 'GeoJSON exterior is counterclockwise');

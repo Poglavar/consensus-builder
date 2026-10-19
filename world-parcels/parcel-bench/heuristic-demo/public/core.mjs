@@ -1,5 +1,5 @@
 // Deterministic raster plot hypotheses: mapped barriers, intact building seeds and image-cost growth.
-export const RECIPE = 'browser-heuristic-v1';
+export const RECIPE = 'browser-heuristic-v2';
 export const DEFAULTS = Object.freeze({ sensitivity: 55, rectangularity: 65 });
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const around = [[1, 0], [0, 1], [-1, 0], [0, -1]];
