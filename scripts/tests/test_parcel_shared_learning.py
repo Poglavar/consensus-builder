@@ -221,6 +221,18 @@ class SharedLearningTests(unittest.TestCase):
         identifier = learning.append_finding(shared, record)
         self.assertTrue(identifier.startswith("finding-"))
 
+    def test_stale_json_reference_does_not_block_valid_artifact(self):
+        shared = self.root / "shared"
+        receipt = self.root / "state/valid-receipt.json"
+        receipt.parent.mkdir()
+        receipt.write_text(json.dumps({"decision": "candidate", "nativeCrs": "EPSG:32636"}) + "\n")
+        record = learning.build_city_finding(self.root, {"cityCode": "10"}, "review", {
+            "discoveryDecision": "candidate", "staleEvidenceFile": "state/missing.json",
+            "receiptPath": str(receipt)}, shared)
+        self.assertIsNotNone(record)
+        self.assertEqual(record["facts"]["crs"], "EPSG:32636")
+        self.assertEqual(len(record["evidenceRefs"]), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

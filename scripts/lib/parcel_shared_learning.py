@@ -362,9 +362,10 @@ def _structured_facts(value: Any, *, depth: int = 0) -> dict[str, str | int | fl
 
 
 def _file_facts(path: Path) -> dict[str, str | int | float | bool]:
-    if path.suffix.lower() not in {".json", ".geojson"} or path.stat().st_size > _MAX_EVIDENCE_BYTES:
-        return {}
     try:
+        if (path.is_symlink() or not path.is_file() or path.suffix.lower() not in {".json", ".geojson"}
+                or path.stat().st_size > _MAX_EVIDENCE_BYTES):
+            return {}
         return _structured_facts(json.loads(path.read_text(encoding="utf-8")))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return {}
