@@ -20,6 +20,30 @@ The durable record is the cleaned object handled by `ProposalAuthoredRecord` and
 
 Identity has several layers: `proposal.id` is a database row key; `proposalId` / `proposal_id` is the authored/external identifier; `serverProposalId` is used by browser records to refer to the published row; a chain reference also needs chain type, network, contract/program and token/account. These must not be exported as interchangeable identifiers. [Authored boundary](frontend/js/proposals/authored-record.js), [serializer](backend/proposals/serializer.js), [DDL](backend/routes/proposals-ddl.sql), [API validation and lookup](backend/routes/proposals.js), [chain references](frontend/js/proposals/chain-ref.js).
 
+#### Proposal identifiers at API boundaries
+
+| Term | Current representation and meaning | Boundary rule |
+| --- | --- | --- |
+| **Database proposal row ID** — `ProposalRowId` | `proposal.id` in SQL and API responses; browser `serverProposalId` refers to it. Assigned by the publication database and meaningful within that database. | Digit-only lookup values select this namespace exclusively. A row ID neither proves minting nor identifies a chain token. Creating a proposal cannot supply this ID. |
+| **Authored proposal ID** — `AuthoredProposalId` | API `proposalId`, stored as `proposal.proposal_id`. The browser commonly publishes a content fingerprint; agents commonly supply an operation ID. It is unique within the publication store, not automatically a global IRI or an immutable snapshot. | Creation accepts an optional nonempty string of at most 255 characters that is not all digits; absent values receive a generated authored ID. Top-level `id` and `proposal_id` are rejected creation fields, including when `proposalId` is also supplied. |
+| **Chain proposal reference** — `ChainProposalRef` | `{ chainType, chainId, contract, tokenId }`: chain family, network, contract/program, token/account. For example, the nested `onchain.proposalId` is a token/account ID, unlike the root `proposalId`. | `POST /proposals/mirror` accepts only `{ chainRef }` and verifies that location. Chain token/account IDs are never searched as a third namespace by ordinary proposal lookup. A server mirror has its own row and authored IDs. |
+
+`GET`/`HEAD`/edit/owner-decision/lineage lookup and batch lookup use the same namespace rule:
+digits select the row ID; other identifiers select the authored ID. Missing numeric rows stay
+missing even if another record has that value in `proposal_id`. Batch epoch edits use the same
+rule before checking edit tokens. There is no numeric authored-ID fallback.
+`HEAD /proposals/:id` exposes `X-Proposal-Row-Id` and `X-Proposal-Authored-Id`; the former ambiguous
+headers were removed. The browser's upload projection removes read-response `id` and SQL
+`proposal_id` fields from its copy while preserving the local record.
+[Lookup implementation](backend/proposals/identifiers.js), [API routes](backend/routes/proposals.js),
+[upload projection](frontend/js/proposals/create.js): `buildUploadReadyProposal`,
+[machine-readable agent input schema](backend/routes/agent-recipe-schema.json).
+
+The `/plans` API still spells its row-ID list `proposalIds` (filter `proposal_ids`), and its member
+responses use `id` for the row ID and `proposalId` for the authored ID. Its validation now explicitly
+calls these database row IDs and accepts published members without a mint. Renaming these fields
+and their frontend consumers remains a separate step; no alias fields were added in this change.
+
 ### Named plan — `NamedPlan`
 
 An immutable named, ordered collection of published proposal rows. `ens_plan.slug` identifies it; `proposal_ids` stores deduplicated **database row IDs as strings**. A proposal can belong to multiple named plans. A plan must have at least one member when created. It may cover several cities; its stored city is selected from member cities.
@@ -206,7 +230,7 @@ flowchart LR
 
 | ID | Finding and evidence | Consequence / decision to make |
 | --- | --- | --- |
-| V01 | **“Proposal ID” means row ID, authored ID or chain ID.** `/plans` accepts numeric row IDs but its validation message calls them “minted”; proposal lookup prioritizes row IDs over colliding numeric legacy `proposal_id` values. [routes](backend/routes/proposals.js), [plan validation](backend/routes/ens-plans.js) | Name the identifier kind at every API/export boundary. Minting must not be inferred from a numeric ID. |
+| V01 | **“Proposal ID” means row ID, authored ID or chain ID. Partially resolved 2026-10-19.** Baseline lookup preferred row IDs but fell back to authored IDs; creation accepted three synonymous input keys; `/plans` called numeric IDs “minted”. [routes](backend/routes/proposals.js), [plan validation](backend/routes/ens-plans.js) | Lookup now uses disjoint row/authored namespaces, creation accepts only `proposalId`, HEAD headers name the two identifier kinds, and plan validation no longer implies minting. The identifier table above defines the chain distinction. Remaining: rename ambiguous plan/API/browser fields in coordinated small changes and use qualified identifiers in exports. |
 | V02 | **“Plan” means a named collection, local composition, statutory source, or drawing.** Named-plan order is also different from formation replay order. [plan store](backend/plans/plan-store.js), [replay](frontend/js/proposals/plan-order.js) | Adopt qualified labels and separate relationships for membership, chronology and dependency. |
 | V03 | **Named-plan immutability is partial.** Members are references plus hashes, not snapshots. Missing hashes on older plans produce no drift comparison. The API's `changed: false` therefore does not always mean “verified unchanged.” [route](backend/routes/ens-plans.js), [hashes](backend/plans/plan-hash.js) | Decide whether historical plans need immutable member snapshots or an explicit verification state. |
 | V04 | **Plan hashes omitted authored decision kind and site. Resolved 2026-10-19.** The baseline probe showed that changing either field left an ordinary member hash unchanged; the readjustment deal fingerprint also omitted this proposal-level scope. The former site exclusion conflated authored geometry with its PostGIS projection. [plan hashing](backend/plans/plan-hash.js), [sharing](frontend/js/proposals/sharing.js) | Every plan member now commits to `proposal_data.kind` and `proposal_data.site`; readjustment deal fingerprints remain components of that wider commitment. One current SHA-256 path replaces the old path, with no compatibility verifier or migration. [Focused headless unit tests](backend/test/plan-hash.test.js) cover both member types; [route tests](backend/test/ens-plans.test.js) verify drift reporting without rewriting the stored hash. This resolves the missing plan scope, not every difference between plan, sharing and consent projections. |
@@ -346,6 +370,7 @@ Baseline verification: all 90 distinct local source-link targets existed; the il
 | --- | --- |
 | 2026-10-19 | Initial code-grounded vocabulary, relationship map, 18 open audit findings, existing JSON-LD inventory and proposed standards mappings. No application behavior or schema changed. |
 | 2026-10-19 | Resolved V04: named-plan member hashes include authored site and decision kind for ordinary and readjustment proposals. One current SHA-256 contract; prior experimental hashes are unsupported. Recorded the policy of small verified changes without legacy compatibility flows. |
+| 2026-10-19 | Partially resolved V01: defined row/authored/chain identifier roles; removed numeric authored-ID fallback from reads and edits; rejected creation aliases; renamed HEAD headers; aligned upload projection and agent input schema. Plan/browser field renames remain open. |
 
 V04 verification: 58 targeted headless unit tests passed across `test/plan-hash.test.js`,
 `test/ens-plans.test.js`, `test/readjustment-publication.test.js` and
@@ -353,6 +378,13 @@ V04 verification: 58 targeted headless unit tests passed across `test/plan-hash.
 --pool=threads --maxWorkers=2`). The run completed without being stopped. This checks the hash
 contract, API drift reporting and publication/approval integration with mocked storage; it does
 not verify a deployed database or chain mint.
+
+V01 verification: eight targeted headless unit-test files covered identifiers, upload projection,
+proposal routes, edit authorization, paid publication, plans, chain mirrors and lineage (221 tests).
+The initial run had three incorrect test expectations; after correcting those, the affected
+`test/proposals.test.js` rerun passed all 114 tests. The other seven files passed in the initial
+run. Neither run was stopped. Storage, payment and chain boundaries were mocked; no live
+database, payment or mint was changed.
 
 ## Continuous parcel-source processing
 
@@ -365,3 +397,5 @@ A **floor-plan reading task** retains its existing processor, source-hash and li
 The task result records `billing.mode: subscription`, the CLI engine, `cliAttempt`, and a durable `cliResponse` before applying the existing domain reader. `cost_usd: 0` means no metered API charge for that invocation, not zero subscription consumption; usage and the metered equivalent remain separate. A saved response is replayed without a new model call. An interrupted attempt without a response becomes an explicit error for inspection, so it cannot silently repeat or hold up the queue. Existing `paidResponse` checkpoints remain API evidence and are not sent to the CLI. Processing completion does not imply publication or resolve the audit findings above. [Worker](backend/floor-plans/cli-worker.js), [manual command](backend/scripts/floor-plan-cli.mjs).
 
 The user's manual-pass policy is Codex CLI with `gpt-6.1-sol`, medium or high effort, and at most 30 task identities per pass. The command defaults to high effort; explicit model/effort choices override a reader's cheaper tier, including image triage. Attempt checkpoints record those choices. Retrying a rejected model request is restricted to its original task IDs and does not add another cohort.
+
+A public project's `thumbnailUrl` is a derived SVG image of its stored building envelope, using the same local-metre footprint/storey prisms as the detailed 3D viewer. It is a schematic preview, not a photograph, additional facade evidence, or a new reconstruction. It neither establishes a building identity nor changes location, quality or publication eligibility. Missing or invalid envelope geometry produces no thumbnail; the card states that the 3D outline is unavailable. [Projection](backend/floor-plan-archive/building-thumbnail.js), [public projection](backend/floor-plan-archive/public-catalogue.js).

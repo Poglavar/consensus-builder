@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 import * as cheerio from 'cheerio';
 import { BASE_PATH, PUBLIC_ORIGIN, projectId, readPublicCatalogue, readPublicProject } from '../floor-plan-archive/public-catalogue.js';
 import { readBlobRow } from '../floor-plans/blob-store.js';
+import { buildingThumbnailSvg } from '../floor-plan-archive/building-thumbnail.js';
 
 const require = createRequire(import.meta.url);
 const { filterProjects, decodeFilters } = require('../../frontend/novogradnje/catalogue.js');
@@ -21,7 +22,9 @@ function apartmentFacts(a) { return [typeof a.areaM2 === 'number' ? `${a.areaM2}
     Number.isInteger(a.floor) ? `${a.floor}. kat` : null].filter(Boolean).join(' · '); }
 
 export function projectMarkup(project) {
-    return `<article class="project-card"><a class="card-link" href="${escape(project.url)}"><div class="card-visual"><span class="building-tag">${kindLabel(project.kind)}</span></div><div class="card-body"><h3 class="card-title">${escape(project.name)}</h3><p class="card-address">${escape(project.address)}</p><div class="card-chips"><span class="chip">${yearLabel(project)}</span></div><p>${project.apartments.length ? `${project.apartments.length} stanova u katalogu` : 'Broj stanova nije naveden'} · ${project.planCount} tlocrta</p></div></a></article>`;
+    const thumbnail = project.thumbnailUrl ? `<img class="building-thumbnail" src="${escape(project.thumbnailUrl)}" alt="3D obris zgrade ${escape(project.name)}" width="320" height="180" loading="lazy">`
+        : '<span class="thumbnail-unavailable">3D obris još nije dostupan</span>';
+    return `<article class="project-card"><a class="card-link" href="${escape(project.url)}"><div class="card-visual">${thumbnail}<span class="building-tag">${kindLabel(project.kind)}</span></div><div class="card-body"><h3 class="card-title">${escape(project.name)}</h3><p class="card-address">${escape(project.address)}</p><div class="card-chips"><span class="chip">${yearLabel(project)}</span></div><p>${project.apartments.length ? `${project.apartments.length} stanova u katalogu` : 'Broj stanova nije naveden'} · ${project.planCount} tlocrta</p></div></a></article>`;
 }
 
 function detailMarkup(project, apartment) {
@@ -97,6 +100,11 @@ export function setupNovogradnjeRoute(app, pool) {
     get('/novogradnje/api/projects/:id', async (req, res) => {
         const project = await readPublicProject(pool, req.params.id);
         return project ? res.json(project) : res.status(404).json({ error: 'Projekt nije pronađen.' });
+    });
+    get('/novogradnje/api/projects/:id/thumbnail.svg', async (req, res) => {
+        const project = await readPublicProject(pool, req.params.id);
+        const image = project && buildingThumbnailSvg(project.model);
+        return image ? res.type('image/svg+xml').send(image) : res.status(404).json({ error: '3D obris nije dostupan.' });
     });
     get('/novogradnje/api/source/:hash', async (req, res) => {
         if (!/^[a-f0-9]{64}$/.test(req.params.hash)) return res.status(400).end();
