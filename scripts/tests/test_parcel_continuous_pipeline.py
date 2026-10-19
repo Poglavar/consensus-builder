@@ -141,6 +141,29 @@ class PipelineTests(unittest.TestCase):
                                       'validatedStages': [['1', 'receipt']]})
         self.assertEqual(self.pool.validated, set())
 
+    def test_dispatch_and_accept_externalize_finished_snapshots_but_keep_live_inputs(self):
+        historical = {'status': 'failed', 'isolation': {'workspace': {'baseSnapshot': {'old.js': 'old'}}}}
+        current = {'status': 'running', 'isolation': {'workspace': {'baseSnapshot': {'live.js': 'live'}}}}
+        row = self.runner.state['cities']['1']
+        row.update(qualification=current, qualificationHistory=[historical])
+        self.pool.popen = Mock(return_value=SimpleNamespace(pid=os.getpid()))
+        self.pool._start('qualification', [self.cities[0]])
+        job = next(iter(self.pool.active.values()))
+        self.addCleanup(job['out'].close)
+        dispatched = json.loads((job['directory'] / 'input.json').read_text())['state']['cities']['1']
+        history_workspace = dispatched['qualificationHistory'][0]['isolation']['workspace']
+        self.assertNotIn('baseSnapshot', history_workspace)
+        ref = history_workspace['baseSnapshotRef']
+        self.assertEqual(json.loads((self.root / ref['path']).read_text()), {'old.js': 'old'})
+        self.assertEqual(dispatched['qualification']['isolation']['workspace']['baseSnapshot'], {'live.js': 'live'})
+        self.accept('qualification', {'cities': {'1': {'qualification': {
+            'status': 'integrated', 'isolation': {'workspace': {'baseSnapshot': {'done.js': 'done'}}}
+        }}}})
+        saved_workspace = row['qualification']['isolation']['workspace']
+        self.assertNotIn('baseSnapshot', saved_workspace)
+        self.assertEqual(json.loads((self.root / saved_workspace['baseSnapshotRef']['path']).read_text()),
+                         {'done.js': 'done'})
+
     def test_interrupted_stage_retains_qualification_evidence(self):
         self.accept('qualification', {'cities': {'1': {'qualification': {'status': 'running', 'artifactRoot': 'saved'}}},
                                       'interrupted': True})

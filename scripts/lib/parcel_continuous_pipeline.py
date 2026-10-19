@@ -14,6 +14,7 @@ from pathlib import Path
 
 import parcel_discovery_coordination as coordination
 import parcel_discovery_outcomes as outcomes
+from parcel_checkpoint_snapshots import compact_city_histories
 
 
 def _write(path, value):
@@ -162,6 +163,8 @@ class ContinuousPipeline:
         return selected
 
     def _start(self, lane, cities):
+        compact_city_histories(self.runner.root, self.runner.state_dir,
+                               {str(city['cityCode']): self.runner._city_entry(city) for city in cities})
         runtime = self.runner._refresh_shared_runtime()
         task_id = f"{lane}-{uuid.uuid4().hex[:16]}"
         directory = self.runner.state_dir / "pipeline-tasks" / task_id
@@ -244,6 +247,8 @@ class ContinuousPipeline:
                                 {"qualification", "qualificationHistory", "admission", "wupIdentity", "pipelineFailures"}})
                 if current.get("status") == "running" or result.get("interrupted") and not child:
                     current["status"] = "pending" if lane == "research" else "research-complete"
+        compact_city_histories(self.runner.root, self.runner.state_dir,
+                               {code: self.runner.state['cities'][code] for code in spec['cityCodes']})
         self.runner.state.setdefault("usage", {}).update(result.get("usage", {}))
         self.runner.state.setdefault("failedItems", {}).update(result.get("failedItems", {}))
         if result.get("adapterStageBlocked"):

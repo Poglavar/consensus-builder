@@ -330,6 +330,7 @@ def _archive_changes(root: Path, state_dir: Path, run_id: str) -> dict[str, Any]
         if manifest.get("runId") != run_id or manifest.get("root") != str(root) or expected != actual:
             raise RuntimeError("workspace history differs from current changes; refusing reuse")
         return manifest
+    immutable_files = _history_file_index(state_dir)
     history.mkdir(parents=True)
     entries: list[dict[str, Any]] = []
     for rel in sorted(tracked_changes | untracked):
@@ -346,18 +347,47 @@ def _archive_changes(root: Path, state_dir: Path, run_id: str) -> dict[str, Any]
             stored_rel = f"files/{rel}"
             stored_path = history / stored_rel
             stored_path.parent.mkdir(parents=True, exist_ok=True)
-            with stored_path.open("wb") as stream:
-                stream.write(content)
-                stream.flush()
-                os.fsync(stream.fileno())
+            digest = _sha(content)
+            existing = immutable_files.get(digest)
+            if existing is not None:
+                if not existing.is_file() or existing.is_symlink() or _sha(existing.read_bytes()) != digest:
+                    raise IOError(f"workspace history deduplication source failed verification: {existing}")
+                os.link(existing, stored_path)
+            else:
+                temporary = stored_path.with_name(f".{stored_path.name}.{uuid.uuid4().hex}.tmp")
+                with temporary.open("wb") as stream:
+                    stream.write(content)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                os.replace(temporary, stored_path)
+                immutable_files[digest] = stored_path
             entries.append({"path": rel, "kind": "file", "storedPath": stored_rel,
-                            "sha256": _sha(content), "mode": path.stat().st_mode & 0o777})
+                            "sha256": digest, "mode": path.stat().st_mode & 0o777})
         else:
             raise RuntimeError(f"cannot archive non-file workspace change: {rel}")
     manifest = {"runId": run_id, "root": str(root), "entries": entries}
     _json_write(history / "manifest.json", manifest)
     _verify_archive(history, manifest)
     return manifest
+
+
+def _history_file_index(state_dir: Path) -> dict[str, Path]:
+    """Index completed rescue files; verify selected bytes immediately before reuse."""
+    base = state_dir / "qualification-workspaces/history"
+    index: dict[str, Path] = {}
+    if not base.is_dir():
+        return index
+    for manifest_path in sorted(base.glob("*/manifest.json")):
+        archive = manifest_path.parent
+        manifest = _read_metadata(manifest_path)
+        for entry in manifest.get("entries", []):
+            if entry.get("kind") == "file":
+                path = archive / entry["storedPath"]
+                path.resolve().relative_to(archive.resolve())
+                if path.is_symlink():
+                    raise IOError(f"workspace history deduplication source is a symlink: {entry['path']}")
+                index.setdefault(entry["sha256"], path)
+    return index
 
 
 def _verify_archive(history: Path, manifest: dict[str, Any]) -> None:

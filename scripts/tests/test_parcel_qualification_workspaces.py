@@ -372,6 +372,57 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         row = next(row for row in manifest["entries"] if row["path"] == "backend/parcels/adapter.js")
         self.assertEqual((history / row["storedPath"]).read_text(), "archive once\n")
 
+    def test_reuse_archives_hardlink_identical_immutable_history_only(self):
+        first = self.prepare()
+        live = first["root"] / "backend/parcels/adapter.js"
+        live.write_text("identical failed adapter bytes\n")
+        live_inode = live.stat().st_ino
+        workspaces.finish_workspace(first)
+        second = self.prepare()
+        first_history = self.state_dir / "qualification-workspaces/history" / first["runId"]
+        first_manifest = json.loads((first_history / "manifest.json").read_text())
+        first_row = next(row for row in first_manifest["entries"]
+                         if row["path"] == "backend/parcels/adapter.js")
+        first_stored = first_history / first_row["storedPath"]
+        self.assertNotEqual(first_stored.stat().st_ino, live_inode)
+
+        live.write_text("identical failed adapter bytes\n")
+        second_live_inode = live.stat().st_ino
+        workspaces.finish_workspace(second)
+        third = self.prepare()
+        second_history = self.state_dir / "qualification-workspaces/history" / second["runId"]
+        second_manifest = json.loads((second_history / "manifest.json").read_text())
+        second_row = next(row for row in second_manifest["entries"]
+                          if row["path"] == "backend/parcels/adapter.js")
+        second_stored = second_history / second_row["storedPath"]
+        self.assertEqual(first_stored.stat().st_ino, second_stored.stat().st_ino)
+        self.assertNotEqual(second_stored.stat().st_ino, second_live_inode)
+
+        live.write_text("different failed adapter bytes\n")
+        workspaces.finish_workspace(third)
+        self.prepare()
+        third_history = self.state_dir / "qualification-workspaces/history" / third["runId"]
+        third_manifest = json.loads((third_history / "manifest.json").read_text())
+        third_row = next(row for row in third_manifest["entries"]
+                         if row["path"] == "backend/parcels/adapter.js")
+        third_stored = third_history / third_row["storedPath"]
+        self.assertNotEqual(first_stored.stat().st_ino, third_stored.stat().st_ino)
+
+    def test_corrupt_previous_archive_is_never_used_for_deduplication(self):
+        first = self.prepare()
+        live = first["root"] / "backend/parcels/adapter.js"
+        live.write_text("bytes to corrupt\n")
+        workspaces.finish_workspace(first)
+        second = self.prepare()
+        history = self.state_dir / "qualification-workspaces/history" / first["runId"]
+        manifest = json.loads((history / "manifest.json").read_text())
+        row = next(row for row in manifest["entries"] if row["path"] == "backend/parcels/adapter.js")
+        (history / row["storedPath"]).write_text("corrupt archive bytes\n")
+        live.write_text("bytes to corrupt\n")
+        workspaces.finish_workspace(second)
+        with self.assertRaisesRegex(IOError, "history deduplication source failed verification"):
+            self.prepare()
+
     def test_corrupt_existing_reuse_archive_refuses(self):
         workspace = self.prepare()
         child = workspace["root"]
