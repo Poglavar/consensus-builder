@@ -65,6 +65,10 @@ class AdmissionBridgeTests(unittest.TestCase):
 
         def fake_run(command, **_kwargs):
             calls.append(command)
+            if "vitest.mjs" in " ".join(command) and "list" in command:
+                return SimpleNamespace(returncode=0, stdout=json.dumps([
+                    {"file": str((self.root / relative).resolve())} for relative in admission.RELEASE_TESTS
+                ]), stderr="")
             if "admit-qualified-cities.mjs" not in " ".join(command):
                 self.fail(f"unexpected subprocess: {command}")
             if "--apply" not in command:
@@ -170,7 +174,24 @@ class AdmissionBridgeTests(unittest.TestCase):
                             for path in result["changedFiles"]))
         self.assertTrue(any("vitest.mjs" in " ".join(command) and "backend/test/qualified-city-release.test.js" in command
                             for command in calls))
+        release_commands = [command for command in calls if "vitest.mjs" in " ".join(command)]
+        self.assertEqual(len(release_commands), 2)
+        for command in release_commands:
+            self.assertIn("**/tmp/**", command)
+            self.assertIn("**/node_modules/**", command)
+            self.assertEqual([path for path in admission.RELEASE_TESTS if path in command],
+                             list(admission.RELEASE_TESTS))
         self.assertEqual(sum("--apply" in command for command in calls), 1)
+
+    def test_release_scope_rejects_archived_or_missing_test_files(self):
+        expected = [{"file": str((self.root / relative).resolve())} for relative in admission.RELEASE_TESTS]
+        archived = self.root / "tmp/qualification-workspaces/history/files/backend/test/qualified-city-release.test.js"
+        for rows in (expected + [{"file": str(archived)}], expected[:-1]):
+            with self.subTest(count=len(rows)), patch.object(
+                    admission, "_run", return_value=SimpleNamespace(
+                        returncode=0, stdout=json.dumps(rows), stderr="")):
+                with self.assertRaisesRegex(RuntimeError, "exact seven files"):
+                    admission._verify_release_test_scope(self.root)
 
     def test_applied_admission_with_city_omitted_from_reports_is_failed(self):
         calls, fake_run, fake_checked = self._run_admission_flow(omit_city_from_reports=True)

@@ -47,6 +47,7 @@ RELEASE_TESTS = (
     "backend/test/world-coverage-geography.test.js",
     "backend/test/frontend-world-coverage.test.js",
 )
+RELEASE_TEST_EXCLUDES = ("**/tmp/**", "**/node_modules/**")
 
 
 def _json(path: Path) -> Any:
@@ -195,6 +196,34 @@ def _run_checked(command: list[str], root: Path, label: str, timeout: int = 180)
     if result.returncode:
         raise RuntimeError(f"{label} failed ({result.returncode}): {output[-1600:]}")
     return output
+
+
+def _release_test_command(root: Path, action: str) -> list[str]:
+    command = ["node", str(root / "backend/node_modules/vitest/vitest.mjs"), action]
+    if action == "list":
+        command.extend(["--filesOnly", "--json"])
+    else:
+        command.extend(["--pool=threads", "--maxWorkers=4"])
+    for pattern in RELEASE_TEST_EXCLUDES:
+        command.extend(["--exclude", pattern])
+    return [*command, *RELEASE_TESTS]
+
+
+def _verify_release_test_scope(root: Path) -> None:
+    result = _run(_release_test_command(root, "list"), cwd=root, timeout=120)
+    if result.returncode:
+        raise RuntimeError(f"headless release test scope listing failed: {(result.stderr or result.stdout)[-1200:]}")
+    try:
+        rows = json.loads(result.stdout)
+        actual = {Path(row["file"]).resolve() for row in rows}
+    except (json.JSONDecodeError, KeyError, TypeError) as error:
+        raise RuntimeError("headless release test scope listing was malformed") from error
+    expected = {(root / relative).resolve() for relative in RELEASE_TESTS}
+    if actual != expected or len(rows) != len(expected):
+        unexpected = sorted(str(path) for path in actual - expected)
+        missing = sorted(str(path) for path in expected - actual)
+        raise RuntimeError(f"headless release test scope differs from the exact seven files; "
+                           f"unexpected={unexpected}, missing={missing}")
 
 
 def _block(summary: str, manifest: str | None = None, changed: list[str] | None = None) -> dict[str, Any]:
@@ -406,8 +435,8 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
             changed = _changed_files(root, before, release, code)
             return _fail(f"admission was applied, but coverage report build/readiness failed: {error}", manifest_rel, changed)
         try:
-            _run_checked(["node", str(root / "backend/node_modules/vitest/vitest.mjs"), "run",
-                          "--pool=threads", "--maxWorkers=4", *RELEASE_TESTS], root,
+            _verify_release_test_scope(root)
+            _run_checked(_release_test_command(root, "run"), root,
                          "headless admission release checks", timeout=300)
         except Exception as error:
             changed = _changed_files(root, before, release, code)

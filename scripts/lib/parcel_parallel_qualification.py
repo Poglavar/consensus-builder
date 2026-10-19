@@ -324,9 +324,14 @@ def advance_candidates(runner, cities, cohort_dir):
         return progressed
     runner._model("review")
     runner._subscription_environment()
+    workspace_options = {}
+    shared_root = getattr(runner.args, "shared_root", None)
+    if shared_root:
+        workspace_options["base_revision"] = subprocess.check_output(
+            ["git", "-C", str(shared_root), "rev-parse", "HEAD"], text=True).strip()
     jobs = []
     for slot, (city, receipt, packet, digest) in enumerate(selected, 1):
-        workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet)
+        workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet, **workspace_options)
         _, parent_attempt = stage._next_attempt(stage._stage_city_root(runner.state_dir, str(city["cityCode"])))
         args = copy.copy(runner.args)
         args.repo_root, args.state_dir = workspace["root"], workspace["stateDir"]

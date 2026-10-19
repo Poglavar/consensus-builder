@@ -81,9 +81,10 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def prepare(self, slot=1):
+    def prepare(self, slot=1, base_revision=None):
         return workspaces.prepare_workspace(self.parent, self.state_dir, slot,
-                                            self.city, self.receipt, self.packet)
+                                            self.city, self.receipt, self.packet,
+                                            base_revision=base_revision)
 
     def test_two_slots_are_distinct_and_inputs_are_copied_and_remapped(self):
         city_mtime = self.city_path.stat().st_mtime_ns
@@ -176,6 +177,36 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertEqual((history / row["storedPath"]).read_text(),
                          "export const failedAttempt = true;\n")
         self.assertTrue(next_workspace["stateDir"].is_dir())
+
+    def test_selected_base_ahead_of_parent_head_is_not_rearchived_as_overlay(self):
+        old_head = run_git(self.parent, "rev-parse", "HEAD")
+        big = self.parent / "frontend/runtime-bundle.js"
+        big.parent.mkdir()
+        payload = "export const runtime = 'canonical';\n" * 2000
+        big.write_text(payload)
+        run_git(self.parent, "add", "frontend/runtime-bundle.js")
+        run_git(self.parent, "commit", "-m", "canonical runtime ahead")
+        canonical = run_git(self.parent, "rev-parse", "HEAD")
+        run_git(self.parent, "tag", "canonical-runtime", canonical)
+        run_git(self.parent, "reset", "--hard", old_head)
+        big.parent.mkdir(exist_ok=True)
+        big.write_text(payload)
+
+        tracked, untracked = workspaces._parent_overlay_paths(self.parent, canonical)
+        self.assertNotIn("frontend/runtime-bundle.js", tracked)
+        self.assertNotIn("frontend/runtime-bundle.js", untracked)
+        workspace = self.prepare(base_revision=canonical)
+        child = workspace["root"]
+        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), old_head)
+        self.assertEqual(run_git(child, "rev-parse", "HEAD"), canonical)
+        self.assertEqual((child / "frontend/runtime-bundle.js").read_text(), payload)
+        workspaces.finish_workspace(workspace)
+
+        self.prepare(base_revision=canonical)
+        history = self.state_dir / "qualification-workspaces/history" / workspace["runId"]
+        manifest = json.loads((history / "manifest.json").read_text())
+        self.assertNotIn("frontend/runtime-bundle.js", {row["path"] for row in manifest["entries"]})
+        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), old_head)
 
     def test_unexpected_post_finish_drift_refuses_reuse_without_overwriting_it(self):
         workspace = self.prepare()

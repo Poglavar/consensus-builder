@@ -112,10 +112,44 @@ def _is_allowed_untracked(rel: str) -> bool:
     return rel.startswith(("backend/parcels/", "backend/test/"))
 
 
-def _parent_overlay_paths(root: Path) -> tuple[set[str], set[str]]:
-    tracked = set(_read_nul_paths(_git(root, "diff", "--no-renames", "--name-only", "-z", "HEAD").stdout.encode()))
-    untracked = {rel for rel in _untracked_paths(root) if _is_allowed_untracked(rel)}
+def _matches_revision(root: Path, rel: str, revision: str) -> bool:
+    path = root / rel
+    if not path.is_file() or path.is_symlink():
+        return False
+    blob = _git(root, "rev-parse", f"{revision}:{rel}", check=False)
+    if blob.returncode:
+        return False
+    actual = _git(root, "hash-object", "--", rel, check=False)
+    if actual.returncode or actual.stdout.strip() != blob.stdout.strip():
+        return False
+    tree = _git(root, "ls-tree", revision, "--", rel, check=False).stdout.split()
+    if not tree:
+        return False
+    expected_executable = tree[0] == "100755"
+    return bool(path.stat().st_mode & 0o111) == expected_executable
+
+
+def _parent_overlay_paths(root: Path, base_revision: str = "HEAD") -> tuple[set[str], set[str]]:
+    tracked = set(_read_nul_paths(_git(
+        root, "diff", "--no-renames", "--name-only", "-z", base_revision).stdout.encode()))
+    tracked = {rel for rel in tracked if not _matches_revision(root, rel, base_revision)}
+    base_tracked = _tracked_paths(root, base_revision)
+    untracked = {rel for rel in _untracked_paths(root) - base_tracked if _is_allowed_untracked(rel)}
     return tracked, untracked
+
+
+def _resolve_base_revision(root: Path, revision: str | None, parent_head: str) -> str:
+    if revision is None:
+        return parent_head
+    if not isinstance(revision, str) or not revision.strip():
+        raise ValueError("qualification base revision must be a non-empty Git revision")
+    resolved = _git(root, "rev-parse", "--verify", f"{revision.strip()}^{{commit}}", check=False)
+    if resolved.returncode or not re.fullmatch(r"[0-9a-f]{40,64}", resolved.stdout.strip()):
+        raise ValueError("qualification base revision is not a commit in this Git repository")
+    commit = resolved.stdout.strip()
+    if _git(root, "merge-base", "--is-ancestor", parent_head, commit, check=False).returncode:
+        raise ValueError("qualification base revision must descend from the parent checkout HEAD")
+    return commit
 
 
 def _ignored_inventory(root: Path) -> set[str]:
@@ -392,7 +426,8 @@ def _read_metadata(path: Path) -> dict[str, Any]:
 
 
 def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, Any],
-                      receipt: dict[str, Any], packet: dict[str, Any]) -> dict[str, Any]:
+                      receipt: dict[str, Any], packet: dict[str, Any],
+                      base_revision: str | None = None) -> dict[str, Any]:
     """Prepare one persistent private worktree and copy the exact reviewed input set."""
     root = Path(root).resolve()
     state_dir = Path(state_dir)
@@ -413,11 +448,11 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
     branch = f"qualification-{identity}-slot-{slot}"
     child = parent_dir / f"{root.name}-{branch}"
     metadata_path = state_dir / "qualification-workspaces" / f"slot-{slot}.json"
-    parent_head = _head(root)
+    parent_head = _resolve_base_revision(root, base_revision, _head(root))
     stage = _stage(root)
     parent_hashes = stage._input_hashes(root, city, receipt, packet)
     inputs = _input_paths(parent_hashes)
-    tracked_overlay, untracked_overlay = _parent_overlay_paths(root)
+    tracked_overlay, untracked_overlay = _parent_overlay_paths(root, parent_head)
     run_id = uuid.uuid4().hex
     owned_inputs = {}
 
