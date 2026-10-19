@@ -478,6 +478,20 @@ signature, timestamp or chain lifecycle is created by refreshing the display.
 [labels](frontend/js/proposals/approval-text.js): `consentLabels`,
 [list metrics](frontend/js/proposals/geometry.js): `computeProposalMetrics`.
 
+### Modeled land value and total
+
+The agent dialog's land estimate uses USD 200 per m² and an ETH/USD conversion estimate (default
+USD 2,000 per ETH). It captures and displays that rate for the dialog's calculations. These are
+model assumptions, not an observed sale price or market appraisal. The estimate and modeled total
+remain denominated in ETH even when another chain is selected. A simulated agent's `ethBalance`
+is model money; the user's wallet balance is read separately. Both the balance and the whole
+portfolio estimate must be known finite nonnegative amounts before their modeled total can be
+shown. Missing parcel areas, a missing balance or a failed estimate leave the total unknown;
+a known zero is still valid. Refreshing a user's parcel list clears the prior total until the
+wallet refresh supplies its balance, rather than briefly adding the simulated agent balance.
+[Valuation](frontend/js/financials.js), [agent dialog](frontend/js/agents.js),
+[wallet display](frontend/js/user-management.js).
+
 ### Market location and account evidence
 
 The markets API and bet-share lookup accept only `onchain_data.chainId: solana-devnet`, the configured

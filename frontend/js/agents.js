@@ -1326,6 +1326,7 @@ async function showAgentDialog(agentId, options = {}) {
     const walletConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
     const walletAccounts = walletConnected ? (walletState.accounts || []) : [];
     const ownedParcels = getAgentOwnedParcels(agentId, { includePersistent: walletConnected, includeTransient: true });
+    const portfolioBasis = getPortfolioValuationBasis();
     const parcelDetails = getAgentParcelDetails(agentId);
     const cachedLists = getAgentDialogCache(agentId);
     let portfolioValue = null;
@@ -1337,10 +1338,9 @@ async function showAgentDialog(agentId, options = {}) {
         ? walletAccounts
         : (agent.walletAddresses || []);
 
-    const currencySymbol = getChainCurrencySymbol();
     const initialEthBalanceDisplay = isUserAgent
         ? '-'
-        : CbFormat.formatMoney(agent.ethBalance, currencySymbol);
+        : (Number.isFinite(agent.ethBalance) ? CbFormat.formatMoney(agent.ethBalance, 'ETH') : '-');
     const initialTotalWealthDisplay = '-';
 
     // Prefer cached on-chain data when available so lists don't rebuild on every open
@@ -1370,9 +1370,11 @@ async function showAgentDialog(agentId, options = {}) {
         : '-';
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
-    const labelEthBalance = translateText('agentDialog.ethBalance', `${currencySymbol} Balance`);
-    const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Portfolio Value');
-    const labelTotalWealth = translateText('agentDialog.totalWealth', 'Total Wealth');
+    const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH balance');
+    const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Modeled land value');
+    const labelTotalWealth = translateText('agentDialog.totalWealth', 'Modeled total');
+    const portfolioBasisLabel = translateText('agentDialog.portfolioBasis',
+        'Land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}} per ETH.', portfolioBasis);
     const labelPendingAmount = translateText('agentDialog.pendingAmount', 'Pending Amount');
     const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
     const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
@@ -1390,6 +1392,7 @@ async function showAgentDialog(agentId, options = {}) {
     overlay.className = 'cb-dialog-overlay' + (elevated ? ' cb-dialog-overlay--top' : '');
     const modal = document.createElement('div');
     modal.className = 'cb-dialog cb-dialog--lg agent-dialog-modal';
+    modal.dataset.portfolioUsdPerEth = String(portfolioBasis.usdPerEth);
     if (readOnly) {
         modal.classList.add('agent-dialog-readonly');
     }
@@ -1451,6 +1454,7 @@ async function showAgentDialog(agentId, options = {}) {
                         <div class="stat-value" data-agent-pending-amount>${initialPendingAmountDisplay}</div>
                     </div>
                 </div>
+                <p class="stat-label" data-agent-portfolio-basis data-i18n-key="agentDialog.portfolioBasis" data-i18n-params='${JSON.stringify(portfolioBasis)}'>${portfolioBasisLabel}</p>
                 ${isUserAgent ? `
                     <div class="info-section">
                         <h4 data-i18n-key="agentDialog.proposalsPending" data-i18n-params='${JSON.stringify({ count: filteredPending.length })}'>${labelProposalsPending}</h4>
@@ -1505,13 +1509,13 @@ async function showAgentDialog(agentId, options = {}) {
     if (typeof calculatePortfolioValue === 'function' && ownedParcels.length > 0) {
         (async () => {
             try {
-                const value = await calculatePortfolioValue(ownedParcels, { forceRefresh: true });
+                const value = await calculatePortfolioValue(ownedParcels, { forceRefresh: true, usdPerEth: portfolioBasis.usdPerEth });
                 console.log('[AgentDialog] Portfolio calculation result:', value);
                 portfolioValue = Number.isFinite(value) ? value : NaN;
 
                 const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
                 if (portfolioNode) {
-                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, getChainCurrencySymbol()) : '-';
+                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, 'ETH') : '-';
                 }
 
                 const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
@@ -1525,8 +1529,8 @@ async function showAgentDialog(agentId, options = {}) {
                             setUserTotalWealthDisplay(NaN);
                         }
                     } else {
-                        const totalWealth = (agent.ethBalance || 0) + (portfolioValue || 0);
-                        totalWealthNode.textContent = CbFormat.formatMoney(totalWealth, getChainCurrencySymbol());
+                        const totalWealth = calculateModeledTotalEth(agent.ethBalance, portfolioValue);
+                        totalWealthNode.textContent = Number.isFinite(totalWealth) ? CbFormat.formatMoney(totalWealth, 'ETH') : '-';
                     }
                 }
             } catch (error) {
@@ -2187,21 +2191,21 @@ async function loadAgentChainData(agent, isUserAgent) {
             if (isUserAgent && typeof calculatePortfolioValue === 'function') {
                 try {
                     const ownedNow = getAgentOwnedParcels(agent.id);
-                    const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true });
+                    const displayedBasis = document.querySelector('.agent-dialog-modal')?.dataset.portfolioUsdPerEth;
+                    const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true, usdPerEth: Number(displayedBasis) });
                     const modal = document.querySelector('.agent-dialog-modal');
                     if (modal) {
                         const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
                         const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
                         const portfolioValue = Number.isFinite(value) ? value : NaN;
                         if (portfolioNode) {
-                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, getChainCurrencySymbol()) : '-';
+                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, 'ETH') : '-';
                         }
                         if (totalWealthNode) {
                             totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
-                            if (Number.isFinite(portfolioValue)) {
-                                const totalWealth = (agent.ethBalance || 0) + portfolioValue;
-                                totalWealthNode.textContent = CbFormat.formatMoney(totalWealth, getChainCurrencySymbol());
-                            }
+                            // The wallet refresh below supplies the actual balance. Until then,
+                            // do not combine this estimate with a simulated/stale agent balance.
+                            totalWealthNode.textContent = '-';
                         }
                         if (typeof refreshUserEthBalanceDisplay === 'function') {
                             refreshUserEthBalanceDisplay();

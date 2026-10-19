@@ -108,6 +108,18 @@ function areaToEth(areaSqM, options = {}) {
     return (areaSqM * PORTFOLIO_PRICE_PER_SQM_USD) / usdPerEth;
 }
 
+function getPortfolioValuationBasis(options = {}) {
+    return { pricePerSqmUsd: PORTFOLIO_PRICE_PER_SQM_USD, usdPerEth: resolveUsdPerEth(options) };
+}
+
+// Both inputs are ETH quantities. A missing land estimate or balance is not a zero holding.
+function calculateModeledTotalEth(balanceEth, portfolioEth) {
+    if (!Number.isFinite(balanceEth) || balanceEth < 0
+        || !Number.isFinite(portfolioEth) || portfolioEth < 0) return null;
+    const total = balanceEth + portfolioEth;
+    return Number.isFinite(total) ? total : null;
+}
+
 /**
  * Estimate the market value of a parcel in ETH using area from map data.
  * @param {string} parcelId - The ID of the parcel
@@ -230,9 +242,11 @@ if (typeof window !== 'undefined') {
     window.getLastTransactedPrice = getLastTransactedPrice;
     window.calculatePortfolioValue = calculatePortfolioValue;
     window.calculatePayoutPerParcel = calculatePayoutPerParcel;
+    window.getPortfolioValuationBasis = getPortfolioValuationBasis;
+    window.calculateModeledTotalEth = calculateModeledTotalEth;
 }
 
 // Node tests load this classic script with require (the browser ignores this branch).
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { calculatePayoutPerParcel, areaToEth };
+    module.exports = { calculatePayoutPerParcel, areaToEth, getPortfolioValuationBasis, calculateModeledTotalEth };
 }
