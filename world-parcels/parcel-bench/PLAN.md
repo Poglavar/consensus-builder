@@ -4,7 +4,65 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (six-fit settlement sampling pilot complete; uniform sampling retained; high-growth Africa/Asia remain the geographic priority). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (product clarified as plausible imagery-derived plots; historical cadastral trials remain frozen). Status values: todo · running · done · dropped (with the reason).
+
+## Current product target: plausible plots where cadastre is unavailable
+
+User clarification, 2026-10-19: when UrbanGameTheory loads an arbitrary village, especially in
+Africa or Asia, and no usable cadastral source exists, infer plausible plot boundaries from the
+imagery and available buildings/roads. Exact recovery of registered cadastral parcels is not the
+product requirement. Cadastre was intended to supply examples of boundaries, not force every
+visible enclosure to reproduce a registered parcel. This clarification supersedes cadastral parcel
+F1 as the sole product objective; it does not relabel or invalidate frozen historical experiments.
+
+Proposed next work, before further model tuning or rental:
+
+1. Define the annotation unit on imagery: residential compounds, visible land-use plots and their
+   outer divisions, with rules for internal garden/farm subdivisions, multi-building compounds,
+   empty plots and unresolved open land. Record multiple plausible interpretations where necessary.
+   The precise granularity is to be frozen before an experiment, not inferred from model outputs.
+2. Create a small human-reviewed imagery benchmark across independent target settlements,
+   prioritizing African/Asian villages and growth edges and retaining Croatian diagnostic controls.
+   Label visible divisions, plausible plot groupings and ambiguous/occluded portions separately.
+   Review the imagery before showing cadastral overlays, then record agreement/disagreement with
+   cadastre. Freeze development/holdout geography, annotation rules, candidate settings and decision
+   criteria before comparing results. Target imagery is needed even where parcel servers are absent;
+   the current Croatian-only cohort cannot validate this product scenario.
+3. Use cadastre as selective auxiliary supervision. Visible, aligned cadastral edges can teach
+   boundary evidence; invisible/uncertain cadastral edges should not be compulsory visual targets.
+   Verified physical divisions absent from cadastre must not be trained as background merely
+   because they are not registered boundaries. Imagery-derived labels are needed to resolve those
+   cases. Automated edge agreement can propose weak labels but is not proof of visibility. Existing
+   cadastral interior/distance targets also require review, rather than changing only the scorer.
+4. Compare the existing learned boundary maps with SAM 3 mask proposals on the same new imagery
+   task. SAM's text/visual prompts support testing compounds and land-use regions; its overlapping
+   object masks are candidate evidence, not a finished non-overlapping plot partition. The earlier
+   cadastral spike does not settle performance on this reframed target. Reuse existing saved maps
+   only where the image/crop/recipe are compatible; do not silently apply old cadastral gates to
+   choose the new winner. Freeze the actual model/checkpoint, prompts and output handling per trial.
+5. Reconstruct plots with shared edges and larger surrounding context. Permit multiple buildings
+   in one compound and plots with no building; use roads, tracks, entrances and plausible access as
+   soft contextual evidence, not a requirement that every polygon touches a mapped road. Resolve
+   overlapping proposals, joins across crop edges and small-region cleanup against visible evidence.
+   Leave unresolved ground unassigned or explicitly uncertain rather than inventing a supported
+   boundary. Test whether building-per-seed and the fixed 120 m² merge cause inappropriate splits
+   or joins before retaining them in a new recipe.
+6. Evaluate image-supported boundary precision/recall, unnecessary divisions and merges,
+   building cuts/grouping, valid shared-edge geometry, confident coverage and human editing effort
+   against the new annotations. Report ambiguous cases and uncovered area; geometric validity or a
+   visually tidy tiling alone does not establish plausible plots. Cadastral overlap remains a
+   secondary diagnostic where available. Keep held-out settlements for generalization evidence.
+
+Candidate application output is an inferred, editable plot layer with imagery/model provenance and
+boundary support/uncertainty, separate from sourced cadastral records and ownership. This is a
+proposed implementation direction; no runtime fallback, new benchmark, model change or training
+run has been implemented or evaluated under this product contract yet.
+
+Research supports separating visibility from registration: [CadastreVision](https://doi.org/10.1016/j.isprsjprs.2024.08.005)
+explicitly distinguishes visible and non-visible cadastral boundaries. [SAM 3](https://github.com/facebookresearch/sam3)
+supports concept and visual prompting and returns instance masks; using those masks as plot proposals
+still requires a grouping and reconstruction policy. Neither source establishes performance in our
+target villages or makes arbitrary segmentation equivalent to plausible physical plots.
 
 ## Product priority: suburban and village communities
 

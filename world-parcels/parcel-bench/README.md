@@ -1,5 +1,17 @@
 # ParcelBench: the yardstick for parcel recognition from imagery
 
+**Current product target (clarified 2026-10-19):** infer plausible, imagery-supported plots for
+UrbanGameTheory when usable cadastral data is unavailable, especially in African/Asian villages
+and growth areas. Cadastre supplies boundary examples and a secondary check; exact registered
+parcel recovery is not the sole product objective. The next experiment needs imagery-based plot
+annotations and a separate frozen evaluation. Boundary learning, SAM 3 proposals and plot
+reconstruction are candidates to compare; their effectiveness under this target is still untested.
+See [the current product contract and proposed next work](PLAN.md#current-product-target-plausible-plots-where-cadastre-is-unavailable).
+
+The cadastral benchmark, principles and results below document the historical experiments. Keep
+their original targets, scorers and decisions; a new product metric does not retroactively promote
+an old treatment or turn Croatian cadastral scores into village segmentation validation.
+
 The October 2026 spike in [`../guess-spike/`](../guess-spike/README.md) trained SAM 3 heads and a SegFormer boundary model on Zagreb tiles for ten days and never beat a 150-line OSM heuristic. It also never had a stable yardstick: the test tiles were reused and swapped, the metric was redefined three times, and validation and test rankings disagreed. Coinbase's fraud-agent series (Build, Evaluate, Own; October 2026) got the order right: freeze a benchmark drawn from real outcomes, decide the product metric, layer the model on the rules you already have, and only then post-train a small specialised model against a deterministic reward. This directory is that order applied to parcels.
 
 Everything here runs on the laptop in seconds. Training does **not**: it runs on a rented GPU (user decision, 2026-10-12), see [Compute](#compute).
@@ -8,11 +20,11 @@ The primary product target is **suburban and village communities and their growt
 decision, 2026-10-19). Sampling, training coverage and model decisions should serve those contexts;
 dense urban centres are a secondary comparison. Settlement context needs its own evidence and labels:
 the existing low/medium/high/dense bins count cadastral parcels per tile and do not identify suburbs
-or villages. The next step is a coverage audit and, where needed, a separately frozen development
-cohort before the proposed confidence-versus-coverage study. Frozen historical results retain their
+or villages. The existing-data proxy audit and six-fit sampling comparison are complete; the next
+cohort must support the clarified imagery-derived plot target. Frozen historical results retain their
 original definitions. See [the current plan](PLAN.md#product-priority-suburban-and-village-communities).
 
-## Principles
+## Historical cadastral benchmark principles
 
 1. **One frozen benchmark, one scorer.** A city manifest fixes the tiles, their strata, the reference hashes and the scoring parameters. Every number comes from `score.py`. The final split is scored once per milestone and the result goes into the ledger; the selection split chooses checkpoints, thresholds and cleanup.
 2. **Four product metrics, reported together.** Parcel F1 at IoU ≥ 0.5, area-weighted recall, boundary F1 at 2 m, and shape precision. Area-weighted recall is our dollar-weighted recall: recovering ten large parcels is worth more to a visitor than ten slivers.
