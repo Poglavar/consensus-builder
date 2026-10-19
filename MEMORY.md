@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-19: Resume NYC envelopes with a narrow R6A interior-lot pilot in Brooklyn Community District 3, expanding by explicit rule families; parcel capacity requires cited site evidence because clean PLUTO attributes do not establish zoning-lot rights.
+
 - 2026-06-13: Frontend now defaults `window.STORAGE_PROVIDER='walrus'` (was `''`). ParcelNFT made **soulbound** (overrode `_update` to block owner-to-owner transfers; mint/burn allowed) — real ownership is EAS-attested (ProposalNFT acceptance), the holder is just a registry custodian. Mint harness: `PARCEL_REGISTRY_ADDRESS` env mints all parcels to one address instead of the ACCOUNT pool. Redeployed soulbound ParcelNFT `0x20e0A2897c642565905c0B45BBfaf7D8F96D1639` + ProposalNFT `0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F` (real schema UIDs) on Base Sepolia; frontend `contracts/*.json` repointed. Supersedes ParcelNFT `0xa5eE…` / ProposalNFT `0xC23D183B…`.
 
 - 2026-06-13: Added Walrus (Sui) as a config-selectable storage backend alongside IPFS/Pinata + local FS. Backend `POST /walrus/upload` + `backend/storage/walrus.js`; frontend `window.STORAGE_PROVIDER='walrus'` flips `target:'auto'` uploads, `walrus://<blobId>` resolved via `window.WALRUS_AGGREGATOR_URL` (public testnet default). Mint scripts: `--storage=walrus` + CJS `scripts/walrus-storage.js`; new `mint-parcels-nyc.js` (one NFT per `swis_sbl_id`, `US-NY-<id>`). On-chain pointer is canonical `walrus://<blobId>`; contracts unchanged. Spec in `feature-walrus.md`.

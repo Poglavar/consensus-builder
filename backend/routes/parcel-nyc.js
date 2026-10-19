@@ -2,6 +2,8 @@ import { buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
 import { fetchNycOwners, isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
 import { fetchPluto } from '../zoning/pluto.js';
 import { computeEnvelope } from '../zoning/envelope.js';
+import { SITE_REVIEWS } from '../zoning/reviews.js';
+import { getPilotEvidence } from '../zoning/pilot.js';
 
 const MAX_LIMIT = 5000;
 const SRID_WGS84 = 4326;
@@ -371,9 +373,8 @@ export function setupParcelNycRoute(app, pool) {
         }
     });
 
-    // As-of-right buildable-envelope estimate for a lot. Resolves the BBL from the
-    // parcel id, fetches PLUTO live (no DB), and combines it with the contextual
-    // district rules table. Returns FAR-only for lots we don't model (see envelope.js).
+    // Screen the current PLUTO record and publish a bulk envelope only when a
+    // curated site review matches its inputs. Unresolved evidence is returned explicitly.
     app.get('/parcel-nyc/:parcelId/envelope', async (req, res) => {
         const parcelId = normalizeParcelValue((req.params.parcelId || '').trim());
         if (!parcelId) {
@@ -394,7 +395,7 @@ export function setupParcelNycRoute(app, pool) {
                 parcelId: buildParcelId(parcelId),
                 bbl: pluto.bbl,
                 address: pluto.address,
-                envelope: computeEnvelope(pluto),
+                envelope: computeEnvelope(pluto, SITE_REVIEWS[pluto.bbl], { publicScreen: getPilotEvidence(pluto) }),
             });
         } catch (error) {
             console.error(`Error in /parcel-nyc/${parcelId}/envelope:`, error);

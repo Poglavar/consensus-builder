@@ -1,0 +1,61 @@
+{
+  "count": 1022,
+  "candidates": 500,
+  "excludedOrIncompleteCount": 522,
+  "issueCounts": [
+    {
+      "code": "split-zone",
+      "message": "PLUTO marks split zoning.",
+      "kind": "exclusion",
+      "count": 64
+    },
+    {
+      "code": "multiple-districts",
+      "message": "PLUTO reports more than one zoning district.",
+      "kind": "exclusion",
+      "count": 64
+    },
+    {
+      "code": "overlay",
+      "message": "PLUTO reports a commercial overlay.",
+      "kind": "exclusion",
+      "count": 392
+    },
+    {
+      "code": "lot-type",
+      "message": "The pilot requires PLUTO interior-lot type 5.",
+      "kind": "exclusion",
+      "count": 129
+    },
+    {
+      "code": "irregular-lot",
+      "message": "A known regular-lot flag is required.",
+      "kind": "exclusion",
+      "count": 41
+    },
+    {
+      "code": "dimension-conflict",
+      "message": "PLUTO area differs from frontage × depth by more than 1%; survey review is required.",
+      "kind": "missing-data",
+      "count": 39
+    },
+    {
+      "code": "environmental",
+      "message": "PLUTO reports an environmental designation.",
+      "kind": "exclusion",
+      "count": 2
+    },
+    {
+      "code": "historic",
+      "message": "PLUTO reports historic or landmark protection.",
+      "kind": "exclusion",
+      "count": 46
+    },
+    {
+      "code": "dimensions-outside-tier",
+      "message": "Pilot scope: area at least 1,700 sq ft, width 18–under 40 ft, depth 95–110 ft.",
+      "kind": "exclusion",
+      "count": 3
+    }
+  ]
+}

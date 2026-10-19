@@ -1,0 +1,239 @@
+{
+  "purpose": "Candidate audit, not verified development capacity.",
+  "ruleVersion": "r6a-interior-2026-10-19",
+  "snapshotHash": "b76130654abce627e6ae621b90e8e721634140f97f07304d191d542be3d72a4d",
+  "generatedAt": "2026-10-19T08:40:59.048Z",
+  "screenedPlutoRecords": 1022,
+  "plutoCandidates": 500,
+  "audited": 25,
+  "withoutMappedConflicts": 13,
+  "flagged": 12,
+  "failed": 0,
+  "reviewedEnvelopes": 0,
+  "lots": [
+    {
+      "bbl": "3014810010",
+      "address": "MONROE STREET",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1481/10"
+    },
+    {
+      "bbl": "3015910006",
+      "address": "121 MARCUS GARVEY BLVD",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1591/6"
+    },
+    {
+      "bbl": "3015930012",
+      "address": "856 WILLOUGHBY AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1593/12"
+    },
+    {
+      "bbl": "3015940005",
+      "address": "139 MARCUS GARVEY BLVD",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1594/5"
+    },
+    {
+      "bbl": "3015990002",
+      "address": "71 STUYVESANT AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1599/2"
+    },
+    {
+      "bbl": "3016010012",
+      "address": "918 DEKALB AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1601/12"
+    },
+    {
+      "bbl": "3016020015",
+      "address": "974 DEKALB AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1602/15"
+    },
+    {
+      "bbl": "3016030002",
+      "address": "87 STUYVESANT AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1603/2"
+    },
+    {
+      "bbl": "3016060032",
+      "address": "484 KOSCIUSZKO STREET",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1606/32"
+    },
+    {
+      "bbl": "3016070005",
+      "address": "97 STUYVESANT AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1607/5"
+    },
+    {
+      "bbl": "3016160058",
+      "address": "915 GREENE AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1616/58"
+    },
+    {
+      "bbl": "3016170001",
+      "address": "81 MALCOLM X BOULEVARD",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1617/1"
+    },
+    {
+      "bbl": "3016180002",
+      "address": "31 PATCHEN AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1618/2"
+    },
+    {
+      "bbl": "3016200043",
+      "address": "856 GREENE AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1620/43"
+    },
+    {
+      "bbl": "3016220081",
+      "address": "771 LEXINGTON AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1622/81"
+    },
+    {
+      "bbl": "3016230003",
+      "address": "51 PATCHEN AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "nyco: mapped constraint intersects the tax-lot polygon."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1623/3"
+    },
+    {
+      "bbl": "3016250045",
+      "address": "176 STUYVESANT AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1625/45"
+    },
+    {
+      "bbl": "3016270046",
+      "address": "62 PATCHEN AVENUE",
+      "publicScreen": "flagged",
+      "flags": [
+        "Current zoning-map intersections are not exclusively R6A."
+      ],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1627/46"
+    },
+    {
+      "bbl": "3016300035",
+      "address": "666 QUINCY STREET",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1630/35"
+    },
+    {
+      "bbl": "3016310060",
+      "address": "859 GATES AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1631/60"
+    },
+    {
+      "bbl": "3016320045",
+      "address": "GATES AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1632/45"
+    },
+    {
+      "bbl": "3016330052",
+      "address": "GATES AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1633/52"
+    },
+    {
+      "bbl": "3016370011",
+      "address": "872 GATES AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1637/11"
+    },
+    {
+      "bbl": "3016380030",
+      "address": "962 GATES AVENUE",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1638/30"
+    },
+    {
+      "bbl": "3016820080",
+      "address": "219 BAINBRIDGE STREET",
+      "publicScreen": "no-mapped-conflict-found",
+      "flags": [],
+      "error": null,
+      "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1682/80"
+    }
+  ]
+}
