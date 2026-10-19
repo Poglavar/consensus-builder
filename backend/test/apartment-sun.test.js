@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url);
-const {mount,ceilingParts,castsShadow}=require('../../frontend/js/apartment-sun.js');
+const {mount,ceilingParts,ceilingLampPositions,castsShadow}=require('../../frontend/js/apartment-sun.js');
 const geometry=require('../../frontend/js/building-floor-plans.js');
+const navigation=require('../../frontend/js/apartment-people-navigation.js');
 const state=require('../../frontend/js/apartment-sun-state.js');
 const SunCalc=require('../../frontend/vendor/suncalc.min.js');
 const architecture={schema:'consensus-builder.floor-architecture.v1',dimensionsM:[6,5],wallHeightM:2.7,slabThicknessM:.2,
@@ -25,6 +26,7 @@ function fixture({reduced=false}={}){
     class Resource{
         constructor(options){Object.assign(this,options);this.dispose=vi.fn();resources.push(this);}
         translate(){return this;}
+        rotateX(){return this;}
     }
     class Mesh extends Group{constructor(geometry,material){super();this.isMesh=true;this.geometry=geometry;this.material=material;}}
     class Shape{constructor(points){this.points=points;this.holes=[];}}
@@ -42,13 +44,13 @@ function fixture({reduced=false}={}){
     const doc=new EventTarget();doc.hidden=false;doc.createElement=tag=>new Element(tag);
     const media=new EventTarget();media.matches=reduced;
     const env={document:doc,innerWidth:1000,innerHeight:900,SunCalc,
-        __apartmentSunState:{...state,dayBounds:date=>state.dayBounds(date||'2026-06-21')},__buildingFloorPlans:geometry,
+        __apartmentSunState:{...state,dayBounds:date=>state.dayBounds(date||'2026-06-21')},__buildingFloorPlans:geometry,__apartmentPeopleNavigation:navigation,
         matchMedia:()=>media,requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id),
         IntersectionObserver:class{constructor(callback){this.callback=callback;this.disconnect=vi.fn();observers.push(this);}observe(){}}
     };
     const THREE={Group,Vector2:Vector,Vector3:class extends Vector{constructor(x,y,z){super();this.set(x,y,z);}},Object3D:Group,
-        Mesh,Shape,Path:Shape,ExtrudeGeometry:Resource,MeshBasicMaterial:Resource,MeshDepthMaterial:Resource,Color,
-        DirectionalLight:Light,DoubleSide:2,RGBADepthPacking:3201,PCFShadowMap:1};
+        Mesh,Shape,Path:Shape,ExtrudeGeometry:Resource,CylinderGeometry:Resource,MeshBasicMaterial:Resource,MeshDepthMaterial:Resource,Color,
+        DirectionalLight:Light,SpotLight:Light,DoubleSide:2,RGBADepthPacking:3201,PCFShadowMap:1};
     const group=new Group(),glass=new Mesh(new Resource(),new Resource()),wall=new Mesh(new Resource(),new Resource());
     glass.name='UnitPart:glass';wall.name='UnitPart:wall';group.add(glass,wall);
     const scene=new Group(),ambient={isLight:true,isHemisphereLight:true,intensity:2.4},oldLight={isLight:true,intensity:2};scene.add(ambient,oldLight);
@@ -56,8 +58,11 @@ function fixture({reduced=false}={}){
     const dispose=mount({THREE,scene,group,renderer,render,host,controlsHost,architecture,location:{lat:45.815,lng:15.982}},env);
     const ui=controlsHost.children[0],timeline=ui.children[0],options=ui.children[1];
     const sun=scene.children.find(child=>child.name==='ApartmentSun');
+    const nightLights=group.children.find(child=>child.name==='ApartmentNightLights');
+    const lamps=nightLights?.children.filter(child=>child.name==='ApartmentNightLamp');
+    const fixtures=nightLights?.children.filter(child=>child.name==='CeilingLamp');
     const step=now=>{const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
-    return {group,glass,wall,sun,renderer,render,host,controlsHost,frames,step,dispose,doc,media,observers,ambient,oldLight,resources,
+    return {group,glass,wall,sun,nightLights,lamps,fixtures,renderer,render,host,controlsHost,frames,step,dispose,doc,media,observers,ambient,oldLight,resources,
         pause:timeline.children[0],slider:timeline.children[2],north:options.children[1].children[0]};
 }
 
@@ -83,6 +88,47 @@ describe('apartment sunlight and shadow ownership',()=>{
         f.step(0);f.step(10000);expect(f.sun.intensity).toBe(0);expect(f.host.dataset.sunTime).toBe('00:00');
         f.step(20000);expect(f.host.dataset.sunTime).toBe(noon);expect(f.sun.intensity).toBeGreaterThan(0);f.dispose();
     });
+    it('turns ceiling lamps on at midnight and off again at noon',()=>{
+        const f=fixture();
+        expect(f.nightLights.visible).toBe(false);expect(f.lamps.length).toBeGreaterThan(0);
+        expect(f.fixtures).toHaveLength(f.lamps.length);
+        for(const lamp of f.lamps){expect(lamp.intensity).toBe(0);expect(f.nightLights.children).toContain(lamp.target);}
+        f.step(0);f.step(10000);
+        expect(f.host.dataset.sunTime).toBe('00:00');expect(f.nightLights.visible).toBe(true);
+        for(const lamp of f.lamps)expect(lamp.intensity).toBe(35);
+        f.step(20000);expect(f.nightLights.visible).toBe(false);
+        for(const lamp of f.lamps)expect(lamp.intensity).toBe(0);
+        f.dispose();
+    });
+    it('chooses safe ceiling positions outside floor holes and walls',()=>{
+        const positions=ceilingLampPositions(architecture,navigation),nav=navigation.buildNavigation(architecture);
+        expect(positions).toHaveLength(1);
+        for(const point of positions){
+            expect(nav.canWalk(point)).toBe(true);
+            expect(point[0]>=2.4&&point[0]<=3.6&&point[1]>=2&&point[1]<=3).toBe(false);
+            expect(point[1]).toBeLessThan(4.8);
+        }
+    });
+    it('lights each room separately even when an ordinary open door connects them',()=>{
+        const divided={...architecture,slabs:[[[[0,0],[1,0],[1,1],[0,1]]]],
+            walls:[[[[.48,0],[.52,0],[.52,.4],[.48,.4]]],[[[.48,.6],[.52,.6],[.52,1],[.48,1]]]],
+            openings:[{kind:'door',a:[.5,.4],b:[.5,.6],hinge:[.5,.4],openTip:[.65,.4],sillM:0,heightM:2.1,depthM:.2}]};
+        expect(navigation.buildNavigation(divided).components).toHaveLength(1);
+        const positions=ceilingLampPositions(divided,navigation);
+        expect(positions).toHaveLength(2);
+        expect(positions.filter(point=>point[0]<3)).toHaveLength(1);
+        expect(positions.filter(point=>point[0]>3)).toHaveLength(1);
+        for(const point of positions)expect(navigation.buildNavigation(divided).canWalk(point)).toBe(true);
+    });
+    it('limits ceiling lamps to eight rooms',()=>{
+        const manyRooms={...architecture,dimensionsM:[30,5],slabs:[[[[0,0],[1,0],[1,1],[0,1]]]],
+            walls:Array.from({length:9},(_,i)=>{const x=(i+1)/10;return [[[x-.003,0],[x+.003,0],[x+.003,1],[x-.003,1]]];})};
+        const nav=navigation.buildNavigation(manyRooms);
+        expect(nav.components).toHaveLength(10);
+        const positions=ceilingLampPositions(manyRooms,navigation);
+        expect(positions).toHaveLength(8);
+        for(const point of positions)expect(nav.canWalk(point)).toBe(true);
+    });
     it('supports pausing, manual time and an explicitly illustrative north adjustment',()=>{
         const f=fixture();f.pause.dispatchEvent(new Event('click'));expect(f.frames.size).toBe(0);
         f.slider.value='0';f.slider.dispatchEvent(new Event('input'));expect(f.sun.intensity).toBe(0);
@@ -99,6 +145,10 @@ describe('apartment sunlight and shadow ownership',()=>{
         const f=fixture(),roof=f.group.children.find(child=>child.name==='ApartmentShadowCeiling').children[0];
         f.dispose();expect(f.sun.shadow.dispose).toHaveBeenCalledOnce();expect(roof.geometry.dispose).toHaveBeenCalledOnce();
         expect(roof.material.dispose).toHaveBeenCalledOnce();expect(roof.customDepthMaterial.dispose).toHaveBeenCalledOnce();
+        expect(f.fixtures.length).toBeGreaterThan(0);
+        for(const resource of new Set(f.fixtures.flatMap(fixture=>[fixture.geometry,fixture.material])))expect(resource.dispose).toHaveBeenCalledOnce();
+        for(const lamp of f.lamps)expect(lamp.shadow.dispose).toHaveBeenCalledOnce();
+        expect(f.group.children).not.toContain(f.nightLights);
         expect(f.controlsHost.children).toEqual([]);expect(f.frames.size).toBe(0);expect(f.observers[0].disconnect).toHaveBeenCalledOnce();
         expect(f.ambient.intensity).toBe(2.4);expect(f.oldLight.intensity).toBe(2);expect(f.renderer.shadowMap.enabled).toBe(false);
     });

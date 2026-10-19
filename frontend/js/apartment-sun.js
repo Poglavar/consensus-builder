@@ -10,6 +10,32 @@
    ...part,baseM:architecture.wallHeightM,heightM:architecture.slabThicknessM
   }));
  }
+ function ceilingLampPositions(architecture,navigation){
+  // Close doorways for this room lookup; lamps belong inside rooms rather than corridors between them.
+  const nav=navigation.buildNavigation({...architecture,openings:architecture.openings.map(o=>o.kind==='door'?{...o,kind:'glazedDoor'}:o)});
+  if(!nav)return [];
+  return nav.components.filter(ids=>ids.length*nav.step*nav.step>=.8).slice(0,8).map(ids=>{
+   const centre=ids.reduce((p,id)=>[p[0]+nav.points[id][0]/ids.length,p[1]+nav.points[id][1]/ids.length],[0,0]);
+   const id=ids.reduce((best,id)=>Math.hypot(nav.points[id][0]-centre[0],nav.points[id][1]-centre[1])<Math.hypot(nav.points[best][0]-centre[0],nav.points[best][1]-centre[1])?id:best,ids[0]);
+   return nav.points[id];
+  });
+ }
+ function buildNightLights(THREE,architecture,navigation){
+  const group=new THREE.Group();group.name='ApartmentNightLights';
+  const geometry=new THREE.CylinderGeometry(.17,.17,.045,16).rotateX(Math.PI/2);
+  const material=new THREE.MeshBasicMaterial({color:0xffe4b0}),lights=[];
+  for(const [x,y] of ceilingLampPositions(architecture,navigation)){
+   const fixture=new THREE.Mesh(geometry,material);fixture.name='CeilingLamp';fixture.position.set(x,y,architecture.wallHeightM-.07);
+   const light=new THREE.SpotLight(0xffdfaa,0,architecture.wallHeightM*3,Math.PI*.43,.55,2);
+   light.name='ApartmentNightLamp';light.position.set(x,y,architecture.wallHeightM-.13);light.target=new THREE.Object3D();light.target.position.set(x,y,0);
+   light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.normalBias=.015;light.shadow.bias=-.0001;
+   light.shadow.camera.near=.05;light.shadow.camera.far=architecture.wallHeightM*3;
+   group.add(fixture,light,light.target);lights.push(light);
+  }
+  group.visible=false;
+  return {group,setNight(night){group.visible=night;lights.forEach(light=>{light.intensity=night?35:0;});},
+   dispose(){geometry.dispose();material.dispose();lights.forEach(light=>light.shadow.dispose());}};
+ }
  function buildCeiling(THREE,architecture,geometry){
   const group=new THREE.Group();group.name='ApartmentShadowCeiling';group.userData.cbFloorPlan=true;
   const material=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false,side:THREE.DoubleSide});
@@ -38,6 +64,7 @@
   originalLights.forEach(({light})=>{if(!light.isHemisphereLight)light.intensity=0;});
   group.traverse(object=>{if(object.isMesh){object.castShadow=castsShadow(object);object.receiveShadow=castsShadow(object);object.material.needsUpdate=true;}});
   const ceiling=buildCeiling(THREE,architecture,env.__buildingFloorPlans);group.add(ceiling.group);
+  const nightLights=buildNightLights(THREE,architecture,env.__apartmentPeopleNavigation);group.add(nightLights.group);
   const size=Math.hypot(...architecture.dimensionsM,architecture.wallHeightM),radius=size/2+1,distance=size*3;
   const target=new THREE.Object3D();target.position.set(architecture.dimensionsM[0]/2,architecture.dimensionsM[1]/2,architecture.wallHeightM/2);
   const sun=new THREE.DirectionalLight(0xfff2da,3.2);sun.name='ApartmentSun';sun.castShadow=true;sun.target=target;
@@ -64,6 +91,7 @@
    const daylight=Math.max(0,Math.min(1,(sample.altitude+.1)/.3));
    sun.intensity=sample.daylight?3.2*Math.min(1,Math.sqrt(Math.max(0,d.z))*2):0;
    sun.color.set(sample.altitude<.18?0xffc180:0xfff2da);
+   nightLights.setNight(!sample.daylight);
    if(ambient)ambient.intensity=.26+daylight*.3;
    scene.background=new THREE.Color('#1d2937').lerp(new THREE.Color('#eef3f5'),daylight);
    time.textContent=sample.time;phase.textContent=sample.daylight?'Dan':'Noć';slider.value=String(Math.round(progress*1000));slider.setAttribute('aria-valuetext',sample.time);
@@ -87,10 +115,10 @@
   const motionChanged=()=>{if(media.matches)paused=true;paint();sync();};
   const observer=new env.IntersectionObserver(entries=>{onscreen=entries.some(e=>e.isIntersecting);sync();});observer.observe(host);
   doc.addEventListener('visibilitychange',sync);media?.addEventListener('change',motionChanged);paint();sync();
-  return ()=>{disposed=true;sync();observer.disconnect();doc.removeEventListener('visibilitychange',sync);media?.removeEventListener('change',motionChanged);ui.remove();group.remove(ceiling.group);ceiling.dispose();scene.remove(sun,target);sun.shadow.dispose();
+  return ()=>{disposed=true;sync();observer.disconnect();doc.removeEventListener('visibilitychange',sync);media?.removeEventListener('change',motionChanged);ui.remove();group.remove(ceiling.group,nightLights.group);ceiling.dispose();nightLights.dispose();scene.remove(sun,target);sun.shadow.dispose();
    originalLights.forEach(({light,intensity})=>{light.intensity=intensity;});renderer.shadowMap.enabled=oldShadow.enabled;renderer.shadowMap.type=oldShadow.type;
    delete host.dataset.sunTime;delete host.dataset.sunDate;delete host.dataset.sunAltitude;delete host.dataset.sunlightState;
   };
  }
- return {mount,ceilingParts,castsShadow};
+ return {mount,ceilingParts,ceilingLampPositions,castsShadow};
 });
