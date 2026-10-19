@@ -29,6 +29,12 @@ Member order contributes to the named-plan hash. It does not determine replay ch
 declare dependencies. A statutory plan or a floor-plan drawing is a different kind of object;
 this document uses “plan” as shorthand for **named plan** only.
 
+**Applied proposal stats** reports the current browser composition. **Urban grain score** identifies
+whether it is using that local composition or a named-plan scope. A named-plan card displays the
+plan's title, or its slug when it has no title. The current score filter can follow a member's local
+replacement/source lineage and measures the live fabric; it is not yet an exact committed-member
+evaluation. That separate correctness issue is recorded as V19 in [the audit register](vocabulary.md#audit-register--findings-and-resolutions).
+
 ## A named plan never changes
 
 - `POST /plans` creates a plan. There is no update route: no `PUT`, no edit token.

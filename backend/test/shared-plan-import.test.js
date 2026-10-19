@@ -633,9 +633,9 @@ describe('shared-plan import boundary', () => {
             .not.toMatch(/resetPartiallyAppliedSharedPlan/);
         expect(source, 'the plan route unapplies members again')
             .not.toMatch(/coveredIncomingIds\.size > 0 && coveredIncomingIds\.size < totalProposals/);
-        // The remaining "Rebuilding applied plan" is the boot replay awaiting reapplyAppliedProposals,
-        // which is a different phase that happens to share the wording.
-        expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\{ onProgress: reportSharedPlanProgress \}\)/);
+        // Rebuilding the applied composition is the boot replay, reported in the status line
+        // while the shared-proposal link waits for it to finish.
+        expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\{\s*onProgress: window\.ReplayStatus\.statusReporter\(tShare,/);
     });
 });
 

@@ -389,7 +389,7 @@
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
             labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open the proposals list', icon: 'fas fa-list-ul' },
         control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Plan Stats', icon: 'fas fa-chart-pie' }),
+            labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Summon the urbanist rooster', icon: 'fas fa-crow' }),
         control('mintedProposalsButton', { id: 'proposals.minted', group: 'proposals', surfaces: ['proposals'],

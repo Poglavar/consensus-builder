@@ -280,7 +280,7 @@ function _announceWaitingForReplay(manager, kind) {
     const key = 'proposalApplyStatus.waitingForReplay';
     let message = '';
     try { message = root.i18n?.t?.(key) || ''; } catch (_) { }
-    if (!message || message === key) message = 'Waiting for the applied plan to finish rebuilding…';
+    if (!message || message === key) message = 'Waiting for the applied composition to finish rebuilding…';
     if (typeof root.updateStatus === 'function') {
         try { root.updateStatus(message); } catch (_) { }
     }

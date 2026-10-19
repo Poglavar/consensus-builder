@@ -221,7 +221,7 @@ test.describe('shared dynamic button factories @features', () => {
     expect(await secondYearProposals.innerText()).toBe('2');
     await section.locator('[data-epoch-view="added"]').click();
     await expect.poll(() => secondYearProposals.innerText()).toBe(addedCount);
-    await modal.getByRole('button', { name: 'Close plan stats' }).click();
+    await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
     await expect(modal).toBeHidden();
   });
 

@@ -60,7 +60,7 @@ describe('grain score wiring', () => {
         const block = lookup(dictionary, 'sidebar.proposals.grainScore');
         expect(block).toBeTruthy();
         [
-            'buttonLabel', 'buttonHint', 'buttonEmpty', 'title', 'ready', 'start', 'countTitle',
+            'buttonLabel', 'buttonHint', 'buttonEmpty', 'title', 'appliedComposition', 'localScope', 'namedScope', 'ready', 'start', 'countTitle',
             'fineTitle', 'methodologyBody', 'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete'
         ].forEach(key => expect(block[key], `${locale}.${key}`).toBeTruthy());
     });

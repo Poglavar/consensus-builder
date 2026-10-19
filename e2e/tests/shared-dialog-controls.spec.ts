@@ -114,7 +114,7 @@ test.describe('shared dialog button controls @features', () => {
     }
   });
 
-  test('partial shared plan result supports Copy and Close', async ({ browser, baseURL, mockApi: authorPage }) => {
+  test('partial shared proposals result supports Copy and Close', async ({ browser, baseURL, mockApi: authorPage }) => {
     // Two devices, and the drawing gets its terms before it is shared.
     test.setTimeout(90_000);
     const server = createSharedProposalServer();
@@ -135,12 +135,12 @@ test.describe('shared dialog button controls @features', () => {
     const receiver = await newReceiver(browser, baseURL, `/proposals/${serverId},7999?city=zg`, server);
     try {
       const result = receiver.page.locator('.share-modal-overlay');
-      await expect(result).toContainText(/Shared plan result/i, { timeout: 60_000 });
+      await expect(result).toContainText(/Shared proposals result/i, { timeout: 60_000 });
       const copy = result.getByRole('button', { name: 'Copy', exact: true });
       await copy.click();
       await expect(result).toBeVisible();
       await expect.poll(() => receiver.page.evaluate(() => navigator.clipboard.readText()))
-        .toMatch(/Shared plan result/i);
+        .toMatch(/Shared proposals result/i);
       await expect(result).toContainText('Applied 1 proposal');
       await expect(result).toContainText('Not found on server');
       await result.locator('.share-modal .btn-primary').click();

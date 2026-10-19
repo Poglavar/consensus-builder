@@ -335,6 +335,9 @@ test.describe('World navigation and open ground @features', () => {
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();
     await expect(panel.locator('[data-grain-role="result"]')).toBeVisible({ timeout: 20000 });
+    await expect(panel.locator('[data-grain-role="planName"]')).toHaveText('Applied composition');
+    await expect(panel.locator('[data-grain-role="route"]')).toHaveText('Local composition · score stays in this browser');
+    await test.info().attach('local-composition-score', { body: await panel.screenshot(), contentType: 'image/png' });
     const score = Number(await panel.locator('[data-grain-role="totalScore"]').innerText());
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);

@@ -474,7 +474,7 @@ function sharedCorridorCountPhrase(roads, tracks, tShare) {
 // describes them.
 function sharedPlanProgressView(event, tShare) {
     if (!event || typeof tShare !== 'function') return null;
-    const title = tShare('plan.applyingAllTitle', 'Applying the shared plan');
+    const title = tShare('plan.applyingAllTitle', 'Applying shared proposals');
     const count = () => sharedCorridorCountPhrase(event.roads, event.tracks, tShare);
     switch (event.phase) {
         case 'ground-check':
@@ -1759,9 +1759,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
         // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
-        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
             total: totalProposals,
-            title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+            title: tShare('plan.fetchingPlanTitle', 'Fetching shared proposals')
         });
 
         const backendBase = resolveBackendBaseUrl();
@@ -2094,7 +2094,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     'Proposal {{ids}} is no longer on the server. Only your local copy is left, so this link will not open for anyone else.',
                     { ids: goneFromServer.map(id => `#${id}`).join(', ') }), 10000, 'warning');
             } else if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(tShare('plan.alreadyAppliedMessage', 'This shared plan is already applied to the map.'), 4000, 'info');
+                showEphemeralMessage(tShare('plan.alreadyAppliedMessage', 'These shared proposals are already applied to the map.'), 4000, 'info');
             }
             if (urlRequests3D) {
                 try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
@@ -2141,9 +2141,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         // What remains is the link's own import: modal again, as for the fetch.
         if (replayHidModal) {
-            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
                 total: totalProposals,
-                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+                title: tShare('plan.fetchingPlanTitle', 'Fetching shared proposals')
             });
             updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         }
@@ -2551,7 +2551,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         let planSummaryModal = null;
         if (showSummaryModal) {
             planSummaryModal = showSimpleShareModal({
-                title: tShare('plan.summary', 'Shared Plan Result'),
+                title: tShare('plan.summary', 'Shared proposals result'),
                 body: bodyLines.join(''),
                 actions: [
                     {
@@ -2559,7 +2559,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         keepOpen: true,
                         onClick: (api) => {
                             try {
-                                const text = `${tShare('plan.summary', 'Shared Plan Result')}\n\n`
+                                const text = `${tShare('plan.summary', 'Shared proposals result')}\n\n`
                                     + String(api && api.body ? api.body.innerText : '').trim();
                                 const copied = () => {
                                     if (typeof showEphemeralMessage === 'function') {

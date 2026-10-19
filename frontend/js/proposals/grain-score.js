@@ -1,4 +1,4 @@
-// Institut za zrnatost — plan-level parcel inspection on the live Leaflet map.
+// Institut za zrnatost — parcel inspection for an applied composition or named-plan scope.
 //
 // The map already contains the authoritative derived parcel fabric. This module reads that fabric,
 // measures each resulting parcel, lets the rooster visit it, and only then reveals the scorecard.
@@ -368,10 +368,10 @@
         const slug = plan && plan.slug ? plan.slug : null;
         setNodeText(panel, 'eyebrow', t('sidebar.proposals.grainScore.institute', 'Institut za zrnatost'));
         setNodeText(panel, 'title', t('sidebar.proposals.grainScore.title', 'Urban grain score'));
-        setNodeText(panel, 'planName', (plan && plan.title) || t('sidebar.proposals.grainScore.currentPlan', 'Current applied plan'));
+        setNodeText(panel, 'planName', (plan && plan.title) || slug || t('sidebar.proposals.grainScore.appliedComposition', 'Applied composition'));
         setNodeText(panel, 'route', slug
-            ? rules.buildPlanScorePath(slug)
-            : t('sidebar.proposals.grainScore.unnamedRoute', 'Unnamed plan · score stays in this browser'));
+            ? t('sidebar.proposals.grainScore.namedScope', 'Named plan · {{path}}', { path: rules.buildPlanScorePath(slug) })
+            : t('sidebar.proposals.grainScore.localScope', 'Local composition · score stays in this browser'));
         const close = panel.querySelector('[data-grain-action="close"]');
         if (close) close.setAttribute('aria-label', t('sidebar.proposals.grainScore.closeAria', 'Close grain score'));
         renderSoundControl();
@@ -381,7 +381,7 @@
         renderPanelChrome(plan);
         const { panel } = ensureUi();
         showOnly('loading');
-        setNodeText(panel, 'loadingText', message || t('sidebar.proposals.grainScore.loading', 'Preparing the plan for inspection…'));
+        setNodeText(panel, 'loadingText', message || t('sidebar.proposals.grainScore.loading', 'Preparing proposals for inspection…'));
     }
 
     function renderReady() {
@@ -400,7 +400,7 @@
     function renderError(message) {
         const { panel } = ensureUi();
         showOnly('error');
-        setNodeText(panel, 'error', message || t('sidebar.proposals.grainScore.unavailable', 'The grain score is unavailable for this plan.'));
+        setNodeText(panel, 'error', message || t('sidebar.proposals.grainScore.unavailable', 'The grain score is unavailable for these proposals.'));
     }
 
     function verdictLabel(key) {
@@ -919,13 +919,13 @@
             if (typeof global.ensurePlanCity === 'function' && await global.ensurePlanCity(plan.city)) return;
             state.namedPlan = { ...plan, slug: normalized };
             global.__currentNamedPlan = state.namedPlan;
-            renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.applyingPlan', 'Rebuilding the plan on the map…'));
+            renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.applyingNamedPlan', 'Applying named-plan proposals to the map…'));
             if (typeof handleSharedPlanRoute !== 'function') throw new Error('Shared-plan loader unavailable');
             const loadResult = await handleSharedPlanRoute(ids, 0, { suppressSummary: true, suppressDetails: true });
             if (loadResult && (loadResult.blocked || (Array.isArray(loadResult.failed) && loadResult.failed.length))) {
                 renderError(t(
                     'sidebar.proposals.grainScore.incompletePlan',
-                    'The plan cannot be scored because not all of its proposals could be applied.'
+                    'The named plan cannot be scored because not all of its proposals could be applied.'
                 ));
                 updateButtonState();
                 return;

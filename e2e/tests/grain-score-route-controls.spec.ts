@@ -40,7 +40,10 @@ async function personalize(page: Page): Promise<void> {
   await expect(page.locator('#welcome-modal')).toBeHidden();
 }
 
-test('named-plan grain-score route prepares the real plan and Start runs its inspection @features', async ({ browser, baseURL, mockApi: authorPage }) => {
+for (const title of ['Grain score route plan', '']) {
+test(`named-plan grain-score route ${title ? 'with a title' : 'without a title'} prepares the real plan and Start runs its inspection @features`, async ({ browser, baseURL, mockApi: authorPage }) => {
+  // Two browser contexts publish, load and inspect; keep the overall cap above the per-phase waits.
+  test.setTimeout(90_000);
   const server = createSharedProposalServer();
   await attachSharedProposalServer(authorPage, server);
   await openCity(authorPage);
@@ -59,7 +62,7 @@ test('named-plan grain-score route prepares the real plan and Start runs its ins
   const slug = 'grain-score-route-test';
   const plan = {
     slug,
-    title: 'Grain score route plan',
+    title,
     city: proposal.city || 'zagreb',
     proposalRowIds: [serverId],
   };
@@ -68,7 +71,8 @@ test('named-plan grain-score route prepares the real plan and Start runs its ins
     const panel = receiver.page.locator('#grain-score-panel');
     await expect(panel).toBeVisible({ timeout: 60_000 });
     await expect(panel.locator('[data-grain-role="ready"]')).toBeVisible({ timeout: 60_000 });
-    await expect(panel.locator('[data-grain-role="planName"]')).toContainText(plan.title);
+    await expect(panel.locator('[data-grain-role="planName"]')).toHaveText(title || slug);
+    await expect(panel.locator('[data-grain-role="route"]')).toHaveText(`Named plan · /plans/${slug}/score`);
     const start = panel.locator('[data-grain-action="start"]');
     await expect(start).toBeVisible();
     await start.click();
@@ -78,3 +82,4 @@ test('named-plan grain-score route prepares the real plan and Start runs its ins
     await receiver.context.close();
   }
 });
+}
