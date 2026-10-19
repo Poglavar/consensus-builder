@@ -12,6 +12,7 @@ const {
     normalizeOwnerLabelLoose,
     isCityOwnedLabel,
     classifyOwnershipLabel,
+    normalizeCanonicalOwnerType,
     getOwnershipType
 } = require('../../frontend/js/parcels/ownership-type.js');
 
@@ -35,6 +36,7 @@ describe('classifyOwnershipLabel', () => {
         expect(classifyOwnershipLabel('REPUBLIKA HRVATSKA')).toBe('government');
         expect(classifyOwnershipLabel('Grad Zagreb')).toBe('government');
         expect(classifyOwnershipLabel('Dom zdravlja Zagreb')).toBe('government');
+        expect(classifyOwnershipLabel('Javno dobro')).toBe('government');
     });
 
     it('matches the city regex through inflected forms', () => {
@@ -80,6 +82,33 @@ describe('classifyOwnershipLabel', () => {
     it('getOwnershipType is the single-argument alias', () => {
         expect(getOwnershipType('REPUBLIKA HRVATSKA')).toBe('government');
         expect(getOwnershipType('Ivan Horvat')).toBe('private individual');
+    });
+
+    it('recognizes known New York public bodies without treating generic city wording as public', () => {
+        expect(classifyOwnershipLabel('City of New York')).toBe('government');
+        expect(classifyOwnershipLabel('New York City Housing Authority')).toBe('government');
+        expect(classifyOwnershipLabel('New York City Transit Authority')).toBe('government');
+        expect(classifyOwnershipLabel('NYC Department of Environmental Protection')).toBe('government');
+        expect(classifyOwnershipLabel('New York City Dept. of Transportation')).toBe('government');
+        expect(classifyOwnershipLabel('NYC Dept of Parks and Recreation')).toBe('government');
+        expect(classifyOwnershipLabel('New York City Ventures LLC')).toBe('company');
+        expect(classifyOwnershipLabel('City of Chicago Holdings LLC')).toBe('company');
+        expect(classifyOwnershipLabel('City Living LLC')).toBe('company');
+        expect(classifyOwnershipLabel('NYC Department Store LLC')).toBe('company');
+    });
+
+    it('recognizes common US company suffixes and leaves unmarked names alone', () => {
+        expect(classifyOwnershipLabel('Acme Holdings LLC')).toBe('company');
+        expect(classifyOwnershipLabel('Example Services, Inc.')).toBe('company');
+        expect(classifyOwnershipLabel('Acme Real Estate')).toBe('private individual');
+    });
+
+    it('preserves canonical owner types instead of interpreting them as owner labels', () => {
+        expect(normalizeCanonicalOwnerType(' company ')).toBe('company');
+        expect(normalizeCanonicalOwnerType('GOVERNMENT')).toBe('government');
+        expect(normalizeCanonicalOwnerType('private individual')).toBe('private individual');
+        expect(normalizeCanonicalOwnerType('city')).toBe('government');
+        expect(normalizeCanonicalOwnerType('New York City Housing Authority')).toBeNull();
     });
 });
 

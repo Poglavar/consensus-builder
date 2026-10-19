@@ -57,11 +57,6 @@ function _normalizeProposalId(value) {
     }
 }
 
-function _coordinatedPlanIdOf(record) {
-    if (!record || record.coordinatedPlanId === undefined || record.coordinatedPlanId === null) return '';
-    return String(record.coordinatedPlanId).trim();
-}
-
 function _getProposalApplyLabel(proposalId, proposalData) {
     const title = proposalData && typeof proposalData.title === 'string'
         ? proposalData.title.trim()
@@ -1925,67 +1920,12 @@ const ProposalManager = {
                 // Ribbon on open ground only: no cadastral parcel to arrange (PARCEL-OPTIONAL.md).
                 openGroundOnly: openGroundApi.corridorOnOpenGroundOnly(record),
                 isTrack: !!(definition && definition.metadata && definition.metadata.isTrack),
-                name: record.title || record.name || 'Road',
-                coordinatedPlanId: _coordinatedPlanIdOf(record) || null
+                name: record.title || record.name || 'Road'
             });
         });
         return takes;
     },
 
-    // Non-road plots authored by an explicitly coordinated plan. Its road records are published
-    // separately, but the two geometries are one tessellation: road bands occupy the intentional
-    // gaps between these plots. Corridor derivation starts from the cadastre, so its ordinary
-    // remainders must be clipped around the standing plots instead of duplicated over them.
-    //
-    // The authored records are the source here, never the current map layers. During canonical
-    // replay every generated layer has already been purged and every target record is temporarily
-    // marked unapplied, so discovering plots through generated parcel ownership was both
-    // architecturally backwards and ineffective exactly when replay needed it most.
-    _coordinatedReadjustmentGroundByParcel(takes, appliedList = null) {
-        const planIds = new Set((Array.isArray(takes) ? takes : [])
-            .map(take => take && take.coordinatedPlanId ? String(take.coordinatedPlanId) : '')
-            .filter(Boolean));
-        const occupied = new Map();
-        if (!planIds.size) return occupied;
-
-        const explicitRecords = Array.isArray(appliedList);
-        const records = explicitRecords
-            ? appliedList
-            : ((typeof proposalStorage !== 'undefined' && proposalStorage
-                && typeof proposalStorage.getAllProposals === 'function')
-                ? proposalStorage.getAllProposals().filter(record => appliedOf(record))
-                : []);
-        records.filter(Boolean).forEach(record => {
-            const planId = _coordinatedPlanIdOf(record);
-            if (!planId || !planIds.has(planId)) return;
-            const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
-                ? applyRoute.normalizeGoalKey(record.goal)
-                : String(record.goal || '');
-            if (goalKey !== 'reparcellization' || !record.reparcellization) return;
-
-            const plots = (Array.isArray(record.reparcellization.polygons)
-                ? record.reparcellization.polygons
-                : [])
-                .map(slice => {
-                    const geometry = slice && slice.geometry ? slice.geometry : slice;
-                    if (!geometry || !/Polygon/.test(String(geometry.type || ''))) return null;
-                    return { type: 'Feature', properties: {}, geometry };
-                })
-                .filter(Boolean);
-            if (!plots.length) return;
-
-            // Anchors were projected from the author's explicit live selection and stamped before
-            // publication. Assigning all authored plots to each declared base is safe: clipping a
-            // parcel by a plot outside it is a no-op, while guessing a plot-to-base relationship
-            // from a generated child id would recreate the lineage dependency this materializer is
-            // designed to eliminate.
-            proposalClaims.cadastreParcelIdsOf(record).forEach(baseId => {
-                if (!occupied.has(baseId)) occupied.set(baseId, []);
-                occupied.get(baseId).push(...plots);
-            });
-        });
-        return occupied;
-    },
 
     // Derive the parcel fabric from the cadastre and the corridors over it.
     //
@@ -2243,12 +2183,6 @@ const ProposalManager = {
         // An untouched parcel comes back as the cadastral feature itself. Every changed parcel is
         // replaced as one fabric partition below; Leaflet is not consulted and cannot affect the
         // result.
-        const coordinatedGround = typeof this._coordinatedReadjustmentGroundByParcel === 'function'
-            ? this._coordinatedReadjustmentGroundByParcel(takes, options.appliedList)
-            : new Map();
-        if (coordinatedGround.size && typeof A.remaindersOutsideOccupiedGround === 'function') {
-            pieces = A.remaindersOutsideOccupiedGround(pieces, coordinatedGround);
-        }
         const fabricStore = _fabricDraft(options);
         if (!fabricStore || typeof fabricStore.replaceCadastreScope !== 'function') {
             throw new Error('Corridor parcel derivation requires a parcel mutation draft.');
@@ -2533,7 +2467,7 @@ const ProposalManager = {
     // Several consecutive corridors in one shared package are one change to the cadastral fabric,
     // not a sequence of unrelated clicks. Materialise their complete take set in one pass, exactly
     // as a canonical rebuild does. The package phase decides whether this batch runs before an
-    // ordinary readjustment or after a coordinated, pre-tessellated one.
+    // ordinary readjustment.
     async materializeCorridorBatch(proposalIds, options = {}) {
         const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : [])
             .map(id => String(id || '')).filter(Boolean)));

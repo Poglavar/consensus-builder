@@ -242,7 +242,10 @@
                 context: freeformContext(frozen, { blockName }),
                 placement: { free: true, site: clone(site), bindingStatus: 'pending' }
             },
-            fields: { site: clone(site), selectedParcelIds: [], cadastreParcelIds: [], binding: null }
+            fields: {
+                site: clone(site), selectedParcelIds: [], cadastreParcelIds: [], binding: null,
+                ...(draft?.fields?.titleOrigin === 'generated' ? { name: '', titleOrigin: 'generated' } : {})
+            }
         };
     }
 

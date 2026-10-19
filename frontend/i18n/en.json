@@ -657,7 +657,10 @@
         },
         "design": {
             "corridorSummary": "{{segments}} segment(s) · {{width}} m wide",
-            "buildingSummary": "{{count}} building(s) · {{typology}}",
+            "buildingSummary": {
+                "one": "{{count}} building · {{typology}}",
+                "other": "{{count}} buildings · {{typology}}"
+            },
             "reparcelSummary": "{{count}} replacement parcel(s) · {{algorithm}}",
             "parcelSummary": "{{count}} affected parcel(s)",
             "manual": "manual",
@@ -2650,7 +2653,10 @@
             "show": "Show"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} intersects {{count}} building(s). Keep it at surface level through them, or tunnel through them?",
+            "offer": {
+                "one": "This {{kind}} intersects {{count}} building. Keep it at surface level through it, or tunnel through it?",
+                "other": "This {{kind}} intersects {{count}} buildings. Keep it at surface level through them, or tunnel through them?"
+            },
             "road": "road",
             "track": "track",
             "proposalImpact": "This road is later than these building proposals; a surface crossing takes their ground during replay:",
@@ -3653,12 +3659,19 @@
                 "additionalFloors": "Additional floors:",
                 "floorHeight": "Floor height (m):",
                 "helper": "Pick a rule: proposed height draws every building at exactly that height; additional floors adds floors on top of each building's current height (needs known heights).",
-                "summaryExact": "Proposing {{count}} buildings at {{height}} m.",
+                "summaryExact": {
+                    "one": "Proposing {{count}} building at {{height}} m.",
+                    "other": "Proposing {{count}} buildings at {{height}} m."
+                },
                 "loading": "Loading existing buildings…",
                 "notAvailable": "Existing building data is not available for this city yet.",
                 "noneFound": "No existing buildings found on the selected parcels.",
                 "loadFailed": "Could not load existing buildings. Try again.",
-                "summary": "Raising {{count}} of {{total}} existing buildings."
+                "summary": "Raising {{count}} of {{existingBuildings}}.",
+                "buildingCount": {
+                    "one": "{{count}} existing building",
+                    "other": "{{count}} existing buildings"
+                }
             },
             "warnings": {
                 "oversizedBlock": "This block is large — walking around it would take about {{minutes}} minutes. Recommended blocks are between 50×50 m and 200×200 m, so they can be walked around in about 2½ to 10 minutes. Do you want to proceed?",
@@ -3783,7 +3796,6 @@
                 "selectedParcels": "Selected parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} parcels",
-                "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule",
                 "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
                 "excludedNoRoom": "The setback leaves no room to build on this plot.",
                 "excludedCannotMeet": "Too small to meet the minimum this rule compels — the rule contradicts itself here."
@@ -7138,7 +7150,10 @@
             "short": "reaches in"
         },
         "buildings": {
-            "count": "{{count}} building(s)",
+            "count": {
+                "one": "{{count}} building",
+                "other": "{{count}} buildings"
+            },
             "footprint": "footprint {{area}}",
             "floorArea": "floor area {{area}}",
             "height": "{{floors}} floors · {{height}}"

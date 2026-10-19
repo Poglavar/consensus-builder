@@ -25,7 +25,7 @@ const D = 0.0002;
 
 function block(extra = {}, buildings = [{ type: 'Feature', properties: { height: 15 }, geometry: box(16, 45, 16 + 3 * D, 45 + D) }]) {
     return {
-        proposalId: 'own-block', goal: 'buildings', typologyType: 'block', title: 'Courtyard block', applied: true,
+        proposalId: 'own-block', goal: 'buildings', typologyType: 'block', title: 'Courtyard block', titleOrigin: 'generated', applied: true,
         cadastreParcelIds: ['HR-1', 'HR-2'], createdAt: '2026-10-01T10:00:00.000Z',
         buildingProposal: { typologyType: 'block', parameters: { mode: 'parametric', typology: 'block', setback: 2 } },
         geometry: { buildings, blockMassing: buildings[0] },
@@ -47,7 +47,7 @@ function loadShell(source) {
         createDraftFromProposal: vi.fn(proposal => {
             const draft = {
                 id: draftId(), sourceProposalId: proposal.proposalId, sourceSnapshot: proposal,
-                adapterKey: 'buildings', goal: 'buildings', fields: { name: proposal.title },
+                adapterKey: 'buildings', goal: 'buildings', fields: { name: proposal.title, description: proposal.description || '', ...(proposal.titleOrigin ? { titleOrigin: proposal.titleOrigin } : {}) },
                 editorPayload: { typology: 'block', context: { blockName: 'Block 7', parameters: { mode: 'parametric', setback: 2, typology: 'block' } } },
                 validation: { valid: true, errors: [] }
             };
@@ -97,6 +97,8 @@ function loadShell(source) {
     install('__siteDraft', require('../../frontend/js/proposals/site-draft.js'));
     install('turf', turf);
     install('UrbanRuleVariation', variation);
+    install('generateDefaultProposalName', type => `${type} generated`);
+    install('generateDefaultProposalDescription', (type, name) => `${type}: ${name}`);
     install('CbDialog', { confirm: vi.fn(async () => true) });
     install('isProposalApplied', record => record?.applied === true);
     install('showStyledAlert', vi.fn());
@@ -135,11 +137,26 @@ describe('convertProposalToFreeform', () => {
         expect(draft.editorPayload.context.buildings[0].properties).toMatchObject({ height: 15, type: 'proposedBuildingSingle' });
         // The rule's parameters do not survive into the Freeform design.
         expect(draft.editorPayload.context.parameters).toEqual({ typology: 'single', height: 15, rotation: 0, footprintMode: 'polygon' });
+        expect(draft.fields).toMatchObject({ name: 'single generated', titleOrigin: 'generated', description: 'single: single generated' });
         // No live parcels: the Block stores no site, so the Freeform stands on its own footprint.
         expect(turf.area(turf.feature(draft.fields.site))).toBeCloseTo(turf.area(turf.feature(source.geometry.buildings[0].geometry)), 0);
         expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledOnce();
         expect(ProposalManager.updateProposalInPlace.mock.calls[0][0]).toBe('own-block');
         expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
+    });
+
+    it('preserves a user-authored title while converting the geometry', async () => {
+        const source = block({ title: 'My courtyard', titleOrigin: 'user' });
+        const { drafts } = loadShell(source);
+        await globalThis.convertProposalToFreeform('own-block');
+        expect(drafts.get('conversion-draft').fields).toMatchObject({ name: 'My courtyard', titleOrigin: 'user' });
+    });
+
+    it('does not replace an authored description when it replaces a generated title', async () => {
+        const source = block({ description: 'Keep this description.' });
+        const { drafts } = loadShell(source);
+        await globalThis.convertProposalToFreeform('own-block');
+        expect(drafts.get('conversion-draft').fields).toMatchObject({ name: 'single generated', titleOrigin: 'generated', description: 'Keep this description.' });
     });
 
     it('makes a Freeform counterproposal of a published Block, which stays as it is', async () => {
@@ -189,7 +206,7 @@ function detached(extra = {}) {
         properties: { height: floors * 3, floors, parcelId, urbanRule: variation.normalizeParcelRule({ kind: 'max', maxFloors: floors, minFloors: 1, floorHeightM: 3 }), variationSeed: 7, massing: true },
         geometry: box(west, 45, west + D, 45 + D) });
     const houses = [house(16, 3, 'HR-1'), house(16 + 3 * D, 4, 'HR-2')];
-    return block({ proposalId: 'own-detached', typologyType: 'parcelBased', title: 'Two houses',
+    return block({ proposalId: 'own-detached', typologyType: 'parcelBased', title: 'Two houses', titleOrigin: 'generated',
         buildingProposal: { typologyType: 'parcelBased', parameters: { typology: 'parcelBased' } }, ...extra }, houses);
 }
 const shift = (geometry, dx) => ({ ...geometry, coordinates: geometry.coordinates.map(ring => ring.map(([x, y]) => [x + dx, y])) });

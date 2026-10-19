@@ -3564,12 +3564,13 @@ function generateExistingBuildingsInModal() {
     generatedBuildingFeature = null;
     displayBuildingsInModal(features);
     if (existingRule === 'additional') {
-        setBlockifyInfo('blockify.modal.existing.summary', 'Raising {{count}} of {{total}} existing buildings.', {
+        setBlockifyInfo('blockify.modal.existing.summary', 'Existing buildings: {{total}} · raising: {{count}}', {
             count: features.length,
-            total: list.length
+            total: list.length,
+            existingBuildings: { key: 'blockify.modal.existing.buildingCount', count: list.length }
         });
     } else {
-        setBlockifyInfo('blockify.modal.existing.summaryExact', 'Proposing {{count}} buildings at {{height}} m.', {
+        setBlockifyInfo('blockify.modal.existing.summaryExact', 'Proposed buildings: {{count}} · height: {{height}} m', {
             count: features.length,
             height: CbFormat.formatNumber(currentProposedHeightFloors * currentFloorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 })
         });

@@ -125,6 +125,27 @@ describe('proposal rows: mutations', () => {
     });
 });
 
+describe('proposal rows: inserts do no whole-store duplicate scan', () => {
+    it('adds authored records without hashing unrelated stored geometry, even for an explicit id', () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        install('getCurrentCityId', () => 'zagreb');
+        install('hashStringDeterministic', deterministicHash);
+        let unrelatedReads = 0;
+        const unrelated = record('existing');
+        Object.defineProperty(unrelated, 'geometry', { get() {
+            unrelatedReads += 1;
+            return {};
+        } });
+        store.proposals.set('existing', unrelated);
+        const seed = vi.spyOn(store, '_buildHashSeed');
+        expect(store.addProposal(record('authored-new'), { deferSave: true })).toBe('authored-new');
+        expect(unrelatedReads).toBe(0);
+        expect(seed).not.toHaveBeenCalled();
+        expect(store.getProposal('authored-new').title).toBe('authored-new');
+    });
+});
+
 describe('proposal rows: deterministic ID collisions', () => {
     it('allocates unique ids when several authored proposals share one immutable seed in the same millisecond, and reloads every row', () => {
         vi.useFakeTimers();

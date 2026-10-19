@@ -12,13 +12,8 @@
         return typeof require === 'function' ? require('../open-ground.js') : null;
     }
 
-    function shouldFormOwnBuildingParcel(proposalData, goalKey, featureCount) {
-        const planId = proposalData?.coordinatedPlanId;
-        const belongsToCoordinatedPlan = planId !== undefined && planId !== null
-            && String(planId).trim() !== '';
-        // A coordinated plan has already published and applied the plot tessellation on which its
-        // buildings sit. Cutting a second footprint parcel here destroys that authored fabric.
-        return goalKey === 'single' && featureCount === 1 && !belongsToCoordinatedPlan;
+    function shouldFormOwnBuildingParcel(_proposalData, goalKey, featureCount) {
+        return goalKey === 'single' && featureCount === 1;
     }
 
     return {

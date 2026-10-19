@@ -227,6 +227,12 @@
         const value = raw.toString().trim();
         if (!value) return '';
 
+        const normalizeCanonical = typeof global.normalizeCanonicalOwnerType === 'function'
+            ? global.normalizeCanonicalOwnerType
+            : null;
+        const canonical = normalizeCanonical ? normalizeCanonical(value) : null;
+        if (canonical) return canonical;
+
         const classifier = typeof global.classifyOwnershipLabel === 'function'
             ? global.classifyOwnershipLabel
             : null;

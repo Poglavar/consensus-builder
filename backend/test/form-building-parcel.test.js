@@ -81,8 +81,8 @@ describe('building parcel formation routing', () => {
         expect(shouldFormOwnBuildingParcel({ goal: 'single' }, 'single', 1)).toBe(true);
     });
 
-    it('keeps a coordinated-plan building on the plot already created by its readjustment', () => {
-        expect(shouldFormOwnBuildingParcel({ coordinatedPlanId: 'upu-borovje' }, 'single', 1)).toBe(false);
+    it('does not let legacy plan metadata change ordinary single-building parcel formation', () => {
+        expect(shouldFormOwnBuildingParcel({ coordinatedPlanId: 'upu-borovje' }, 'single', 1)).toBe(true);
     });
 
     it('does not form parcels for multi-footprint or non-single building proposals', () => {

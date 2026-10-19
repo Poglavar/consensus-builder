@@ -139,6 +139,28 @@ describe('_applyReparcellizationProposal — flat anchors', () => {
     });
 });
 
+describe('_applyReparcellizationProposal — legacy plan metadata', () => {
+    it('returns uncovered owner ground as a remainder even when the retired marker is present', async () => {
+        const manager = makeManager();
+        const data = proposalData();
+        data.coordinatedPlanId = 'legacy-plan';
+        // Leave the east 25% of HR-B outside the authored plots; it remains the owner's parcel.
+        data.reparcellization.polygons[1].geometry = rect(1, 0, 3, 2);
+
+        const ok = await manager._applyReparcellizationProposal('p-rep', data, {});
+
+        expect(ok).toBe(true);
+        const remainders = manager.added.filter(feature =>
+            feature.properties && feature.properties.producedByProposalId === 'p-rep'
+            && !feature.properties.ownershipDetails);
+        expect(remainders).toHaveLength(1);
+        expect(remainders[0].properties.rootParcelId).toBe('HR-B');
+        expect(turf.area(remainders[0])).toBeCloseTo(turf.area({
+            type: 'Feature', properties: {}, geometry: rect(3, 0, 4, 2)
+        }), 0);
+    });
+});
+
 describe('_applyReparcellizationProposal — deterministic derivation', () => {
     it('derives the same disposable ids on every replay without storing them', async () => {
         const firstManager = makeManager();
