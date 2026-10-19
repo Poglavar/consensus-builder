@@ -376,6 +376,9 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         packet = json.loads(json.dumps(packet).replace(str(self.parent), str(job)))
         workspace = workspaces.prepare_workspace(job, job / "tmp/state", 1,
                                                   city, self.receipt, packet)
+        cache = workspace["root"] / "node_modules/.vite/vitest" / ("a" * 40) / "results.json"
+        cache.parent.mkdir(parents=True)
+        cache.write_text('{}')
         workspaces.finish_workspace(workspace)
         workspaces.discard_workspace(workspace)
         self.assertFalse(workspace["root"].exists())

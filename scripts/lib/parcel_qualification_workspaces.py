@@ -522,6 +522,11 @@ def discard_workspace(workspace: dict[str, Any]) -> None:
                 raise RuntimeError("workspace backend/node_modules is not the approved symlink")
             continue
         parts = Path(rel).parts
+        if re.fullmatch(r"node_modules/\.vite/vitest/[0-9a-f]{40}/results\.json", rel):
+            cached = root / rel
+            if cached.is_file() and not any((root / Path(*parts[:i])).is_symlink()
+                                            for i in range(1, len(parts) + 1)):
+                continue
         if "__pycache__" in parts:
             cached = root / rel
             if (cached.is_file() and not cached.is_symlink() and cached.suffix == ".pyc"):
