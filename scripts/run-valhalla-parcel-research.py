@@ -474,7 +474,9 @@ class Runner:
         source = receipt.get("source", {}) if receipt else {}
         if source.get("adapter"):
             city["adapter"] = source["adapter"]
-        if source.get("endpoint"):
+        if source.get("sourceId"):
+            city["provider"] = source["sourceId"]
+        elif source.get("endpoint"):
             from urllib.parse import urlsplit
             city["provider"] = urlsplit(source["endpoint"]).hostname
         context = context_for_task(shared, city, stage, max_records=12)

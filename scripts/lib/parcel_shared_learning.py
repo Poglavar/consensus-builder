@@ -230,10 +230,16 @@ def _atomic_json(path: Path, value: Any) -> None:
 
 
 def _copy_evidence(shared_root: Path, source: Path) -> dict[str, str] | None:
-    if (source.is_symlink() or not source.is_file() or source.suffix.lower() not in _EVIDENCE_SUFFIXES
-            or source.stat().st_size > _MAX_EVIDENCE_BYTES or _SECRET_EVIDENCE_NAME.search(source.name)):
+    try:
+        if (source.suffix.lower() not in _EVIDENCE_SUFFIXES or source.is_symlink() or not source.is_file()
+                or source.stat().st_size > _MAX_EVIDENCE_BYTES or _SECRET_EVIDENCE_NAME.search(source.name)):
+            return None
+        with source.open("rb") as incoming:
+            payload = incoming.read(_MAX_EVIDENCE_BYTES + 1)
+    except (OSError, ValueError):
         return None
-    payload = source.read_bytes()
+    if len(payload) > _MAX_EVIDENCE_BYTES:
+        return None
     try:
         text = payload.decode("utf-8")
     except UnicodeDecodeError:
@@ -251,9 +257,8 @@ def _copy_evidence(shared_root: Path, source: Path) -> dict[str, str] | None:
             destination.parent.mkdir(parents=True, exist_ok=True)
             fd, temporary = tempfile.mkstemp(prefix=f".{name}.", dir=destination.parent)
             try:
-                with os.fdopen(fd, "wb") as out, source.open("rb") as incoming:
-                    while chunk := incoming.read(1024 * 1024):
-                        out.write(chunk)
+                with os.fdopen(fd, "wb") as out:
+                    out.write(payload)
                     out.flush()
                     os.fsync(out.fileno())
                 if _sha(Path(temporary).read_bytes()) != digest:
@@ -413,11 +418,16 @@ def build_city_finding(root: Path, city: dict[str, Any], lane: str, state: dict[
     for raw in _artifact_values([city, state]):
         if len(evidence) >= 8 or raw.startswith(("http://", "https://")):
             continue
-        candidate = Path(raw)
-        path = (candidate if candidate.is_absolute() else root / candidate).resolve()
         try:
+            candidate = Path(raw)
+            if candidate.suffix.lower() not in _EVIDENCE_SUFFIXES:
+                continue
+            origin = candidate if candidate.is_absolute() else root / candidate
+            if origin.is_symlink():
+                continue
+            path = origin.resolve()
             path.relative_to(root)
-        except ValueError:
+        except (OSError, ValueError, RuntimeError):
             continue
         for key, value in _file_facts(path).items():
             facts.setdefault(key, value)

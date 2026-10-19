@@ -233,6 +233,20 @@ class SharedLearningTests(unittest.TestCase):
         self.assertEqual(record["facts"]["crs"], "EPSG:32636")
         self.assertEqual(len(record["evidenceRefs"]), 1)
 
+    def test_prose_and_invalid_paths_do_not_hide_valid_evidence(self):
+        receipt = self.root / "receipt.json"
+        receipt.write_text('{"nativeCrs":"EPSG:4326"}')
+        link = self.root / "linked.json"
+        link.symlink_to(receipt)
+        record = learning.build_city_finding(self.root, {"cityCode": "11"}, "review", {
+            "discoveryDecision": "candidate", "evidence": [
+                "Official source purpose remains unestablished. " * 30,
+                "x" * 500 + ".json", "invalid\x00file.json", str(link), str(receipt)]}, self.root / "shared")
+        self.assertEqual(record["facts"]["crs"], "EPSG:4326")
+        self.assertEqual(len(record["evidenceRefs"]), 1)
+        self.assertIsNone(learning._copy_evidence(self.root / "shared", self.root / ("x" * 500 + ".json")))
+        learning.append_finding(self.root / "shared", record)
+
 
 if __name__ == "__main__":
     unittest.main()
