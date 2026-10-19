@@ -14,15 +14,17 @@ const httpUrl = value => { try { const u = new URL(value); return ['http:', 'htt
 function location(model) {
     const g = model.envelope?.footprint;
     const ring = g?.type === 'Polygon' ? g.coordinates?.[0] : g?.type === 'MultiPolygon' ? g.coordinates?.[0]?.[0] : null;
-    if (!ring?.length || ring.some(p => !p.slice(0, 2).every(Number.isFinite))) return null;
+    if (!ring || ring.length < 4 || ring.some(p => !Array.isArray(p) || p.length < 2
+        || !p.slice(0, 2).every(Number.isFinite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 90)) return null;
     const open = ring.slice(0, -1);
     return { lng: open.reduce((sum, p) => sum + p[0], 0) / open.length,
-        lat: open.reduce((sum, p) => sum + p[1], 0) / open.length, status: model.location?.status || 'probable' };
+        lat: open.reduce((sum, p) => sum + p[1], 0) / open.length, status: model.location.status };
 }
 
 export function publicProject(row, { detail = false, retained = new Set() } = {}) {
     const model = row.model, inventory = model?.inventory;
-    if (!inventory || inventory.excludedUse || !model.siteKey) return null;
+    if (!inventory || inventory.excludedUse || !model.siteKey
+        || !['located','probable'].includes(model.location?.status) || !location(model)) return null;
     const id = projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
     const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrada/${slug}/`;
     // Facts-only postings stay private; geometry or a retained original drawing qualifies.

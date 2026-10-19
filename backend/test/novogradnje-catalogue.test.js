@@ -28,6 +28,14 @@ const originalRow = { ...row, site_key: 'permit:original', model: { ...model, si
     inventory: originalInventory } };
 
 describe('source-backed residential catalogue', () => {
+    it.each(['ambiguous','unresolved',null])('keeps %s building locations private despite available plans', status => {
+        expect(publicProject({...row,model:{...model,location:{status}}})).toBeNull();
+    });
+    it('requires a geographic footprint for public floor plans', () => {
+        expect(publicProject({...row,model:{...model,envelope:null}})).toBeNull();
+        expect(publicProject({...row,model:{...model,envelope:{footprint:{type:'Polygon',
+            coordinates:[[[500000,5000000],[500001,5000000],[500001,5000001],[500000,5000000]]]}}}})).toBeNull();
+    });
     it('merges language aliases and keeps unknown values separate from zero', () => {
         expect(projectInventory(postings, []).apartments).toHaveLength(1);
         expect(model.inventory.apartments[0]).toMatchObject({ areaM2: 70, rooms: 3, orientation: ['SE'], floor: null });
