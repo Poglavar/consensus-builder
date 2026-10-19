@@ -2,7 +2,7 @@ import {readPublicCatalogue,readPublicProject} from '../floor-plan-archive/publi
 import {describe,it,expect} from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import {publicProject,readPublicCatalogue} from '../floor-plan-archive/public-catalogue.js';
+import {publicProject} from '../floor-plan-archive/public-catalogue.js';
 import {setupNovogradnjeRoute as setupSharedNovogradnjeRoute} from '../routes/novogradnje.js';
 import {createRequire} from 'node:module';
 const setupNovogradnjeRoute=(app,pool)=>setupSharedNovogradnjeRoute(app,pool,{catalogue:{read:()=>readPublicCatalogue(pool),project:token=>readPublicProject(pool,token),sourceUrl:hash=>`https://shared.test/api/floor-plans/sources/${hash}`}});
@@ -20,7 +20,7 @@ describe('whole-floor drawings in the public catalogue',()=>{
         const p=publicProject(row,{detail:true,retained:new Map([[hash,'application/pdf']])});
         expect(p.apartments).toEqual([]);expect(p.planCount).toBe(1);expect(p.kind).toBe('existing');
         expect(p.floorPlans[0]).toMatchObject({scope:'floor',levels:[1,2,3,4],source:{page:3,assetUrl:`/novogradnje/api/source/${hash}`}});
-        expect(p.floorPlans[0].url).toBe(`${p.url}tlocrt/typical/`);
+        expect(p.floorPlans[0].url).toBe(`${p.url}tlocrti/typical/`);
         expect(publicProject(row).floorPlans[0]).not.toHaveProperty('architecture');
     });
     it('includes floors by default but does not match them to apartment-size or room filters',()=>{
@@ -36,11 +36,24 @@ describe('whole-floor drawings in the public catalogue',()=>{
     it('serves an indexable floor route with CreativeWork metadata and includes it in sitemap',async()=>{
         const app=express();setupNovogradnjeRoute(app,db);const p=publicProject(row);
         const page=await request(app).get(p.floorPlans[0].url).expect(200);
+        const canonical=`https://zagreb.lol${p.floorPlans[0].url}`;
+        expect(page.text).toContain(`<link rel="canonical" href="${canonical}">`);
+        expect(page.text).toContain(`<meta property="og:url" content="${canonical}">`);
         expect(page.text).toContain('Starogradnja');expect(page.text).toContain('2007');expect(page.text).toContain('"floorPlanId":"typical"');
         const ld=JSON.parse(page.text.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
-        expect(ld['@graph'].some(n=>n['@type']==='CreativeWork')).toBe(true);
+        expect(ld['@graph'].find(n=>n['@type']==='CreativeWork').url).toBe(canonical);
+        expect(ld['@graph'].find(n=>n['@type']==='WebPage').url).toBe(canonical);
         expect(ld['@graph'].some(n=>n['@type']==='Apartment')).toBe(false);
-        const sitemap=await request(app).get('/novogradnje/sitemap.xml').expect(200);expect(sitemap.text).toContain(p.floorPlans[0].url);
-        await request(app).get(`${p.url}stan/typical/`).expect(404);
+        const sitemap=await request(app).get('/novogradnje/sitemap.xml').expect(200);expect(sitemap.text).toContain(`<loc>${canonical}</loc>`);
+        expect(sitemap.text).not.toMatch(/\/(zgrada|stan|tlocrt)\//);
+        await request(app).get(`${p.url}stanovi/typical/`).expect(404);
+        for(const path of [
+            `${p.url}tlocrt/typical/`,
+            `/novogradnje/zgrada/${p.slug}/tlocrt/typical/`,
+            `/novogradnje/zgrada/${p.slug}/tlocrti/typical/`
+        ]) {
+            const response=await request(app).get(path).expect(404);
+            expect(response.headers.location).toBeUndefined();
+        }
     });
 });

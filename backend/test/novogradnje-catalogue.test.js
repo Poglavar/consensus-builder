@@ -71,7 +71,8 @@ describe('source-backed residential catalogue', () => {
         const p = publicProject(row);
         expect(publicProject({ ...row, model: { ...model, label: 'Novi naziv' } }).id).toBe(p.id);
         expect(p.apartments[0]).not.toHaveProperty('architecture');
-        expect(p.apartments[0].url).toBe(`${p.url}stan/${p.apartments[0].id}/`);
+        expect(p.url).toBe(`/novogradnje/zgrade/primjer-12-${projectId(model.siteKey)}/`);
+        expect(p.apartments[0].url).toBe(`${p.url}stanovi/${p.apartments[0].id}/`);
         expect(p.apartments).toHaveLength(1);
         expect(p.planCount).toBe(1);
         expect(publicProject(noPlan)).toBeNull();
@@ -100,21 +101,35 @@ describe('public pages and metadata', () => {
     it('serves indexable project and apartment HTML before JavaScript with per-page canonical and JSON-LD', async () => {
         const page = await request(app).get(project.apartments[0].url).expect(200);
         expect(page.headers['content-type']).toContain('text/html');
-        expect(page.text).toContain(`https://zagreb.lol${project.apartments[0].url}`);
+        const canonical = `https://zagreb.lol${project.apartments[0].url}`;
+        expect(page.text).toContain(`<link rel="canonical" href="${canonical}">`);
+        expect(page.text).toContain(`<meta property="og:url" content="${canonical}">`);
         expect(page.text).toContain('application/ld+json'); expect(page.text).toContain('70 m²');
         expect(page.text).toContain('Oglas stana'); expect(page.text).not.toContain('__NOVOGRADNJE_BOOT__');
     });
+    it('rejects singular building and apartment routes without redirects', async () => {
+        const apartment = project.apartments[0];
+        for (const path of [
+            `/novogradnje/zgrada/${project.slug}/`,
+            `/novogradnje/zgrada/${project.slug}/stan/${apartment.id}/`,
+            `/novogradnje/zgrada/${project.slug}/stanovi/${apartment.id}/`,
+            `${project.url}stan/${apartment.id}/`,
+        ]) {
+            const response = await request(app).get(path).expect(404);
+            expect(response.headers.location).toBeUndefined();
+        }
+    });
     it('serves original-only apartment pages with an original-plan label and no false 3D promise', async () => {
         const original = publicProject(originalRow, { retained: new Map([['b'.repeat(64), 'image/png']]) });
-        const page = await request(app).get(`${original.url}stan/${original.apartments[0].id}/`).expect(200);
+        const page = await request(app).get(`${original.url}stanovi/${original.apartments[0].id}/`).expect(200);
         expect(page.text).toContain('Izvorni tlocrt');
         expect(page.text).not.toContain('Tlocrt i 3D prikaz');
         expect(page.text).toContain('"hasGeometry":false');
         await request(app).get(`/novogradnje/legacy?site=${encodeURIComponent(originalRow.site_key)}`).expect(301).expect('Location',original.url);
     });
     it('redirects stale name slugs by stable ID and answers genuine 404s for missing apartments and assets', async () => {
-        await request(app).get(`/novogradnje/zgrada/stari-naziv-${projectId(model.siteKey)}/`).expect(301).expect('Location', project.url);
-        await request(app).get(`${project.url}stan/missing/`).expect(404);
+        await request(app).get(`/novogradnje/zgrade/stari-naziv-${projectId(model.siteKey)}/`).expect(301).expect('Location', project.url);
+        await request(app).get(`${project.url}stanovi/missing/`).expect(404);
         await request(app).get('/novogradnje/missing.js').expect(404);
     });
     it('migrates archive site links and never accepts an external redirect target', async () => {
@@ -123,7 +138,9 @@ describe('public pages and metadata', () => {
     });
     it('lists deep links in the sitemap and prevents filtered duplicate pages from being indexed', async () => {
         const sitemap = await request(app).get('/novogradnje/sitemap.xml').expect(200);
-        expect(sitemap.text).toContain(project.apartments[0].url);
+        expect(sitemap.text).toContain(`<loc>https://zagreb.lol${project.url}</loc>`);
+        expect(sitemap.text).toContain(`<loc>https://zagreb.lol${project.apartments[0].url}</loc>`);
+        expect(sitemap.text).not.toMatch(/\/(zgrada|stan|tlocrt)\//);
         const filtered = await request(app).get('/novogradnje/?min=100').expect(200);
         expect(filtered.text).toContain('noindex,follow');
         expect(filtered.text).toContain('href="https://zagreb.lol/parcele/"');
@@ -142,11 +159,11 @@ describe('public pages and metadata', () => {
         const original = await request(app).get(`/novogradnje/api/projects/${projectId(originalRow.site_key)}`).expect(200);
         expect(original.body.apartments[0]).toMatchObject({ hasPlan: true, hasGeometry: false,
             source: { sha256: 'b'.repeat(64) } });
-        const page = await request(app).get(`${project.url}stan/facts-only/`).expect(404);
+        const page = await request(app).get(`${project.url}stanovi/facts-only/`).expect(404);
         expect(page.text).toContain('noindex');
-        await request(app).get(`/novogradnje/zgrada/${projectId(lead.site_key)}/`).expect(404);
+        await request(app).get(`/novogradnje/zgrade/${projectId(lead.site_key)}/`).expect(404);
         await request(app).get(`/novogradnje/api/projects/${projectId(lead.site_key)}`).expect(404);
-        await request(app).get(`/novogradnje/zgrada/${projectId(noPlan.site_key)}/`).expect(404);
+        await request(app).get(`/novogradnje/zgrade/${projectId(noPlan.site_key)}/`).expect(404);
         await request(app).get(`/novogradnje/api/projects/${projectId(noPlan.site_key)}`).expect(404);
         await request(app).get('/novogradnje/legacy?plan=unread-plan').expect(301).expect('Location','/novogradnje/');
     });

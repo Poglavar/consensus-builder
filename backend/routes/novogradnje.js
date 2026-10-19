@@ -142,9 +142,9 @@ export function setupNovogradnjeRoute(app, pool, { catalogue } = {}) {
         res.type('html').send(await renderPublicPage({ catalogue, project, apartment, floorPlan, search }));
     };
     get('/novogradnje/', page);
-    get('/novogradnje/zgrada/:slug/stan/:apartment/', page);
-    get('/novogradnje/zgrada/:slug/tlocrt/:floorPlan/', page);
-    get('/novogradnje/zgrada/:slug/', page);
+    get('/novogradnje/zgrade/:slug/stanovi/:apartment/', page);
+    get('/novogradnje/zgrade/:slug/tlocrti/:floorPlan/', page);
+    get('/novogradnje/zgrade/:slug/', page);
     app.use('/novogradnje', express.static(directory, { index: false, dotfiles: 'deny', setHeaders: res => res.set('Cache-Control', 'no-store') }));
     app.use('/novogradnje', (_req, res) => res.status(404).type('text').send('Nije pronađeno.'));
 }

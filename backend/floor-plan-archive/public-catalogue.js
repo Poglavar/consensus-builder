@@ -26,11 +26,11 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
     if (!inventory || inventory.excludedUse || !model.siteKey) return null;
     const located = ['located','probable'].includes(model.location?.status) && Boolean(location(model));
     const id = row.public_id || projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
-    const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrada/${slug}/`;
+    const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrade/${slug}/`;
     // Facts-only postings stay private; geometry or a retained original drawing qualifies.
     const apartments = (inventory.apartments || []).map(a => ({ ...a, hasGeometry: Boolean(a.architecture) }))
         .filter(a => a.hasPlan === true && (a.hasGeometry || Boolean(a.source?.sha256 && retained.has(a.source.sha256)))).map(a => {
-        const value = { id: a.id, label: a.label, url: `${url}stan/${a.id}/`, areaM2: a.areaM2,
+        const value = { id: a.id, label: a.label, url: `${url}stanovi/${a.id}/`, areaM2: a.areaM2,
             rooms: a.rooms, orientation: a.orientation, floor: a.floor, hasPlan: true,
             hasGeometry: a.hasGeometry, sourceTitle: a.sourceTitle };
         if (detail) Object.assign(value, { ...a, ...value,
@@ -42,7 +42,7 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
     });
     const floorPlans = (inventory.floorPlans || []).filter(p => p.scope === 'floor' && p.hasPlan === true
         && (p.architecture || (p.source?.sha256 && retained.has(p.source.sha256)))).map(p => {
-        const value={id:p.id,label:p.label,scope:'floor',levels:p.levels||[],url:`${url}tlocrt/${p.id}/`,hasPlan:true,hasGeometry:Boolean(p.architecture)};
+        const value={id:p.id,label:p.label,scope:'floor',levels:p.levels||[],url:`${url}tlocrti/${p.id}/`,hasPlan:true,hasGeometry:Boolean(p.architecture)};
         if(detail)Object.assign(value,{...p,...value,source:p.source?{...p.source,url:httpUrl(p.source.url),
             mediaType:retained.get?.(p.source.sha256)||null,assetUrl:p.source.sha256&&retained.has(p.source.sha256)?`${BASE_PATH}api/source/${p.source.sha256}`:null}:null});
         return value;
