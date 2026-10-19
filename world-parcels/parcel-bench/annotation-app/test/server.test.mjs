@@ -12,7 +12,7 @@ const created = [];
 afterEach(async () => { for (const fn of created.splice(0).reverse()) await fn(); });
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
-async function fixture({ basePath = '/autokatastar/pregled/', mutateBatch, mutateImage } = {}) {
+async function fixture({ basePath = '/autokatastar/pregled/', token = TOKEN, mutateBatch, mutateImage } = {}) {
     const root = await mkdtemp(join(tmpdir(), 'annotation-app-'));
     created.push(() => rm(root, { recursive: true, force: true }));
     const bundleDir = join(root, 'bundle'), dataDir = join(root, 'reviews');
@@ -28,7 +28,7 @@ async function fixture({ basePath = '/autokatastar/pregled/', mutateBatch, mutat
     batch.batch_hash = hash(Buffer.from(JSON.stringify(payload)));
     const finalBatch = mutateBatch ? mutateBatch(batch) : batch;
     await writeFile(join(bundleDir, 'batch.json'), JSON.stringify(finalBatch));
-    const server = await createReviewServer({ bundleDir, dataDir, token: TOKEN, basePath, publicOrigin: ORIGIN });
+    const server = await createReviewServer({ bundleDir, dataDir, token, basePath, publicOrigin: ORIGIN });
     await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
     const base = `http://127.0.0.1:${server.address().port}${basePath}`;
     created.push(() => new Promise(resolve => server.close(resolve)));
@@ -45,6 +45,17 @@ async function put(base, cookie, body, origin = ORIGIN) {
 }
 
 describe('annotation review server', () => {
+    it('accepts a configured passphrase, rejects incorrect keys and refuses undersized configuration', async () => {
+        const token = 'sample-pass';
+        const { base } = await fixture({ token });
+        assert.equal((await login(base, 'wrong-pass')).response.status, 401);
+        const { response, cookie } = await login(base, token);
+        assert.equal(response.status, 200);
+        assert.equal((await fetch(`${base}api/batch`, { headers: { cookie } })).status, 200);
+        await assert.rejects(fixture({ token: 'short' }), /at least 8 bytes/);
+        await assert.rejects(fixture({ token: '' }), /at least 8 bytes/);
+    });
+
     it('requires authentication for the batch, reviews and imagery while serving only the shell publicly', async () => {
         const { base } = await fixture();
         const shell = await fetch(`${base}model.mjs`);
