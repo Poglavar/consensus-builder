@@ -12,9 +12,10 @@
 // which is monotone in r), started from [0, sqrt(area/π)] (no inscribed circle can have more area
 // than the polygon). It stops when the bracket is within max(0.5 mm, 0.05 % of r), so the reported
 // width is within ±1 mm below 2 m and ±0.1 % above. turf.buffer runs in an azimuthal-equidistant
-// metric frame centred on the geometry, so all distances here are ground metres. The server runs
-// the same bisection with ST_Buffer in EPSG:3765 (ST_MaximumInscribedCircle's fixed 1/1000-of-extent
-// tolerance is too coarse for a long thin sliver).
+// metric frame centred on the geometry, so all distances here are ground metres. The server uses
+// ST_Buffer in the site's canonical local transverse-Mercator operation frame; the source
+// dataset CRS is only for candidate lookup (backend/proposals/binding.js, projections.md).
+// ST_MaximumInscribedCircle's fixed 1/1000-of-extent tolerance is too coarse for a long thin sliver.
 //
 // Pure: no DOM, no fetch. `turf` is the browser global, globalThis.turf in node tests, or an
 // explicit `options.turf`.
