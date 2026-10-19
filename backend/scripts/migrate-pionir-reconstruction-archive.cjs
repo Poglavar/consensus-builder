@@ -8,7 +8,7 @@ const { pathToFileURL } = require('node:url');
 const { createPool } = require('../db/connection.cjs');
 
 const BUNDLE_SCHEMA = 'consensus-builder.pionir-reconstruction-bundle.v1';
-const ARCHIVE_ROOT = path.resolve(__dirname, '../../rekonstrukcije/pionir-paron');
+const ARCHIVE_ROOT = path.resolve(__dirname, '../../restatements/pionir-paron');
 const EXPECTED_PROJECT_KEYS = Object.freeze([
     'borongajska-caviceva',
     'folnegoviceva-rapska',

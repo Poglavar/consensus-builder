@@ -10,7 +10,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 
 const PROJECT_ROOT = fileURLToPath(new URL(
-    '../../rekonstrukcije/pionir-paron/',
+    '../../restatements/pionir-paron/',
     import.meta.url
 ));
 

@@ -15,7 +15,7 @@ import sys
 from urllib.request import urlopen
 from pionir_floor_architecture import extract_architecture
 
-PROJECT = Path(__file__).resolve().parents[2] / "rekonstrukcije/pionir-paron/borongajska-caviceva"
+PROJECT = Path(__file__).resolve().parents[2] / "restatements/pionir-paron/borongajska-caviceva"
 
 
 def digest(data):

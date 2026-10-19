@@ -10,7 +10,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 
 const PROPOSAL_PATH = fileURLToPath(new URL(
-    '../../rekonstrukcije/pionir-paron/pergosiceva-a1-a4/proposal.geojson',
+    '../../restatements/pionir-paron/pergosiceva-a1-a4/proposal.geojson',
     import.meta.url
 ));
 

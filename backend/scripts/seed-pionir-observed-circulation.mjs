@@ -36,7 +36,7 @@ const {
     corridorProfileWidth
 } = require('../../frontend/js/corridor-profile.js');
 
-const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/', import.meta.url));
+const ARCHIVE_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/', import.meta.url));
 const RECONSTRUCTION_DATE = '2026-08-13T00:00:00.000Z';
 
 export const MIN_SEGMENT_LENGTH_M = 8;

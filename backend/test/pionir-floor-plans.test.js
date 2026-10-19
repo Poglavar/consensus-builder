@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 
-const read = name => JSON.parse(readFileSync(new URL(`../../rekonstrukcije/pionir-paron/borongajska-caviceva/${name}`, import.meta.url)));
+const read = name => JSON.parse(readFileSync(new URL(`../../restatements/pionir-paron/borongajska-caviceva/${name}`, import.meta.url)));
 const manifest = read('floor-plan-sources.json');
 const proposal = read('proposal.geojson');
 const buildings = proposal.features.filter(f => f.properties['consensus:role'] === 'building');
@@ -12,7 +12,7 @@ const source = buildings.filter(f => f.properties.floorPlans);
 const require = createRequire(import.meta.url);
 const { validateFloorPlans, buildFloorPlanGeometry, buildingSourceId } = require('../../frontend/js/building-floor-plans.js');
 
-const archive = slug => JSON.parse(readFileSync(new URL(`../../rekonstrukcije/pionir-paron/${slug}/proposal.geojson`, import.meta.url)));
+const archive = slug => JSON.parse(readFileSync(new URL(`../../restatements/pionir-paron/${slug}/proposal.geojson`, import.meta.url)));
 const crossProject = [
     ['spansko-sjever-a-f', ['F']],
     ['savica-f1-f3', ['F3']],
