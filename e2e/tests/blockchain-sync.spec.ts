@@ -269,6 +269,7 @@ test.describe('Blockchain sync @features', () => {
         SolanaChainDataLoader?: {
           getAllProposals?: (cluster: string, programAddress: string) => Promise<Array<{ proposalId: string }>>;
           getConnection?: (cluster: string) => {
+            getGenesisHash?: () => Promise<string>;
             getAccountInfo?: (publicKey: unknown) => Promise<{ data: Uint8Array } | null>;
           };
           parseProposalAccount?: (data: Uint8Array, address: string) => Record<string, unknown> | null;
@@ -292,6 +293,8 @@ test.describe('Blockchain sync @features', () => {
         importCalls: [] as Array<Record<string, unknown>>,
         addProposalCalls: 0,
         saveCalls: 0,
+        accountReads: 0,
+        enumerationCalls: 0,
       };
 
       const existingProposal = {
@@ -335,12 +338,17 @@ test.describe('Blockchain sync @features', () => {
         metrics.statusMessages.push(message);
       };
 
-      globalWindow.SolanaChainDataLoader.getAllProposals = async () => ([
-        { proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' },
-      ]);
+      globalWindow.SolanaChainDataLoader.getAllProposals = async () => {
+        metrics.enumerationCalls += 1;
+        return [{ proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' }];
+      };
+      let genesisHash = 'wrong-network';
       globalWindow.SolanaChainDataLoader.getConnection = () => ({
-        getAccountInfo: async () => ({ data: new Uint8Array([1, 2, 3, 4]),
-          owner: { toBase58: () => '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg' } }),
+        getGenesisHash: async () => genesisHash,
+        getAccountInfo: async () => {
+          metrics.accountReads += 1;
+          return { data: new Uint8Array([1, 2, 3, 4]), owner: { toBase58: () => '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg' } };
+        },
       });
       globalWindow.SolanaChainDataLoader.parseProposalAccount = (_data: Uint8Array, address: string) => ({
         proposalId: address,
@@ -359,10 +367,14 @@ test.describe('Blockchain sync @features', () => {
         owner: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
       });
 
+      const rejected = await globalWindow.SolanaBlockchainSync.sync?.();
+      const afterRejected = { reads: metrics.accountReads, enumerations: metrics.enumerationCalls, imports: metrics.importCalls.length };
+      genesisHash = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
       const syncResult = await globalWindow.SolanaBlockchainSync.sync?.();
 
       return {
         syncResult,
+        rejected, afterRejected,
         metrics,
       };
     });
@@ -378,7 +390,10 @@ test.describe('Blockchain sync @features', () => {
         },
       ],
     });
-    expect(result.metrics.refreshCount).toBe(1);
+    expect(result.afterRejected).toEqual({ reads: 0, enumerations: 0, imports: 0 });
+    expect(result.rejected).toMatchObject({ totalSynced: 0, contracts: [{ error: 'Solana RPC network does not match devnet.' }] });
+    expect(result.metrics.statusMessages).toContain('Solana sync incomplete; 0 proposal(s) synced. Solana RPC network does not match devnet.');
+    expect(result.metrics.refreshCount).toBe(2);
     expect(result.metrics.statusMessages).toContain('Synced 1 proposal(s) from Solana');
     expect(result.metrics.addProposalCalls).toBe(0);
     expect(result.metrics.saveCalls).toBe(0);

@@ -47,11 +47,15 @@ compare without case; Solana and Canton program/account case is preserved. A sha
 bare token number or metadata's authored ID cannot select a local record to overwrite. A new
 chain import receives a qualified local key; an exact existing reference keeps its local key.
 Multiple local records naming that reference are rejected. EVM sync checks the wallet network
-before each token read; Solana sync checks the fetched account's owner against the named program.
+before each token read; Solana proposal sync verifies the devnet genesis before enumeration and
+each account read, then checks the account's owner against the named program. Other clusters are
+unsupported by this sync path until a verified deployment is configured. An unknown cluster cannot
+fall through to a default devnet endpoint. A failed contract/account read is reported as incomplete,
+retaining the count of earlier successful imports instead of reporting an empty successful scan.
 Missing or unrecognized status from these sync reads remains Unknown. These checks do not make
-unverified metadata into a server mirror or establish physical realization. The browser Solana
-loader still relies on its configured cluster endpoint; genesis verification is currently in
-the server reader, not this sync path. Existing misidentified experimental local records must be
+unverified metadata into a server mirror or establish physical realization. Other browser Solana
+loader entrypoints still have separate account-decoding and network-evidence limitations.
+Existing misidentified experimental local records must be
 removed and reimported; no parcel-similarity or bare-ID compatibility path remains.
 [Reference comparison](frontend/js/proposals/chain-ref.js), [chain import](frontend/js/proposals/data.js),
 [EVM sync](frontend/js/blockchain-sync.js), [Solana sync](frontend/js/solana/blockchain-sync.js).
