@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (existing-data settlement sampling pilot being frozen; high-growth Africa/Asia are the geographic priority). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (six-fit settlement sampling pilot complete; uniform sampling retained; high-growth Africa/Asia remain the geographic priority). Status values: todo · running · done · dropped (with the reason).
 
 ## Product priority: suburban and village communities
 
@@ -20,7 +20,8 @@ density: a compact village can contain many small parcels, while a low-count til
 farm, park, industrial site or vacant tract. Land around a community can be relevant to growth;
 parcel count alone cannot establish that context.
 
-Immediate next work, before the proposed confidence-versus-coverage comparison:
+Next work extends the completed existing-data proxy audit below, before the proposed
+confidence-versus-coverage comparison:
 
 1. Audit existing blocks for settlement context using imagery, building pattern and available
    settlement/land-use evidence, recording the classification method and uncertain cases. Report
@@ -53,10 +54,84 @@ protocols. This priority does not retroactively promote a treatment that failed 
 
 ## Existing-data settlement pilot (2026-10-19)
 
-Status: frozen before rental under `gpu/plans/selection-v5-settlement.json` (SHA-256
+Status: **complete; targeted sampling not adopted**. The protocol was frozen before rental under
+`gpu/plans/selection-v5-settlement.json` (SHA-256
 `7c9c38987b3d3c34a82f78e28bc58d3cfd475836f352b3c7a23df603b83c4e25`; recipe `8d1993998759908e`).
 This executes the user's request to train on available data. The local labelled image datasets cover
 Croatia, not Africa or Asia. No regional transfer or confirmed-village performance can be inferred.
+
+### Completed comparison and decision
+
+All six fresh fits completed 30 epochs and 5,100 optimizer updates each. On the 46-tile lower-rise
+proxy development cohort, targeted sampling reduced mean parcel F1 from **0.2458 to 0.2384**. Its
+targeted-minus-uniform difference was **−0.0074**, with a paired whole-block 95% interval of
+**−0.0204 to +0.0052**. The interval does not establish a population-level loss, and the treatment
+does not meet the prospectively required improvement. All three paired seed changes were negative
+(−0.0031, −0.0018, −0.0174); the median was −0.0031 and the mean after dropping the best seed
+was −0.0102. All seven advancement checks failed, including the precision and recall guards.
+**Keep uniform sampling and raw RGB; no model is promoted to production.**
+
+| Primary macro metric | Uniform, three-seed mean | Targeted, three-seed mean | Targeted − uniform | Paired 95% block interval |
+|---|---:|---:|---:|---:|
+| Parcel F1 | 0.2458 | 0.2384 | −0.0074 | −0.0204 to +0.0052 |
+| Precision | 0.3705 | 0.3531 | −0.0174 | −0.0423 to +0.0055 |
+| Parcel recall | 0.1918 | 0.1873 | −0.0045 | −0.0141 to +0.0043 |
+| Interior recall | 0.2170 | 0.2063 | −0.0107 | −0.0268 to +0.0067 |
+| Area-weighted recall | 0.3117 | 0.3106 | −0.0010 | −0.0270 to +0.0275 |
+| Boundary F1, diagnostic | 0.5327 | 0.5250 | −0.0077 | −0.0134 to −0.0014 |
+
+These are region-balanced, then geographic-block-balanced metrics, not pooled parcel counts. The
+F1 gate requires a mean gain of at least 0.01, an interval strictly above zero, a positive median
+seed gain and a positive mean after dropping the best seed. The lower interval endpoints also
+failed the precision (greater than −0.02), interior-recall and area-recall (greater than −0.01)
+guards. The bootstrap conditions on the three fitted seeds and reused development cohorts; it
+does not quantify training-seed or new-community uncertainty.
+
+| Region, proxy cohort | Uniform macro F1 | Targeted macro F1 | Change |
+|---|---:|---:|---:|
+| Zagreb | 0.2789 | 0.2779 | −0.0010 |
+| Split | 0.2363 | 0.2256 | −0.0107 |
+| Zadar | 0.2223 | 0.2117 | −0.0106 |
+
+All six fits also completed their three planned 48-tile full-source selection evaluations using
+the proxy-selected checkpoint/configuration. Their raw pooled mean F1 changed Zagreb
+0.2716 → 0.2637, Split 0.2306 → 0.2256 and Zadar 0.1791 → 0.1767. These are secondary
+comparisons. Every source city occurs in training, so none is a zero-shot transfer result.
+No reserved final set or untouched confirmation city was scored.
+
+The sampled journals contain exactly 30,600 training draws per fit. Uniform sampling visited all
+2,699 eligible tiles in every seed and assigned 43.48–43.84% of draws to the proxy. Targeted
+sampling assigned 74.88–75.08% to the proxy and visited 2,629–2,644 unique tiles, leaving
+55–70 eligible candidates undrawn per fit. Candidate exposure remains conservatively all 2,699
+tiles for separation checks. Reweighting the existing proxy therefore supplied no demonstrated
+gain; this does not establish that better labelled target communities or regional data would fail.
+
+The temporary worker is destroyed and its absence was rechecked. All **3,543 output files
+(7,123,132,102 bytes)** passed SHA-256 recovery verification; all twelve best/last checkpoints
+passed metadata and finite-weight checks. Observed account debit after the post-closure check
+was **$0.5855**, within the $1 cap, with no top-up. The quoted $0.50/hour rate over the
+72.31-minute rental window gives a separate $0.6026 estimate. Per-fit allocations range
+$0.0682–$0.0892, with $0.1419 allocated to setup/recovery outside active fits; these divide
+the quoted shared-worker rate and are not provider invoices. Billing timing and network/storage
+charges can differ from that estimate.
+
+Frozen analysis and reproducible provenance are in
+`output/runs/selection-v5-settlement-comparison/report.json` and `report.md`; actual sampled
+coverage and cost allocations are separate `training-coverage.json` and `cost-allocation.json`
+artifacts in that directory. The selection-only ledger adds 24 rows: six primary proxy evaluations
+with macro metrics recorded separately from raw counts, plus eighteen full-source evaluations.
+The ledger links checkpoint, recipe, plan, comparison, cost and verified-backup hashes.
+
+Validation: **34 targeted headless unit tests across five files passed**, covering features,
+sampling, exposure, analysis and GPU preparation. Production-size CUDA preflight passed both
+arms' train/resume/evaluate flows (six flows, eight optimizer updates in total). One initial
+headless unit-test invocation used the wrong working directory and failed import before loading
+tests; its corrected run passed. No full suite or browser suite was run, and no run was stopped.
+A `gpt-6-luna` worker at low reasoning independently checked the saved arithmetic and frozen
+gate decisions. The next data task is verified suburban/village and growth-edge coverage,
+especially Africa/Asia, including sparse and large-plot sites excluded by the current proxy/export.
+
+### Frozen cohort, audit and protocol
 
 The metadata audit uses the eligible IDs in the frozen manifests, rather than stale source-export
 split tags: 1,623 Zagreb, 395 Split and 681 Zadar training tiles, 2,699 total. It joins cached OSM
@@ -88,6 +163,21 @@ sites within the existing communities, not new-community or new-city confirmatio
 from the pinned ImageNet initialization. The full candidate pool is rechecked against **all** original
 selection/final tiles for the 500 m buffer and shared source IDs. Original finals are retained as
 reserved metadata; Šibenik remains untouched.
+
+The cohort contains 1,327 clipped references. By region, reference/interior counts are Zagreb
+495/206, Split 1,210/555 and Zadar 678/295. Median tile-level median reference intersection areas
+are 284.93, 237.71 and 163.54 m² respectively; these are clipped intersections, not full legal
+plot sizes. Twenty-nine of the 46 proxy tiles fall in the existing dense parcel-count stratum,
+reinforcing that footprint pattern and cadastral density are different variables. The 21 primary
+blocks share no reference source IDs with one another.
+
+A qualitative audit after the freeze inspected nine purposive images: minimum, median and maximum
+OSM footprint coverage in each region. Housing, gardens and community edges appear alongside
+courtyard complexes, possible shed/construction or industrial contexts, and OSM undercoverage.
+The contact sheet, sample IDs and observations are retained under the context output directory.
+This is not a random validation sample, cannot estimate classification accuracy, and establishes
+neither building height nor suburb/village type. No cohort, sampling weight or gate changed after
+that inspection.
 
 Each arm uses 30 epochs, 1,020 replacement draws per epoch, batch 6 and 170 optimizer updates per
 epoch. The uniform arm gives each eligible tile equal probability. The targeted arm allocates 75% to
@@ -189,7 +279,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
 | 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | zero-shot comparison done; advancement failed; untouched confirmation and target fine-tuning deferred |
-| 13 | Suburban/village coverage audit and settlement-focused development cohort | metadata + rented GPU | running; existing-data lower-rise proxy pilot frozen separately; village and Africa/Asia coverage remain gaps |
+| 13 | Suburban/village coverage audit and settlement-focused development cohort | metadata + rented GPU | existing-data audit and six-fit proxy pilot done; targeted sampler not adopted; verified village and Africa/Asia cohorts pending |
 
 ### Agreed reconstruction and transfer sequence (2026-10-15)
 

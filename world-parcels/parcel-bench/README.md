@@ -391,8 +391,13 @@ default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa 
 ### Existing-data settlement pilot
 
 The product priority is suburban/village growth communities, especially Africa and Asia. The
-`selection-v5-settlement` pilot uses the Croatian labels already available: six fresh fits compare
+`selection-v5-settlement` pilot used the Croatian labels already available: six fresh fits compared
 uniform versus context-weighted sampling at the same number of updates. Its lower-rise footprint
 proxy is separate from parcel density, confirmed village type and regional transfer. The primary
-score balances regions and geographic blocks; original final sets stay reserved. See the
-[prospective cohort, sampling policy and limits](PLAN.md#existing-data-settlement-pilot-2026-10-19).
+score balances regions and geographic blocks; original final sets stay reserved. Targeted sampling
+failed its frozen gate: mean parcel F1 changed **0.2458 → 0.2384**, with a targeted-minus-uniform
+95% block interval of **−0.0204 to +0.0052**. All three seeds were lower and the precision/recall
+guards failed. Keep uniform sampling and raw RGB. The rental is closed, all artifacts were verified,
+and observed account debit was about **$0.59** against the $1 cap. This does not validate Africa/Asia
+or confirmed villages; those remain data priorities. See the
+[results, cohort, sampling policy and limits](PLAN.md#existing-data-settlement-pilot-2026-10-19).
