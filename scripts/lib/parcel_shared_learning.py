@@ -391,7 +391,8 @@ def build_city_finding(root: Path, city: dict[str, Any], lane: str, state: dict[
     qualification = state.get("qualification") if isinstance(state.get("qualification"), dict) else {}
     admission = state.get("admission") if isinstance(state.get("admission"), dict) else {}
     decision = str(state.get("discoveryDecision", "")).strip().lower()
-    outcome = str((admission or qualification).get("status") if lane in {"qualification", "admission"}
+    latest = (qualification or admission) if lane == "qualification" else (admission or qualification)
+    outcome = str(latest.get("status") if lane in {"qualification", "admission"}
                   else decision if lane == "review" else state.get("status", "")).strip().lower()
     if not outcome or outcome in {"pending", "running", "research-complete"} and lane != "research":
         return None

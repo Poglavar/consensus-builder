@@ -247,6 +247,13 @@ class SharedLearningTests(unittest.TestCase):
         self.assertIsNone(learning._copy_evidence(self.root / "shared", self.root / ("x" * 500 + ".json")))
         learning.append_finding(self.root / "shared", record)
 
+    def test_new_qualification_failure_is_not_replaced_by_an_older_admission(self):
+        record = learning.build_city_finding(self.root, {"cityCode": "12"}, "qualification", {
+            "qualification": {"status": "failed"}, "admission": {"status": "integrated"},
+            "source": {"endpoint": "https://maps.example.gov/parcels"}}, self.root / "shared")
+        self.assertEqual(record["verificationStatus"], "failed")
+        self.assertEqual(record["category"], "qualification-failure")
+
 
 if __name__ == "__main__":
     unittest.main()

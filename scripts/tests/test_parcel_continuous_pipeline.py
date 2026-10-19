@@ -117,6 +117,7 @@ class PipelineTests(unittest.TestCase):
         self.runner.state['cities']['1']['qualification'] = saved
         self.accept('qualification', {'cities': {'1': {'qualification': saved}}, 'error': 'slot recovery required'})
         self.assertEqual(self.pool.validated, set())
+        self.runner._record_shared_learning.assert_not_called()
 
     def test_saved_result_is_validated_only_with_a_positive_stage_receipt(self):
         saved = {'status': 'integrated', 'receiptSha256': 'receipt'}
@@ -173,6 +174,32 @@ class PipelineTests(unittest.TestCase):
         self.pool._start = start
         self.pool.run()
         self.assertEqual(launched, ['review'])
+
+    def test_fresh_stage_records_findings_in_its_private_checkpoint(self):
+        class Child:
+            def __init__(child, args):
+                child.validated_stages = set()
+                child.stop_requested = False
+            def _configure_source_novelty(child, path): pass
+            def request_stop(child, *args): pass
+            def stop_children(child): pass
+            def save_state(child): pipeline._write(child.state_path, child.state)
+            def _city_entry(child, city): return child.state['cities'][str(city['cityCode'])]
+            def _record_city_attempts(child, cities, cohort):
+                child.state['cities']['1']['status'] = 'research-complete'
+                return [], None, False
+            def _record_shared_learning(child, city, lane, row):
+                row['sharedFindings'] = {lane: 'finding-from-latest-stage-code'}
+        control = self.root / 'child'
+        spec = control / 'input.json'
+        pipeline._write(spec, {'args': {}, 'lane': 'research', 'cities': [self.cities[0]],
+                              'cohortDir': str(self.root),
+                              'state': {'queuePath': str(self.root / 'queue.json'), 'cities': {'1': {}}}})
+        with patch.object(pipeline.signal, 'signal'):
+            self.assertEqual(pipeline.execute_task(Child, SimpleNamespace(pipeline_task=spec)), 0)
+        result = json.loads((control / 'result.json').read_text())
+        self.assertEqual(result['cities']['1']['sharedFindings']['research'], 'finding-from-latest-stage-code')
+        self.assertTrue((control / 'state.json').is_file())
 
 
 if __name__ == '__main__':

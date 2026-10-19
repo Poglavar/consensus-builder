@@ -74,6 +74,9 @@ def execute_task(runner_class, args):
             child._advance_candidate(cities, cohort)
         else:
             raise ValueError(f"Unknown pipeline lane: {lane}")
+        if not systemic and not child.stop_requested:
+            for city in cities:
+                child._record_shared_learning(city, lane, child._city_entry(city))
     except Exception as exc:
         error = f"{type(exc).__name__}: {exc}"
     finally:
@@ -226,6 +229,7 @@ class ContinuousPipeline:
                 for key in ("qualification", "qualificationHistory", "admission"):
                     if key in child:
                         current[key] = child[key]
+                current.setdefault("sharedFindings", {}).update(child.get("sharedFindings", {}))
                 if current.get("qualification", {}).get("status") in {"running", "ready-isolated"} and result.get("interrupted"):
                     current["qualification"]["status"] = "ready-isolated"
                 digest = current.get("qualification", {}).get("receiptSha256")
@@ -237,8 +241,6 @@ class ContinuousPipeline:
                                 {"qualification", "qualificationHistory", "admission", "wupIdentity", "pipelineFailures"}})
                 if current.get("status") == "running" or result.get("interrupted") and not child:
                     current["status"] = "pending" if lane == "research" else "research-complete"
-            if not result.get("interrupted"):
-                self.runner._record_shared_learning(self.by_code[code], lane, current)
         self.runner.state.setdefault("usage", {}).update(result.get("usage", {}))
         self.runner.state.setdefault("failedItems", {}).update(result.get("failedItems", {}))
         if result.get("adapterStageBlocked"):
