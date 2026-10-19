@@ -1,0 +1,50 @@
+{
+  "policy": "parcel-availability-v1",
+  "passed": true,
+  "requiredChecks": [
+    "classification",
+    "exactIds",
+    "stableGeometry"
+  ],
+  "status": "follow-up-required",
+  "followUp": [
+    {
+      "check": "binding",
+      "reason": "Not established during initial qualification; investigate in the second pass."
+    },
+    {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+    },
+    {
+      "check": "sourceCurrentness",
+      "reason": "This is an offline re-evaluation of saved source evidence; live freshness, jurisdictional coverage and production binding were not rechecked. Verify them in the second pass."
+    }
+  ],
+  "candidateSha256": "7c69aa54167a855889b0fc71690ef54298c36b2f516401a8229bd4ed3c369a2b",
+  "cacheSha256": "d4a0d2344b7f9710179556f7e01fa7a5ee37128067b58a221510b0cac132a3ae",
+  "qualificationSha256": "6e8ddc780b3073c15996f2757d001dce78ca924a0766b75e108508b6021e5eb1",
+  "policyReevaluationProvenance": {
+    "offlineOnly": true,
+    "networkRequestsMade": 0,
+    "sourceArtifacts": {
+      "candidate": {
+        "path": "candidate.json",
+        "sha256": "7c69aa54167a855889b0fc71690ef54298c36b2f516401a8229bd4ed3c369a2b"
+      },
+      "qualification": {
+        "path": "qualification.json",
+        "sha256": "c7637cb07cfae9a6d7627329e3ea1e9e4dc3809556ad24fdae18bc801cd237cc"
+      },
+      "cache": {
+        "path": "full-safe.geojson",
+        "sha256": "d4a0d2344b7f9710179556f7e01fa7a5ee37128067b58a221510b0cac132a3ae"
+      },
+      "metric": {
+        "path": "metric-report.json",
+        "sha256": "38eb3aa33e74ea08e2129429656360ca046dbf031baec80f93fb14b76a3b4b05"
+      }
+    },
+    "originalStatus": "held"
+  }
+}

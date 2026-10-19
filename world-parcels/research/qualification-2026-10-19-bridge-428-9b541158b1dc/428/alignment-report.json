@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "sourceId": "bw-bofinet-botswana-lapcas-plots",
+  "cityCode": "428",
+  "contractSha256": "df17bc12f8d511daa9d31f57b965175dc0f68ac41a3676faddd47ae654d2502a",
+  "evidenceSha256": "7dc01e7cc4ee25a9a42b5168654c6c1a969ec9acd0251944f89175247598496e",
+  "metadataSha256": "7a6651ef610538e4bccbe3268c9f0c17da1ba8442b3a4b527e584f6abe376cc0",
+  "nativeSha256": "0583cef2d421fbe16c3f15b27d262b1d3126d7e74f7ece2960b71e40d3bc973e",
+  "cacheSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+  "nativeCrs": "EPSG:4326",
+  "nativeAxisOrder": "east-north",
+  "outputCrs": "EPSG:4326",
+  "coordinateOperation": "axis order change (2D) + Null geographic offset from WGS 84 to WGS 84 + axis order change (2D)",
+  "operationPipeline": "proj=noop ellps=GRS80",
+  "operationAccuracyM": 0.0,
+  "bestOperationAvailable": true,
+  "ballparkAllowed": false,
+  "toleranceM": 0.25,
+  "maxVertexDifferenceM": 0.0,
+  "featureCount": 3,
+  "samples": [
+    {
+      "parcelId": "bofinet:Botswana_PLOTS:FID:5986",
+      "nativeVertexCount": 6,
+      "adapterVertexCount": 6,
+      "maxVertexDifferenceM": 0.0,
+      "maxBoundaryDifferenceM": 0.0
+    },
+    {
+      "parcelId": "bofinet:Botswana_PLOTS:FID:11324",
+      "nativeVertexCount": 7,
+      "adapterVertexCount": 7,
+      "maxVertexDifferenceM": 0.0,
+      "maxBoundaryDifferenceM": 0.0
+    },
+    {
+      "parcelId": "bofinet:Botswana_PLOTS:FID:41315",
+      "nativeVertexCount": 5,
+      "adapterVertexCount": 5,
+      "maxVertexDifferenceM": 0.0,
+      "maxBoundaryDifferenceM": 0.0
+    }
+  ],
+  "maxBoundaryDifferenceM": 0.0,
+  "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+  "operationChoiceUnresolved": false,
+  "sourceGeometryChanged": false,
+  "fittedOffsetApplied": false,
+  "sourceGeoreferencing": "unverified",
+  "limitations": [
+    "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+    "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+  ]
+}

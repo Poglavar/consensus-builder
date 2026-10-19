@@ -1,0 +1,17 @@
+{
+  "nativeCrs": "EPSG:32736",
+  "metadataUrl": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=1.0.0&request=GetCapabilities",
+  "capabilitiesFile": "source-capabilities.xml",
+  "capabilitiesSha256": "3102208a5c317fad2867297913f3d564efe5ac460949d122e343dce06b8267a0",
+  "schemaFile": "source-schema.xsd",
+  "schemaSha256": "ad9393351a91414fbd6e32e81f9c663bee3be04904f6284d8b5dc550642b5dd5",
+  "featureType": "taspro:spatial_units36",
+  "publishedSrs": "EPSG:32736",
+  "declaredGeometryType": "gml:MultiPolygonPropertyType",
+  "nativeAxisOrder": "east-north",
+  "nativeWireCrs": "urn:ogc:def:crs:EPSG::32736",
+  "outputWireCrs": "urn:ogc:def:crs:EPSG::4326",
+  "outputAxisOrder": "longitude,latitude",
+  "datum": "WGS 84 (EPSG definition); no provider realization or coordinate epoch published",
+  "appMetricFrame": "Dynamic local WGS84 transverse Mercator, k=1, canonical geometry anchor rounded to 1e-6 degrees. EPSG:32736 is used only by the qualifier for independent geometry diagnostics, not as a substitute for this app frame."
+}

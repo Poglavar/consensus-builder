@@ -1,0 +1,50 @@
+{
+  "policy": "parcel-availability-v1",
+  "passed": true,
+  "requiredChecks": [
+    "classification",
+    "exactIds",
+    "stableGeometry"
+  ],
+  "status": "follow-up-required",
+  "followUp": [
+    {
+      "check": "metric",
+      "reason": "Detailed geometry audit has unresolved findings; retained for the second pass."
+    },
+    {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+    },
+    {
+      "check": "sourceCurrentness",
+      "reason": "This is an offline re-evaluation of saved source evidence; live freshness, jurisdictional coverage and production binding were not rechecked. Verify them in the second pass."
+    }
+  ],
+  "candidateSha256": "8c7fe0c0ab7c9b3702d1ba190246f1f6637ded9fa1e8949687d25184e1a8080a",
+  "cacheSha256": "9128e6536b49d657750c68b2aced0f2cdfab259779dc1079b3c0293ebe0ebf93",
+  "qualificationSha256": "c10b763c0c0ef1807eca908bc28acd20fbd3aa8cf3282ac44384a09b7c86fed9",
+  "policyReevaluationProvenance": {
+    "offlineOnly": true,
+    "networkRequestsMade": 0,
+    "sourceArtifacts": {
+      "candidate": {
+        "path": "candidate.json",
+        "sha256": "8c7fe0c0ab7c9b3702d1ba190246f1f6637ded9fa1e8949687d25184e1a8080a"
+      },
+      "qualification": {
+        "path": "qualification.json",
+        "sha256": "65ea78dce87fe77bc8682f20a98013c5f0c58ee2952c5c1024a8a8c1f6a552c2"
+      },
+      "cache": {
+        "path": "full-safe.geojson",
+        "sha256": "9128e6536b49d657750c68b2aced0f2cdfab259779dc1079b3c0293ebe0ebf93"
+      },
+      "metric": {
+        "path": "metric-report.json",
+        "sha256": "585e545569142279f7cb78df81f5b962b9d421ddcb1f831445c135dde8739207"
+      }
+    },
+    "originalStatus": "held"
+  }
+}

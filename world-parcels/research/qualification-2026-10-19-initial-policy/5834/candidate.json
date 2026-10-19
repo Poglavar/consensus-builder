@@ -1,0 +1,65 @@
+{
+  "descriptor": {
+    "id": "gb-hmlr-browser-v1",
+    "name": "HM Land Registry — England and Wales browser ground",
+    "adapter": "hmlr-browser",
+    "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+    "idPrefix": "GB-HMLR-BROWSER-v1-",
+    "idField": "INSPIREID",
+    "outFields": [
+      "INSPIREID"
+    ],
+    "idType": "string",
+    "countryCode": "GB",
+    "metricSrid": 27700,
+    "cityIds": [
+      "5834"
+    ],
+    "defaultForCity": false,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 25,
+    "geometryKind": "derived-ground",
+    "normalizationPolicy": "hmlr-browser-v1-area-desc-id-asc-grid1mm-project-before-overlay-geos3.13.0",
+    "scope": "England and Wales registered freehold title-index coverage; deterministic derived ground, not legal title boundaries.",
+    "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.",
+    "maxConcurrentQueries": 2,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "evidenceFile": "backend/parcels/HMLR-GROUND.md",
+    "licenceNote": "Official INSPIRE freehold index downloads are published under the Open Government Licence. Derived ground retains publisher attribution and source provenance.",
+    "caveats": [
+      "Requires a complete, SHA-verified static routing manifest before city bindings are enabled.",
+      "Council ZIPs are downloaded and processed in the browser; a transport relay handles the publisher cookie/redirect flow.",
+      "Application footprints use deterministic overlap resolution and remain indicative freehold title-index derivatives."
+    ],
+    "manifestUrl": "https://urbangametheory.xyz/data/hmlr/44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90/manifest.json",
+    "snapshotId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90"
+  },
+  "city": {
+    "code": "5834",
+    "name": "Scunthorpe",
+    "point": [
+      -0.657437101400954,
+      53.5755538301194
+    ]
+  },
+  "sampleIds": [
+    "GB-HMLR-BROWSER-v1-31931165",
+    "GB-HMLR-BROWSER-v1-31929301",
+    "GB-HMLR-BROWSER-v1-31931361"
+  ],
+  "absentId": "GB-HMLR-BROWSER-v1-99999999",
+  "metricEpsg": "EPSG:32630",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "HM Land Registry — England and Wales browser ground",
+      "HM Land Registry INSPIRE Index Polygons provide registered freehold title-index parcel polygons with native INSPIRE IDs. This browser adapter derives deterministic ground geometries from source parcel polygons; the output is not a legal title boundary.; HM Land Registry INSPIRE Index Polygons provide registered freehold title-index parcel polygons with native INSPIRE IDs. This browser adapter derives deterministic ground geometries from source parcel polygons; the output is not a legal title boundary.",
+      "HM Land Registry INSPIRE Index Polygons provide registered freehold title-index parcel polygons with native INSPIRE IDs. This browser adapter derives deterministic ground geometries from source parcel polygons; the output is not a legal title boundary.",
+      "Official HM Land Registry guidance states the INSPIRE Index Polygons dataset covers England and Wales: https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "England and Wales registered freehold title-index coverage; authority metadata bounds only choose candidate probes and do not prove city or parcel coverage."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

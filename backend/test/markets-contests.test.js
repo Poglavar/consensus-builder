@@ -168,7 +168,8 @@ describe('plan versions (F2)', () => {
             proposal({ id: 4, proposalId: 'rival', parcelIds: ['P1'], proposalAccount: RIVAL })
         ],
         plans: [
-            plan({ slug: 'upu-borovje-v3', title: 'UPU Borovje', createdAt: '2026-10-10T19:02:23Z', memberIds: ['1', '3'], proposalAccount: V3, supersedes: 'upu-borovje-v2' }),
+            plan({ slug: 'upu-borovje-v3', title: 'UPU Borovje', createdAt: '2026-10-10T19:02:23Z', memberIds: ['1', '3'], proposalAccount: V3, supersedes: 'upu-borovje-v2',
+                screenshotUrl: '/plans/v3-after.png', screenshotBeforeUrl: '/plans/v3-before.png', screenshotPairUrl: '/plans/v3-pair.png' }),
             plan({ slug: 'upu-borovje-v2', title: 'UPU Borovje', createdAt: '2026-10-10T18:17:15Z', memberIds: ['1', '3'], proposalAccount: V2, supersedes: 'upu-borovje' }),
             plan({ slug: 'upu-borovje', title: 'UPU Borovje', createdAt: '2026-10-10T14:08:54Z', memberIds: ['1', '2'], proposalAccount: V1 })
         ],
@@ -188,6 +189,7 @@ describe('plan versions (F2)', () => {
         expect(contest.proposals.map(entry => [entry.kind, entry.proposalId])).toEqual([['plan', 'upu-borovje-v3'], ['proposal', 'rival']]);
         const current = contest.proposals[0];
         expect(current).toMatchObject({ planSlug: 'upu-borovje-v3', supersedes: 'upu-borovje-v2', bettable: true });
+        expect(current).toMatchObject({ screenshotUrl: '/plans/v3-after.png', screenshotBeforeUrl: '/plans/v3-before.png', screenshotPairUrl: '/plans/v3-pair.png' });
         expect(current.olderVersions.map(old => [old.slug, old.supersededBy])).toEqual([
             ['upu-borovje-v2', 'upu-borovje-v3'],
             ['upu-borovje', 'upu-borovje-v2']

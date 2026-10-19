@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "4544",
+    "name": "Chief Albert Luthuli Park",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "iso2": "ZA",
+    "iso3": "ZAF",
+    "locId": 710,
+    "rank": 212,
+    "globalRank": 1264,
+    "capital": false,
+    "point": [
+      28.442109859765,
+      -26.1276446337782
+    ],
+    "pointOrder": "longitude,latitude",
+    "population2025": 441204,
+    "population2025k": 441.204,
+    "populationUnit": "persons",
+    "populationYear": 2025,
+    "appCityId": "chief_albert_luthuli_park",
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csg-dffe-national-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "name": "Chief Surveyor-General national Erven polygons (DFFE host)",
+    "operator": "Chief Surveyor-General; DFFE public ArcGIS host",
+    "countryCode": "ZA",
+    "cityIds": [
+      "chief_albert_luthuli_park"
+    ],
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 1,
+    "metricSrid": 32735,
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "evidenceFile": "evidence/source-layer.json",
+    "attribution": "Chief Surveyor-General; DFFE hosted Erven; provider output in WGS84.",
+    "scope": "National cadastral Erven service; initial exact-read qualification for Chief Albert Luthuli Park only. No citywide completeness claim.",
+    "licenceNote": "Public service; explicit reuse permission unestablished. Item licenceInfo and accessInformation are empty."
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-item.json",
+      "evidence/source-layer.json"
+    ],
+    "reason": "DFFE item identifies a National Cadastral Layer and Chief Surveyor General custodian; Erven layer 2 serves polygon parcel records with native PRCL_KEY. This is cadastral reference geometry, not sales listings, proposals or a planning overlay."
+  },
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR095600001026000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR095600005694000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR095600004191000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR077300007352000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR077300007605000000"
+  ],
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "evidenceFiles": [
+    "evidence/input-verification.json",
+    "evidence/source-fetch-manifest.json",
+    "evidence/currency-evidence.json"
+  ],
+  "followUpUncertainties": [
+    "The unchanged WUP centroid lies outside the official named municipal suburb; discovery polygons sample both separated clusters and establish no exact settlement boundary or citywide completeness.",
+    "Initial qualification tests repeated native PRCL_KEY reads only. Distributed area manifests, forced paging, explicit absence, binding and full-area completeness remain second-pass work.",
+    "Native EPSG:4148 and requested provider output EPSG:4326 are declared; wire axes, datum operation, grids and independent alignment remain unverified. No fitted offsets or coordinate edits are permitted.",
+    "Current/historic status semantics, source update date, replacement identity continuity and wider duplicate/overlap behavior remain unverified. No status filter or overlap suppression is applied.",
+    "DFFE item licenceInfo/accessInformation are empty; public access and custodian attribution do not establish redistribution permission."
+  ],
+  "geometryPolicy": "Preserve complete provider-returned rings and coordinates; no clipping, simplification, repair, fitted offsets or overlap filtering. OBJECTID transport only; native PRCL_KEY defines canonical identity."
+}

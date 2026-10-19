@@ -8,9 +8,18 @@ import { parseEsriParcelCollection } from './esri-parcel-reader.js';
 import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
 import { OVERLAP_GROUND_POLICY, withOverlapGround } from './overlap-ground.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
+import { sha256Hex } from './portable-hash.js';
+import { createAkwaGisPublicFetch } from './akwagis-public-fetch.js';
 export { validateBounds } from './source-contract.js';
 
 const MAX_DISTINCT_MANIFEST_PAGES = 128;
+export const NATIVE_GEOMETRY_IDENTITY_KIND = 'native-key-geometry-sha256-v1';
+
+// Hash the complete GeoJSON geometry with sorted object keys and ECMAScript JSON numbers.
+// Coordinates, ring order, polygon type and precision are all retained without normalization.
+export const nativeGeometryHash = geometry => sha256Hex(JSON.stringify(geometry,
+    (_key, value) => value && !Array.isArray(value) && typeof value === 'object'
+        ? Object.fromEntries(Object.keys(value).sort().map(key => [key, value[key]])) : value));
 
 // Fixed-width cadastral fields can contain a literal blank section. Preserve every
 // source component exactly; the snapshot namespace codec intentionally rejects spaces.
@@ -19,7 +28,11 @@ export const encodeArcgisCompositeId = values => values.map(value =>
 export const splitArcgisCompositeId = value => value.split('~').map(decodeURIComponent);
 
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
+    if (descriptor.publicTokenUrl !== undefined) fetchImpl = createAkwaGisPublicFetch(fetchImpl, descriptor);
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
+    // Discovery receipts can bind the query operation itself rather than its parent layer.
+    const layerEndpoint = endpoint.replace(/\/$/, '');
+    const queryEndpoint = layerEndpoint.endsWith('/query') ? layerEndpoint : `${layerEndpoint}/query`;
     const pageSize = descriptor.pageSize || 2000;
     const maxFeatures = descriptor.maxFeatures || 10000;
     const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
@@ -38,6 +51,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const geometryPrecision = descriptor.geometryPrecision;
     // A layer whose labels do not identify one polygon gets references derived from each outline.
     const geometryIdentity = descriptor.identityKind === GEOMETRY_IDENTITY_KIND;
+    const nativeGeometryIdentity = descriptor.identityKind === NATIVE_GEOMETRY_IDENTITY_KIND;
     const lookupCellSize = descriptor.lookupCellSize ?? 0.0025;
     // Old servers without GeoJSON output or working offsets read outlines through object-ID lists in Esri JSON.
     if (geometryIdentity && (idField !== undefined || composite || descriptor.idType !== undefined || idPattern || idQueryBraces
@@ -46,8 +60,14 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || !Number.isFinite(lookupCellSize) || lookupCellSize < 0.0001 || lookupCellSize > 0.005)) {
         throw new Error('Invalid ArcGIS parcel source descriptor.');
     }
-    if (!geometryIdentity && (descriptor.identityKind !== undefined || descriptor.lookupCellSize !== undefined)) {
+    if (!geometryIdentity && ((!nativeGeometryIdentity && descriptor.identityKind !== undefined) || descriptor.lookupCellSize !== undefined)) {
         throw new Error('Invalid ArcGIS parcel source descriptor.');
+    }
+    if (nativeGeometryIdentity && (composite || idType !== 'string' || idQueryBraces
+        || descriptor.boundsQueryMode !== 'object-ids' || descriptor.idsQueryMode !== 'object-ids'
+        || descriptor.queryFormat !== 'geojson' || descriptor.nativeGeometryMode !== undefined
+        || responseSrid !== undefined || geometryPrecision !== undefined || descriptor.overlapResolution !== undefined)) {
+        throw new Error('Invalid ArcGIS native-key geometry identity descriptor.');
     }
     if (!id || !idPrefix || !Array.isArray(outFields) || !outFields.length
         || outFields.some(field => !columnName(field))
@@ -179,9 +199,9 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         let payload;
         try {
             // ArcGIS supports form POST; avoid intermediary URL limits for long OID/GUID batches.
-            const url = `${endpoint}/query?${search}`;
+            const url = `${queryEndpoint}?${search}`;
             const usePost = url.length > 1800;
-            const response = await fetchImpl(usePost ? `${endpoint}/query` : url, {
+            const response = await fetchImpl(usePost ? queryEndpoint : url, {
                 signal, ...(usePost ? { method: 'POST', body: search.toString() } : {}),
                 headers: { Accept: 'application/geo+json, application/json',
                     ...(usePost ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) }
@@ -238,7 +258,15 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 }
                 seenObjects.add(String(objectId));
                 if (geometryIdentity) { retainOutline(byId, outlineFeature(props, geometry)); continue; }
-                const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry }, nativeId);
+                const hash = nativeGeometryIdentity ? nativeGeometryHash(geometry) : null;
+                const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry },
+                    nativeGeometryIdentity ? `${nativeId}-${hash}` : nativeId);
+                if (nativeGeometryIdentity) {
+                    canonical.properties.sourceNativeParcelId = String(nativeId);
+                    canonical.properties.parcelNumber = String(nativeId);
+                    canonical.properties.parcelIdentityKind = NATIVE_GEOMETRY_IDENTITY_KIND;
+                    canonical.properties.sourceGeometryHash = hash;
+                }
                 if (descriptor.partsCoordinatePrecision !== undefined) {
                     const factor = 10 ** descriptor.partsCoordinatePrecision;
                     const round = value => Array.isArray(value) ? value.map(round) : Math.round(value * factor) / factor;
@@ -516,7 +544,12 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         if (geometryIdentity) return queryOutlineIds(unique);
         const native = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
-            const tail = value.slice(idPrefix.length);
+            let tail = value.slice(idPrefix.length);
+            if (nativeGeometryIdentity) {
+                const match = /^(.*)-([0-9a-f]{64})$/.exec(tail);
+                if (!match) throw new HttpError(400, 'Invalid native-key geometry parcel ID.');
+                tail = match[1];
+            }
             if (composite) {
                 let parts;
                 try { parts = decodeCompositeId(tail); }
@@ -564,10 +597,18 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             // An out-of-scope record fails completeness; it never becomes valid ground or absence.
             const batch = equalityOnly ? await queryObjectIds(params, false)
                 : descriptor.idsQueryMode === 'object-ids' ? await queryObjectIds(params) : await query(params);
-            if (batch.features.some(feature => !expected.has(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');
+            if (nativeGeometryIdentity) {
+                // A native key can select several genuine versions/outlines. Only the requested
+                // complete geometry reference matches; changed geometry becomes explicit absence.
+                const expectedNative = new Set(unique.slice(start, start + idBatchSize)
+                    .map(value => value.slice(idPrefix.length, -65)));
+                if (batch.features.some(feature => !expectedNative.has(feature.properties.sourceNativeParcelId))) {
+                    throw upstreamError('Parcel ID query returned unexpected native parcels.');
+                }
+            } else if (batch.features.some(feature => !expected.has(feature.properties.parcelId))) throw upstreamError('Parcel ID query returned unexpected parcels.');
             sourceRows += batch.sourceRows ?? batch.features.length;
             if (sourceRows > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use fewer IDs.');
-            result.features.push(...batch.features);
+            result.features.push(...batch.features.filter(feature => !nativeGeometryIdentity || expected.has(feature.id)));
         }
         if (descriptor.nativeGeometryMode === 'parts') result.sourceRows = sourceRows;
         const present = new Set(result.features.map(feature => feature.properties.parcelId));

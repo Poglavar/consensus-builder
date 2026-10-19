@@ -1,0 +1,180 @@
+{
+  "purpose": "Safe first-party Bloemfontein native-key sample and production descriptor; coordinates copied unchanged from the CSG response.",
+  "sourceSha256": "17cefda40404fa705f4d48c97d81c6f772ce75afb79b1c295ee0a2d7704242b3",
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+    "countryCode": "ZA",
+    "sourceCrs": "EPSG:4148",
+    "metricSrid": 32735,
+    "cityIds": [
+      "bloemfontein"
+    ],
+    "metricSridByCity": {
+      "bloemfontein": 32735
+    },
+    "evidenceFile": "evidence/qualification.json",
+    "scope": "National cadastral Erven reference polygons, with exact native-key Bloemfontein samples. Initial parcel availability only; citywide completeness, currentness, title and survey accuracy are not established.",
+    "licenceNote": "Anonymous public access observed; service item licenseInfo is empty. Reuse and redistribution permission remain unverified."
+  },
+  "point": [
+    26.2428621568224,
+    -29.1652013339971
+  ],
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-MANMF003000900027026000000",
+    "ZA-CSG-DFFE-ERVEN-MANMF003000900027027000000",
+    "ZA-CSG-DFFE-ERVEN-MANMF003000900027898000000"
+  ],
+  "response": {
+    "displayFieldName": "SS_NAME",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "PRCL_KEY": "PRCL_KEY"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "PRCL_KEY",
+        "type": "esriFieldTypeString",
+        "alias": "PRCL_KEY",
+        "length": 50
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 3267855,
+          "PRCL_KEY": "MANMF003000900027026000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                26.243565670000066,
+                -29.164119392999968
+              ],
+              [
+                26.24355767000003,
+                -29.16414539199997
+              ],
+              [
+                26.243587671000054,
+                -29.164152388999984
+              ],
+              [
+                26.24349667200005,
+                -29.16434137699997
+              ],
+              [
+                26.24329866400007,
+                -29.16429337399995
+              ],
+              [
+                26.24334167200004,
+                -29.164154382999982
+              ],
+              [
+                26.243565670000066,
+                -29.164119392999968
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 3267856,
+          "PRCL_KEY": "MANMF003000900027027000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                26.243587671000054,
+                -29.164152388999984
+              ],
+              [
+                26.243736683000066,
+                -29.164188388999946
+              ],
+              [
+                26.24367467800005,
+                -29.16438437799996
+              ],
+              [
+                26.24349667200005,
+                -29.16434137699997
+              ],
+              [
+                26.243587671000054,
+                -29.164152388999984
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 3269631,
+          "PRCL_KEY": "MANMF003000900027898000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                26.243066640000055,
+                -29.165205321999963
+              ],
+              [
+                26.243022644000064,
+                -29.16534431699995
+              ],
+              [
+                26.24277463500005,
+                -29.165285315999938
+              ],
+              [
+                26.24281863800007,
+                -29.16514531999997
+              ],
+              [
+                26.243066640000055,
+                -29.165205321999963
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

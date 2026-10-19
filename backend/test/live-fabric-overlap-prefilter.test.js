@@ -35,11 +35,16 @@ const install = (name, value) => {
 };
 
 let features;
+let sourceFacts;
 
 beforeEach(() => {
     install('turf', turf);
     install('window', { turf });
     install('updateStatus', () => {});
+    sourceFacts = new Map();
+    install('CadastralParcelRepository', {
+        getMany: ids => ids.map(id => sourceFacts.get(id)).filter(Boolean)
+    });
 });
 
 afterEach(() => {
@@ -49,12 +54,12 @@ afterEach(() => {
     });
 });
 
-function resolve() {
+function resolve(footprintOverride = null) {
     features.forEach((feature, index) => {
-        feature.properties.parcelId = `live-${index}`;
-        feature.properties.cadastreParcelIds = [`HR-${index}`];
+        feature.properties.parcelId ||= `live-${index}`;
+        feature.properties.cadastreParcelIds ||= [`HR-${index}`];
     });
-    const footprint = turf.multiPolygon(features.flatMap(feature => (
+    const footprint = footprintOverride || turf.multiPolygon(features.flatMap(feature => (
         feature.geometry.type === 'MultiPolygon'
             ? feature.geometry.coordinates
             : [feature.geometry.coordinates]
@@ -66,10 +71,10 @@ function resolve() {
             missingIds: []
         })
     };
-    const wholeParcels = (_shape, entries) => entries.map(entry => ({
-        id: entry.id,
-        area: turf.area(entry.feature)
-    }));
+    const wholeParcels = (shape, entries) => entries.map(entry => {
+        const hit = turf.intersect(shape, entry.feature);
+        return { id: entry.id, area: hit ? turf.area(hit) : 0 };
+    }).filter(hit => hit.area >= 0.25);
     window.__planOrder = {
         footprintOf: () => footprint,
         computeBaseAncestry: wholeParcels,
@@ -101,6 +106,94 @@ describe('a corrupted partition is still refused', () => {
         const result = resolve();
         expect(result.ok).toBe(false);
         expect(result.message).toMatch(/overlap/);
+    });
+});
+
+describe('overlap inherited from immutable cadastral source outlines', () => {
+    it('allows distinct roots whose live overlap stays inside the source overlap', () => {
+        const left = box(15.90, 43.73, 0.002, 0.001);
+        const right = box(15.901, 43.73, 0.002, 0.001);
+        sourceFacts.set('HR-0', left);
+        sourceFacts.set('HR-1', right);
+        features = [left, right].map(feature => structuredClone(feature));
+        expect(resolve(box(15.90, 43.73, 0.003, 0.001)).ok).toBe(true);
+    });
+
+    it('refuses a derived overlap outside the two source outlines', () => {
+        sourceFacts.set('HR-0', box(15.90, 43.73, 0.002, 0.001));
+        sourceFacts.set('HR-1', box(15.901, 43.73, 0.002, 0.001));
+        features = [box(15.90, 43.73, 0.002, 0.001), box(15.9005, 43.73, 0.0025, 0.001)];
+        expect(resolve(box(15.90, 43.73, 0.003, 0.001)).ok).toBe(false);
+    });
+
+    it('fails closed when either immutable source fact is unavailable', () => {
+        sourceFacts.set('HR-0', box(15.90, 43.73, 0.002, 0.001));
+        features = [box(15.90, 43.73, 0.002, 0.001), box(15.901, 43.73, 0.002, 0.001)];
+        expect(resolve(box(15.90, 43.73, 0.003, 0.001)).ok).toBe(false);
+    });
+
+    it('still refuses two derived pieces sharing the same cadastral anchor', () => {
+        const source = box(15.90, 43.73, 0.003, 0.001);
+        sourceFacts.set('HR-0', source);
+        features = [box(15.90, 43.73, 0.002, 0.001), box(15.901, 43.73, 0.002, 0.001)];
+        features[1].properties.cadastreParcelIds = ['HR-0'];
+        expect(resolve(source).ok).toBe(false);
+    });
+
+    it('does not let double-counted source overlap hide uncovered ground', () => {
+        const left = box(15.90, 43.73, 0.002, 0.001);
+        const right = box(15.901, 43.73, 0.002, 0.001);
+        sourceFacts.set('HR-0', left);
+        sourceFacts.set('HR-1', right);
+        features = [left, right].map(feature => structuredClone(feature));
+        const result = resolve(box(15.90, 43.73, 0.004, 0.001));
+        expect(result.ok).toBe(false);
+        expect(result.coverage).toBeCloseTo(0.75, 2);
+    });
+
+    it('handles a source outline with disconnected ground and a hole', () => {
+        const left = box(15.90, 43.73, 0.002, 0.002);
+        left.geometry = { type: 'MultiPolygon', coordinates: [
+            [left.geometry.coordinates[0], [[15.9006, 43.7306], [15.901, 43.7306], [15.901, 43.731], [15.9006, 43.731], [15.9006, 43.7306]]],
+            box(15.905, 43.73, 0.001, 0.001).geometry.coordinates
+        ] };
+        const right = box(15.901, 43.73, 0.002, 0.002);
+        sourceFacts.set('HR-0', left);
+        sourceFacts.set('HR-1', right);
+        features = [structuredClone(left), structuredClone(right)];
+        const footprint = box(15.9012, 43.7302, 0.0004, 0.0004);
+        expect(resolve(footprint).ok).toBe(true);
+    });
+
+    it('allows successive cuts of the same overlapping source outlines', () => {
+        const left = box(15.90, 43.73, 0.002, 0.001);
+        const right = box(15.901, 43.73, 0.002, 0.001);
+        sourceFacts.set('HR-0', left);
+        sourceFacts.set('HR-1', right);
+        features = [left, right].map(feature => structuredClone(feature));
+        const first = box(15.9002, 43.7301, 0.0004, 0.0008);
+        expect(resolve(first).ok).toBe(true);
+        features = features.map((feature, index) => {
+            const remainder = turf.difference(feature, first);
+            remainder.properties.cadastreParcelIds = [`HR-${index}`];
+            return remainder;
+        });
+        const second = box(15.9012, 43.7301, 0.0004, 0.0008);
+        expect(resolve(second).ok).toBe(true);
+    });
+
+    it('checks a merged feature against the union of its distinct source anchors', () => {
+        const first = box(15.90, 43.73, 0.001, 0.001);
+        const second = box(15.901, 43.73, 0.001, 0.001);
+        const third = box(15.9015, 43.73, 0.001, 0.001);
+        sourceFacts.set('HR-0', first);
+        sourceFacts.set('HR-1', second);
+        sourceFacts.set('HR-2', third);
+        const merged = turf.union(first, second);
+        merged.properties.cadastreParcelIds = ['HR-0', 'HR-1'];
+        third.properties.cadastreParcelIds = ['HR-2'];
+        features = [merged, third];
+        expect(resolve(box(15.90, 43.73, 0.0025, 0.001)).ok).toBe(true);
     });
 });
 

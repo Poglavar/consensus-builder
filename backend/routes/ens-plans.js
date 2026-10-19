@@ -7,6 +7,8 @@ import { createPlanStore, membersCity } from '../plans/plan-store.js';
 import { normalizeCityCode } from './proposals.js';
 import { changedMembers, memberHash, nextVersionSlug, planHash } from '../plans/plan-hash.js';
 import { proposalAccountOf } from '../markets/contests.js';
+import { enqueuePlanThumbnail } from '../thumbnails/plan-thumbnail.js';
+import { publicApiBaseUrl } from '../utils/public-base-url.js';
 
 const ENS_NAMESPACE = 'proposals.urbangametheory.eth';
 // Named plans resolve to the existing short `/proposals/<slug>` route. That route fetches the
@@ -62,6 +64,9 @@ const planView = (row) => ({
     onchain: row.onchain_data || null,
     // The plan's own Solana proposal account once minted: its betting pool (markets/contests.js).
     proposalAccount: proposalAccountOf(row.onchain_data),
+    screenshotUrl: row.thumbnail_url || null,
+    screenshotBeforeUrl: row.thumbnail_before_url || null,
+    screenshotPairUrl: row.thumbnail_pair_url || null,
     mintable: row.has_site === true,
     createdAt: row.created_at || null,
     // Listing only: how many proposals the plan names, and whether a later version replaces it.
@@ -146,6 +151,9 @@ export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } 
                 city: membersCity(members, ids) || normalizeCityCode(text(req.body?.city, 32)),
                 supersedes, creatorIp: req.ip || null, creatorFingerprint: text(req.body?.fingerprint, 64),
             });
+            if (typeof pool?.query === 'function' && row?.slug && row.plan_hash && row.member_hashes) {
+                enqueuePlanThumbnail(pool, row.slug, { baseUrl: publicApiBaseUrl() });
+            }
             res.status(201).json(planView(row));
         } catch (e) {
             if (e.code !== '23505') throw e;

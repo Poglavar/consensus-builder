@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "1936",
+  "cityName": "Sumbe",
+  "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+  "candidateSha256": "69b8ee13a8d9ce4f37a5e1af17614fc2a94a40b81f427fca5999eff1ceea1cc4",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32733",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": true,
+      "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "cityCode": "1936",
+      "contractSha256": "371007b12f6ffebf92b94fbf48725fb985ff5c7ac70b7c0fd3a5cd38dd42e91d",
+      "evidenceSha256": "3dd2aa5e3a0d31f3daedcbe0f7aff81ab69503f39897f3093dd10276464e0ac6",
+      "metadataSha256": "c4a9104a1aeb370f313dc8daac120716208d4d249107d3f60711a0c84c67831c",
+      "nativeSha256": "311a59f7fd7dc3857e35ed3bd02efd0e2ba904aad39dcf7d128f6e110421db68",
+      "cacheSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+      "nativeCrs": "EPSG:3857",
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "coordinateOperation": "Inverse of Popular Visualisation Pseudo-Mercator + axis order change (2D)",
+      "operationPipeline": "proj=pipeline step inv proj=webmerc lat_0=0 lon_0=0 x_0=0 y_0=0 ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+      "operationAccuracyM": 0,
+      "bestOperationAvailable": true,
+      "ballparkAllowed": false,
+      "toleranceM": 0.25,
+      "maxVertexDifferenceM": 8.224501791346878e-9,
+      "featureCount": 3,
+      "samples": [
+        {
+          "parcelId": "AO-SUMBE-AGT-2ceed370-8f73-4f77-9c3b-9b6682db0650",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 7.979694565964065e-9,
+          "maxBoundaryDifferenceM": 6.875653006666484e-9
+        },
+        {
+          "parcelId": "AO-SUMBE-AGT-7770b89a-91b5-40b2-a90f-c8a97d49d8ab",
+          "nativeVertexCount": 7,
+          "adapterVertexCount": 7,
+          "maxVertexDifferenceM": 8.224501791346878e-9,
+          "maxBoundaryDifferenceM": 7.4280980845081275e-9
+        },
+        {
+          "parcelId": "AO-SUMBE-AGT-6a4bc6bd-bcec-4fae-afe6-d9796363ff19",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 4.774906340761812e-9,
+          "maxBoundaryDifferenceM": 4.253852945111092e-9
+        }
+      ],
+      "maxBoundaryDifferenceM": 7.4280980845081275e-9,
+      "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+      "operationChoiceUnresolved": false,
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "limitations": [
+        "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+        "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+      ],
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+  "featureCount": 3,
+  "sampleIds": [
+    "AO-SUMBE-AGT-2ceed370-8f73-4f77-9c3b-9b6682db0650",
+    "AO-SUMBE-AGT-7770b89a-91b5-40b2-a90f-c8a97d49d8ab",
+    "AO-SUMBE-AGT-6a4bc6bd-bcec-4fae-afe6-d9796363ff19"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:41:28.006Z",
+      "queryHash": "a7f20eeadafdde72072bcdd5eb7536decc24f1304147b8e5546438925e814fea",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 600
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:41:28.611Z",
+      "queryHash": "a7f20eeadafdde72072bcdd5eb7536decc24f1304147b8e5546438925e814fea",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 319
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:41:28.933Z",
+      "queryHash": "a646dcaa0c9c4921104bf628e370948acb03a86d02e89634c298eeb56e5a9681",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 320
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:41:29.257Z",
+      "queryHash": "a7f20eeadafdde72072bcdd5eb7536decc24f1304147b8e5546438925e814fea",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 546
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:41:29.804Z",
+      "queryHash": "a7f20eeadafdde72072bcdd5eb7536decc24f1304147b8e5546438925e814fea",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 533
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:41:30.338Z",
+      "queryHash": "a646dcaa0c9c4921104bf628e370948acb03a86d02e89634c298eeb56e5a9681",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 389
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

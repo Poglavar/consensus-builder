@@ -1,0 +1,96 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/uttar-pradesh/ncog/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "gid"
+    ],
+    "id": "in-up-ncog-tiles",
+    "idPrefix": "IN-UP-NCOG-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "NCOG_UttarPradesh_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 4,
+    "maxFeatures": 10000,
+    "metricSrid": 32643,
+    "name": "Uttar Pradesh cadastral maps — indianopenmaps tile snapshot (NCOG_UttarPradesh_Cadastrals)",
+    "outFields": [
+      "gid"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Uttar Pradesh from the NCOG_UttarPradesh_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "UP",
+    "zoom": 14,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "hapur",
+      "farrukhabad",
+      "hardoi",
+      "fatehpur",
+      "faizabad",
+      "sultanpur",
+      "gyanpur",
+      "mehdawal",
+      "gorakhpur",
+      "jianpur",
+      "azamgarh",
+      "chauri_chaura",
+      "dohrighat",
+      "saidpur",
+      "9751"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "9751": 32644,
+      "hapur": 32643,
+      "farrukhabad": 32644,
+      "hardoi": 32644,
+      "fatehpur": 32644,
+      "faizabad": 32644,
+      "sultanpur": 32644,
+      "gyanpur": 32644,
+      "mehdawal": 32644,
+      "gorakhpur": 32644,
+      "jianpur": 32644,
+      "azamgarh": 32644,
+      "chauri_chaura": 32644,
+      "dohrighat": 32644,
+      "saidpur": 32644
+    }
+  },
+  "city": {
+    "code": "9751",
+    "name": "Bindki",
+    "point": [
+      80.5778682037624,
+      26.0354237104828
+    ]
+  },
+  "sampleIds": [
+    "IN-UP-NCOG-g1~805689508~260367093~f1f63dc97784b587f656c1dddef97f2547d0c0984514dde97a25f621de017c14",
+    "IN-UP-NCOG-g1~805690044~260366756~556337651604e7d19cc60d9131ccf68537da8ca3909ea202872f56276bb443d0",
+    "IN-UP-NCOG-g1~805646485~260389361~48185288570ddb75710683482e267ef47fbcd53a883c6a612854cb348754948b"
+  ],
+  "absentId": "IN-UP-NCOG-g1~805646485~260389361~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32644",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Uttar Pradesh cadastral maps — indianopenmaps tile snapshot (NCOG_UttarPradesh_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Uttar Pradesh; candidate cities are limited to WUP points inside IN-UP. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

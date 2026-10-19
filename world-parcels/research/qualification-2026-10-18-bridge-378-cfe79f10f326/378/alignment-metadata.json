@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "bf-dgi-ecadastre-public-geojson",
+  "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+  "publisher": "Direction générale des Impôts du Burkina Faso",
+  "purpose": "cadastral-parcels",
+  "viewer": {
+    "url": "https://ecadastre.dgi.bf/",
+    "httpStatus": 200,
+    "retrievedAt": "2026-10-18T21:33:51.631413+00:00",
+    "responseSha256": "190ecc50f037f2ce270cc4af4fcb5f330dbd94e63b76d82a9a96bc9efe3891ad",
+    "title": "Cadastre Burkina"
+  },
+  "viewerConfig": {
+    "url": "https://ecadastre.dgi.bf/main.d0f438b0f6cdaf6e.js",
+    "httpStatus": 200,
+    "retrievedAt": "2026-10-18T21:33:51.631413+00:00",
+    "responseSha256": "2f117b3fdb714cfef6096986ac9f3fce3112b1445417ff4cd182a5feb3d0f8dc",
+    "geometryRoutePresent": true,
+    "parcelLayerMarkerPresent": true,
+    "safeRouteExcerpt": "this.httpRequest.get(\"api/locations/geojson\",{minX:Ii,minY:di,maxX:Fs,maxY:cs})"
+  },
+  "officialFaq": {
+    "url": "https://dgi.bf/faq/",
+    "httpStatus": 200,
+    "retrievedAt": "2026-10-18T21:33:51.631413+00:00",
+    "responseSha256": "2d4a447f1fed787457f052fecd206fbb32af79c93a36613114297f1a52830157",
+    "linksOfficialEcadastre": true,
+    "mentionsBobo": true,
+    "mentionsCadastralExtract": true
+  },
+  "wireCrs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "nativeStorageCrs": "unverified",
+  "wireAxes": "longitude,latitude from observed bounded queries and unchanged GeoJSON",
+  "purposeAssessment": "DGI links its eCadastre cadastral viewer; current viewer code identifies the geometry as PLOT and uses native parcel IDs. This is the public cadastral layer, rather than listings, development proposals or planning overlays.",
+  "coverageAssessment": "Four bounded diagnostic windows only. Distributed parcel evidence does not establish citywide completeness or a municipal boundary.",
+  "rightsAndReuse": "Anonymous access verified; no explicit reuse licence or attribution terms established. Technical qualification is not reuse permission or runtime admission."
+}

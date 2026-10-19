@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-18",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "378",
+      "appCityId": "bobo_dioulasso",
+      "cityName": "Bobo-Dioulasso",
+      "qualificationCityName": "Bobo-Dioulasso",
+      "cityId": "wup2025:378",
+      "countryCode": "BF",
+      "country": "Burkina Faso",
+      "sourceId": "bf-dgi-ecadastre-public-geojson",
+      "appCenterLatLon": [
+        11.1847197779143,
+        -4.28974790525362
+      ],
+      "wupPointLatLon": [
+        11.1847197779143,
+        -4.28974790525362
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "eec7464d03c1539eca052a4ce69f22afde19995ed9444cbf2319c88c5375f89a",
+        "evidenceOriginalSha256": "eec7464d03c1539eca052a4ce69f22afde19995ed9444cbf2319c88c5375f89a",
+        "evidenceExportSha256": "eec7464d03c1539eca052a4ce69f22afde19995ed9444cbf2319c88c5375f89a"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "02a67f4a3dc37318df40c689bb2e272339bc9d24c792ddb6af5f83eb0e856cbf",
+        "evidenceExportSha256": "a8f9c16f0bbf8093a0b7df35fed475f65527b32a865a97d992995ec7eb329fca",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": false
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "native CRS must be a published EPSG code"
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "independent alignment qualification check is missing or false"
+            }
+          ],
+          "candidateSha256": "eec7464d03c1539eca052a4ce69f22afde19995ed9444cbf2319c88c5375f89a",
+          "cacheSha256": "486b2fc04dee0739be6553d5d043efcfa88e590b48fb906134dc49d4f8373477",
+          "qualificationSha256": "02a67f4a3dc37318df40c689bb2e272339bc9d24c792ddb6af5f83eb0e856cbf"
+        },
+        "featureCount": 5,
+        "sampleIds": [
+          "BF-ECADASTRE:aN1k1sijuxh",
+          "BF-ECADASTRE:NgGGJkfQ1af",
+          "BF-ECADASTRE:hmTuv6heRVn",
+          "BF-ECADASTRE:bENNwjbYc8f",
+          "BF-ECADASTRE:HXgwb55P1Pk"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "8dad1ed7c60f462570d38d23daf40852cdda4021073a0dd3b531525c38141257",
+        "evidenceExportSha256": "4a45d4cc1db68e352aa24a7d66789f9767b0f69b105d4e6bc7e47bad85298048",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32630",
+        "inputSha256": "486b2fc04dee0739be6553d5d043efcfa88e590b48fb906134dc49d4f8373477",
+        "featureCount": 5,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "486b2fc04dee0739be6553d5d043efcfa88e590b48fb906134dc49d4f8373477",
+        "evidenceOriginalSha256": "486b2fc04dee0739be6553d5d043efcfa88e590b48fb906134dc49d4f8373477",
+        "evidenceExportSha256": "486b2fc04dee0739be6553d5d043efcfa88e590b48fb906134dc49d4f8373477",
+        "featureCount": 5
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/full-safe.geojson",
+        "alignment": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/alignment-native.json",
+        "initialReview": "world-parcels/research/qualification-2026-10-18-bridge-378-cfe79f10f326/378/initial-review.json"
+      },
+      "alignment": {
+        "status": "follow-up-required",
+        "evidenceExportSha256": "0499b8a78ad2384a87e79a882d2e07c0b76c1a53d34af8a983e38706797a75c9",
+        "followUp": "native CRS must be a published EPSG code"
+      },
+      "independentMetricAudit": {
+        "sha256": "4a45d4cc1db68e352aa24a7d66789f9767b0f69b105d4e6bc7e47bad85298048",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "486b2fc04dee0739be6553d5d043efcfa88e590b48fb906134dc49d4f8373477",
+        "metricCrs": "EPSG:32630",
+        "featureCount": 5,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "bf-dgi-ecadastre-public-geojson",
+        "adapter": "bf-dgi-geojson",
+        "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+        "idField": "FID",
+        "idFields": null,
+        "idPrefix": "BF-ECADASTRE:",
+        "metricSrid": 32630,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": null,
+          "idsQueryMode": null,
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": null,
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": false,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-18",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

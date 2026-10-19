@@ -1,0 +1,234 @@
+{
+  "comment": "Safe first-party Addis WFS exact response: native uniqueparcelid and unchanged provider-returned EPSG:4326 geometry only.",
+  "descriptor": {
+    "id": "et-addis-eland-geoserver-parcel-publish",
+    "name": "Addis Ababa e-Land published cadastral parcels",
+    "adapter": "wfs",
+    "endpoint": "https://geos.addiscadaster.gov.et/geoserver/ows",
+    "featureType": "ncrprs_cadaster:v_1_parcel_cadaster_publish",
+    "version": "1.0.0",
+    "idField": "uniqueparcelid",
+    "idType": "string",
+    "idPattern": "^AA[0-9]{12}$",
+    "idPrefix": "ET-ADDIS-ELAND-",
+    "geometryField": "geometry",
+    "requestProperties": true,
+    "outFields": [
+      "uniqueparcelid"
+    ],
+    "pageSize": 25,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32637,
+    "countryCode": "ET",
+    "cityIds": [
+      "adis_beba_addis_ababa"
+    ],
+    "scope": "Official Addis city cadastral parcel publish layer. Initial exact-read qualification and prior four distributed bounded observations support parcel availability, not citywide completeness, currency, legal title or survey accuracy.",
+    "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+    "catalogueUrl": "https://eland.addiscadaster.gov.et/",
+    "attribution": "Addis Ababa City Administration Landholding Registration and Information Agency, e-Land cadastral parcels",
+    "licenceNote": "Anonymous public read access verified. No explicit geometry reuse licence established; follow-up required.",
+    "defaultForCity": true,
+    "idBatchSize": 80,
+    "wireCrs": "EPSG:4326",
+    "wireAxisOrder": "longitude,latitude",
+    "returnsWGS84": true,
+    "evidenceFile": "evidence/source-metadata.json",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    },
+    "licenceUrl": "https://eland.addiscadaster.gov.et/"
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "v_1_parcel_cadaster_publish.fid-10faf2a0_1a152cc6811_-d86",
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  38.7407,
+                  9.0117
+                ],
+                [
+                  38.7409,
+                  9.0118
+                ],
+                [
+                  38.7413,
+                  9.0117
+                ],
+                [
+                  38.7414,
+                  9.0112
+                ],
+                [
+                  38.7406,
+                  9.0113
+                ],
+                [
+                  38.7407,
+                  9.0117
+                ]
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "geometry",
+        "properties": {
+          "uniqueparcelid": "AA000030901044"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "v_1_parcel_cadaster_publish.fid-10faf2a0_1a152cc6811_-d85",
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  38.746,
+                  8.9989
+                ],
+                [
+                  38.7463,
+                  8.9989
+                ],
+                [
+                  38.7465,
+                  8.999
+                ],
+                [
+                  38.7465,
+                  8.9989
+                ],
+                [
+                  38.7465,
+                  8.9989
+                ],
+                [
+                  38.7465,
+                  8.9988
+                ],
+                [
+                  38.7465,
+                  8.9987
+                ],
+                [
+                  38.7465,
+                  8.9987
+                ],
+                [
+                  38.7465,
+                  8.9987
+                ],
+                [
+                  38.7464,
+                  8.9987
+                ],
+                [
+                  38.7464,
+                  8.9987
+                ],
+                [
+                  38.7463,
+                  8.9987
+                ],
+                [
+                  38.7463,
+                  8.9987
+                ],
+                [
+                  38.746,
+                  8.9986
+                ],
+                [
+                  38.746,
+                  8.9989
+                ]
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "geometry",
+        "properties": {
+          "uniqueparcelid": "AA000040601276"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "v_1_parcel_cadaster_publish.fid-10faf2a0_1a152cc6811_-d84",
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  38.7562,
+                  9.0038
+                ],
+                [
+                  38.7563,
+                  9.0038
+                ],
+                [
+                  38.7563,
+                  9.0035
+                ],
+                [
+                  38.7563,
+                  9.0035
+                ],
+                [
+                  38.7563,
+                  9.0035
+                ],
+                [
+                  38.7563,
+                  9.0035
+                ],
+                [
+                  38.7562,
+                  9.0035
+                ],
+                [
+                  38.7562,
+                  9.0035
+                ],
+                [
+                  38.7561,
+                  9.0035
+                ],
+                [
+                  38.7562,
+                  9.0038
+                ]
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "geometry",
+        "properties": {
+          "uniqueparcelid": "AA000041001300"
+        }
+      }
+    ],
+    "totalFeatures": 3,
+    "numberMatched": 3,
+    "numberReturned": 3,
+    "timeStamp": "2026-10-19T06:20:08.561Z",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::4326"
+      }
+    }
+  }
+}

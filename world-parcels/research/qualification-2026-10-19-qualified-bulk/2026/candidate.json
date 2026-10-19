@@ -1,0 +1,92 @@
+{
+  "descriptor": {
+    "adapter": "wfs",
+    "catalogueUrl": "https://www.govmap.gov.il/",
+    "countryCode": "IL",
+    "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "featureType": "opendata:PARCEL_ALL",
+    "geometryField": "the_geom",
+    "id": "il-govmap-cadastral-parcel-rows",
+    "idField": "OBJECTID",
+    "idPrefix": "govmap:row:",
+    "idType": "integer",
+    "maxBboxKm2": 1,
+    "maxFeatures": 10000,
+    "metricSrid": 32636,
+    "name": "Govmap public cadastral parcel rows",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 100,
+    "requestProperties": true,
+    "scope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "version": "2.0.0",
+    "idBatchSize": 3,
+    "responseSrid": 3857,
+    "minRequestIntervalMs": 100,
+    "cityIds": [
+      "jerusalem",
+      "eastjerusalem",
+      "ashkelon",
+      "ashdod",
+      "haifa",
+      "netanya",
+      "hadera",
+      "rehovot",
+      "daliyat_al_karmel",
+      "tira",
+      "rosh_haayin",
+      "kafr_yasif",
+      "beersheba",
+      "taibe",
+      "umm_al_fahm",
+      "modiin_maccabim_reut",
+      "2026"
+    ],
+    "maxConcurrentQueries": 2,
+    "evidenceFile": "research/world-capitals-2026-10-08/jerusalem-acceptance.json",
+    "attribution": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "licenceNote": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+    "additionalCityEvidence": {
+      "eastjerusalem": "research/world-capitals-2026-10-08/east-jerusalem-acceptance.json",
+      "jerusalem": "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+    },
+    "cityScopes": {
+      "eastjerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+    },
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "IL",
+        "basis": "Survey of Israel national cadastral parcel layer published through GovMap.",
+        "evidence": [
+          "research/countries/IL.json",
+          "research/world-capitals-2026-10-08/jerusalem-acceptance.json"
+        ]
+      }
+    }
+  },
+  "city": {
+    "code": "2026",
+    "name": "Shefaram",
+    "point": [
+      35.1747460235648,
+      32.8096376263738
+    ]
+  },
+  "sampleIds": [
+    "govmap:row:300272",
+    "govmap:row:300273",
+    "govmap:row:300271"
+  ],
+  "absentId": "govmap:row:999999998",
+  "metricEpsg": "EPSG:32636",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Govmap public cadastral parcel rows",
+      "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.; Survey of Israel national cadastral parcel layer published through GovMap.; Survey of Israel national cadastral parcel layer published through GovMap."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

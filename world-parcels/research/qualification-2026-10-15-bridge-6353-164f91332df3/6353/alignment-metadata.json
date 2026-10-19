@@ -1,0 +1,10 @@
+{
+  "nativeCrs": "EPSG:20137",
+  "featureType": "ncrprs_cadaster:v_1_parcel_cadaster_publish",
+  "metadataUrl": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+  "capabilitiesSha256": "0be3b7896468175f72e7e885d8442dc0870968b7d6df0495a9708b46272559c4",
+  "nativeSampleRequestUrl": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster%3Av_1_parcel_cadaster_publish&outputFormat=application%2Fjson&srsName=EPSG%3A20137&bbox=38.7491%2C9.0055%2C38.7498%2C9.0062%2CEPSG%3A4326&maxFeatures=20&sortBy=uniqueparcelid&propertyName=geometry%2Cuniqueparcelid",
+  "nativeSampleResponseSha256": "846ad8cad7e18b0dc149a2eb989241cf31d6d82860774dc026c6abc7de6e6b85",
+  "wireAxisOrder": "east-north",
+  "wireAxisBasis": "The EPSG:20137 GeoJSON response has projected easting/northing coordinates near [472395,995281]."
+}

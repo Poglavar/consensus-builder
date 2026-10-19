@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10229",
+  "cityName": "Tirunelveli",
+  "sourceId": "in-tn-tngis-tiles",
+  "candidateSha256": "df740f3329ececc93858699c589baf7d2acf631835548e9bcb8b49fdd0ca27ed",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "050244ee3da736b5362199e0d398be8ee3a80827ef6b79b4fefce8bd2671eb77",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "050244ee3da736b5362199e0d398be8ee3a80827ef6b79b4fefce8bd2671eb77",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~776792514~87220115~2cd717c4f8114eee21d584044b6ce8c5c7e445fe105fcd5a5230475b126de168",
+    "IN-TN-TNGIS-g1~776794177~87218365~8b7f24857cb181a6666093f651c112ebb1826c700f381b7089150b97a7cd645e",
+    "IN-TN-TNGIS-g1~776786667~87216085~234056633966b3ccd92972e30550809b2a6adda46e1cf64d1402d91a1bcb2b94"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:10:55.135Z",
+      "queryHash": "36da49679ef42bee14ae95892059de7a9acb73ba76988cc137543b1b66a7fa32",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 232
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:10:55.571Z",
+      "queryHash": "36da49679ef42bee14ae95892059de7a9acb73ba76988cc137543b1b66a7fa32",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 57
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

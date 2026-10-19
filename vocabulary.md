@@ -72,7 +72,9 @@ Every member hash commits to the decision `kind` and site from `proposal_data` (
 
 ### Working plan / applied composition — `WorkingComposition`
 
-The proposals currently applied in one browser, together with their materialized effects. “Share entire plan” can turn this composition into a named plan, but an arbitrary composition has no `ens_plan` identity. Application and replay are local operations. Replay orders formations by `authoredAt || createdAt`, then numeric record ID, then record key; `epochYear` is a presentation bucket, not a dependency or replay order. [Sharing flows](frontend/js/proposals/sharing-routes.js), [proposal manager](frontend/js/proposal-manager.js), [ordering](frontend/js/proposals/plan-order.js) (`formationTime`, `compareFormationOrder`), [epoch](frontend/js/proposals/epoch.js).
+The proposals currently applied in one browser, together with their materialized effects. “Share entire plan” can turn this composition into a named plan, but an arbitrary composition has no `ens_plan` identity. Application and replay are local operations. The named-plan panel’s explicit Apply plan action chooses its members over geometrically overlapping applied rivals in one atomic mutation; a failed member keeps the previous composition. Passive shared-record imports retain the non-displacing ground check. Replay orders formations by `authoredAt || createdAt`, then numeric record ID, then record key; `epochYear` is a presentation bucket, not a dependency or replay order. [Sharing flows](frontend/js/proposals/sharing-routes.js), [proposal manager](frontend/js/proposal-manager.js), [ordering](frontend/js/proposals/plan-order.js) (`formationTime`, `compareFormationOrder`), [epoch](frontend/js/proposals/epoch.js).
+
+An explicit browser choice to continue without parcels permits a **local geometry-only derivation** for a material proposal with its own site or footprint. The runtime projects its ground input to an empty cadastral scope and a synthetic site host; this is a map construction while the parcel source is unavailable, not a new binding or evidence that the land is unowned. The stored proposal keeps its published `cadastreParcelIds`, binding and site unchanged. Parcel acts and records without their own ground geometry cannot use this derivation. Returning to ordinary parcel mode requires the usual cadastral checks and rederivation. [Projection](frontend/js/proposals/open-ground.js) (`geometryOnlyGroundRecord`), [application](frontend/js/proposal-manager.js).
 
 Other uses of “plan” need qualification: a statutory planning document, a floor-plan drawing, and the nested `reparcellization` layout are different objects.
 
@@ -87,6 +89,8 @@ The common Croatian identifier is `HR-<cadastral municipality>-<parcel number>`;
 A face of the currently materialized land fabric: unchanged cadastral ground, a proposed body, or a remainder created by applying formations. It has a runtime identity and provenance back to cadastral anchors and/or synthetic open ground. One base parcel can produce several pieces; a resulting piece can span several base parcels. A piece is not a newly registered cadastral parcel.
 
 `LiveParcelFabric` is the mutable derived land representation. `ParcelPresenter` renders its revision. `ParcelMutation` coordinates atomic publication of proposal state, fabric and related local state. Neither a Leaflet layer nor its visibility determines cadastral identity. [Ground service](frontend/js/parcels/ground-service.js), [mutation transaction](frontend/js/proposals/apply/transaction.js), [claims](frontend/js/proposals/claims.js), [open-ground hosts](frontend/js/proposals/open-ground.js).
+
+Distinct source parcels can have overlapping outlines. Live pieces with disjoint cadastral anchors may retain only overlap already present in their immutable source outlines; an apply does not choose an owner for that source conflict. Pieces sharing a source anchor must remain disjoint, and coverage of a proposal counts overlapping source ground once.
 
 ### Proposal site — `ProposalSite`
 
@@ -396,6 +400,7 @@ Baseline verification: all 90 distinct local source-link targets existed; the il
 | 2026-10-19 | Resolved V04: named-plan member hashes include authored site and decision kind for ordinary and readjustment proposals. One current SHA-256 contract; prior experimental hashes are unsupported. Recorded the policy of small verified changes without legacy compatibility flows. |
 | 2026-10-19 | Partially resolved V01: defined row/authored/chain identifier roles; removed numeric authored-ID fallback from reads and edits; rejected creation aliases; renamed HEAD headers; aligned upload projection and agent input schema. Plan/browser field renames remain open. |
 | 2026-10-19 | Continued V01: renamed named-plan membership fields and filter to explicit row-ID names across the API, browser and naming script; member details distinguish row IDs from authored IDs. Retired request names are rejected, with no response aliases. Storage and hashes retain their existing meaning. |
+| 2026-10-19 | Defined explicit geometry-only local derivation during parcel-source unavailability: the synthetic site host is presentation ground, while authored cadastral identity and binding remain unchanged. |
 
 V04 verification: 58 targeted headless unit tests passed across `test/plan-hash.test.js`,
 `test/ens-plans.test.js`, `test/readjustment-publication.test.js` and
@@ -437,3 +442,17 @@ The task result records `billing.mode: subscription`, the CLI engine, `cliAttemp
 The user's manual-pass policy is Codex CLI with `gpt-6.1-sol`, medium or high effort, and at most 30 task identities per pass. The command defaults to high effort; explicit model/effort choices override a reader's cheaper tier, including image triage. Attempt checkpoints record those choices. Retrying a rejected model request is restricted to its original task IDs and does not add another cohort.
 
 A public project's `thumbnailUrl` is a derived SVG image of its stored building envelope, using the same local-metre footprint/storey prisms as the detailed 3D viewer. It is a schematic preview, not a photograph, additional facade evidence, or a new reconstruction. It neither establishes a building identity nor changes location, quality or publication eligibility. Missing or invalid envelope geometry produces no thumbnail; the card states that the 3D outline is unavailable. [Projection](backend/floor-plan-archive/building-thumbnail.js), [public projection](backend/floor-plan-archive/public-catalogue.js).
+
+### Bot discovery and shared test-token funding
+
+A minted named plan is a distinct bot policy input identified as `plan:<slug>`; its member row
+IDs remain provenance and never become an ordinary proposal ID. The plan's real chain account
+identifies the support/market target, and current chain state determines action eligibility.
+A plan with missing or changed members is excluded explicitly. Density evidence aggregates its
+member building records without changing those published records.
+
+Shared bot USDC funding is wallet maintenance on Solana devnet, separate from betting and donation
+spend limits. Only configured actor wallets about to transfer tokens are eligible. The main bot
+wallet funds their shortfall to 0.5 test USDC while retaining 1 test USDC; a database-session lock
+serializes balance checks, transfers and readback. Confirmed receipts are timestamped in the
+existing agent-run ledger. It grants no authority to fund unknown wallets or another network.

@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10193",
+  "cityName": "Nagercoil",
+  "sourceId": "in-tn-tngis-tiles",
+  "candidateSha256": "b6a7b15a19fb851de29685f3efc59d9a199ea587b78bd9b7d6576e5b077d17c9",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "46cd0fbc6cfd8e0ccff8f99d5457c9ddf4e15c1a172e8547b2fc9812d5817439",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "46cd0fbc6cfd8e0ccff8f99d5457c9ddf4e15c1a172e8547b2fc9812d5817439",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~774257934~81765740~d7943779fbef2d5e34bb549aabab233d87e964b46e0957618bcc1b1f4cb4ca22",
+    "IN-TN-TNGIS-g1~774259007~81765581~0ccbe2931a565055575aab3ed2699d37e3373d25de764faf155c9cf32499cd86",
+    "IN-TN-TNGIS-g1~774256700~81765953~000cd1a6ed47e98914811abc866f5cfe310423a2a054be40b32c0e7bd9b19657"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:08:51.035Z",
+      "queryHash": "a697300c7d9f19ec231a6a62635e3136086a599e9539a47b7e5727b5da0713b4",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:08:52.205Z",
+      "queryHash": "a697300c7d9f19ec231a6a62635e3136086a599e9539a47b7e5727b5da0713b4",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 81
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "3345",
+    "name": "Ondjiva",
+    "point": [
+      15.7237660210887,
+      -17.0691708465801
+    ],
+    "country": "Angola",
+    "countryCode": "AO",
+    "currency": {
+      "locale": "pt-AO",
+      "code": "AOA"
+    }
+  },
+  "descriptor": {
+    "id": "ao-agt-cunene-agt-layer-0",
+    "adapter": "arcgis",
+    "name": "ANGOLA_GGPEN Cunene AGT property-registration polygons",
+    "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0",
+    "idField": "ID_GGPEN",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "AO-CUNENE-AGT-",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{36}$",
+    "outFields": [
+      "OBJECTID",
+      "ID_GGPEN"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "AO",
+    "metricSrid": 32733,
+    "cityIds": [
+      "3345"
+    ],
+    "scope": "Cunene AGT property-registration parcels. Reviewed positive reads span central, northwest and southeast Ondjiva; full city coverage and legal-title authority are unestablished.",
+    "evidenceFile": "evidence/source-review.json",
+    "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/c93d6a26dd4b49b689719523f0723c0d?f=pjson",
+    "licenceNote": "Public query access is verified; publisher metadata has no explicit parcel-data reuse licence. Redistribution and attribution terms require second-pass review.",
+    "attribution": "ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified."
+  },
+  "sampleIds": [
+    "AO-CUNENE-AGT-1902d7521152e1453c52e0faf4b5663eba9b",
+    "AO-CUNENE-AGT-19024cc94eaf308b648104928a52e46b6242",
+    "AO-CUNENE-AGT-1902da1883a53a95e7cc9d5fc302254de5b9"
+  ],
+  "metricEpsg": 32733,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "kind": "property-registration-parcels",
+    "evidence": [
+      "evidence/source-review.json",
+      "evidence/agt-purpose-bundle.json",
+      "evidence/item-metadata.json",
+      "evidence/layer-metadata.json"
+    ]
+  },
+  "currencyEvidence": "evidence/currency-provenance.json",
+  "inputEvidence": "evidence/input-binding.json",
+  "qualityFollowups": "evidence/quality-followups.json"
+}

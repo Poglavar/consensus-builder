@@ -214,10 +214,10 @@ describe('the wiring', () => {
         used.forEach(key => expect(available.has(key), key).toBe(true));
     });
 
-    it('offers exactly the four ways on, retry first and only when retryable', () => {
+    it('offers geometry-only continuation beside recovery choices, retry first only when retryable', () => {
         const options = fallbackSource.slice(fallbackSource.indexOf('function renderOptions()'), fallbackSource.indexOf('function backButton()'));
         expect(options).toContain('if (verdict.retryable)');
-        const order = ['retry', 'url', 'ocr', 'schelling'].map(key => options.indexOf(`option('${key}'`));
+        const order = ['retry', 'without-parcels', 'url', 'ocr', 'schelling'].map(key => options.indexOf(`option('${key}'`));
         expect(order.every(index => index > -1)).toBe(true);
         expect(order).toEqual([...order].sort((a, b) => a - b));
     });

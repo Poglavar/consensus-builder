@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "f70b9106369d12fc73f56ad9ed57c0a1f183b1a5aecc22834ee16f6838623e9b",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32644",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 2,
+  "validFeatureCount": 2,
+  "perFeature": [
+    {
+      "id": "b031e8f7fd6a23268ecdb7dfb0b8a059bd374e9b179613a8d0439a6e8451061b",
+      "geometrySha256": "a8eb26607608588afe1c76c24cf35236983c7e0ed4ae3601e6d05b7147d7a532",
+      "boundsMetric": {
+        "minX": 180282.68605941784,
+        "minY": 1482772.1075914209,
+        "maxX": 181219.0472917435,
+        "maxY": 1483813.4755309399,
+        "widthM": 936.3612323256675,
+        "heightM": 1041.3679395189974,
+        "aspectRatio": 1.1121433732711485
+      },
+      "areaM2": 394587.7208841634,
+      "invalidReasons": []
+    },
+    {
+      "id": "0e943159c504b8b17bb117bf926c3836c28790ff45a912bf2308d7568608095b",
+      "geometrySha256": "ebf4540659ad270e397af02ea44e0c55ebd9e71c6c0f058c48f11b8e74ab1854",
+      "boundsMetric": {
+        "minX": 180476.834397603,
+        "minY": 1482669.6572850016,
+        "maxX": 180861.08628629573,
+        "maxY": 1483209.683717643,
+        "widthM": 384.25188869272824,
+        "heightM": 540.0264326413162,
+        "aspectRatio": 1.405396950626715
+      },
+      "areaM2": 15690.406369816163,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 0,
+  "subthresholdPositiveIntersectionTotalM2": 0,
+  "subthresholdPositiveIntersections": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

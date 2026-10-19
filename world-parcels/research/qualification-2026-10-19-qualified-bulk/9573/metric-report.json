@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "93aa6b87022d59dcbed71c85387747412fbd1bd25cbe8fcadafb5d2f89e123d9",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32643",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 1,
+  "validFeatureCount": 1,
+  "perFeature": [
+    {
+      "id": "8821fc7ce681191754bc78ad0f6854c3b0a550cbdbb2933be58cad719fedc9d2",
+      "geometrySha256": "c7b119fab6464758296cb7eecb0b6874704ce286ff5cd97a94aa5c7b58df806e",
+      "boundsMetric": {
+        "minX": 798389.7220481711,
+        "minY": 2267996.574504013,
+        "maxX": 799318.5330255833,
+        "maxY": 2268634.4842124283,
+        "widthM": 928.8109774121549,
+        "heightM": 637.9097084151581,
+        "aspectRatio": 1.4560226395044538
+      },
+      "areaM2": 315305.5796923439,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 0,
+  "subthresholdPositiveIntersectionTotalM2": 0,
+  "subthresholdPositiveIntersections": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

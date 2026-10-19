@@ -3,6 +3,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { sendAndConfirmPolling } from './solana-send.js';
+import { usdcToAtomic } from './bettor.js';
+import { updateRun } from './ledger.js';
+import { getAccount, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction,
+    createTransferCheckedInstruction, TokenAccountNotFoundError } from '@solana/spl-token';
 
 const DEVNET_GENESIS_HASH = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
 const SOURCE_PERSONA = 'densifier-01';
@@ -127,4 +131,121 @@ export async function ensureBotSolFunding({
         signature,
         balanceLamports: finalRecipientBalance
     };
+}
+
+
+export const BOT_USDC_MINT = new PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+const MIN_BOT_USDC = 100_000n;
+const TARGET_BOT_USDC = 500_000n;
+const SOURCE_USDC_RESERVE = 1_000_000n;
+
+async function readUsdcBalance(connection, wallet) {
+    const account = getAssociatedTokenAddressSync(BOT_USDC_MINT, new PublicKey(wallet));
+    try {
+        const token = await getAccount(connection, account, 'confirmed');
+        if (!token.mint.equals(BOT_USDC_MINT) || !token.owner.equals(new PublicKey(wallet))) {
+            throw new Error('Bot USDC account has an unexpected mint or owner');
+        }
+        return token.amount;
+    } catch (error) {
+        if (error instanceof TokenAccountNotFoundError) return 0n;
+        throw error;
+    }
+}
+
+function usdcBalance(value) {
+    if (typeof value !== 'bigint' || value < 0n) throw new Error('Invalid USDC balance; no token transfer can be planned');
+    return value;
+}
+
+// All scheduled actor processes share this source wallet. Hold one database-session lock across
+// the balance recheck, signed transfer and readback so simultaneous top-ups respect its reserve.
+async function withUsdcFundingLock(pool, sourceWallet, work) {
+    if (!pool || typeof pool.connect !== 'function') throw new Error('USDC funding requires the agent database pool');
+    const client = await pool.connect();
+    const key = `ugt-bot-usdc:${sourceWallet}`;
+    let locked = false;
+    let releaseError;
+    try {
+        await client.query('SELECT pg_advisory_lock(hashtextextended($1, 0))', [key]);
+        locked = true;
+        return await work();
+    } catch (error) {
+        releaseError = error;
+        throw error;
+    } finally {
+        try {
+            if (locked) await client.query('SELECT pg_advisory_unlock(hashtextextended($1, 0))', [key]);
+        } catch (error) { releaseError = error; throw error; }
+        finally { client.release(releaseError); }
+    }
+}
+
+/** Top up a configured actor only when its next token-spending action needs USDC. */
+export async function ensureBotUsdcFunding({
+    connection, persona, pool, requiredAtomic,
+    enabled = process.env.AGENT_USDC_FUNDING_ENABLED === '1',
+    readBalance = readUsdcBalance,
+    loadFunder = loadConfiguredFunder,
+    sendAndConfirm = sendAndConfirmPolling
+}) {
+    if (!enabled) return { status: 'skipped', reason: 'disabled' };
+    const recipient = configuredPersona(persona);
+    const source = configuredSource();
+    if (typeof requiredAtomic !== 'bigint' || requiredAtomic <= 0n || requiredAtomic > TARGET_BOT_USDC) {
+        throw new Error('USDC funding requires a positive action amount of at most 0.5 USDC');
+    }
+    if (recipient.wallet === source.wallet) return { status: 'skipped', reason: 'source-wallet', wallet: recipient.wallet };
+    const minimum = requiredAtomic > MIN_BOT_USDC ? requiredAtomic : MIN_BOT_USDC;
+    const balance = usdcBalance(await readBalance(connection, recipient.wallet));
+    if (balance >= minimum) return { status: 'skipped', reason: 'sufficient-balance', wallet: recipient.wallet };
+    if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) {
+        throw new Error('USDC auto-funding is restricted to Solana devnet; no tokens were transferred');
+    }
+    return withUsdcFundingLock(pool, source.wallet, async () => {
+        const current = usdcBalance(await readBalance(connection, recipient.wallet));
+        if (current >= minimum) return { status: 'skipped', reason: 'sufficient-balance', wallet: recipient.wallet };
+        const amount = TARGET_BOT_USDC - current;
+        const sourceBalance = usdcBalance(await readBalance(connection, source.wallet));
+        if (sourceBalance - amount < SOURCE_USDC_RESERVE) {
+            throw new Error(`USDC funding wallet ${source.wallet} cannot top up ${recipient.wallet} while retaining 1 test USDC; fund the source wallet before retrying`);
+        }
+        if (lamports(await connection.getBalance(new PublicKey(source.wallet), 'confirmed')) < SOURCE_RESERVE + FEE_ALLOWANCE) {
+            throw new Error(`USDC funding wallet ${source.wallet} needs devnet SOL for fees and token-account rent`);
+        }
+        const funder = await loadFunder(source);
+        if (funder?.publicKey?.toBase58() !== source.wallet) throw new Error('Configured USDC funding signer does not match the source wallet');
+        const target = new PublicKey(recipient.wallet);
+        const sourceToken = getAssociatedTokenAddressSync(BOT_USDC_MINT, funder.publicKey);
+        const targetToken = getAssociatedTokenAddressSync(BOT_USDC_MINT, target);
+        const transaction = new Transaction()
+            .add(createAssociatedTokenAccountIdempotentInstruction(funder.publicKey, targetToken, target, BOT_USDC_MINT))
+            .add(createTransferCheckedInstruction(sourceToken, BOT_USDC_MINT, targetToken, funder.publicKey, amount, 6));
+        const signature = await sendAndConfirm(connection, transaction, [funder], { commitment: 'confirmed' });
+        const [afterRecipient, afterSource] = await Promise.all([
+            readBalance(connection, recipient.wallet), readBalance(connection, source.wallet)
+        ]);
+        if (usdcBalance(afterRecipient) < TARGET_BOT_USDC || usdcBalance(afterSource) < SOURCE_USDC_RESERVE) {
+            throw new Error(`USDC top-up transaction ${signature} confirmed but balance readback failed; inspect this receipt before retrying`);
+        }
+        return { status: 'funded', wallet: recipient.wallet, sourceWallet: source.wallet,
+            mint: BOT_USDC_MINT.toBase58(), amountAtomic: amount.toString(), balanceAtomic: afterRecipient.toString(), signature };
+    });
+}
+
+
+// Wallet maintenance is separate from the actor's stake/donation budget. Pledges, claims and
+// revocations transfer no USDC out of the wallet and must never trigger a token top-up.
+export async function fundBotAction({ action, runId, ...options }) {
+    if (!['stake', 'donate'].includes(action?.type)) return { status: 'skipped', reason: 'no-token-spend' };
+    const enabled = options.enabled ?? (process.env.AGENT_USDC_FUNDING_ENABLED === '1');
+    if (enabled && (typeof runId !== 'string' || !runId || typeof options.pool?.query !== 'function')) {
+        throw new Error('USDC action funding requires a run ID and ledger pool before transferring');
+    }
+    const receipt = await ensureBotUsdcFunding({ ...options, enabled, requiredAtomic: usdcToAtomic(String(action.amount)) });
+    if (receipt.status === 'funded') {
+        await updateRun(options.pool, runId, { summaryPatch: { usdcFunding: receipt } });
+        console.log(`[${new Date().toISOString()}] USDC funding — status=completed wallet=${receipt.wallet} amountAtomic=${receipt.amountAtomic} tx=${receipt.signature}`);
+    }
+    return receipt;
 }

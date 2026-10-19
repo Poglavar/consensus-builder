@@ -1,0 +1,164 @@
+{
+  "purpose": "Live safe-key and unchanged full-ring Kanyamazane samples for the existing production ArcGIS adapter.",
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "countryCode": "ZA",
+    "cityIds": [
+      "kanyamazane"
+    ],
+    "defaultForCity": true,
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "sourceCrs": "EPSG:4148",
+    "metricSrid": 32736,
+    "catalogueUrl": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/info/iteminfo?f=pjson",
+    "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+    "evidenceFile": "evidence/source-purpose.json",
+    "scope": "National cadastral Erven reference polygons. Kanyamazane discovery shows bounded coverage in three separated settlement areas south of the unchanged WUP locator. Exact sample reads do not establish citywide completeness or a city boundary.",
+    "licenceNote": "Anonymous government parcel access and custodian attribution verified. Item licence/access fields are blank; reuse terms, currentness, legal title and survey accuracy remain unresolved."
+  },
+  "response": {
+    "displayFieldName": "SS_NAME",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "PRCL_KEY": "PRCL_KEY"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "PRCL_KEY",
+        "type": "esriFieldTypeString",
+        "alias": "PRCL_KEY",
+        "length": 50
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 7304923,
+          "PRCL_KEY": "M326T0JU003200005654000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                31.16600654100006,
+                -25.455579792999977
+              ],
+              [
+                31.166007791000027,
+                -25.455426355999975
+              ],
+              [
+                31.16618666500006,
+                -25.455427604999954
+              ],
+              [
+                31.166185419000044,
+                -25.455581043999928
+              ],
+              [
+                31.16600654100006,
+                -25.455579792999977
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7305599,
+          "PRCL_KEY": "M326T0JU003200002029000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                31.175241823000082,
+                -25.470149073999945
+              ],
+              [
+                31.175276574000062,
+                -25.470015197999942
+              ],
+              [
+                31.175483105000065,
+                -25.470059386999942
+              ],
+              [
+                31.175448356000068,
+                -25.470193260999967
+              ],
+              [
+                31.175241823000082,
+                -25.470149073999945
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7335392,
+          "PRCL_KEY": "M326T0JU003200006405000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                31.18387201100007,
+                -25.48087257399994
+              ],
+              [
+                31.18389979100004,
+                -25.48077723099993
+              ],
+              [
+                31.18414969800006,
+                -25.480837292999972
+              ],
+              [
+                31.18409629300004,
+                -25.481020509999954
+              ],
+              [
+                31.183901917000075,
+                -25.48104791799995
+              ],
+              [
+                31.18387201100007,
+                -25.48087257399994
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

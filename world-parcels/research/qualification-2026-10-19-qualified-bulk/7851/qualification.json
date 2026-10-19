@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "7851",
+  "cityName": "Palghar",
+  "sourceId": "in-mh-mrsac-tiles",
+  "candidateSha256": "4d50d6db50f1ff8c35d93bfd314aafd319a7b87fd9ab5af02b12ce5f436a8e89",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "c06e9b084567ce93216ead27da8797beea95f759014ff0e4d1d52e4631c2dfb6",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "c06e9b084567ce93216ead27da8797beea95f759014ff0e4d1d52e4631c2dfb6",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-MH-MRSAC-g1~727669036~196949607~adb1fdbbae7d0efe9f3db37c3fd4cfd1e7e815ab6cb38d669b941273ce0b052a",
+    "IN-MH-MRSAC-g1~727659702~196940011~f4975d58ad89773ea7a118eecee7646efb294395e26f934c41674ed19720136d"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 4,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:28:12.275Z",
+      "queryHash": "21188c16828964a3a98c41198e05a2a02b22132e14987f2e0d33c041b2441ec2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 113
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:28:12.678Z",
+      "queryHash": "2885cc8c63ebbcc08b08e529bf4a61c29b6a8286a817c5402d8cfe6588a53827",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 869
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:28:13.668Z",
+      "queryHash": "21188c16828964a3a98c41198e05a2a02b22132e14987f2e0d33c041b2441ec2",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 29
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:28:13.865Z",
+      "queryHash": "2885cc8c63ebbcc08b08e529bf4a61c29b6a8286a817c5402d8cfe6588a53827",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 65
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

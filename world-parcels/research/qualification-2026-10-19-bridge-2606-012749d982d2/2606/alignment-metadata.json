@@ -1,0 +1,26 @@
+{
+  "url": "https://divo.ecommunes.ci/MapServer/AgentLot.aspx",
+  "httpStatus": 200,
+  "responseSha256": "c6258445ecd4820e18b08f26aa9d366f93c7af14d293436b0458af281e0f1938",
+  "checkedAt": "2026-10-19T02:21:50.798Z",
+  "layer": {
+    "Name": "Parcellaire",
+    "FeatureType": "3",
+    "SRName": "WGS_1984_UTM_Zone_30N",
+    "Editable": "True"
+  },
+  "unit": "Meter",
+  "envelope": {
+    "Left": "235273.332702637",
+    "Top": "648094.669921875",
+    "Right": "241422.261697762",
+    "Bottom": "641461.552490234"
+  },
+  "nativeCrs": "EPSG:32630",
+  "nativeCrsBasis": "Standard EPSG equivalent of published WGS_1984_UTM_Zone_30N; database storage realization is unpublished.",
+  "wireAxisOrder": "east-north",
+  "safeIdentity": "Feature/@ID",
+  "geometry": "Feature/Geometry WKTZM",
+  "attributePolicy": "Only layer and geom are requested. Default Values are discarded in memory, never persisted.",
+  "transferContract": "No advertised count, paging or truncation metadata; area completeness unverified."
+}

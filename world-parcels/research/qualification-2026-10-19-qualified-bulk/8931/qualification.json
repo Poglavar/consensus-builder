@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "8931",
+  "cityName": "Baramati",
+  "sourceId": "in-mh-mrsac-tiles",
+  "candidateSha256": "0bc3a1d94c9af34298e4384456dbb3bf2d3ba9e136720aa2648237b8aa36dccd",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "d63a1ce5bf87dc79657884d39e65d0ed85311e5a86fad9e0dda83119e107cee4",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "d63a1ce5bf87dc79657884d39e65d0ed85311e5a86fad9e0dda83119e107cee4",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-MH-MRSAC-g1~745887458~181653746~f488dd4d2281a0a3ea3c2fc09704d85d977f98723b89ba6638a779b5faa1ea39",
+    "IN-MH-MRSAC-g1~745856774~181621226~5dcc9e6c98551e6579d1a3128f4eda54489bbc67c7cea37d15938cd2ce6a30c5"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:21:57.202Z",
+      "queryHash": "68f532026e77f6b7aa13eb64ce4b3ac964d9ce84851dde28d15f771bc0e85a16",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 608
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:21:58.070Z",
+      "queryHash": "5a5b111117fa2f5289372699dc2b239b53f9169e54fa67d6796541e66970b814",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 64
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:21:58.074Z",
+      "queryHash": "e5effa9a40a65290a1daff5b38b7c61c46876f2065816845876c190bc2dafeec",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 66
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:21:58.375Z",
+      "queryHash": "68f532026e77f6b7aa13eb64ce4b3ac964d9ce84851dde28d15f771bc0e85a16",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 38
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:21:58.494Z",
+      "queryHash": "5a5b111117fa2f5289372699dc2b239b53f9169e54fa67d6796541e66970b814",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 30
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:21:58.495Z",
+      "queryHash": "e5effa9a40a65290a1daff5b38b7c61c46876f2065816845876c190bc2dafeec",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 133
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

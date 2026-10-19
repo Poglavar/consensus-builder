@@ -27,6 +27,9 @@ ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS plan_hash     TEXT;          -- sh
 ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS supersedes    TEXT REFERENCES ens_plan(slug);
 ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS site          geometry(MultiPolygon, 4326);  -- union of member sites
 ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS onchain_data  JSONB;         -- set once by scripts/mint-plan.mjs
+ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS thumbnail_url TEXT;          -- full named-plan render (after)
+ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS thumbnail_before_url TEXT;   -- same frame with land context only
+ALTER TABLE ens_plan ADD COLUMN IF NOT EXISTS thumbnail_pair_url TEXT;     -- side-by-side link preview
 CREATE INDEX IF NOT EXISTS ens_plan_supersedes_idx ON ens_plan (supersedes);
 CREATE INDEX IF NOT EXISTS ens_plan_city_idx ON ens_plan (city);
 -- "Which plans is this proposal part of?" (GET /plans?proposal_row_ids=): proposal_ids ?| row IDs.

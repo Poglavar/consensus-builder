@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-18",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "580",
+      "appCityId": "kigali",
+      "cityName": "Kigali",
+      "qualificationCityName": "Kigali",
+      "cityId": "wup2025:580",
+      "countryCode": "RW",
+      "country": "Rwanda",
+      "sourceId": "rw-nla-rsdi-kigali-parcels",
+      "appCenterLatLon": [
+        -1.95092395958257,
+        30.0945497299371
+      ],
+      "wupPointLatLon": [
+        -1.95092395958257,
+        30.0945497299371
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "5de516e8c24a847dd2f134d8b6fb7dea9cff3cb0d88ad1bfb6a345fd2fa78010",
+        "evidenceOriginalSha256": "5de516e8c24a847dd2f134d8b6fb7dea9cff3cb0d88ad1bfb6a345fd2fa78010",
+        "evidenceExportSha256": "5de516e8c24a847dd2f134d8b6fb7dea9cff3cb0d88ad1bfb6a345fd2fa78010"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "97dbcb9491c67ac915a172a612a3c587b6310ae9494ec9bf6a6274eaf47fa7a2",
+        "evidenceExportSha256": "97dbcb9491c67ac915a172a612a3c587b6310ae9494ec9bf6a6274eaf47fa7a2",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": false,
+          "alignment": false
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "metric",
+              "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "metric",
+            "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "metric",
+              "reason": "Detailed geometry audit has unresolved findings; retained for the second pass."
+            },
+            {
+              "check": "alignment",
+              "reason": "independent alignment qualification check is missing or false"
+            }
+          ],
+          "candidateSha256": "5de516e8c24a847dd2f134d8b6fb7dea9cff3cb0d88ad1bfb6a345fd2fa78010",
+          "cacheSha256": "791456db74ec0398020de90ffca30384b4ebbad6e0eed23ff03d5f0af2b638af",
+          "qualificationSha256": "97dbcb9491c67ac915a172a612a3c587b6310ae9494ec9bf6a6274eaf47fa7a2"
+        },
+        "featureCount": 5,
+        "sampleIds": [
+          "RW-LAIS-KGL-1/02/08/01/1860",
+          "RW-LAIS-KGL-1/02/07/01/2317",
+          "RW-LAIS-KGL-1/02/08/01/1169",
+          "RW-LAIS-KGL-1/02/08/01/1906",
+          "RW-LAIS-KGL-1/02/08/01/783"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "9afd1e0852fc3d967803f174dce8e23e83f214b001b427c54e055396dc664277",
+        "evidenceExportSha256": "9afd1e0852fc3d967803f174dce8e23e83f214b001b427c54e055396dc664277",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32736",
+        "inputSha256": "791456db74ec0398020de90ffca30384b4ebbad6e0eed23ff03d5f0af2b638af",
+        "featureCount": 5,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": false,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 1,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "791456db74ec0398020de90ffca30384b4ebbad6e0eed23ff03d5f0af2b638af",
+        "evidenceOriginalSha256": "791456db74ec0398020de90ffca30384b4ebbad6e0eed23ff03d5f0af2b638af",
+        "evidenceExportSha256": "791456db74ec0398020de90ffca30384b4ebbad6e0eed23ff03d5f0af2b638af",
+        "featureCount": 5
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/full-safe.geojson",
+        "initialReview": "world-parcels/research/qualification-2026-10-18-bridge-580-b402ca443ee5/580/initial-review.json"
+      },
+      "alignment": {
+        "status": "follow-up-required",
+        "followUp": "Deferred to second-pass review."
+      },
+      "independentMetricAudit": {
+        "sha256": "9afd1e0852fc3d967803f174dce8e23e83f214b001b427c54e055396dc664277",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "791456db74ec0398020de90ffca30384b4ebbad6e0eed23ff03d5f0af2b638af",
+        "metricCrs": "EPSG:32736",
+        "featureCount": 5,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": false,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 1,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "rw-nla-rsdi-kigali-parcels",
+        "adapter": "arcgis",
+        "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+        "idField": "upi",
+        "idFields": null,
+        "idPrefix": "RW-LAIS-KGL-",
+        "metricSrid": 32736,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "offset",
+          "idsQueryMode": "offset",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "esri-json",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [
+          "NLA/RSDI publishes the Kigali-specific LAIS cadastral parcel layer. Receipt probes establish substantial-city discovery coverage, not exhaustive coverage."
+        ],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": null,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-18",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

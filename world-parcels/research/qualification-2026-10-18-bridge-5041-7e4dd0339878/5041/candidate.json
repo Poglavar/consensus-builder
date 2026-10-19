@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "5041",
+    "cityCode": 5041,
+    "id": "polokwane",
+    "name": "Polokwane",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "iso2": "ZA",
+    "iso3": "ZAF",
+    "point": [
+      29.4132145590407,
+      -23.8681459171116
+    ],
+    "population2025": 451786,
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    },
+    "currencyEvidenceFile": "evidence/currency-evidence.json"
+  },
+  "source": {
+    "sourceId": "za-polokwane-municipal-land-information-polokwane-properties",
+    "endpoint": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+    "purpose": "cadastral-parcels",
+    "purposeEvidenceUrls": [
+      "https://gis.polokwane.gov.za/polokwanewebpage/",
+      "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+      "https://www.polokwane.gov.za/wp-content/uploads/2023/07/2018-2019-Draft-IDP.pdf"
+    ]
+  },
+  "descriptor": {
+    "id": "za-polokwane-municipal-land-information-polokwane-properties",
+    "name": "City of Polokwane municipal Land Information / Polokwane Properties",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+    "countryCode": "ZA",
+    "cityIds": [
+      "polokwane"
+    ],
+    "defaultForCity": false,
+    "idPrefix": "ZA-POLOKWANE-LIM-SG32-",
+    "idField": "SG32",
+    "idType": "string",
+    "idPattern": "^[A-Z0-9]{32}$",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "SG32"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32735,
+    "sourceCrs": "EPSG:4148",
+    "nativeCrs": "EPSG:4148",
+    "responseCrs": "EPSG:4326",
+    "returnsWGS84": true,
+    "capabilities": {
+      "exactIds": true,
+      "areaEnumeration": true
+    },
+    "attribution": "City of Polokwane Local Municipality GIS / Land Information Management / Polokwane Properties. Provider WGS84 output; complete returned polygon rings retained.",
+    "licenceNote": "Anonymous public access is verified. No explicit reusable licence was established; permission and attribution terms require second-pass review.",
+    "scope": "Municipal cadastral property records observed across the urban area. Bounded distributed discovery and five exact samples do not establish whole-city or municipality completeness. Rural gaps remain in the reviewed packet.",
+    "evidenceFile": "evidence/source-metadata.json"
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "authority": "City of Polokwane Local Municipality GIS",
+    "evidence": [
+      "evidence/source-metadata.json",
+      "evidence/service-metadata.json",
+      "evidence/official-applications.html.json",
+      "evidence/safe-parcel-response.json"
+    ],
+    "basis": "Official municipal GIS separates Land Information from Valuation Roll and Town Planning. The exact Land_Information_Management layer is Polokwane Properties, a polygon layer with SG21/SG32 survey keys and PARCEL_NO, PORTION, PARCEL_TYPE, ERF_NUMBER and PORTION_NUMBER cadastral schema. Five known SG32 records return full polygons. This supports cadastral property records rather than listings, proposed developments or a planning overlay; it does not establish legal-title or currentness semantics."
+  },
+  "sampleIds": [
+    "ZA-POLOKWANE-LIM-SG32-T0LS0000068000000680000800000000",
+    "ZA-POLOKWANE-LIM-SG32-T0LS0000067600000676000000000000",
+    "ZA-POLOKWANE-LIM-SG32-T0LS0014000800002164000000000000",
+    "ZA-POLOKWANE-LIM-SG32-T0LS0031000000008190000000000000",
+    "ZA-POLOKWANE-LIM-SG32-T0LS0000068800000688001600000000"
+  ],
+  "absentId": "ZA-POLOKWANE-LIM-SG32-T0LS9999999999999999999999999999",
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceMetadataFile": "evidence/source-metadata.json",
+  "receiptBindingFile": "evidence/receipt-binding.json",
+  "followUpFile": "evidence/follow-ups.json",
+  "coverage": {
+    "scope": "substantial-city",
+    "citywideVerified": false,
+    "pointUnchanged": true,
+    "basis": "Discovery claim checked against copied hash-verified five-area first-party probes and live exact SG32 reads. Qualification samples do not establish citywide completeness; no 13-cell coverage claim is made."
+  }
+}

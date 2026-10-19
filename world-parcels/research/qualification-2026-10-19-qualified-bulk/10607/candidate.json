@@ -1,0 +1,72 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/andhra-pradesh/apsac/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "objectid_1"
+    ],
+    "id": "in-ap-apsac-tiles",
+    "idPrefix": "IN-AP-APSAC-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "APSAC_AP_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 9,
+    "maxFeatures": 10000,
+    "metricSrid": 32644,
+    "name": "Andhra Pradesh cadastral maps — indianopenmaps tile snapshot (APSAC_AP_Cadastrals)",
+    "outFields": [
+      "objectid_1"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Andhra Pradesh from the APSAC_AP_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "AP",
+    "zoom": 13,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "tirupati",
+      "vijayawada",
+      "10607"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "APSAC cadastral maps (apsac.ap.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "10607": 32644,
+      "tirupati": 32644,
+      "vijayawada": 32644
+    }
+  },
+  "city": {
+    "code": "10607",
+    "name": "Kavali",
+    "point": [
+      79.9905269119046,
+      14.913427315607
+    ]
+  },
+  "sampleIds": [
+    "IN-AP-APSAC-g1~799890196~148856391~02f4aeca55e51f41f25d567099305e9b4248a2d173bf3ba3f994d72fb877e075",
+    "IN-AP-APSAC-g1~799894702~148844674~7e4f8178498990e2ff57f3b14e72ba919fecc891a5e7def6d2bcf096ff8d80ec",
+    "IN-AP-APSAC-g1~799883330~148801954~f2de9bd8bef276c1884c7e493ce4311602cf6e2c33e02e67ba40173b13544676"
+  ],
+  "absentId": "IN-AP-APSAC-g1~799883330~148801954~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32644",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Andhra Pradesh cadastral maps — indianopenmaps tile snapshot (APSAC_AP_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Andhra Pradesh; candidate cities are limited to WUP points inside IN-AP. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

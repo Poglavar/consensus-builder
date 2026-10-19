@@ -1,0 +1,32 @@
+{
+  "sourceSpatialReference": {
+    "wkid": 26332,
+    "latestWkid": 26332,
+    "xyTolerance": 0.001,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -5121100,
+    "falseY": -9998000,
+    "xyUnits": 10000,
+    "falseZ": -100000,
+    "zUnits": 10000,
+    "falseM": -100000,
+    "mUnits": 10000
+  },
+  "extent": {
+    "spatialReference": {
+      "wkid": 26332,
+      "latestWkid": 26332,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -5121100,
+      "falseY": -9998000,
+      "xyUnits": 10000,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  }
+}

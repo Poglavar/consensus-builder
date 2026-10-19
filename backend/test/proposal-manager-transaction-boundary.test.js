@@ -128,6 +128,42 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.batchDepth).toBe(0);
     });
 
+    it('chooses every plan member together and releases only their geometric rivals', async () => {
+        store.proposals.set('second', { proposalId: 'second', applied: false });
+        store.proposals.set('untouched', { proposalId: 'untouched', applied: true });
+        const rebuilt = [];
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, candidates, options) => {
+            expect(candidates.map(record => record.proposalId)).toEqual(['conflict', 'untouched']);
+            return [options._parcelMutation.proposals.getProposal('conflict')];
+        };
+        ProposalManager.rebuildAppliedFabric = async options => {
+            rebuilt.push(options._parcelMutation.proposals.getAllProposals().map(record => [record.proposalId, record.applied]));
+            expect(options.resetProposalIds).toEqual(['conflict']);
+            return { ok: true, failed: [] };
+        };
+        const result = await ProposalManager.applyProposalPlan(['target', 'second', 'target']);
+        expect(result.ok).toBe(true);
+        expect(result.releasedIds).toEqual(['conflict']);
+        expect(rebuilt).toEqual([[['target', true], ['conflict', false], ['second', true], ['untouched', true]]]);
+        expect(store.getProposal('target').applied).toBe(true);
+        expect(store.getProposal('second').applied).toBe(true);
+        expect(store.getProposal('conflict').applied).toBe(false);
+        expect(store.getProposal('untouched').applied).toBe(true);
+    });
+
+    it('keeps the entire previous composition when any incoming plan member refuses', async () => {
+        store.proposals.set('second', { proposalId: 'second', applied: false });
+        const before = structuredClone([...store.proposals]);
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, _candidates, options) => [options._parcelMutation.proposals.getProposal('conflict')];
+        ProposalManager.rebuildAppliedFabric = async options => {
+            expect(options._parcelMutation.proposals.getProposal('conflict').applied).toBe(false);
+            return { ok: false, failed: [{ proposalId: 'second', code: 'bad-ground', reason: 'Ground missing' }] };
+        };
+        await expect(ProposalManager.applyProposalPlan(['target', 'second'])).resolves.toBe(false);
+        expect([...store.proposals]).toEqual(before);
+        expect(ProposalManager._lastFailedPlanApplySummary.failed[0].code).toBe('bad-ground');
+    });
+
     it('restores state and rethrows the original error', async () => {
         const cause = new Error('geometry exploded');
         ProposalManager._applyProposalTransactionBody = async (proposalId, options) => {

@@ -16,6 +16,7 @@ const SOLANA_CONFIG = path.join(HOME_DIR, '.config', 'solana');
 const apiEnv = require('../ecosystem.config.cjs').apps.find(app => app.name === 'consensus-builder-api').env;
 const botEnv = {
   AGENT_SOL_FUNDING_ENABLED: '1',
+  AGENT_USDC_FUNDING_ENABLED: '1',
   SOLANA_RPC_MAX_ACCOUNTS: apiEnv.SOLANA_RPC_MAX_ACCOUNTS
 };
 const lensEnv = {

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-15",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "6353",
+      "appCityId": "adis_beba_addis_ababa",
+      "cityName": "Ādīs Ᾱbeba (Addis Ababa)",
+      "qualificationCityName": "Ādīs Ᾱbeba (Addis Ababa)",
+      "cityId": "wup2025:6353",
+      "countryCode": "ET",
+      "country": "Ethiopia",
+      "sourceId": "et-addis-eland-geoserver-parcel-publish",
+      "appCenterLatLon": [
+        9.00578119930776,
+        38.7494189124444
+      ],
+      "wupPointLatLon": [
+        9.00578119930776,
+        38.7494189124444
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "6a5e108081fd6fd1b79178475a8f4c3d56e3062d1feb3bfe5826149af7139733",
+        "evidenceOriginalSha256": "6a5e108081fd6fd1b79178475a8f4c3d56e3062d1feb3bfe5826149af7139733",
+        "evidenceExportSha256": "6a5e108081fd6fd1b79178475a8f4c3d56e3062d1feb3bfe5826149af7139733"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "b7a846dd6b257a642a8fe03c8cc4782dc30a9752d7a6604f6281678c743cd696",
+        "evidenceExportSha256": "552353b37d9fed26cf44a34c73428f0ebeab1cef6592f990aba2d435193d541a",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true,
+          "alignment": true
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "ET-ADDIS-ELAND-AA000041000409",
+          "ET-ADDIS-ELAND-AA000041000776"
+        ],
+        "cellSizeDegrees": 0.00025,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "The alignment gate verifies the published coordinate transform; basemap disagreement is never corrected with a fitted offset."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "d48cb699740532770d8f6a85297032b07baa7d988a518dff6e2d929fd438ff55",
+        "evidenceExportSha256": "7c4196e63e0422ed4e414bc6762791b7b17c760cddb716520b36caecc050187d",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32637",
+        "inputSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/independent-metric-audit.json",
+        "alignment": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/alignment-report.json",
+        "independentAlignment": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/independent-alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-15-bridge-6353-164f91332df3/6353/alignment-native.json"
+      },
+      "alignment": {
+        "schemaVersion": 1,
+        "passed": true,
+        "sourceId": "et-addis-eland-geoserver-parcel-publish",
+        "cityCode": "6353",
+        "contractSha256": "84cf6a53becfb902a431ff9ea6ff9ece9a5a6038745abf8f9632045060fc0f69",
+        "evidenceSha256": "24e2b3857a36cf108fc14002a29479704f0bcd02a6a0e1c0d204cfd01363fd5d",
+        "metadataSha256": "8138e9c42af9a1a205f4efb80051670ae6148225999f95bdbf4900292eef9ed6",
+        "nativeSha256": "fb4042a6cbfcc2edcc0dec8d067e770c2addef06d914d466b91b174bfa5eac43",
+        "cacheSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+        "nativeCrs": "EPSG:20137",
+        "nativeAxisOrder": "east-north",
+        "outputCrs": "EPSG:4326",
+        "coordinateOperation": "Inverse of UTM zone 37N + Adindan to WGS 84 (1) + axis order change (2D)",
+        "operationPipeline": "proj=pipeline step inv proj=utm zone=37 a=6378249.145 rf=293.465 step inv proj=longlat a=6378249.145 rf=293.465 step proj=push v_3 step proj=cart a=6378249.145 rf=293.465 step proj=helmert x=-166 y=-15 z=204 step inv proj=cart ellps=WGS84 step proj=pop v_3 step proj=unitconvert xy_in=rad xy_out=deg",
+        "operationAccuracyM": 9,
+        "bestOperationAvailable": true,
+        "ballparkAllowed": false,
+        "toleranceM": 0.25,
+        "maxVertexDifferenceM": 1.6019260106781362e-9,
+        "featureCount": 2,
+        "samples": [
+          {
+            "parcelId": "ET-ADDIS-ELAND-AA000041000409",
+            "nativeVertexCount": 28,
+            "adapterVertexCount": 28,
+            "maxVertexDifferenceM": 1.6019260106781362e-9,
+            "maxBoundaryDifferenceM": 2.125562294649939e-9
+          },
+          {
+            "parcelId": "ET-ADDIS-ELAND-AA000041000776",
+            "nativeVertexCount": 8,
+            "adapterVertexCount": 8,
+            "maxVertexDifferenceM": 8.572900850568892e-10,
+            "maxBoundaryDifferenceM": 1.3264159280011994e-9
+          }
+        ],
+        "maxBoundaryDifferenceM": 2.125562294649939e-9,
+        "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+        "operationChoiceUnresolved": false,
+        "sourceGeometryChanged": false,
+        "fittedOffsetApplied": false,
+        "sourceGeoreferencing": "unverified",
+        "limitations": [
+          "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+          "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+        ],
+        "evidenceExportSha256": "6f359b9fc25784a12bbba8d703fd863f0bb65013567aca31bb6b07f13a8886c5"
+      },
+      "independentMetricAudit": {
+        "sha256": "7c4196e63e0422ed4e414bc6762791b7b17c760cddb716520b36caecc050187d",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+        "metricCrs": "EPSG:32637",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "wfs",
+        "endpoint": "https://geos.addiscadaster.gov.et/geoserver/ows",
+        "idField": "uniqueparcelid",
+        "idFields": null,
+        "idPrefix": "ET-ADDIS-ELAND-",
+        "metricSrid": 32637,
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": false,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after nine-gate qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-15",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: nine gates, independent geometry and native CRS alignment audits, production descriptor identity and query contract."
+      }
+    }
+  ]
+}

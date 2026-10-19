@@ -308,6 +308,28 @@ describe('renderProposalThumbnailSet (dividers.md M3)', () => {
         expect(frame.polygons.map(poly => poly.role)).toEqual(['proposal', 'parcel']);
     });
 
+    it('frames every plan part and keeps overlapping fills and each part’s holes independent', async () => {
+        const outer = [[15.9770, 45.8100], [15.9776, 45.8100], [15.9776, 45.8106], [15.9770, 45.8106], [15.9770, 45.8100]];
+        const hole = [[15.9772, 45.8102], [15.9773, 45.8102], [15.9773, 45.8103], [15.9772, 45.8103], [15.9772, 45.8102]];
+        const overlap = [[15.9774, 45.8103], [15.9780, 45.8103], [15.9780, 45.8108], [15.9774, 45.8108], [15.9774, 45.8103]];
+        const parts = [[outer, hole], [overlap]];
+        const frame = computeStitchFrame({ polygonParts: parts, polygonOrder: 'lnglat' });
+        expect(frame.polygons).toHaveLength(2);
+        expect(frame.polygons.map(poly => poly.coords)).toEqual(parts);
+        expect(frame.lngMax).toBeGreaterThan(15.9780);
+
+        const set = await renderProposalThumbnailSet({ polygonParts: parts, polygonOrder: 'lnglat',
+            tileUrl: 'https://tiles.example/{z}/{x}/{y}.png', tileSource: solidTileSource() });
+        const pixel = async (coordinate) => {
+            const point = (await import('../thumbnails/tile-stitch.js')).lngLatToPixel(...coordinate, set.frame.xMin, set.frame.yMin, set.frame.zoom);
+            return pixelAt(set.after.buffer, Math.round(point.px), Math.round(point.py));
+        };
+        const inHole = await pixel([15.97725, 45.81025]);
+        const inOverlap = await pixel([15.9775, 45.81045]);
+        expect(inHole.rgba).toEqual([0x33, 0x66, 0x99, 255]);
+        expect(inOverlap.rgba[0]).toBeGreaterThan(0x33);
+    });
+
     it('draws the thumbnail, the same ground without the proposal, and the pair from one tile fetch', async () => {
         const tileSource = solidTileSource();
         const options = { polygon: ZAGREB_SQUARE, polygonOrder: 'lnglat', parcelPolygons: [PARCEL], parcelPolygonOrder: 'lnglat',

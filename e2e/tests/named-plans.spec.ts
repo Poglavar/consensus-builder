@@ -119,14 +119,15 @@ test.describe('Named plans @features', () => {
     const apply = panel.locator('[data-plan-action="apply"]');
     await expect(apply).toBeEnabled();
     await apply.click();
-    await expect(panel).toBeHidden();
+    // The plan stays available while its members are selected atomically.
     // Applying a plan goes through its published records: the member stands as the record of its row id.
     await expect.poll(() => page.evaluate((id: string) => {
       const w = window as any;
       return w.proposalStorage.getAllProposals().some((p: any) => String(w.getServerProposalId(p)) === id && w.isProposalCurrentlyApplied(p));
     }, serverId), { timeout: 30_000 }).toBe(true);
-    // Apply plan ends the way a plan link used to: framing what it applied and opening its panel.
-    await expect(page.locator('#proposal-details-panel')).toBeVisible({ timeout: 30_000 });
+    // Apply returns to the entire plan, rather than a single member's parcel panel.
+    await expect(panel).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('#proposal-details-panel')).toBeHidden();
 
     // Opened again, the plan says it is on the map; Copy link and Close work, and Escape closes too.
     await page.evaluate((slug: string) => (window as any).PlanView.open(slug), SLUG);

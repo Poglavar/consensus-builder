@@ -1,0 +1,70 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/gujarat/ncog/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "gid"
+    ],
+    "id": "in-gj-ncog-tiles",
+    "idPrefix": "IN-GJ-NCOG-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "NCOG_Gujarat_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 9,
+    "maxFeatures": 10000,
+    "metricSrid": 32643,
+    "name": "Gujarat cadastral maps — indianopenmaps tile snapshot (NCOG_Gujarat_Cadastrals)",
+    "outFields": [
+      "gid"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Gujarat from the NCOG_Gujarat_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "GJ",
+    "zoom": 13,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "anand",
+      "vadodara",
+      "5866"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "NCOG (BISAG-N) Gujarat cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "5866": 32643,
+      "anand": 32643,
+      "vadodara": 32643
+    }
+  },
+  "city": {
+    "code": "5866",
+    "name": "Siddhpur",
+    "point": [
+      72.3682905246486,
+      23.9191513192781
+    ]
+  },
+  "sampleIds": [
+    "IN-GJ-NCOG-g1~723672545~239185203~bca6e1eb9fb7df740cad67f127efc972a7241d49ec65fa780a3f4ca0860ba39c"
+  ],
+  "absentId": "IN-GJ-NCOG-g1~723672545~239185203~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32643",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Gujarat cadastral maps — indianopenmaps tile snapshot (NCOG_Gujarat_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Gujarat; candidate cities are limited to WUP points inside IN-GJ. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

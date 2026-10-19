@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "4507",
+    "name": "Masetjhaba View",
+    "appCityId": "masetjhaba_view",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "point": [
+      28.3891524973703,
+      -26.3449086556998
+    ],
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "defaultForCity": true,
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "idBatchSize": 80,
+    "cityIds": [
+      "masetjhaba_view"
+    ],
+    "evidenceFile": "evidence/source-classification.json",
+    "scope": "Bounded cadastral reference polygons in Masetjhaba View proper and extensions 1–4; not the full WUP agglomeration, legal title, currentness or survey accuracy."
+  },
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR090100000590000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR090100001166000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR090100005004000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR090100003580000000",
+    "ZA-CSG-DFFE-ERVEN-GEKUT0IR090100005628000000"
+  ],
+  "metricEpsg": 32735,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-classification.json",
+      "evidence/source-service.json",
+      "evidence/source-layer.json"
+    ]
+  },
+  "coverage": {
+    "scope": "substantial-city-discovery; five bounded township samples only",
+    "evidenceFile": "evidence/coverage-review.json"
+  },
+  "limitations": [
+    "The unchanged WUP locator is north of the named townships; exact point returned zero, which is not citywide absence.",
+    "Initial parcel-availability-v1 qualification does not perform the 13-cell deep review or prove citywide completeness.",
+    "Native datum operation, grids, survey alignment, current/historic semantics, reuse permission, topology and app binding remain follow-ups."
+  ]
+}

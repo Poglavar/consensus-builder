@@ -1,0 +1,39 @@
+{
+  "policy": "parcel-availability-v1",
+  "passed": true,
+  "requiredChecks": [
+    "classification",
+    "exactIds",
+    "stableGeometry"
+  ],
+  "status": "follow-up-required",
+  "followUp": [
+    {
+      "check": "explicitAbsence",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "sampling",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "completeness",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "binding",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+    },
+    {
+      "check": "sourceCurrentness",
+      "reason": "Fresh bounded reads of the current runtime descriptor succeeded. The tile snapshot publication age and correspondence to the present cadastral register remain unverified; investigate in the second pass."
+    }
+  ],
+  "candidateSha256": "2c79f98ffcf7c623c87104d83a770ce0fb878d76cf2dc3211ae97b75d1e4a669",
+  "cacheSha256": "458217916983329eaf681ec88eacb7fb2964a3f84302b1861b0d1e4fc6be042d",
+  "qualificationSha256": "16ca0b5a64d4416eb894f9d064543ce8a1c9b9c7d41e0041a71c41d6dbb352d8"
+}

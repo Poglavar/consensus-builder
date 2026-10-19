@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-19",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "1936",
+      "appCityId": "sumbe",
+      "cityName": "Sumbe",
+      "qualificationCityName": "Sumbe",
+      "cityId": "wup2025:1936",
+      "countryCode": "AO",
+      "country": "Angola",
+      "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "appCenterLatLon": [
+        -11.2178706676586,
+        13.8457791803372
+      ],
+      "wupPointLatLon": [
+        -11.2178706676586,
+        13.8457791803372
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "69b8ee13a8d9ce4f37a5e1af17614fc2a94a40b81f427fca5999eff1ceea1cc4",
+        "evidenceOriginalSha256": "69b8ee13a8d9ce4f37a5e1af17614fc2a94a40b81f427fca5999eff1ceea1cc4",
+        "evidenceExportSha256": "69b8ee13a8d9ce4f37a5e1af17614fc2a94a40b81f427fca5999eff1ceea1cc4"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "3d85644dc906c91fc02cbb93676330e68f10b5013070edbe055452ef6387b410",
+        "evidenceExportSha256": "4178d8d030cf95974bc052dc26442a2f6543a7e79c349a563979e436f960c81c",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": true
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ],
+          "candidateSha256": "69b8ee13a8d9ce4f37a5e1af17614fc2a94a40b81f427fca5999eff1ceea1cc4",
+          "cacheSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+          "qualificationSha256": "3d85644dc906c91fc02cbb93676330e68f10b5013070edbe055452ef6387b410"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "AO-SUMBE-AGT-2ceed370-8f73-4f77-9c3b-9b6682db0650",
+          "AO-SUMBE-AGT-7770b89a-91b5-40b2-a90f-c8a97d49d8ab",
+          "AO-SUMBE-AGT-6a4bc6bd-bcec-4fae-afe6-d9796363ff19"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "6ff626808b34e576b5c06fc330fee680e114b18865faac8cdf2833f8712f32af",
+        "evidenceExportSha256": "ce4623a58460b74daa160b6015c10be5c3cfbf2549fed976134553fb3ce8dd5d",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32733",
+        "inputSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+        "evidenceOriginalSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+        "evidenceExportSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/full-safe.geojson",
+        "alignment": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/alignment-report.json",
+        "independentAlignment": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/independent-alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/alignment-native.json",
+        "initialReview": "world-parcels/research/qualification-2026-10-19-bridge-1936-723ee628ed63/1936/initial-review.json"
+      },
+      "alignment": {
+        "status": "verified",
+        "report": {
+          "schemaVersion": 1,
+          "passed": true,
+          "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+          "cityCode": "1936",
+          "contractSha256": "371007b12f6ffebf92b94fbf48725fb985ff5c7ac70b7c0fd3a5cd38dd42e91d",
+          "evidenceSha256": "3dd2aa5e3a0d31f3daedcbe0f7aff81ab69503f39897f3093dd10276464e0ac6",
+          "metadataSha256": "c4a9104a1aeb370f313dc8daac120716208d4d249107d3f60711a0c84c67831c",
+          "nativeSha256": "311a59f7fd7dc3857e35ed3bd02efd0e2ba904aad39dcf7d128f6e110421db68",
+          "cacheSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+          "nativeCrs": "EPSG:3857",
+          "nativeAxisOrder": "east-north",
+          "outputCrs": "EPSG:4326",
+          "coordinateOperation": "Inverse of Popular Visualisation Pseudo-Mercator + axis order change (2D)",
+          "operationPipeline": "proj=pipeline step inv proj=webmerc lat_0=0 lon_0=0 x_0=0 y_0=0 ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+          "operationAccuracyM": 0,
+          "bestOperationAvailable": true,
+          "ballparkAllowed": false,
+          "toleranceM": 0.25,
+          "maxVertexDifferenceM": 8.224501791346878e-9,
+          "featureCount": 3,
+          "samples": [
+            {
+              "parcelId": "AO-SUMBE-AGT-2ceed370-8f73-4f77-9c3b-9b6682db0650",
+              "nativeVertexCount": 5,
+              "adapterVertexCount": 5,
+              "maxVertexDifferenceM": 7.979694565964065e-9,
+              "maxBoundaryDifferenceM": 6.875653006666484e-9
+            },
+            {
+              "parcelId": "AO-SUMBE-AGT-7770b89a-91b5-40b2-a90f-c8a97d49d8ab",
+              "nativeVertexCount": 7,
+              "adapterVertexCount": 7,
+              "maxVertexDifferenceM": 8.224501791346878e-9,
+              "maxBoundaryDifferenceM": 7.4280980845081275e-9
+            },
+            {
+              "parcelId": "AO-SUMBE-AGT-6a4bc6bd-bcec-4fae-afe6-d9796363ff19",
+              "nativeVertexCount": 5,
+              "adapterVertexCount": 5,
+              "maxVertexDifferenceM": 4.774906340761812e-9,
+              "maxBoundaryDifferenceM": 4.253852945111092e-9
+            }
+          ],
+          "maxBoundaryDifferenceM": 7.4280980845081275e-9,
+          "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+          "operationChoiceUnresolved": false,
+          "sourceGeometryChanged": false,
+          "fittedOffsetApplied": false,
+          "sourceGeoreferencing": "unverified",
+          "limitations": [
+            "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+            "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+          ]
+        },
+        "evidenceExportSha256": "00141d6aaf76f5e75227e355a495b5d7327335b126c5b0a8c3a178cafc7820d2"
+      },
+      "independentMetricAudit": {
+        "sha256": "ce4623a58460b74daa160b6015c10be5c3cfbf2549fed976134553fb3ce8dd5d",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "6619d5170b29bcfe5eff5fbadf7595c0692349f40799962a84b2da37bc5fc918",
+        "metricCrs": "EPSG:32733",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+        "adapter": "arcgis",
+        "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/CuanzaSul_AGT_Oficial_gdb/FeatureServer/0",
+        "idField": "GlobalID_2",
+        "idFields": null,
+        "idPrefix": "AO-SUMBE-AGT-",
+        "metricSrid": 32733,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "geojson",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": null,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-19",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

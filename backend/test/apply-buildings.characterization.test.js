@@ -93,7 +93,7 @@ function mutationOptions(extra = {}) {
 }
 
 describe('_applyBuildingProposal (characterization)', () => {
-    it('tells the parent resolver whether the building partitions anything (content buildings tolerate a source overlap)', async () => {
+    it('uses the same strict parent resolution for rule buildings and a Freeform building', async () => {
         const seen = [];
         const mgr = makeManager({
             _resolveLiveFormationParents: (_data, _label, formationLabel, options) => {
@@ -101,15 +101,15 @@ describe('_applyBuildingProposal (characterization)', () => {
                 return { ok: true, ids: ['HR-1', 'HR-2'], cadastreIds: ['HR-1', 'HR-2'], features: [] };
             }
         });
-        // An imported plan of many buildings on existing parcels: content only.
+        // A rule can supply several building volumes on existing parcels.
         const plan = buildingProposalData();
         plan.geometry.buildings.push(JSON.parse(JSON.stringify(plan.geometry.buildings[0])));
         expect(await _applyBuildingProposal.call(mgr, 'p-b1', plan, mutationOptions())).toBe(true);
-        // A single freeform building forms its own parcel: the partition must be clean.
+        // A Freeform building forms its own parcel, with the same source-overlap proof.
         const single = { ...buildingProposalData(), proposalId: 'p-s1', goal: 'single' };
         await _applyBuildingProposal.call(mgr, 'p-s1', single, mutationOptions()).catch(() => null);
-        expect(seen[0]).toEqual({ formationLabel: 'building', contentOnly: true });
-        expect(seen[1]).toEqual({ formationLabel: 'building', contentOnly: false });
+        expect(seen[0]).toEqual({ formationLabel: 'building', contentOnly: undefined });
+        expect(seen[1]).toEqual({ formationLabel: 'building', contentOnly: undefined });
     });
 
     it('applies: renders the building, flips applied flags and persists one flat record', async () => {

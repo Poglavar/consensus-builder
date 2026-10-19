@@ -150,6 +150,27 @@ describe('proposal rows: inserts do no whole-store duplicate scan', () => {
     });
 });
 
+describe('proposal rows: inserts do no whole-store duplicate scan', () => {
+    it('adds authored records without hashing unrelated stored geometry, even for an explicit id', () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        install('getCurrentCityId', () => 'zagreb');
+        install('hashStringDeterministic', deterministicHash);
+        let unrelatedReads = 0;
+        const unrelated = record('existing');
+        Object.defineProperty(unrelated, 'geometry', { get() {
+            unrelatedReads += 1;
+            return {};
+        } });
+        store.proposals.set('existing', unrelated);
+        const seed = vi.spyOn(store, '_buildHashSeed');
+        expect(store.addProposal(record('authored-new'), { deferSave: true })).toBe('authored-new');
+        expect(unrelatedReads).toBe(0);
+        expect(seed).not.toHaveBeenCalled();
+        expect(store.getProposal('authored-new').title).toBe('authored-new');
+    });
+});
+
 describe('proposal rows: deterministic ID collisions', () => {
     it('allocates unique ids when several authored proposals share one immutable seed in the same millisecond, and reloads every row', () => {
         vi.useFakeTimers();
@@ -347,5 +368,42 @@ describe('proposal rows: a record is stored only in its own city', () => {
         try { store.importProposal(record('legacy', { city: 'city', cadastreParcelIds: ['HR-335649-100'] })); } catch (error) { refusal = error; }
         expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'zagreb' });
         expect(rowKeys(storage)).toEqual([]);
+    });
+});
+
+// The shared-plan save phase must represent completion of the IndexedDB write.
+describe('proposal batch save completion', () => {
+    it('retries the record rows after a failed durable write', async () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.proposals.set('p1', record('p1'));
+        const error = new Error('storage unavailable');
+        const report = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const atomic = storage.atomicWrite;
+        storage.atomicWrite = async () => { throw error; };
+        await expect(store.save()).rejects.toBe(error);
+        storage.atomicWrite = atomic;
+        await store.save();
+        expect(storage.writes[0].puts.has('proposal:p1')).toBe(true);
+        expect(JSON.parse(storage.values.get('proposal:p1')).proposalId).toBe('p1');
+        report.mockRestore();
+    });
+
+
+    it('returns the pending durable write when the outer batch ends', async () => {
+        const storage = fakeStorage();
+        let finish;
+        storage.atomicWrite = () => new Promise(resolve => { finish = resolve; });
+        const store = bootStore(storage);
+        store.proposals.set('p1', record('p1'));
+        store.beginBatch();
+        store.save();
+        let settled = false;
+        const write = store.endBatch().then(() => { settled = true; });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+        finish();
+        await write;
+        expect(settled).toBe(true);
     });
 });

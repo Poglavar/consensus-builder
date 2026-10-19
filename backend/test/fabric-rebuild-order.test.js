@@ -66,6 +66,35 @@ afterEach(() => {
 });
 
 describe('ProposalManager._rebuildPass — stable authored state', () => {
+    it('resets displaced ground producers as well as standing members without parcels', async () => {
+        const proposal = { proposalId: 'incoming', applied: true, goal: 'single', cadastreParcelIds: [] };
+        installGlobal('window', {
+            CityConfigManager: { getCurrentCityId: () => 'san_francisco' },
+            ParcelGroundFallback: { isWithoutParcels: () => true },
+            __formationEdit: null,
+            __planOrder: null
+        });
+        const manager = {
+            _resetDerivedFabricSliced: vi.fn(async () => ({ parcels: 0 })),
+            _reconcileStructurePresentation: vi.fn(),
+            applyProposal: vi.fn(async () => true),
+            _loadReplayGround: vi.fn(async () => 0),
+            _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
+            _appliedCorridorTakes: vi.fn(() => []),
+            _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
+            _rebuildPass: ProposalManager._rebuildPass
+        };
+
+        await manager._rebuildPass([proposal], { resetProposalIds: ['displaced', 'incoming'] });
+        expect(manager._resetDerivedFabricSliced.mock.calls[0][1].proposalIds)
+            .toEqual(['displaced', 'incoming']);
+
+        window.ParcelGroundFallback.isWithoutParcels = () => false;
+        await manager._rebuildPass([proposal], { resetProposalIds: ['displaced'] });
+        expect(manager._resetDerivedFabricSliced.mock.calls[1][1].proposalIds)
+            .toEqual(['displaced']);
+    });
+
     it('keeps the complete standing set visible while deriving an ordered private draft', async () => {
         const proposals = ['a', 'b', 'c'].map((proposalId, index) => ({
             proposalId,
@@ -387,6 +416,43 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
 });
 
 describe('ProposalManager._resetDerivedFabric — pristine registry', () => {
+    it('removes displaced open-ground output when resetting a geometry-only plan', async () => {
+        const square = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
+        const piece = (id, owner) => ({
+            type: 'Feature',
+            properties: {
+                parcelId: id,
+                id,
+                cadastreParcelIds: [],
+                groundIds: ['ground:' + 'a'.repeat(64)],
+                producedByProposalId: owner
+            },
+            geometry: square
+        });
+        const fabric = createLiveParcelFabric();
+        const seeded = fabric.beginMutation({ id: 'seed-ground' });
+        seeded.upsertFeatures([piece('displaced-piece', 'displaced'), piece('unrelated-piece', 'unrelated')]);
+        await seeded.prepare();
+        seeded.publish();
+        const mutation = fabric.beginMutation({ id: 'reset-ground' });
+        installGlobal('window', {
+            CadastralParcelRepository: { listIds: () => [], peekMany: () => [] }
+        });
+
+        ProposalManager._resetDerivedFabric.call({ _clearDerivedRecordState: vi.fn() }, [], {
+            cadastreParcelIds: [],
+            proposalIds: ['displaced', 'incoming'],
+            _parcelMutation: {
+                fabric: mutation,
+                collections: { parks: [], squares: [], lakes: [], transitStations: [], proposedBuildings: [] },
+                afterCommit: vi.fn()
+            }
+        });
+
+        expect(mutation.get('displaced-piece')).toBeNull();
+        expect(mutation.get('unrelated-piece')).not.toBeNull();
+    });
+
     it('replaces a closed cadastral scope inside the explicit live-fabric transaction', async () => {
         const polygon = [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]];
         const cadastral = {

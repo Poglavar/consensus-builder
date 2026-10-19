@@ -757,3 +757,9 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-19: The user requested continuous learning across city discovery, review and adapter qualification: independent stage queues share the latest tested code, adapters and evidence-backed findings, so subsequent cities benefit from earlier work. Keep per-job checkpoints and immutable evidence; publish adapter changes only after validated admission.
 - 2026-10-19: Novogradnje AI processing follows the user's 2026-10-16 decision to use manually invoked subscription CLI chunks; keep the paid API worker and recurring scheduling disabled. Collect or replay already-submitted API results without new submissions, and preserve per-task usage/checkpoints separately from metered spend.
 - 2026-10-19: Manual Novogradnje processing uses Codex CLI with gpt-6.1-sol at medium or high effort (high by default), including image triage, and at most 30 tasks per manual pass; preserve the cohort when retrying unsupported-model failures. The public apartment floor-plan viewer opens in 3D when reconstructed geometry is available.
+
+- 2026-10-19: Direct named-plan bets show a whole-plan before/after image pair; plan member thumbnails cannot represent a bet on the collection. Rationale: the user needs to see the complete design being forecast.
+
+- 2026-10-19: Parcel-source failures have a bounded wait and an explicit Continue without parcels choice; linked designs can apply locally from their own geometry while their published parcel IDs and binding remain unchanged.
+
+- 2026-10-19: Keep all omitted-gems work in the existing `omitted-gems-fixes` branch and matching worktree; do not create separate branches or worktrees for its follow-up fixes.

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "3172",
+    "cityCode": 3172,
+    "id": "ijebu_ode",
+    "name": "Ijebu-Ode",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "iso2": "NG",
+    "iso3": "NGA",
+    "point": [
+      3.93868739084507,
+      6.82182062949707
+    ],
+    "population2025": 500036,
+    "currency": {
+      "locale": "en-NG",
+      "code": "NGN"
+    },
+    "currencyEvidenceFile": "evidence/country-currency.json"
+  },
+  "source": {
+    "sourceId": "ng-ogun-sdi-geonode-parcels",
+    "endpoint": "https://geoserver.ogunstate.gov.ng/geoserver/ows",
+    "purpose": "cadastral-parcels",
+    "purposeEvidenceUrls": [
+      "https://gis.ogunstate.gov.ng/api/v2/resources/339",
+      "https://gis.ogunstate.gov.ng/about/"
+    ]
+  },
+  "descriptor": {
+    "id": "ng-ogun-sdi-geonode-parcels",
+    "name": "Ogun SDI / BLS cadastral parcels",
+    "adapter": "wfs",
+    "endpoint": "https://geoserver.ogunstate.gov.ng/geoserver/ows",
+    "version": "2.0.0",
+    "featureType": "geonode:parcels",
+    "geometryField": "geom",
+    "nativeIdMode": "feature-id",
+    "featureIdParameter": "resourceId",
+    "idField": null,
+    "idType": "string",
+    "idPattern": "^parcels\\.[0-9]+$",
+    "idPrefix": "NG-OGUN-",
+    "outFields": [],
+    "requestProperties": false,
+    "unfilteredSchemaProfile": "ng-ogun-parcels-v1",
+    "pageSize": 250,
+    "idBatchSize": 80,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 25,
+    "maxResponseBytes": 8388608,
+    "minRequestIntervalMs": 250,
+    "countryCode": "NG",
+    "cityIds": [
+      "ijebu_ode"
+    ],
+    "metricSrid": 32631,
+    "nativeCrs": "EPSG:26331",
+    "responseCrs": "CRS:84",
+    "returnsWGS84": true,
+    "scope": "Official Ogun cadastral land-ownership/status layer; this initial qualification proves repeatable exact access to five dispersed Ijebu-Ode native parcel records. Citywide completeness and current/historic semantics remain unverified.",
+    "attribution": "Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.",
+    "licence": "public_domain (first-party catalogue metadata)",
+    "licenceUrl": "https://gis.ogunstate.gov.ng/api/v2/resources/339",
+    "catalogueUrl": "https://gis.ogunstate.gov.ng/catalogue/#/dataset/339",
+    "evidenceFile": "evidence/source-metadata.json",
+    "capabilities": {
+      "exactIds": true,
+      "areaEnumeration": true
+    }
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "authority": "Ogun State Spatial Data Infrastructure; BLS",
+    "evidence": [
+      "evidence/source-metadata.json",
+      "evidence/source-schema.json"
+    ],
+    "basis": "First-party resource 339 binds geonode:parcels and explicitly describes a cadastral layer for all private/public land ownership and status. Native parcel IDs and MultiPolygon responses substantiate that purpose. No sale listings, proposals or planning overlays are substituted."
+  },
+  "sampleIds": [
+    "NG-OGUN-parcels.95",
+    "NG-OGUN-parcels.340",
+    "NG-OGUN-parcels.601",
+    "NG-OGUN-parcels.623",
+    "NG-OGUN-parcels.716"
+  ],
+  "absentId": "NG-OGUN-parcels.2147483647",
+  "metricEpsg": 32631,
+  "cellSizeDegrees": 0.001,
+  "sourceMetadataFile": "evidence/source-metadata.json",
+  "receiptBindingFile": "evidence/receipt-binding.json",
+  "followUpFile": "evidence/follow-ups.json",
+  "coverage": {
+    "scope": "substantial-city",
+    "basis": "Accepted discovery scope only. Five dispersed native parcels are used for exact-read qualification. Neither these samples nor thirteen bounded cells establish citywide completeness.",
+    "citywideVerified": false,
+    "pointUnchanged": true
+  }
+}

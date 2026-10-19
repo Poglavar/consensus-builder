@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "2b403eff0a6724976cd9fb63484a1546adbb2e4288b1b8ad7e84db2a28761b8b",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32644",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 3,
+  "validFeatureCount": 3,
+  "perFeature": [
+    {
+      "id": "891fabe6e5b35723f49513da80ff785bc0afdfd7cb20079c7b41f6d5a5d40a09",
+      "geometrySha256": "35ff0cb703cd6e7dd05084626cd55bac9c12336d43c8cbc131de221dba8c4aa9",
+      "boundsMetric": {
+        "minX": 384382.46095287567,
+        "minY": 1684529.8492530691,
+        "maxX": 384548.69131375285,
+        "maxY": 1684696.0716190806,
+        "widthM": 166.23036087717628,
+        "heightM": 166.2223660114687,
+        "aspectRatio": 1.000048097412517
+      },
+      "areaM2": 16247.476780974766,
+      "invalidReasons": []
+    },
+    {
+      "id": "50651ff384d9e07c4b01545280fa95637b7959445173672e3b2da8e6f8a0044a",
+      "geometrySha256": "f1a3184cd2ee4b970078d03361a0ea9d02e1b982fe4605f9cf56124e22027d34",
+      "boundsMetric": {
+        "minX": 384385.10573554103,
+        "minY": 1684403.124002086,
+        "maxX": 384645.7107733384,
+        "maxY": 1684696.6256128359,
+        "widthM": 260.6050377973588,
+        "heightM": 293.5016107498668,
+        "aspectRatio": 1.1262315311728075
+      },
+      "areaM2": 12673.386013406507,
+      "invalidReasons": []
+    },
+    {
+      "id": "138d4642a68fcb0916aaa48625a87515117c74406c576bd8e7774992ef310408",
+      "geometrySha256": "2f88795d27d65e2b726bb4943390a98aabf6a4ca690bc26981b5aba67837941b",
+      "boundsMetric": {
+        "minX": 384430.339348899,
+        "minY": 1684632.6220755207,
+        "maxX": 384727.50663574564,
+        "maxY": 1685276.6180982243,
+        "widthM": 297.1672868466121,
+        "heightM": 643.9960227035917,
+        "aspectRatio": 2.1671161369656446
+      },
+      "areaM2": 96143.20620939165,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 0,
+  "subthresholdPositiveIntersectionTotalM2": 0,
+  "subthresholdPositiveIntersections": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

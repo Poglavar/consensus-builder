@@ -1,0 +1,3367 @@
+{
+ "schemaVersion": 1,
+ "basis": "Initial parcel-availability reassessment of 97 saved UK records and four pilots, plus a fresh bounded Sagar check of the current runtime contract; unresolved quality and source-currentness findings retained for a second pass.",
+ "pointOrder": "latitude-longitude",
+ "counts": {
+  "qualified": 101
+ },
+ "cities": [
+  {
+   "cityCode": 665,
+   "cityName": "Plymouth",
+   "countryCode": "GB",
+   "point": [
+    50.3914167766278,
+    -4.14532542981983
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:27+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 1466,
+   "cityName": "Torquay",
+   "countryCode": "GB",
+   "point": [
+    50.4587985017225,
+    -3.5516556955526
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:40+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 1563,
+   "cityName": "Bridgend",
+   "countryCode": "GB",
+   "point": [
+    51.516099868969,
+    -3.58082188390639
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:23+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 1656,
+   "cityName": "Exeter",
+   "countryCode": "GB",
+   "point": [
+    50.7234550099131,
+    -3.51776110022917
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:46+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 1919,
+   "cityName": "Barry",
+   "countryCode": "GB",
+   "point": [
+    51.4091160800266,
+    -3.27121519880159
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:26+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2388,
+   "cityName": "Newport",
+   "countryCode": "GB",
+   "point": [
+    51.5905932074279,
+    -2.98603339410683
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:39+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2463,
+   "cityName": "Weston-super-Mare",
+   "countryCode": "GB",
+   "point": [
+    51.3507970266061,
+    -2.9464834096545
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:00+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2537,
+   "cityName": "Blackpool",
+   "countryCode": "GB",
+   "point": [
+    53.8313704516172,
+    -3.02949278235616
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:31+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2675,
+   "cityName": "Ellesmere Port",
+   "countryCode": "GB",
+   "point": [
+    53.2747857125448,
+    -2.91838068661081
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:19+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2742,
+   "cityName": "Chester",
+   "countryCode": "GB",
+   "point": [
+    53.1954598782464,
+    -2.89193995128185
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:59+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2807,
+   "cityName": "Carleton",
+   "countryCode": "GB",
+   "point": [
+    54.883742702573,
+    -2.93333918501296
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:15+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2932,
+   "cityName": "Shrewsbury",
+   "countryCode": "GB",
+   "point": [
+    52.7122564408785,
+    -2.74867014769052
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:06+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 2992,
+   "cityName": "Hereford",
+   "countryCode": "GB",
+   "point": [
+    52.0535998200465,
+    -2.71890579117852
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:21+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3051,
+   "cityName": "Widnes",
+   "countryCode": "GB",
+   "point": [
+    53.3747855952066,
+    -2.7440635225877
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:24+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3225,
+   "cityName": "Runcorn",
+   "countryCode": "GB",
+   "point": [
+    53.3301271868641,
+    -2.70242569043187
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:16+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3280,
+   "cityName": "Wigan",
+   "countryCode": "GB",
+   "point": [
+    53.5417585510263,
+    -2.65327394019557
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:41+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3335,
+   "cityName": "Warrington",
+   "countryCode": "GB",
+   "point": [
+    53.3936954315244,
+    -2.59202812720475
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:33+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3547,
+   "cityName": "Crewe",
+   "countryCode": "GB",
+   "point": [
+    53.0963889408865,
+    -2.4518215137026
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:08+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3589,
+   "cityName": "Modesto",
+   "countryCode": "US",
+   "point": [
+    37.6482342106593,
+    -120.984434522145
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:27+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "metric",
+      "reason": "Detailed geometry audit has unresolved findings; retained for the second pass."
+     },
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This is an offline re-evaluation of saved source evidence; live freshness, jurisdictional coverage and production binding were not rechecked. Verify them in the second pass."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3600,
+   "cityName": "Bath",
+   "countryCode": "GB",
+   "point": [
+    51.3801038417596,
+    -2.37338367551952
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:57+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3651,
+   "cityName": "Oswaldtwistle",
+   "countryCode": "GB",
+   "point": [
+    53.7594075036295,
+    -2.38054449711054
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:13+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3702,
+   "cityName": "Gloucester",
+   "countryCode": "GB",
+   "point": [
+    51.8520315635127,
+    -2.23219925625925
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:35+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3751,
+   "cityName": "Kidderminster",
+   "countryCode": "GB",
+   "point": [
+    52.3867461409946,
+    -2.25042165820862
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:22+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3798,
+   "cityName": "Burnley",
+   "countryCode": "GB",
+   "point": [
+    53.8139176123745,
+    -2.23025976658165
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:34+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 3844,
+   "cityName": "Worcester",
+   "countryCode": "GB",
+   "point": [
+    52.1960687132947,
+    -2.21346406655132
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:50+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4022,
+   "cityName": "Cheltenham",
+   "countryCode": "GB",
+   "point": [
+    51.8979094381315,
+    -2.08512231525744
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:39+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4065,
+   "cityName": "Stafford",
+   "countryCode": "GB",
+   "point": [
+    52.801712438418,
+    -2.11109989992426
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:11+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4192,
+   "cityName": "Cannock",
+   "countryCode": "GB",
+   "point": [
+    52.6914955560703,
+    -2.0142300384158
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:56+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4233,
+   "cityName": "Redditch",
+   "countryCode": "GB",
+   "point": [
+    52.2990212189628,
+    -1.92991161634122
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:02+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4272,
+   "cityName": "Keighley",
+   "countryCode": "GB",
+   "point": [
+    53.8617709476448,
+    -1.91969263455159
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:18+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4311,
+   "cityName": "Elland",
+   "countryCode": "GB",
+   "point": [
+    53.7189997906187,
+    -1.87822448014627
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:47+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4349,
+   "cityName": "Swindon",
+   "countryCode": "GB",
+   "point": [
+    51.5715356304086,
+    -1.78574928165144
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:30+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4387,
+   "cityName": "Huddersfield",
+   "countryCode": "GB",
+   "point": [
+    53.6468211209448,
+    -1.79511408476927
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:33+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4462,
+   "cityName": "Fazeley",
+   "countryCode": "GB",
+   "point": [
+    52.6233811381426,
+    -1.67749059964762
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:03+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4499,
+   "cityName": "Wakefield",
+   "countryCode": "GB",
+   "point": [
+    53.6961440580871,
+    -1.60677258999069
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:25+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4573,
+   "cityName": "Burton-on-Trent",
+   "countryCode": "GB",
+   "point": [
+    52.8086536431537,
+    -1.63156178340561
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:10+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4756,
+   "cityName": "Darlington",
+   "countryCode": "GB",
+   "point": [
+    54.5318246345243,
+    -1.55313379122509
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:56+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4898,
+   "cityName": "Nuneaton",
+   "countryCode": "GB",
+   "point": [
+    52.5219218988889,
+    -1.47935643407184
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:58+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 4968,
+   "cityName": "Chesterfield",
+   "countryCode": "GB",
+   "point": [
+    53.2436280925355,
+    -1.42625421800537
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:54+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5001,
+   "cityName": "Hoyland",
+   "countryCode": "GB",
+   "point": [
+    53.5039062260983,
+    -1.36620622625615
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:59+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5034,
+   "cityName": "Eastleigh",
+   "countryCode": "GB",
+   "point": [
+    50.9758518132651,
+    -1.3592757641613
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:01+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5067,
+   "cityName": "Sunderland",
+   "countryCode": "GB",
+   "point": [
+    54.9022790588835,
+    -1.40594484606918
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:31+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5099,
+   "cityName": "Rotherham",
+   "countryCode": "GB",
+   "point": [
+    53.4312322928264,
+    -1.35646504706708
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:01+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5130,
+   "cityName": "Hinckley",
+   "countryCode": "GB",
+   "point": [
+    52.5506509604454,
+    -1.35891622382662
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:15+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5160,
+   "cityName": "Pontefract",
+   "countryCode": "GB",
+   "point": [
+    53.7079757719577,
+    -1.32512618328553
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:12+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5190,
+   "cityName": "Newbury",
+   "countryCode": "GB",
+   "point": [
+    51.4023266072744,
+    -1.29379113402928
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:17+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5306,
+   "cityName": "Rugby",
+   "countryCode": "GB",
+   "point": [
+    52.3702259189988,
+    -1.26205764474156
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:06+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5334,
+   "cityName": "Kirkby-in-Ashfield",
+   "countryCode": "GB",
+   "point": [
+    53.1180669315152,
+    -1.26079401938608
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:09+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5361,
+   "cityName": "Loughborough",
+   "countryCode": "GB",
+   "point": [
+    52.7678936724989,
+    -1.22085539178469
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:13+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5415,
+   "cityName": "Hartlepool",
+   "countryCode": "GB",
+   "point": [
+    54.681966323611,
+    -1.22791742187889
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:57+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5442,
+   "cityName": "Mansfield",
+   "countryCode": "GB",
+   "point": [
+    53.1490057121034,
+    -1.18975576355205
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:55+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5496,
+   "cityName": "Doncaster",
+   "countryCode": "GB",
+   "point": [
+    53.5213071332784,
+    -1.14432972080085
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:51+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5523,
+   "cityName": "Basingstoke",
+   "countryCode": "GB",
+   "point": [
+    51.2625457774723,
+    -1.1016531677885
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:43+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5548,
+   "cityName": "York",
+   "countryCode": "GB",
+   "point": [
+    53.9601179345087,
+    -1.0890389306505
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:33+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5573,
+   "cityName": "Reading",
+   "countryCode": "GB",
+   "point": [
+    51.4499643731723,
+    -0.96867039514757
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:26+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5648,
+   "cityName": "Aylesbury",
+   "countryCode": "GB",
+   "point": [
+    51.8140265791372,
+    -0.811422254973883
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:08+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5673,
+   "cityName": "Farnham",
+   "countryCode": "GB",
+   "point": [
+    51.2779073993314,
+    -0.755591034770066
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:28+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5697,
+   "cityName": "High Wycombe",
+   "countryCode": "GB",
+   "point": [
+    51.6304741781165,
+    -0.739700268563005
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:42+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5721,
+   "cityName": "Bracknell",
+   "countryCode": "GB",
+   "point": [
+    51.408925681937,
+    -0.750969136462783
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:06+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5745,
+   "cityName": "Maidenhead",
+   "countryCode": "GB",
+   "point": [
+    51.5218423664382,
+    -0.734950010276874
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:16+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5768,
+   "cityName": "Bognor Regis",
+   "countryCode": "GB",
+   "point": [
+    50.7887744955779,
+    -0.679745003645796
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:12+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5790,
+   "cityName": "Kettering",
+   "countryCode": "GB",
+   "point": [
+    52.3978738798855,
+    -0.71643129398482
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:21+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5812,
+   "cityName": "Corby",
+   "countryCode": "GB",
+   "point": [
+    52.4862922660537,
+    -0.711389253776066
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:23+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5834,
+   "cityName": "Scunthorpe",
+   "countryCode": "GB",
+   "point": [
+    53.5755538301194,
+    -0.657437101400954
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:02+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5877,
+   "cityName": "Walton-on-Thames",
+   "countryCode": "GB",
+   "point": [
+    51.3495544556983,
+    -0.503262754300618
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:28+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5898,
+   "cityName": "Guildford",
+   "countryCode": "GB",
+   "point": [
+    51.2482486181062,
+    -0.575197746624339
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:07+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5918,
+   "cityName": "Lincoln",
+   "countryCode": "GB",
+   "point": [
+    53.2185580409574,
+    -0.558543721002124
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:40+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5958,
+   "cityName": "Littlehampton",
+   "countryCode": "GB",
+   "point": [
+    50.814344177037,
+    -0.515607897663478
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:22+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5977,
+   "cityName": "Luton",
+   "countryCode": "GB",
+   "point": [
+    51.8953504741231,
+    -0.449799472542919
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:26+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 5996,
+   "cityName": "Bedford",
+   "countryCode": "GB",
+   "point": [
+    52.1354831387031,
+    -0.462884517154221
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:44+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6015,
+   "cityName": "Hemel Hempstead",
+   "countryCode": "GB",
+   "point": [
+    51.7524993732628,
+    -0.463705601238816
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:53+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6072,
+   "cityName": "St Albans",
+   "countryCode": "GB",
+   "point": [
+    51.7488083088858,
+    -0.323125248526556
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:55+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6091,
+   "cityName": "Horsham",
+   "countryCode": "GB",
+   "point": [
+    51.0709829452005,
+    -0.317209349908432
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:24+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6110,
+   "cityName": "Peterborough",
+   "countryCode": "GB",
+   "point": [
+    52.5794745705663,
+    -0.256348700851727
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:32+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6129,
+   "cityName": "Crawley",
+   "countryCode": "GB",
+   "point": [
+    51.1118594336238,
+    -0.188214829298302
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:44+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6148,
+   "cityName": "Stevenage",
+   "countryCode": "GB",
+   "point": [
+    51.9065830125027,
+    -0.181798776752651
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:51+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6167,
+   "cityName": "Reigate",
+   "countryCode": "GB",
+   "point": [
+    51.2368267379592,
+    -0.178879466167143
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:14+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6185,
+   "cityName": "Grimsby",
+   "countryCode": "GB",
+   "point": [
+    53.5570359442078,
+    -0.0781954663717782
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:38+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6203,
+   "cityName": "Harlow",
+   "countryCode": "GB",
+   "point": [
+    51.7624189706355,
+    0.106309227869453
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:04+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6221,
+   "cityName": "Cambridge",
+   "countryCode": "GB",
+   "point": [
+    52.2067184129985,
+    0.137923301802117
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:35+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6239,
+   "cityName": "Royal Tunbridge Wells",
+   "countryCode": "GB",
+   "point": [
+    51.1398971158576,
+    0.263050918212856
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:11+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6257,
+   "cityName": "Polegate",
+   "countryCode": "GB",
+   "point": [
+    50.7898193079489,
+    0.283361631311407
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:38+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6275,
+   "cityName": "Brentwood",
+   "countryCode": "GB",
+   "point": [
+    51.6229723148614,
+    0.314280917568822
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:25+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6293,
+   "cityName": "Grays",
+   "countryCode": "GB",
+   "point": [
+    51.4876506699566,
+    0.3243422208394
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:49+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6311,
+   "cityName": "Northfleet",
+   "countryCode": "GB",
+   "point": [
+    51.4336111081076,
+    0.35735707385041
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:50+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6329,
+   "cityName": "Basildon",
+   "countryCode": "GB",
+   "point": [
+    51.5720052656319,
+    0.462720741724047
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:48+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6347,
+   "cityName": "Chelmsford",
+   "countryCode": "GB",
+   "point": [
+    51.7350617718334,
+    0.478458974284031
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:43+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6383,
+   "cityName": "Maidstone",
+   "countryCode": "GB",
+   "point": [
+    51.2676621180426,
+    0.527097058088819
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:45+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6399,
+   "cityName": "Braintree",
+   "countryCode": "GB",
+   "point": [
+    51.8757236245079,
+    0.55408077080967
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:25+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6415,
+   "cityName": "Hastings",
+   "countryCode": "GB",
+   "point": [
+    50.8665941451404,
+    0.567187428416308
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:52+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6447,
+   "cityName": "Colchester",
+   "countryCode": "GB",
+   "point": [
+    51.8853930892249,
+    0.907088260783102
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:36+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6463,
+   "cityName": "Ashford",
+   "countryCode": "GB",
+   "point": [
+    51.1424958025931,
+    0.868670273739869
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:05+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6511,
+   "cityName": "Clacton-on-Sea",
+   "countryCode": "GB",
+   "point": [
+    51.7980613983457,
+    1.14982351139602
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:20+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6527,
+   "cityName": "Folkestone",
+   "countryCode": "GB",
+   "point": [
+    51.0851032071685,
+    1.16519356955379
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:19+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6543,
+   "cityName": "Norwich",
+   "countryCode": "GB",
+   "point": [
+    52.6380198067778,
+    1.28476267343452
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:29+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6559,
+   "cityName": "Margate",
+   "countryCode": "GB",
+   "point": [
+    51.3638977247902,
+    1.4019139233658
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:05:37+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6575,
+   "cityName": "Great Yarmouth",
+   "countryCode": "GB",
+   "point": [
+    52.5900315294342,
+    1.72104326090961
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:10+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 6591,
+   "cityName": "Lowestoft",
+   "countryCode": "GB",
+   "point": [
+    52.4730373280153,
+    1.72629201137263
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:07+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This result reuses saved candidate, qualification, metric and parcel-cache artifacts without network requests. Verify present-day source availability, snapshot/release currentness and runtime binding/query contract in the second pass. Saved source release: 44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90; current binding/catalog state is not established by this offline re-evaluation."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 9499,
+   "cityName": "Sagar",
+   "countryCode": "IN",
+   "point": [
+    23.8418091858205,
+    78.7553824828906
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Current production descriptor returned the same usable parcel geometry through repeatable exact-ID reads. Detailed geometry, coverage, binding and projection findings remain second-pass follow-ups.",
+   "finishedAt": "2026-10-18T21:19:40+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "explicitAbsence",
+      "reason": "Deferred to second-pass review."
+     },
+     {
+      "check": "sampling",
+      "reason": "Deferred to second-pass review."
+     },
+     {
+      "check": "completeness",
+      "reason": "Deferred to second-pass review."
+     },
+     {
+      "check": "binding",
+      "reason": "Deferred to second-pass review."
+     },
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "Fresh bounded reads of the current runtime descriptor succeeded. The tile snapshot publication age and correspondence to the present cadastral register remain unverified; investigate in the second pass."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 10301,
+   "cityName": "Madurai",
+   "countryCode": "IN",
+   "point": [
+    9.92418503600906,
+    78.115593861303
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:26+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This is an offline re-evaluation of saved source evidence; live freshness, jurisdictional coverage and production binding were not rechecked. Verify them in the second pass."
+     }
+    ]
+   }
+  },
+  {
+   "cityCode": 10677,
+   "cityName": "Vijayawada",
+   "countryCode": "IN",
+   "point": [
+    16.5158984794553,
+    80.6417604131186
+   ],
+   "sourceIds": [],
+   "outcome": "qualified",
+   "summary": "Passed initial parcel availability policy offline; source currentness and detailed quality require second-pass review.",
+   "finishedAt": "2026-10-18T21:06:27+00:00",
+   "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+     "classification",
+     "exactIds",
+     "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+     {
+      "check": "binding",
+      "reason": "Not established during initial qualification; investigate in the second pass."
+     },
+     {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+     },
+     {
+      "check": "sourceCurrentness",
+      "reason": "This is an offline re-evaluation of saved source evidence; live freshness, jurisdictional coverage and production binding were not rechecked. Verify them in the second pass."
+     }
+    ]
+   }
+  }
+ ]
+}

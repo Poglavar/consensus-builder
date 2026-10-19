@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "d9d3aac764df35b3a797c8be03673c28106680f13ecbf0764d00048d64779015",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32645",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 2,
+  "validFeatureCount": 2,
+  "perFeature": [
+    {
+      "id": "41b22211e2ecb4967edad04a7fff2da19e636db2c5544a8591f77069f96c4505",
+      "geometrySha256": "e1908e15fb98d21973d08f350b64f618223e3baf2e8b153850bd28932c6a4b00",
+      "boundsMetric": {
+        "minX": 381825.5204516759,
+        "minY": 2911335.208817056,
+        "maxX": 382224.8416112826,
+        "maxY": 2911826.1322278073,
+        "widthM": 399.32115960668307,
+        "heightM": 490.9234107513912,
+        "aspectRatio": 1.2293949342302146
+      },
+      "areaM2": 102583.45583509405,
+      "invalidReasons": []
+    },
+    {
+      "id": "d403081a794159c4ac8bce37ecdc09731b9de9e06584b09b20a1842dac0e8f59",
+      "geometrySha256": "8f85c29587bd5117a3ffb93228b12d2e11cf79e1f820042a2444108758bf1b2d",
+      "boundsMetric": {
+        "minX": 382186.7572887911,
+        "minY": 2911818.982831639,
+        "maxX": 382189.809834929,
+        "maxY": 2911821.071863948,
+        "widthM": 3.052546137885656,
+        "heightM": 2.089032309129834,
+        "aspectRatio": 1.4612249530775157
+      },
+      "areaM2": 2.0994171726288564,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 1,
+  "subthresholdPositiveIntersectionTotalM2": 7.848877514593511e-8,
+  "subthresholdPositiveIntersections": [
+    {
+      "ids": [
+        "41b22211e2ecb4967edad04a7fff2da19e636db2c5544a8591f77069f96c4505",
+        "d403081a794159c4ac8bce37ecdc09731b9de9e06584b09b20a1842dac0e8f59"
+      ],
+      "featureIndexes": [
+        0,
+        1
+      ],
+      "areaM2": 7.848877514593511e-8
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

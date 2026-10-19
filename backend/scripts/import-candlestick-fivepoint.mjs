@@ -3,7 +3,7 @@
 // named plan of Freeform buildings: massing read off the plan's own height map and block plan — connected pieces per
 // height zone of each development block (40–180 ft), eleven tower boxes A–K at their encouraged
 // locations (220–420 ft), mid-block breaks kept open. Each footprint is its own Freeform proposal;
-// the 99 proposals are grouped in one named plan. Published through the normal API.
+// the proposals are grouped in one named plan. Published through the normal API.
 // Without --apply nothing is posted: the conversion is validated, summarized and written to --out.
 //
 //   node scripts/import-candlestick-fivepoint.mjs [--apply]

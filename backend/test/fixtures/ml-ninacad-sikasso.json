@@ -1,0 +1,203 @@
+{
+  "comment": "Safe live Sikasso WFS sample and adapted production descriptor; only native ninacad and full source polygons retained.",
+  "descriptor": {
+    "id": "ml-sprdf-ninacad-parcelle-wfs",
+    "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+    "adapter": "wfs",
+    "featureType": "sifMali:parcelle",
+    "version": "2.0.0",
+    "geometryField": "geom",
+    "idField": "ninacad",
+    "idType": "string",
+    "idPattern": "^[0-9]{11}$",
+    "idPrefix": "ML-NINACAD-",
+    "outFields": [
+      "ninacad"
+    ],
+    "requestProperties": true,
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "cityIds": [
+      "sikasso"
+    ],
+    "name": "SPRDF / NINACAD cadastral parcels",
+    "countryCode": "ML",
+    "metricSrid": 32630,
+    "scope": "Sikasso commune 03101 is listed in the official portal with 12 sections. This initial qualification covers only the saved bounded sample and exact native-key reads; municipal boundary and citywide completeness are unverified.",
+    "nativeCrs": "EPSG:4326",
+    "wireCrs": "CRS:84",
+    "wireAxisOrder": "longitude,latitude",
+    "returnsWGS84": true,
+    "evidenceFile": "evidence/source-metadata.json",
+    "licenceNote": "Public service access; no explicit geometry redistribution licence or attribution terms established. Reuse review remains a follow-up and this attempt does not enable runtime admission.",
+    "licenceUrl": "https://ninacad.sprdf.ml/",
+    "catalogueUrl": "https://ninacad.sprdf.ml/",
+    "attribution": "SPRDF / NINACAD cadastral parcels; see publisher conditions.",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    }
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "parcelle.3972522",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -5.6691698209,
+                11.3123839852
+              ],
+              [
+                -5.6691709827,
+                11.312448739
+              ],
+              [
+                -5.6691366029,
+                11.3124646065
+              ],
+              [
+                -5.6692153321,
+                11.3127702609
+              ],
+              [
+                -5.6689669163,
+                11.3127641206
+              ],
+              [
+                -5.6689289455,
+                11.312387749
+              ],
+              [
+                -5.6691698209,
+                11.3123839852
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "ninacad": "03101020001"
+        },
+        "bbox": [
+          -5.6692153321,
+          11.3123839852,
+          -5.6689289455,
+          11.3127702609
+        ]
+      },
+      {
+        "type": "Feature",
+        "id": "parcelle.3989122",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -5.6712301249,
+                11.3149371895
+              ],
+              [
+                -5.6704259628,
+                11.3150136281
+              ],
+              [
+                -5.6703402692,
+                11.3144201566
+              ],
+              [
+                -5.671158798,
+                11.314328121
+              ],
+              [
+                -5.6712301249,
+                11.3149371895
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "ninacad": "03101026441"
+        },
+        "bbox": [
+          -5.6712301249,
+          11.314328121,
+          -5.6703402692,
+          11.3150136281
+        ]
+      },
+      {
+        "type": "Feature",
+        "id": "parcelle.3996298",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -5.671147591,
+                11.314238395
+              ],
+              [
+                -5.670294781,
+                11.314334284
+              ],
+              [
+                -5.6702546632,
+                11.3137606899
+              ],
+              [
+                -5.6710799311,
+                11.3137279371
+              ],
+              [
+                -5.671147591,
+                11.314238395
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "ninacad": "03101026460"
+        },
+        "bbox": [
+          -5.671147591,
+          11.3137279371,
+          -5.6702546632,
+          11.314334284
+        ]
+      }
+    ],
+    "totalFeatures": 22,
+    "numberMatched": 22,
+    "numberReturned": 3,
+    "timeStamp": "2026-10-18T23:30:09.516Z",
+    "links": [
+      {
+        "title": "next page",
+        "type": "application/json",
+        "rel": "next",
+        "href": "https://geoserver.sprdf.ml/geoserver/sifMali/wfs?PROPERTYNAME=ninacad%2Cgeom&REQUEST=GetFeature&BBOX=-5.67073498556137%2C11.3126054897523%2C-5.66873498556137%2C11.3146054897523%2CCRS%3A84&SORTBY=ninacad&SRSNAME=CRS%3A84&OUTPUTFORMAT=application%2Fjson&VERSION=2.0.0&TYPENAMES=sifMali%3Aparcelle&COUNT=3&SERVICE=WFS&STARTINDEX=3"
+      }
+    ],
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::4326"
+      }
+    },
+    "bbox": [
+      -5.6712301249,
+      11.3123839852,
+      -5.6689289455,
+      11.3150136281
+    ]
+  }
+}

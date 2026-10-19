@@ -7,6 +7,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+EXAMPLE_HOME = "/".join(("", "Users", "dev"))
+
 
 SCRIPT = Path(__file__).resolve().parents[1] / "lib/parcel_shared_learning.py"
 spec = importlib.util.spec_from_file_location("parcel_shared_learning_tested", SCRIPT)
@@ -127,7 +129,7 @@ class SharedLearningTests(unittest.TestCase):
         ]))
         self.assertTrue(identifier.startswith("finding-"))
         with self.assertRaisesRegex(ValueError, "private filesystem path"):
-            learning.append_finding(self.root, finding(2, evidenceRefs=[{"path": "/Users/dev/private.json"}]))
+            learning.append_finding(self.root, finding(2, evidenceRefs=[{"path": f"{EXAMPLE_HOME}/private.json"}]))
         with self.assertRaisesRegex(ValueError, "credential-like"):
             learning.append_finding(self.root, finding(3, evidenceRefs=[{"url": "https://x.test/a?api_key=secret"}]))
         with self.assertRaisesRegex(ValueError, "private filesystem path"):
@@ -193,7 +195,7 @@ class SharedLearningTests(unittest.TestCase):
         shared = self.root / "shared"
         result = self.root / "state/result.json"
         result.parent.mkdir()
-        result.write_text('{"artifactRoot":"/Users/dev/private-run"}\n')
+        result.write_text(json.dumps({"artifactRoot": f"{EXAMPLE_HOME}/private-run"}) + "\n")
         record = learning.build_city_finding(self.root, {"cityCode": "8"}, "qualification",
                                              {"qualification": {"status": "failed",
                                                                 "resultPath": str(result)},
@@ -208,7 +210,7 @@ class SharedLearningTests(unittest.TestCase):
         receipt.parent.mkdir()
         receipt.write_text(json.dumps({
             "crs": "x" * 201,
-            "sourceCrs": "/Users/dev/private-definition",
+            "sourceCrs": f"{EXAMPLE_HOME}/private-definition",
             "metadata": {"nativeCrs": "EPSG:3857", "geometryType": "Polygon",
                          "supportsPagination": True, "maxRecordCount": float("nan")},
         }))

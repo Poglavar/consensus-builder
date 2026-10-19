@@ -44,8 +44,23 @@ wallet, `G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg`, accepts devnet SOL for f
 Before a live actor run or lens attestation, a configured bot below 0.05 SOL receives only the
 shortfall to 0.2 SOL. The helper checks the full devnet genesis, configured recipient and source
 signer, and a 0.5 SOL source reserve plus fee allowance; it reads balances back after confirmation.
-Actor runs checkpoint the transfer receipt. This moves devnet SOL for fees; existing USDC/action
-limits for proposal support and betting still apply.
+Actor runs checkpoint the transfer receipt. Existing USDC/action limits for proposal support and betting still apply.
+
+The same main bot wallet also accepts **Solana devnet USDC** for the actors. With
+`AGENT_USDC_FUNDING_ENABLED=1`, a configured actor about to stake or donate is topped up to
+0.5 test USDC if its balance is below 0.1 USDC or below the intended action amount. Transfers
+retain at least 1 test USDC in the source wallet, use the fixed devnet mint with six decimals,
+and verify balances after confirmation. A shared database lock serializes source-wallet funding
+across bot processes. Each successful transfer is recorded as `summary.usdcFunding` on the run.
+Pledges, revocations, claims, dry runs and adequately funded wallets trigger no USDC top-up.
+The actor's normal spending caps apply to its selected action; funding does not increase them.
+
+Supporter and society discovery read paginated proposal summaries and minted named plans.
+Plans use `plan:<slug>` as the policy input identity and their actual Solana proposal account
+for support, market reads and staking. Missing or changed plan members exclude the plan with
+an explicit log entry; unavailable API or chain reads fail the run. Chain state determines whether
+a plan is active or settled. Density policies load members in batches only when needed and
+measure the member building geometry, including holes, using each member's floor/height data.
 
 `run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
 spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and

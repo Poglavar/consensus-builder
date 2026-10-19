@@ -1,0 +1,78 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/tamil-nadu/tngis/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "id"
+    ],
+    "id": "in-tn-tngis-tiles",
+    "idPrefix": "IN-TN-TNGIS-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "TNGIS_TN_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 4,
+    "maxFeatures": 10000,
+    "metricSrid": 32643,
+    "name": "Tamil Nadu cadastral maps — indianopenmaps tile snapshot (TNGIS_TN_Cadastrals)",
+    "outFields": [
+      "id"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Tamil Nadu from the TNGIS_TN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "TN",
+    "zoom": 14,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "coimbatore",
+      "tiruppur",
+      "erode",
+      "vellore",
+      "madurai",
+      "10717"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "10717": 32644,
+      "coimbatore": 32643,
+      "tiruppur": 32643,
+      "erode": 32643,
+      "vellore": 32644,
+      "madurai": 32644
+    }
+  },
+  "city": {
+    "code": "10717",
+    "name": "Tiruvallur",
+    "point": [
+      79.9158697925941,
+      13.1240523617681
+    ]
+  },
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~799155325~131240822~0a3beb68c94c5e6bade89d326bc9fb5b7752e2a2bb13c426f2f5ca005031af40",
+    "IN-TN-TNGIS-g1~799155110~131239725~2335281b68064ffd2d990c6df3657d787a2f74ec5aa79d882ac8cc18fd301c3a",
+    "IN-TN-TNGIS-g1~799154896~131238993~202a76a758255f74073827f1ac567404935af990b250a1fde792d763b0709f6f"
+  ],
+  "absentId": "IN-TN-TNGIS-g1~799154896~131238993~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32644",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Tamil Nadu cadastral maps — indianopenmaps tile snapshot (TNGIS_TN_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Tamil Nadu; candidate cities are limited to WUP points inside IN-TN. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

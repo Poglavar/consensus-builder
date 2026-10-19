@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "3345",
+  "cityName": "Ondjiva",
+  "sourceId": "ao-agt-cunene-agt-layer-0",
+  "candidateSha256": "1093175131c89deae2b4220cd97b602d9dc6656f01254d2bf22c6074ebf1d3e8",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 4
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32733",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "8e86edcfbe9afa3c57f5ed31965157805211c791aa03ccbcfecabf3db668d253",
+  "featureCount": 3,
+  "sampleIds": [
+    "AO-CUNENE-AGT-1902d7521152e1453c52e0faf4b5663eba9b",
+    "AO-CUNENE-AGT-19024cc94eaf308b648104928a52e46b6242",
+    "AO-CUNENE-AGT-1902da1883a53a95e7cc9d5fc302254de5b9"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:50:15.575Z",
+      "queryHash": "ea95e1d021052eada5d38ea5ce68dce4d8b6be79c37e54fe2f83907cf27a9541",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:50:16.022Z",
+      "queryHash": "ea95e1d021052eada5d38ea5ce68dce4d8b6be79c37e54fe2f83907cf27a9541",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:50:16.189Z",
+      "queryHash": "2ebf44d85ec46c4dc4fd2d99d520663ffe31da6f7f9c3a380839b050d081c7bc",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:50:16.382Z",
+      "queryHash": "ea95e1d021052eada5d38ea5ce68dce4d8b6be79c37e54fe2f83907cf27a9541",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 141
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:50:16.524Z",
+      "queryHash": "ea95e1d021052eada5d38ea5ce68dce4d8b6be79c37e54fe2f83907cf27a9541",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 149
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-eu1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-18T23:50:16.675Z",
+      "queryHash": "2ebf44d85ec46c4dc4fd2d99d520663ffe31da6f7f9c3a380839b050d081c7bc",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 158
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

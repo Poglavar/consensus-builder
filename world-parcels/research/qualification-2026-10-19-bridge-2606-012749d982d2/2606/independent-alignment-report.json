@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "sourceId": "ci-divo-ecommunes-parcellaire",
+  "cityCode": "2606",
+  "contractSha256": "4a22c99d3b07f97790b764a23444e969b49c71c7b6adbe19fa8c8387aadde27a",
+  "evidenceSha256": "e35892ed2d641409ab60a89322b9b0bb8a5333dac45d48ab83455743836ef69c",
+  "metadataSha256": "b7c6229c79f896437e52f6c4543ae81c401b5880644c594668e0bcc7e5f988b1",
+  "nativeSha256": "4052e5a2b437cbc95475de3b32be7e5e0f2fe1eb058000b227c38b6ec9503ab5",
+  "cacheSha256": "6d86bf5228847fc1bae041e42d8d6aa592e727cf01b48a3f0ed5ca32c4a74a07",
+  "nativeCrs": "EPSG:32630",
+  "nativeAxisOrder": "east-north",
+  "outputCrs": "EPSG:4326",
+  "coordinateOperation": "Inverse of UTM zone 30N + axis order change (2D)",
+  "operationPipeline": "proj=pipeline step inv proj=utm zone=30 ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+  "operationAccuracyM": 0.0,
+  "bestOperationAvailable": true,
+  "ballparkAllowed": false,
+  "toleranceM": 0.25,
+  "maxVertexDifferenceM": 1.6814143734660337e-09,
+  "featureCount": 3,
+  "samples": [
+    {
+      "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/0F31FA63A2934DC99FF02CDC0F31A9DF",
+      "nativeVertexCount": 5,
+      "adapterVertexCount": 5,
+      "maxVertexDifferenceM": 1.2787128955098617e-09,
+      "maxBoundaryDifferenceM": 1.2399962574502509e-09
+    },
+    {
+      "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/E18CBD07CCEB4212A0DA05942DADD590",
+      "nativeVertexCount": 34,
+      "adapterVertexCount": 34,
+      "maxVertexDifferenceM": 1.6814143734660337e-09,
+      "maxBoundaryDifferenceM": 1.6587789259867026e-09
+    },
+    {
+      "parcelId": "ci-divo-ecommunes/Parcellaire/feature-id/0C2F922F36E845858FA24A68864E40E3",
+      "nativeVertexCount": 5,
+      "adapterVertexCount": 5,
+      "maxVertexDifferenceM": 1.1836918664486923e-09,
+      "maxBoundaryDifferenceM": 1.4131116175921948e-09
+    }
+  ],
+  "maxBoundaryDifferenceM": 1.6587789259867026e-09,
+  "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+  "operationChoiceUnresolved": false,
+  "sourceGeometryChanged": false,
+  "fittedOffsetApplied": false,
+  "sourceGeoreferencing": "unverified",
+  "limitations": [
+    "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+    "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+  ]
+}
