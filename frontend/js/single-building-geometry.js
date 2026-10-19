@@ -66,10 +66,16 @@
     // A footprint ring must not fold across itself or reuse a vertex. Adjacent edges share one
     // endpoint by definition, so only non-adjacent edge pairs are tested for intersections.
     function isSimpleRing(ring) {
-        const open = openRing(ring);
+        let open = openRing(ring);
         if (open.length < 3) return false;
         const unique = new Set(open.map(coord => `${coord[0]},${coord[1]}`));
         if (unique.size !== open.length) return false;
+        // Work in a local unit square: a tolerance in raw degrees misclassified centimetre-wide
+        // corners as intersections, and a global-coordinate shoelace loses small footprint areas.
+        const origin = open[0];
+        const span = Math.max(...open.map(point => Math.max(Math.abs(point[0] - origin[0]), Math.abs(point[1] - origin[1]))));
+        if (!(span > 0)) return false;
+        open = open.map(point => [(point[0] - origin[0]) / span, (point[1] - origin[1]) / span]);
 
         let twiceArea = 0;
         for (let i = 0; i < open.length; i++) {
@@ -115,6 +121,53 @@
             return geometry.coordinates.map(polygon => polygon && polygon[0]).filter(Boolean);
         }
         return [];
+    }
+
+    // Editing one ring must leave the other parts and courtyard boundaries untouched.
+    function withFootprintRing(feature, polygonIndex, ringIndex, ring) {
+        if (!feature?.geometry || !Array.isArray(ring)) return null;
+        const next = JSON.parse(JSON.stringify(feature));
+        const polygons = next.geometry.type === 'Polygon' ? [next.geometry.coordinates]
+            : next.geometry.type === 'MultiPolygon' ? next.geometry.coordinates : [];
+        if (!polygons[polygonIndex]?.[ringIndex]) return null;
+        polygons[polygonIndex][ringIndex] = ensureClosedRing(JSON.parse(JSON.stringify(ring)));
+        return next;
+    }
+
+    // Validate every ring, including the topology of courtyards, before importing or committing an
+    // edit. Testing the exterior alone accepts a hole outside its building or overlapping holes.
+    function validFootprint(feature, turfApi) {
+        const geometry = feature?.geometry;
+        const polygons = geometry?.type === 'Polygon' ? [geometry.coordinates]
+            : geometry?.type === 'MultiPolygon' ? geometry.coordinates : [];
+        if (!polygons.length || !turfApi) return false;
+        try {
+            if (turfApi.area(feature) < 0.5) return false;
+            return polygons.every(rings => {
+                if (!Array.isArray(rings) || !rings.length || rings.some(ring => !isSimpleRing(ring))) return false;
+                const exterior = turfApi.polygon([rings[0]]);
+                const holes = rings.slice(1).map(ring => turfApi.polygon([ring]));
+                if (holes.some(hole => {
+                    const outside = turfApi.difference(hole, exterior);
+                    return outside && turfApi.area(outside) > 1e-6;
+                })) return false;
+                for (let index = 0; index < holes.length; index += 1) {
+                    for (let other = index + 1; other < holes.length; other += 1) {
+                        const overlap = turfApi.intersect(holes[index], holes[other]);
+                        if (overlap && turfApi.area(overlap) > 1e-6) return false;
+                    }
+                }
+                // Each ring is simple and hole interiors are contained and disjoint. A hole may
+                // touch the exterior at one point; Turf kinks incorrectly rejects that valid case.
+                return true;
+            });
+        } catch (_) { return false; }
+    }
+
+    function importedHeight(properties = {}, fallback = 15) {
+        const positive = value => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : null;
+        const floors = positive(properties.storeys) || positive(properties.floors) || positive(properties.levels);
+        return Math.max(3, positive(properties.height) || positive(properties.heightM) || (floors && floors * 3) || fallback);
     }
 
     function metricFrames() {
@@ -284,6 +337,9 @@
         ensureClosedRing,
         footprintWithinBoundary,
         isSimpleRing,
+        withFootprintRing,
+        validFootprint,
+        importedHeight,
         geometryCenter,
         moveGeometry,
         moveCoordinateCollection,

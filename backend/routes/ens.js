@@ -1,7 +1,7 @@
 // ENS CCIP-Read gateway route. Resolves names forwarded by the L1
 // OffchainResolver and returns signed records, for two namespaces:
 //   <slug>.parcels.urbangametheory.eth     -> parcel_ens mapping
-//   <id>.proposals.urbangametheory.eth     -> legacy numeric proposal or unique chain mirror
+//   <id>.proposals.urbangametheory.eth     -> legacy numeric proposal, unique chain mirror, or named plan
 // ownerOf (addr record) is best-effort and parcel-only.
 import { JsonRpcProvider, Contract } from 'ethers';
 import { createRequire } from 'node:module';
@@ -45,6 +45,7 @@ function proposalTextValue(key, { record, config, isApex }) {
     const ids = record.ids || [];
     switch (key) {
         case 'url':
+            if (record.isPlan && record.slug) return `${config.publicBaseUrl}/proposals/${record.slug}`;
             if (record.chainRef) {
                 const path = buildChainProposalPath(record.chainRef);
                 return path ? `${config.publicBaseUrl}${path}` : '';
@@ -98,10 +99,10 @@ export function setupEnsRoute(app, pool) {
         return { ...row, city_name: placed || (city ? city.cityName : null) };
     }
 
-    // Resolve a proposals label to a legacy proposal id list or one chain mirror:
+    // Resolve a proposals label to a legacy proposal id list, one chain mirror, or a named plan:
     //   - numeric / hyphen-chain (1, 1-2-3) → those minted proposal id(s)
     //   - chain-<48 hex chars> → one unique canonical chain_<sha256> mirror
-    //   - otherwise a named plan slug → ens_plan's proposal_ids (mutable)
+    //   - otherwise a named plan slug → its short, slug-based PlanView route
     async function lookupProposal(label) {
         const chainMatch = /^chain-([0-9a-f]{48})$/i.exec(label);
         if (chainMatch) {
@@ -162,7 +163,7 @@ export function setupEnsRoute(app, pool) {
             const { rows } = await pool.query('SELECT proposal_ids, title FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
             if (rows.length) {
                 const ids = Array.isArray(rows[0].proposal_ids) ? rows[0].proposal_ids.map(String) : [];
-                if (ids.length) return { ids, title: rows[0].title, isPlan: true };
+                if (ids.length) return { slug: label, title: rows[0].title, isPlan: true };
             }
         } catch (_) { /* ens_plan absent */ }
         return null;

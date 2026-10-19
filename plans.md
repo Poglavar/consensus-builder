@@ -30,6 +30,9 @@ about ("the official UPU Borovje", "Borovje – urban blocks"). Decisions of 202
   `parcel_ids` filters retain their existing meanings.
 - `GET /plans/:slug` exposes each member's `proposalRowId` and `authoredProposalId` separately.
   A missing member retains `proposalRowId` and reports `missing: true`; its authored ID is unavailable.
+- Named plans contain at most 5,000 deduplicated proposal row IDs. Their URL is the short
+  `/proposals/<slug>` route; membership is looked up server-side, so row-ID length does not affect
+  ENS text-record size.
 - The retired creation field `proposalIds` and query filter `proposal_ids` return 400, including
   when supplied alongside the new fields. Responses have no old aliases.
 
@@ -102,5 +105,6 @@ use the names above; no alias reader is maintained. It changes no stored values 
 
 ## Links
 
-- `/proposals/<slug>` opens a plan (applies its members), as before.
+- `/proposals/<slug>` opens a plan (applies its members); named-plan URLs, including ENS `url`
+  records, use this route rather than expanding row IDs into the path.
 - `/bets/<plan account>` opens the plan's bet, as for proposals.

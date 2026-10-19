@@ -1311,6 +1311,17 @@ describe('site-first drafts', () => {
         }
     });
 
+    it('refuses saving a Freeform collection as one proposal even outside the map Done path', () => {
+        const adapter = buildBuildingAdapter('single');
+        const feature = { type: 'Feature', properties: { height: 18 }, geometry: { type: 'Polygon', coordinates: [[[15.97005,45.8001],[15.9702,45.8001],[15.9702,45.8003],[15.97005,45.8003],[15.97005,45.8001]]] } };
+        const source = { proposalId: 'collection', goal: 'single', typologyType: 'single', title: 'Collection',
+            site: SITE, cadastreParcelIds: [], geometry: { buildings: [feature, structuredClone(feature)] },
+            buildingProposal: { typologyType: 'single', parameters: { typology: 'single' } } };
+        const draft = draftFor(adapter, source);
+        expect(adapter.validate(draft).errors.map(error => error.code)).toContain('freeform-building-count');
+        expect(() => adapter.serializeProposal(draft)).toThrow(/exactly one building/);
+    });
+
     it('saves a moved Freeform building inside its bound site and still rejects a part outside it', () => {
         const adapter = buildBuildingAdapter('single');
         const part = (west, east) => [[[west, 45.8001], [east, 45.8001], [east, 45.8003], [west, 45.8003], [west, 45.8001]]];

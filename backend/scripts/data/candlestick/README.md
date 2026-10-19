@@ -1,14 +1,15 @@
 # Candlestick Point (San Francisco) inputs
 
 Inputs for `backend/scripts/import-candlestick-courtyard.mjs`, which recreates the "Courtyard
-Candlestick" concept as a proposal in this app so it can stand next to the official plan.
+Candlestick" concept as an ordinary named plan of Freeform building proposals so it can stand next to the official plan.
 
 ## candlestick-point-boundary-wgs84.geojson
 
 The project-area boundary: DataSF dataset `m288-24sn` ("Former SF Redevelopment Agency Project
 Areas"), feature "Bayview Hunters Point Area B Zone 1", about 271 acres, reprojected to WGS84.
 Licence: PDDL 1.0 (City and County of San Francisco). Both the courtyard concept and the official
-FivePoint plan describe the same 271.6-acre site, so the same boundary is the site of both proposals.
+FivePoint plan describe the same 271.6-acre development. This boundary is source context; each
+Freeform proposal owns its own footprint site, and the named plan groups the complete development.
 
 ## The courtyard concept model (not in the repository, 37 MB)
 
@@ -42,3 +43,23 @@ Approximate by construction: a massing read off a height map, not the developer'
 points are the figures' symbols: an encouraged tower may stand anywhere in its allowable zone, and the
 Innovation District parcel heights (A–N) were read from a raster figure (A5.3N). Affordable units and arts
 space come from the OCII project overview, not Addendum 7.
+
+
+## Import contract and recreation
+
+Each disconnected footprint becomes one ordinary Freeform proposal (`goal` and `typologyType` are
+`single`), retaining its holes, height and source identity. Source MultiPolygons are split without
+selecting a largest piece. The Courtyard projection retains full WGS84 precision and removes
+repeated consecutive source vertices. The FivePoint reconstruction retains all pieces around
+mid-block passages and assigns overlapping tower bases to the taller volume, keeping the whole
+built footprint without overlapping independent building parcels.
+
+Both commands default to a dry run and write `{ plan, proposals }` to `--out`. The plan manifest
+names its members as `authoredProposalIds`; publication resolves their database row IDs and uses
+the ordinary immutable named-plan API. `--apply` prepares, publishes and reads back each building,
+then publishes and verifies the plan's membership. An exact rerun skips existing records; changed
+content at an existing ID fails and requires a new `--proposal-id` prefix/version.
+
+For recreating an already-published aggregate, supply `--source-proposal-id <row-id>` to preserve
+ordinary counterproposal lineage. Published source geometry and chain references remain intact.
+Rebuilt records can then be edited, moved, reshaped and saved with the standard Freeform tool.

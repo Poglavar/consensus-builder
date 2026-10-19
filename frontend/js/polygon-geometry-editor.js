@@ -66,54 +66,41 @@
         return nearestIndex;
     }
 
-    function planarRingArea(ring) {
-        const points = openRing(ring);
-        let twiceArea = 0;
-        points.forEach((point, index) => {
-            const next = points[(index + 1) % points.length];
-            twiceArea += point[0] * next[1] - next[0] * point[1];
-        });
-        return Math.abs(twiceArea) / 2;
-    }
-
-    // Accept the usual GeoJSON wrappers and return the largest polygon's editable outer ring.
-    // Keeping this here gives every polygon editor exactly the same import semantics.
-    function extractOuterRingFromGeoJSON(input, turfApi) {
-        const polygons = [];
-        const collect = value => {
-            if (!value || typeof value !== 'object') return;
-            if (value.type === 'FeatureCollection') {
-                (Array.isArray(value.features) ? value.features : []).forEach(collect);
-            } else if (value.type === 'Feature') {
-                collect(value.geometry);
-            } else if (value.type === 'GeometryCollection') {
-                (Array.isArray(value.geometries) ? value.geometries : []).forEach(collect);
-            } else if (value.type === 'Polygon' && Array.isArray(value.coordinates)) {
-                polygons.push(value.coordinates);
-            } else if (value.type === 'MultiPolygon' && Array.isArray(value.coordinates)) {
-                value.coordinates.forEach(coordinates => polygons.push(coordinates));
-            }
+    // Accept the usual GeoJSON wrappers without selecting a preferred footprint. Each disconnected
+    // Polygon becomes a building; every interior ring and source property stays with its exterior.
+    // Reject the whole file on malformed or non-polygon content instead of silently losing it.
+    function polygonFeaturesFromGeoJSON(input) {
+        const features = [];
+        const clone = value => JSON.parse(JSON.stringify(value));
+        const polygon = (coordinates, source) => {
+            if (!Array.isArray(coordinates) || !coordinates.length) throw new Error('A footprint needs an exterior ring.');
+            const rings = coordinates.map(ring => {
+                if (!Array.isArray(ring) || ring.length < 3 || ring.some(position => !Array.isArray(position)
+                    || position.length < 2 || position.some(value => !Number.isFinite(value))
+                    || Math.abs(position[0]) > 180 || Math.abs(position[1]) > 90)) {
+                    throw new Error('A footprint contains invalid longitude/latitude coordinates.');
+                }
+                const result = clone(ring);
+                if (!coordinatesEqual(result[0], result[result.length - 1])) result.push(clone(result[0]));
+                if (result.length < 4) throw new Error('A footprint ring needs three vertices.');
+                return result;
+            });
+            features.push({ ...clone(source), type: 'Feature', properties: clone(source.properties || {}),
+                geometry: { type: 'Polygon', coordinates: rings } });
+        };
+        const collect = (value, source = { properties: {} }) => {
+            if (!value || typeof value !== 'object') throw new Error('Missing GeoJSON geometry.');
+            if (value.type === 'FeatureCollection' && Array.isArray(value.features)) value.features.forEach(feature => collect(feature));
+            else if (value.type === 'Feature') collect(value.geometry, value);
+            else if (value.type === 'GeometryCollection' && Array.isArray(value.geometries)) value.geometries.forEach(geometry => collect(geometry, source));
+            else if (value.type === 'Polygon') polygon(value.coordinates, source);
+            else if (value.type === 'MultiPolygon' && Array.isArray(value.coordinates) && value.coordinates.length) {
+                value.coordinates.forEach(coordinates => polygon(coordinates, source));
+            } else throw new Error('GeoJSON must contain only Polygon or MultiPolygon footprints.');
         };
         collect(input);
-
-        let largestRing = null;
-        let largestArea = -Infinity;
-        polygons.forEach(coordinates => {
-            const ring = openRing(coordinates && coordinates[0]);
-            if (ring.length < 3) return;
-            let area = planarRingArea(ring);
-            if (turfApi) {
-                try {
-                    const closed = ring.concat([[ring[0][0], ring[0][1]]]);
-                    area = turfApi.area(turfApi.polygon([closed]));
-                } catch (_) { }
-            }
-            if (area > largestArea) {
-                largestArea = area;
-                largestRing = ring;
-            }
-        });
-        return largestRing;
+        if (!features.length) throw new Error('No polygon footprints found.');
+        return features;
     }
 
     // The clickable edge is intentionally wider than the visible line for touch/mouse usability.
@@ -674,7 +661,7 @@
         openRing,
         coordinateOnEdge,
         constrainRingToBoundary,
-        extractOuterRingFromGeoJSON,
+        polygonFeaturesFromGeoJSON,
         insertVertexAfterEdge,
         removeVertexAt,
         snapCoordinateToBoundary

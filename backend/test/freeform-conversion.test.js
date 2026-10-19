@@ -115,7 +115,7 @@ describe('mergedBuilding: a Block or Row becomes one Freeform building', () => {
 describe('freeformDraftPatch: the draft becomes a Freeform free placement on its site', () => {
     it('re-types the draft and binds the building to the given site', () => {
         const building = conversion.mergedBuilding([box(0, 0, D, D, { height: 9 })], ops).building;
-        const site = box(-D, -D, 2 * D, 2 * D).geometry;
+        const site = { type: 'MultiPolygon', coordinates: [box(-D, -D, 2 * D, 2 * D).geometry.coordinates] };
         const patch = conversion.freeformDraftPatch({ editorPayload: { context: { blockName: 'Block 12' } } }, { building, site });
         expect(patch).toMatchObject({
             adapterKey: 'single',

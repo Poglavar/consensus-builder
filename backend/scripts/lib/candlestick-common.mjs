@@ -1,53 +1,17 @@
 // Shared by the Candlestick Point importers (import-candlestick-courtyard.mjs and
-// import-candlestick-fivepoint.mjs): the site from the DataSF boundary, growing it around footprints
-// that cross it by centimetres, and publishing a converted record through the normal API (the site
-// binding first, then the proposal) so every server rule applies exactly as it does for a browser.
-
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import * as turf from '@turf/turf';
+// import-candlestick-fivepoint.mjs): publish each ordinary Freeform building on its own footprint
+// through the normal API (site binding first, then the proposal), and name the complete collection.
+// Restarts verify stored content before skipping a record, so source edits require a new version.
 
 export const DEFAULTS = Object.freeze({
     backend: 'http://localhost:4650',
     origin: 'http://localhost:5650',
     city: 'san_francisco',
     parcelSourceId: 'us-ca-sf-datasf-active-parcels',
-    boundary: path.join(path.dirname(fileURLToPath(import.meta.url)), '../data/candlestick/candlestick-point-boundary-wgs84.geojson'),
     expiresInDays: 365
 });
 
 const log = (message) => console.log(`[${new Date().toISOString()}] ${message}`);
-
-export function siteFromBoundary(boundaryGeoJson) {
-    const feature = boundaryGeoJson.type === 'FeatureCollection' ? boundaryGeoJson.features[0] : boundaryGeoJson;
-    const geometry = feature.geometry || feature;
-    if (geometry.type === 'Polygon') return { type: 'MultiPolygon', coordinates: [geometry.coordinates] };
-    if (geometry.type === 'MultiPolygon') return geometry;
-    throw new Error(`boundary must be a Polygon or MultiPolygon, got ${geometry.type}`);
-}
-
-// The authored footprints may follow a boundary that differs from DataSF's by centimetres along the
-// edge; the server refuses any footprint area outside the site, so the site is the boundary grown by
-// a hair around exactly the footprints that cross it (reported).
-export function siteCoveringFootprints(site, features, bufferM = 0.3) {
-    let covered = turf.feature(site);
-    const widened = [];
-    for (const feature of features) {
-        let outside = null;
-        // turf 6.5: two features, not a FeatureCollection.
-        try { outside = turf.difference(turf.feature(feature.geometry), covered); } catch (_) { outside = null; }
-        if (!outside || turf.area(outside) <= 0) continue;
-        const grown = turf.buffer(turf.feature(feature.geometry), bufferM, { units: 'meters' });
-        const merged = turf.union(covered, grown);
-        if (!merged) continue;
-        covered = merged;
-        widened.push(feature.properties && feature.properties.id);
-    }
-    const geometry = covered.geometry.type === 'Polygon'
-        ? { type: 'MultiPolygon', coordinates: [covered.geometry.coordinates] }
-        : covered.geometry;
-    return { site: geometry, widened };
-}
 
 export function bboxOf(features) {
     const box = [Infinity, Infinity, -Infinity, -Infinity];
@@ -81,14 +45,27 @@ export async function request(backend, origin, method, route, body) {
  * parcel source and signs the artifact) and POST exactly the record the preparation returns — it
  * carries the signed preparation and the artifact, which publication verifies and stores.
  */
-export async function publish(record, { backend, origin, city, parcelSourceId = DEFAULTS.parcelSourceId }) {
-    const existing = await request(backend, origin, 'GET', `/proposals/${encodeURIComponent(record.proposalId)}`);
+function stable(value) {
+    if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
+    if (value && typeof value === 'object') return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`;
+    return JSON.stringify(value);
+}
+
+export async function publish(record, { backend, origin, city, parcelSourceId = DEFAULTS.parcelSourceId, requestFn = request }) {
+    const existing = await requestFn(backend, origin, 'GET', `/proposals/${encodeURIComponent(record.proposalId)}`);
     if (existing.status === 200) {
-        log(`proposal ${record.proposalId} already exists on ${backend} (row ${existing.json && existing.json.id}); leaving it alone`);
-        return { skipped: true, id: existing.json && existing.json.id };
+        const current = existing.json?.proposal || existing.json;
+        const expectedTypology = record.buildingProposal?.typologyType || record.typologyType;
+        const currentTypology = current?.buildingProposal?.typologyType || current?.typologyType;
+        const same = current?.goal === record.goal && currentTypology === expectedTypology
+            && stable(current?.geometry?.buildings) === stable(record.geometry?.buildings);
+        if (!same) throw new Error(`proposal ${record.proposalId} exists with different Freeform content; choose a new proposal-id prefix/version`);
+        log(`proposal ${record.proposalId} already exists on ${backend} (row ${current.id}); leaving it alone`);
+        return { skipped: true, id: current.id };
     }
+    if (existing.status !== 404) throw new Error(`proposal lookup failed (${existing.status}): ${existing.text.slice(0, 300)}`);
     log(`preparing against ${parcelSourceId}…`);
-    const prepared = await request(backend, origin, 'POST', '/proposals/prepare', {
+    const prepared = await requestFn(backend, origin, 'POST', '/proposals/prepare', {
         proposal: record, city, parcelSourceId, toleranceM: record.toleranceM
     });
     if (prepared.status !== 201 || !prepared.json || !prepared.json.proposal || !prepared.json.artifact) {
@@ -99,12 +76,57 @@ export async function publish(record, { backend, origin, city, parcelSourceId = 
     const parcelIds = artifact.cadastreParcelIds || [];
     log(`prepared ${preparationId}: binds ${parcelIds.length} parcels (coverage ${binding.coverage}, unsurveyed ${Math.round(binding.unsurveyedM2 || 0)} m², ${prepared.json.queryMs} ms)${artifact.corridor ? ', corridor land built by the server' : ''}`);
     const body = { ...prepared.json.proposal, parcelSourceId };
-    const created = await request(backend, origin, 'POST', '/proposals', body);
+    const created = await requestFn(backend, origin, 'POST', '/proposals', body);
     if (created.status < 200 || created.status >= 300) {
         throw new Error(`create failed (${created.status}): ${created.text.slice(0, 500)}`);
     }
     const id = created.json && (created.json.id ?? created.json.proposal?.id);
+    const readback = await requestFn(backend, origin, 'GET', `/proposals/${encodeURIComponent(record.proposalId)}`);
+    const stored = readback.json?.proposal || readback.json;
+    if (readback.status !== 200 || stable(stored?.geometry?.buildings) !== stable(record.geometry?.buildings)
+        || stored?.goal !== record.goal || stored?.typologyType !== record.typologyType) {
+        throw new Error(`Stored proposal ${record.proposalId} failed Freeform geometry readback verification.`);
+    }
     log(`created proposal ${record.proposalId} (row ${id}) with ${parcelIds.length} parcels`);
     // The server returns the edit token exactly once; hand it back so the caller can keep it.
     return { skipped: false, id, parcelIds, preparationId, editToken: (created.json && created.json.editToken) || null };
+}
+
+export async function publishNamedPlan(plan, { backend, origin, requestFn = request }) {
+    const expectedIds = plan.proposalRowIds.map(String);
+    const existing = await requestFn(backend, origin, 'GET', `/plans/${encodeURIComponent(plan.slug)}`);
+    if (existing.status === 200) {
+        const actualIds = (existing.json?.proposalRowIds || []).map(String);
+        if (actualIds.length !== expectedIds.length || actualIds.some((id, index) => id !== expectedIds[index])) {
+            throw new Error(`named plan ${plan.slug} already exists with different members; named plans are immutable`);
+        }
+        return { skipped: true, slug: plan.slug };
+    }
+    if (existing.status !== 404) throw new Error(`named plan lookup failed (${existing.status}): ${existing.text.slice(0, 300)}`);
+
+    const created = await requestFn(backend, origin, 'POST', '/plans', {
+        slug: plan.slug,
+        title: plan.title,
+        description: plan.description,
+        author: plan.author,
+        place: plan.place,
+        city: plan.city,
+        proposalRowIds: expectedIds
+    });
+    if (created.status === 201) {
+        const verified = await requestFn(backend, origin, 'GET', `/plans/${encodeURIComponent(plan.slug)}`);
+        const ids = (verified.json?.proposalRowIds || []).map(String);
+        if (verified.status !== 200 || ids.length !== expectedIds.length || ids.some((id,index) => id !== expectedIds[index])) {
+            throw new Error(`Named plan ${plan.slug} failed membership readback verification.`);
+        }
+        return { skipped: false, slug: plan.slug, plan: verified.json };
+    }
+    if (created.status === 409) {
+        const raced = await requestFn(backend, origin, 'GET', `/plans/${encodeURIComponent(plan.slug)}`);
+        const actualIds = (raced.json?.proposalRowIds || []).map(String);
+        if (raced.status === 200 && actualIds.length === expectedIds.length && actualIds.every((id, index) => id === expectedIds[index])) {
+            return { skipped: true, slug: plan.slug };
+        }
+    }
+    throw new Error(`named plan creation failed (${created.status}): ${created.text.slice(0, 500)}`);
 }
