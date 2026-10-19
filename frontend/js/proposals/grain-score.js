@@ -459,47 +459,42 @@
         button.setAttribute('aria-pressed', String(sound.enabled));
     }
 
-    function featureForParcel(parcelId) {
-        const id = String(parcelId);
-        return global.LiveParcelFabric?.get?.(id)
-            || global.CadastralParcelRepository?.get?.(id)
-            || null;
-    }
-
-    async function resolvePlanItems(proposals, fabric) {
-        const resultingIds = (fabric.resulting || []).map(String);
-        let rows = resultingIds.map(id => ({ id, feature: featureForParcel(id) }));
-        const produced = new Set((fabric.produced || []).map(String));
-        // The yield model explicitly reports which ids were produced by proposals. Everything
-        // else is cadastral input; id spelling is not a provenance signal.
-        const cadastralIds = resultingIds.filter(id => !produced.has(id));
-        if (cadastralIds.length && global.CadastralParcelRepository
-            && typeof global.CadastralParcelRepository.ensureIds === 'function') {
-            try { await global.CadastralParcelRepository.ensureIds(cadastralIds); }
-            catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
-            rows = resultingIds.map(id => ({ id, feature: featureForParcel(id) }));
+    function proposalsForScore(plan) {
+        const applied = appliedProposals();
+        const scope = plan?.slug ? rules.namedPlanScoreScope(plan, applied) : { proposals: applied };
+        if (scope.error === 'members') {
+            renderExactMembersRequired();
+            return null;
         }
-        return rows.map(row => {
-            const dimensions = row.feature ? rules.parcelDimensionsMeters(row.feature) : null;
-            return dimensions ? { ...row, ...dimensions } : { ...row, widthMeters: null, depthMeters: null };
-        });
+        if (scope.error === 'composition') {
+            renderError(t(
+                'sidebar.proposals.grainScore.otherApplied',
+                'Other proposals are applied on this map. Unapply them before scoring this named plan.'
+            ));
+            return null;
+        }
+        if (!scope.proposals.length) {
+            renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
+            return null;
+        }
+        return scope.proposals;
     }
 
     async function prepareExperience(plan) {
         state.prepared = null;
-        const applied = appliedProposals();
-        const proposals = plan?.slug ? rules.selectNamedPlanProposals(plan, applied) : applied;
-        if (!proposals) {
-            renderExactMembersRequired();
-            return null;
+        const initialProposals = proposalsForScore(plan);
+        if (!initialProposals) return null;
+        const initialCadastreIds = Array.from(new Set(initialProposals.flatMap(yieldApi.cadastreIdsOf)));
+        if (initialCadastreIds.length && global.CadastralParcelRepository?.ensureIds) {
+            try { await global.CadastralParcelRepository.ensureIds(initialCadastreIds); }
+            catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
         }
-        if (!proposals.length) {
-            renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
-            return null;
-        }
-        const cadastreIds = Array.from(new Set(proposals.flatMap(proposal => (
-            Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
-        ))));
+        // Loading ground can publish a new fabric revision or let another application complete.
+        // Recheck membership/composition after that await, then capture and measure synchronously.
+        const proposals = proposalsForScore(plan);
+        if (!proposals) return null;
+        const fabricRevision = global.LiveParcelFabric?.snapshot?.().revision;
+        const cadastreIds = Array.from(new Set(proposals.flatMap(yieldApi.cadastreIdsOf)));
         const materializedFeatures = global.LiveParcelFabric?.entriesForCadastre
             ? global.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
             : [];
@@ -513,9 +508,10 @@
             renderError(t('groundStats.grainNoParcels', 'No parcels here: these proposals stand on open ground, so there are no resulting parcels to score.'));
             return null;
         }
-        const rows = await resolvePlanItems(proposals, fabric);
+        const cadastralFeatures = plan?.slug ? [] : cadastreIds.map(id => global.CadastralParcelRepository?.get?.(id)).filter(Boolean);
+        const rows = rules.measureParcelRows(fabric.resulting, materializedFeatures, cadastralFeatures);
         const items = rows.filter(row => row.feature && Number.isFinite(row.widthMeters) && Number.isFinite(row.depthMeters));
-        if (!items.length) {
+        if (!items.length || (plan?.slug && items.length !== rows.length)) {
             renderError(t('sidebar.proposals.grainScore.noGeometry', 'The resulting parcel shapes could not be measured.'));
             return null;
         }
@@ -526,6 +522,7 @@
             plan: plan || { slug: null, title: null },
             proposals,
             fabric,
+            fabricRevision,
             rows,
             items,
             beforeCount,
@@ -755,6 +752,20 @@
 
     async function runInspection({ soundPreparation } = {}) {
         if (state.running || !state.prepared) return;
+        if (state.prepared.plan.slug) {
+            if (!proposalsForScore(state.prepared.plan)) {
+                state.prepared = null;
+                return;
+            }
+            if (state.prepared.fabricRevision !== global.LiveParcelFabric?.snapshot?.().revision) {
+                state.prepared = null;
+                renderError(t(
+                    'sidebar.proposals.grainScore.fabricChanged',
+                    'The map changed after this inspection was prepared. Reopen the grain score to measure it again.'
+                ));
+                return;
+            }
+        }
         const token = ++state.runToken;
         state.running = true;
         updateButtonState();

@@ -2,7 +2,8 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, showProposal, chooseTermsForShare } from '../helpers/runtime';
+import { createSpace, openCity, openParcel, showProposal, chooseTermsForShare } from '../helpers/runtime';
+import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
@@ -40,7 +41,7 @@ async function personalize(page: Page): Promise<void> {
   await expect(page.locator('#welcome-modal')).toBeHidden();
 }
 
-for (const scenario of ['titled', 'untitled', 'fork']) {
+for (const scenario of ['titled', 'untitled', 'fork', 'outside', 'changed-fabric']) {
 const title = scenario === 'untitled' ? '' : 'Grain score route plan';
 test(`named-plan grain-score route ${scenario} verifies its published membership @features`, async ({ browser, baseURL, mockApi: authorPage }) => {
   // Two browser contexts publish, load and inspect; keep the overall cap above the per-phase waits.
@@ -75,6 +76,49 @@ test(`named-plan grain-score route ${scenario} verifies its published membership
     await expect(panel.locator('[data-grain-role="ready"]')).toBeVisible({ timeout: 60_000 });
     await expect(panel.locator('[data-grain-role="planName"]')).toHaveText(title || slug);
     await expect(panel.locator('[data-grain-role="route"]')).toHaveText(`Named plan · /plans/${slug}/score`);
+
+    if (scenario === 'outside') {
+      // Add a real proposal on another parcel. Even an apparently distant
+      // outsider is not proof that the whole live composition is a named-plan evaluation.
+      await panel.locator('[data-grain-action="close"]').click();
+      const otherParcelId = sampleParcels.features[1].properties.parcelId;
+      await receiver.page.evaluate(id => (window as any).CadastralParcelRepository.ensureIds([id]), otherParcelId);
+      await openParcel(receiver.page, 'proposals', otherParcelId);
+      await receiver.page.locator('.parcel-build-btn--square').click();
+      await expect.poll(() => receiver.page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+        .some((p: any) => p.goal === 'square' && p.applied))).toBe(true);
+      const outsideId = await receiver.page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+        .find((p: any) => p.goal === 'square' && p.applied)?.proposalId);
+      expect(outsideId).toBeTruthy();
+      const appliedIds = () => receiver.page.evaluate(() => {
+        const w = window as any;
+        return w.proposalStorage.getAllProposals().filter((p: any) => w.isProposalCurrentlyApplied(p)).map((p: any) => p.proposalId).sort();
+      });
+      const before = await appliedIds();
+      expect(before).toContain(plan.members[0].authoredProposalId);
+      expect(before).toContain(outsideId);
+      await receiver.page.evaluate(slug => (window as any).openPlanGrainScoreRoute(slug), slug);
+      await expect(panel.locator('[data-grain-role="error"]')).toContainText('Unapply them before scoring this named plan.');
+      await expect(panel.locator('[data-grain-role="result"]')).toBeHidden();
+      expect(await appliedIds()).toEqual(before);
+      await panel.locator('[data-grain-action="close"]').click();
+      await receiver.page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), outsideId);
+      await receiver.page.evaluate(slug => (window as any).openPlanGrainScoreRoute(slug), slug);
+      await expect(panel.locator('[data-grain-role="ready"]')).toBeVisible();
+    }
+
+    if (scenario === 'changed-fabric') {
+      // Reapplying the same member preserves membership but replaces the measured fabric.
+      await receiver.page.evaluate(async id => {
+        const w = window as any;
+        await w.ProposalManager.unapplyProposal(id);
+        await w.ProposalManager.applyProposal(id);
+      }, plan.members[0].authoredProposalId);
+      await panel.locator('[data-grain-action="start"]').click();
+      await expect(panel.locator('[data-grain-role="error"]')).toContainText('The map changed after this inspection was prepared.');
+      await expect(panel.locator('[data-grain-role="result"]')).toBeHidden();
+      return;
+    }
 
     if (scenario === 'fork') {
       await panel.locator('[data-grain-action="close"]').click();

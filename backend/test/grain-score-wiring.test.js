@@ -33,7 +33,7 @@ describe('grain score wiring', () => {
     });
 
     it('uses verified exact membership for both the named route and the score button', () => {
-        expect(scoreSource).toContain('rules.selectNamedPlanProposals(plan, applied)');
+        expect(scoreSource).toContain('rules.namedPlanScoreScope(plan, applied)');
         expect(scoreSource).toContain('rules.verifiedNamedPlanMembers(plan)');
         expect(scoreSource).toContain('await openPlanGrainScoreRoute(plan.slug)');
     });
@@ -61,7 +61,7 @@ describe('grain score wiring', () => {
         expect(block).toBeTruthy();
         [
             'buttonLabel', 'buttonHint', 'buttonEmpty', 'title', 'appliedComposition', 'localScope', 'namedScope', 'ready', 'start', 'countTitle',
-            'fineTitle', 'methodologyBody', 'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete', 'exactMembersRequired'
+            'fineTitle', 'methodologyBody', 'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete', 'exactMembersRequired', 'otherApplied', 'fabricChanged'
         ].forEach(key => expect(block[key], `${locale}.${key}`).toBeTruthy());
     });
 });

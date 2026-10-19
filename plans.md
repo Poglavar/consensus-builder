@@ -38,9 +38,21 @@ A local fork or replacement cannot stand in for that member; a fork counts only 
 published row belongs to the plan. Missing, changed, unverified or unapplied members
 prevent a named score, without falling back to the local composition.
 
-The measurement still uses live fabric over the members' cadastral scope. Other applied proposals
-may affect those parcels, so exact member selection does not yet guarantee an isolated or historically
-reproducible result. Fabric isolation and explicit materialization inputs remain open as V19 in
+The named members must be the whole applied composition: any outside applied proposal prevents
+scoring, including proposals on distant parcels or open ground. This is an intentional conservative
+boundary while there is no isolated replay evaluator. The user can unapply outsiders and reopen the
+score; scoring does not change their applied state automatically.
+
+A grain score is an assessment of one current-session fabric snapshot. Ground loading completes
+before composition is rechecked and features are captured. Parcel counts and dimensions use those
+same captured features. A named score requires complete measurable result geometry; original
+cadastral geometry cannot fill a missing materialized result. Start and Repeat recheck eligibility
+and require the captured fabric revision still to be current.
+
+The inputs include the member rows, current cadastral facts, runtime materialization rules and
+fabric revision. Ground and engine versions are not committed by the named-plan hash, and scores
+are not persisted as historical evidence. Immutable membership therefore does not imply a score
+reproducible across sessions or releases. V19 records this bounded resolution in
 [the audit register](vocabulary.md#audit-register--findings-and-resolutions).
 
 ## A named plan never changes

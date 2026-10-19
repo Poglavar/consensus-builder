@@ -79,6 +79,33 @@
         return selected;
     }
 
+    // Live fabric belongs to the whole applied composition. Until an isolated evaluator exists,
+    // exact member selection is safe to measure only when that composition contains no outsiders.
+    // Even distant proposals are excluded: cadastral overlap is not a proof of independence.
+    function namedPlanScoreScope(plan, applied) {
+        const proposals = selectNamedPlanProposals(plan, applied);
+        if (!proposals) return { error: 'members', proposals: null };
+        if (proposals.length !== applied.length) return { error: 'composition', proposals: null };
+        return { error: null, proposals };
+    }
+
+    // Measure the supplied snapshot, never look a parcel up again in a changing live fabric.
+    // Cadastral fallback is explicit; named scores supply none because source ground does not
+    // prove that the corresponding materialized result is still an unchanged cadastral parcel.
+    function measureParcelRows(resultingIds, materializedFeatures, cadastralFeatures = []) {
+        const byId = new Map();
+        [...cadastralFeatures, ...materializedFeatures].filter(Boolean).forEach(feature => {
+            const id = feature.properties?.parcelId ?? feature.properties?.id;
+            if (id != null) byId.set(String(id), feature);
+        });
+        return resultingIds.map(value => {
+            const id = String(value);
+            const feature = byId.get(id) || null;
+            const dimensions = feature && parcelDimensionsMeters(feature);
+            return { id, feature, ...(dimensions || { widthMeters: null, depthMeters: null }) };
+        });
+    }
+
     function coordinatesFromGeometry(input) {
         const geometry = input && input.type === 'Feature' ? input.geometry : input;
         if (!geometry || !Array.isArray(geometry.coordinates)) return [];
@@ -280,6 +307,8 @@
         buildPlanScorePath,
         verifiedNamedPlanMembers,
         selectNamedPlanProposals,
+        namedPlanScoreScope,
+        measureParcelRows,
         parcelDimensionsMeters,
         isFineGrainParcel,
         startingParcelIds,
