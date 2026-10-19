@@ -20,6 +20,20 @@ function rejectionOf(row) {
 }
 
 describe('proposal API serializer', () => {
+    it('keeps measurement capture metadata in its frame without inventing parcel-source dates or authority', () => {
+        const frame = { capturedAt: '2026-09-20T09:00:00Z', geometryHash: 'source-frame-hash' };
+        const row = { city: 'city-a', created_at: '2026-09-22T08:00:00Z', cadastre_parcel_ids: ['HR-1-1'],
+            cadastre_frame: frame, proposal_data: { parcelSet: { authority: 'stale-guess', referenceAt: 'stale-date' } } };
+        const serialized = serializeProposalRow(row);
+        expect(serialized.cadastreFrame).toEqual(frame);
+        expect(serialized.parcelSet).toMatchObject({ authority: null, jurisdiction: 'city-a', parcelIds: ['HR-1-1'] });
+        expect(serialized.parcelSet).not.toHaveProperty('referenceAt');
+        expect(serialized.parcelSet).not.toHaveProperty('geometryHash');
+        const withoutFrame = serializeProposalRow({ ...row, cadastre_frame: null });
+        expect(withoutFrame.cadastreFrame).toBeNull();
+        expect(withoutFrame.parcelSet).toEqual(serialized.parcelSet);
+    });
+
     it('omits unsigned consent from both SQL and JSON while preserving authored approval configuration', () => {
         const claims = { acceptedParcelIds: ['parcel-a'], ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['party-a'] } } };
         const row = { accepted_parcel_ids: claims.acceptedParcelIds, owner_acceptances: claims.ownerAcceptances,

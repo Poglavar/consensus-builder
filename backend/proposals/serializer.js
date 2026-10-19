@@ -236,9 +236,7 @@ export function serializeProposalRow(row, options = {}) {
     proposal.binding = choose(row.binding, proposal.binding ?? null);
     proposal.parcelSet = buildParcelSet({
         parcelIds: proposal.cadastreParcelIds || [],
-        jurisdiction: proposal.city || 'unknown',
-        referenceAt: proposal.cadastreFrame?.capturedAt || proposal.createdAt || null,
-        geometryHash: proposal.cadastreFrame?.geometryHash || null
+        jurisdiction: proposal.city || null
     });
     proposal.roadProposal = choose(row.road_proposal, proposal.roadProposal);
     proposal.buildingProposal = choose(row.building_proposal, proposal.buildingProposal);

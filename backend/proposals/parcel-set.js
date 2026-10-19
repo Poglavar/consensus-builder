@@ -1,3 +1,4 @@
+// Declared parcel-reference identity; source authority and survey dates are never inferred from IDs.
 import { createHash } from 'node:crypto';
 
 function canonicalJson(value) {
@@ -8,26 +9,21 @@ function canonicalJson(value) {
     return JSON.stringify(value);
 }
 
-export function cadastralAuthority(parcelIds = []) {
-    if (parcelIds.length && parcelIds.every(id => String(id).startsWith('HR-'))) {
-        return 'Croatian State Geodetic Administration';
-    }
-    return 'declared cadastral authority';
+function optionalText(value, field) {
+    if (value === null || value === undefined) return null;
+    if (typeof value !== 'string') throw new TypeError(`${field} must be a string or null`);
+    return value.trim() || null;
 }
 
-/** Stable identity for proposals that reference the same canonical cadastral land. */
+/** Stable identity for the declared references and their explicitly supplied scope. */
 export function buildParcelSet({
-    parcelIds = [], jurisdiction = 'unknown', authority = null,
-    referenceAt = null, geometryHash = null
+    parcelIds = [], jurisdiction = null, authority = null
 } = {}) {
     const canonicalIds = Array.from(new Set(parcelIds.map(String).filter(Boolean))).sort();
-    const resolvedAuthority = authority || cadastralAuthority(canonicalIds);
-    const identity = { jurisdiction: jurisdiction || 'unknown', authority: resolvedAuthority, parcelIds: canonicalIds };
+    const identity = { jurisdiction: optionalText(jurisdiction, 'jurisdiction'), authority: optionalText(authority, 'authority'), parcelIds: canonicalIds };
     return {
         ...identity,
         parcelCount: canonicalIds.length,
-        referenceAt: referenceAt || null,
-        geometryHash: geometryHash || null,
         setHash: `sha256:${createHash('sha256').update(canonicalJson(identity)).digest('hex')}`
     };
 }
