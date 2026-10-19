@@ -11,6 +11,10 @@ function makeStore({ absent = [] } = {}) {
     const memberRow = id => proposals.get(String(id)) || {
         id: Number(id), proposal_id: `p-${id}`, title: `Proposal ${id}`, type: 'building', goal: 'buildings',
         site: { type: 'MultiPolygon', coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]]]] },
+        proposal_data: {
+            kind: 'owner-deal',
+            site: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] }
+        },
         cadastre_parcel_ids: [`HR-1-${id}`], building_proposal: { parameters: { floors: 4 } }
     };
     return {
@@ -117,6 +121,22 @@ describe('named plans CRUD', () => {
         store.proposals.set('2', { ...repaired, building_proposal: { parameters: { floors: 5 } } });
         const after = await request(app).get('/plans/watched-plan');
         expect(after.body.members.map(member => member.changed)).toEqual([false, true]);
+    });
+
+    it.each([
+        ['kind', 'community-vote'],
+        ['site', { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 2], [0, 0]]] }]
+    ])('detects changed authored %s without rewriting the named commitment', async (field, value) => {
+        const named = await request(app).post('/plans').send({ slug: 'scope-plan', proposalIds: ['1'] });
+        expect(named.status).toBe(201);
+        expect((await request(app).get('/plans/scope-plan')).body.members[0].changed).toBe(false);
+
+        const original = (await store.members(['1']))[0];
+        store.proposals.set('1', { ...original, proposal_data: { ...original.proposal_data, [field]: value } });
+        const after = await request(app).get('/plans/scope-plan');
+        expect(after.status).toBe(200);
+        expect(after.body.members[0].changed).toBe(true);
+        expect(after.body.planHash).toBe(named.body.planHash);
     });
 
     it('lists plans of a city', async () => {

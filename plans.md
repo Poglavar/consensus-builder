@@ -2,8 +2,8 @@
 
 # Plans
 
-A **proposal** is the building block (one building, one park, one street network, one parcel
-layout). A **plan** is a named, ordered set of proposals: what people actually argue and bet
+A **proposal** is an authored change, rule or transaction concerning land; it may contain several
+buildings, streets or plots. A **plan** is a named, ordered set of proposals: what people actually argue and bet
 about ("the official UPU Borovje", "Borovje – urban blocks"). Decisions of 2026-10-10.
 
 ## A named plan never changes
@@ -15,17 +15,20 @@ about ("the official UPU Borovje", "Borovje – urban blocks"). Decisions of 202
   the newer version by looking up who supersedes it (`supersededBy`, computed on read).
 - There is no "latest" alias. A name that moves is exactly what this design removes.
 - Title, description and author are fixed with the plan. A typo is a `-v2`.
-- The 21 named plans that existed before this change (none was ever edited) are frozen as they are.
 
 ## A plan is only as fixed as its members
 
 Proposal rows can still be repaired in place by operator scripts (as the 2026-10-10 Borovje
 sync did). So a plan stores, at creation:
 
-- `member_hashes` — per member, the sha256 of **what it builds**: goal, type, declared parcels,
-  the road definition, building/structure parameters and geometry, the parcel layout polygons
-  (`backend/plans/plan-hash.js`). Descriptions, thumbnails and lifecycle state are
-  not part of it, so they can change without touching the plan.
+- `member_hashes` — per member, SHA-256 of **decision kind, authored site and design/deal content**
+  (`backend/plans/plan-hash.js`). Every member includes `proposal_data.kind` and
+  `proposal_data.site`; an absent value is represented as `null`, without reading an alternative
+  stored projection. Ordinary members also include goal, type, declared parcels, road definition,
+  building/structure parameters and geometry, layout, and applicable approval context.
+  Readjustment members include the canonical readjustment deal fingerprint, covering plots,
+  allocations, financial terms and approval context. That deal fingerprint is a component of the
+  plan member hash, not the whole hash. Descriptions, thumbnails and lifecycle state are excluded.
 - `plan_hash` — sha256 over the ordered `[proposalId, memberHash]` list.
 - `site` — the union of the members' sites, for the on-chain mint.
 
@@ -57,11 +60,20 @@ apart.
 
 ## Hash portability
 
-The plan hash is over members' stable `proposal_id`s and what they build, so the same plan named in
+The plan hash is over members' stable `proposal_id`s and committed content, so the same plan named in
 two databases hashes equal — one devnet mint can then be recorded in both
 (`mint-plan.mjs --record-existing`, which checks the account's `image_uri` on chain first). The
-stored `site` is deliberately not hashed: PostGIS versions return the same union with different
-vertex order.
+PostGIS `site` projection and aggregate plan site are deliberately not hashed: PostGIS versions
+can return the same union with different vertex order. The site in the authored JSON record is
+hashed. Object keys are sorted; site coordinates retain their authored order and precision.
+This commits to the recorded geometry, not topological equivalence of differently encoded polygons.
+
+## Experimental contract changes
+
+The 2026-10-19 contract includes decision kind and authored site for every member. There is one
+current hashing path. Hashes produced by the preceding contract will report drift; recreate
+affected experimental plans if needed. There is no old-hash verifier, backfill, or promise of
+compatibility with prior plan mints. Stored commitments are never rewritten to appear verified.
 
 ## Links
 

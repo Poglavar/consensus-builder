@@ -6,7 +6,9 @@ This is the maintained vocabulary for Consensus Builder: what its records mean, 
 
 **Baseline:** 2026-10-19, branch `colosseum-worlds-fair`, HEAD `83b1c31fc2facf53430e2959e2fa08347e356c4c`, plus the working-tree edits already present during the audit. Those edits included parcel, geometry, building, readjustment and rendering modules. This is a source audit, not a census of stored rows or verification of a deployed release. References identify files and symbols so they remain useful when line numbers move. The adjacent `cadastre-data` solver was inspected for comparison at HEAD `08b1e96`; it is a separate implementation.
 
-**Status convention:** “Observed” describes code. “Proposed” describes a possible vocabulary or interoperability change. All findings in the audit register are open. The local term identifiers in backticks below are documentation identifiers, not a deployed RDF namespace.
+**Status convention:** “Observed” describes code. “Proposed” describes a possible vocabulary or interoperability change. Findings remain open unless their entry records a resolution. The local term identifiers in backticks below are documentation identifiers, not a deployed RDF namespace.
+
+**Change policy:** This is experimental software without customer compatibility obligations. Improve the model in small, verified changes, using one current contract. Existing data can be discarded and recreated; do not add migrations or parallel legacy/current flows solely to preserve it. Record changed meanings and commitment coverage here. Historical commitments are not rewritten or reinterpreted as proof under a new contract.
 
 ## Central terms as implemented
 
@@ -23,6 +25,8 @@ Identity has several layers: `proposal.id` is a database row key; `proposalId` /
 An immutable named, ordered collection of published proposal rows. `ens_plan.slug` identifies it; `proposal_ids` stores deduplicated **database row IDs as strings**. A proposal can belong to multiple named plans. A plan must have at least one member when created. It may cover several cities; its stored city is selected from member cities.
 
 Creation stores member hashes and a plan hash; the plan hash uses stable `proposal_id` values and member hashes in order. A revision is a new slug with `supersedes`; multiple later plans can supersede one predecessor. Its site is the union of member sites only when every member has a site. Chain mint metadata can be attached separately.
+
+Every member hash commits to the decision `kind` and site from `proposal_data` (absent values are `null`). Ordinary members also commit to their design, cadastral references and applicable approval context. Readjustment members include the canonical deal fingerprint as a component. All members use SHA-256 over their sorted-key JSON projection. The PostGIS site projection is excluded; authored site coordinates retain their order and precision. This is record identity, not geometric equivalence. The 2026-10-19 contract deliberately replaces the prior hashing path: old hashes report drift and affected experimental plans can be recreated. [Hash contract](plans.md#experimental-contract-changes).
 
 “Immutable” applies to the plan record and its commitment, **not to complete historical copies of every member**: reads fetch current proposal rows and report hash drift. Older plans can lack hashes. The list's order contributes to the plan hash; geometry replay has its own order. [Plan DDL](backend/ens/ens-plan-ddl.sql), [route](backend/routes/ens-plans.js) (`validateProposalIds`, `planView`), [store](backend/plans/plan-store.js), [hashing](backend/plans/plan-hash.js) (`memberContent`, `planHash`, `changedMembers`).
 
@@ -198,14 +202,14 @@ flowchart LR
     Chain --> Market[Prediction market]
 ```
 
-## Audit register — open questions, not fixes
+## Audit register — findings and resolutions
 
 | ID | Finding and evidence | Consequence / decision to make |
 | --- | --- | --- |
 | V01 | **“Proposal ID” means row ID, authored ID or chain ID.** `/plans` accepts numeric row IDs but its validation message calls them “minted”; proposal lookup prioritizes row IDs over colliding numeric legacy `proposal_id` values. [routes](backend/routes/proposals.js), [plan validation](backend/routes/ens-plans.js) | Name the identifier kind at every API/export boundary. Minting must not be inferred from a numeric ID. |
 | V02 | **“Plan” means a named collection, local composition, statutory source, or drawing.** Named-plan order is also different from formation replay order. [plan store](backend/plans/plan-store.js), [replay](frontend/js/proposals/plan-order.js) | Adopt qualified labels and separate relationships for membership, chronology and dependency. |
 | V03 | **Named-plan immutability is partial.** Members are references plus hashes, not snapshots. Missing hashes on older plans produce no drift comparison. The API's `changed: false` therefore does not always mean “verified unchanged.” [route](backend/routes/ens-plans.js), [hashes](backend/plans/plan-hash.js) | Decide whether historical plans need immutable member snapshots or an explicit verification state. |
-| V04 | **Plan/content/consent hashes have different semantic coverage.** For ordinary non-readjustment members, `memberContent` omits proposal `kind` and site, while `proposalContentPayload` includes both. The site exclusion was justified as a derived union, but site is now authored content too. [plan hashing](backend/plans/plan-hash.js), [sharing](frontend/js/proposals/sharing.js) | A read-only synthetic probe confirmed that changing only kind or site leaves that plan member hash unchanged; changing included geometry changes it. Decide what a plan commits to and version any changed hash contract. This does not claim that every consent path omits those fields. |
+| V04 | **Plan hashes omitted authored decision kind and site. Resolved 2026-10-19.** The baseline probe showed that changing either field left an ordinary member hash unchanged; the readjustment deal fingerprint also omitted this proposal-level scope. The former site exclusion conflated authored geometry with its PostGIS projection. [plan hashing](backend/plans/plan-hash.js), [sharing](frontend/js/proposals/sharing.js) | Every plan member now commits to `proposal_data.kind` and `proposal_data.site`; readjustment deal fingerprints remain components of that wider commitment. One current SHA-256 path replaces the old path, with no compatibility verifier or migration. [Focused headless unit tests](backend/test/plan-hash.test.js) cover both member types; [route tests](backend/test/ens-plans.test.js) verify drift reporting without rewriting the stored hash. This resolves the missing plan scope, not every difference between plan, sharing and consent projections. |
 | V05 | **“Parcel” collapses source cadastre, tax/provider units, authored plots and runtime pieces.** Synthetic open-ground IDs are another kind. [source adapters](backend/parcels/sources.js), [authored boundary](frontend/js/proposals/authored-record.js), [open ground](frontend/js/proposals/open-ground.js) | Preserve identity kind, provider, jurisdiction and version. Geometry equality or shared display labels do not establish entity identity. |
 | V06 | **“Owner” has unrelated namespaces.** Rights `ownerId` can be an authority/leaseholder; `actorId` is a signer; readjustment uses `ownerKey`; floor-model `owner_id` is the containing proposal; user profiles use agent IDs. [approval](frontend/js/proposals/approval.js), [floor registry](backend/buildings/floor-models.js), [readjustment](frontend/js/reparcellization-ownership.js) | Use party, holder, actor, allocation party and containing proposal as distinct roles. Do not generate a generic `owns` triple from every owner-shaped field. |
 | V07 | **Acceptance representations disagree in granularity.** The SQL comment describes `owner_acceptances` as owner-address keyed, while the older browser helper indexes it by parcel then owner slots. Current uploads strip client acceptance claims; existing rows may still expose them. Signed approvals add a separate party/actor/evidence history. [DDL](backend/routes/proposals-ddl.sql), [helper](frontend/js/proposals/owner-acceptance.js), [upload filter](backend/routes/proposals.js): `dropUnprovableClaims`; [approval](frontend/js/proposals/approval.js) | Document the legacy shape, current write filtering and signed-decision authority. A parcel-level acceptance is not a signed decision receipt. |
@@ -334,10 +338,19 @@ Baseline verification: all 90 distinct local source-link targets existed; the il
 - Update this file in the same change as a domain field, meaning, relationship, identifier, state, unit, or source-precedence change. Repository instructions link here so future changes encounter that requirement.
 - Every term needs a definition, representation/identity, important exclusions, relationships and implementation evidence. Give overloaded meanings distinct qualified labels even before code is renamed.
 - Preserve the distinction between observed behavior and proposed changes. Resolve an audit ID only with the decision, implementation reference and date; keep its history. Do not turn this register into an assertion that an unfixed issue is resolved.
-- When a hash, schema or semantic commitment changes, record its version and which fields it covers. Published commitments and signed approvals must not silently acquire new meanings.
+- When a hash, schema or semantic commitment changes, record the contract, date and field coverage. Retire obsolete experimental records rather than adding compatibility paths. Published commitments and signed approvals must not silently acquire new meanings.
 - Recheck external mappings against a named release before implementation. Record mapping strength, rationale and source; similarity is not equivalence. Maintain preferred labels and translations independently of stable term IDs.
 - Verify changed source links and examples. For documentation-only edits, inspect the resulting document and its links; run focused headless unit tests only where a behavioral claim needs confirmation. No full suite is required for this vocabulary edit.
 
 | Date | Change |
 | --- | --- |
 | 2026-10-19 | Initial code-grounded vocabulary, relationship map, 18 open audit findings, existing JSON-LD inventory and proposed standards mappings. No application behavior or schema changed. |
+| 2026-10-19 | Resolved V04: named-plan member hashes include authored site and decision kind for ordinary and readjustment proposals. One current SHA-256 contract; prior experimental hashes are unsupported. Recorded the policy of small verified changes without legacy compatibility flows. |
+
+V04 verification: 58 targeted headless unit tests passed across `test/plan-hash.test.js`,
+`test/ens-plans.test.js`, `test/readjustment-publication.test.js` and
+`test/proposal-approval-publication.test.js` (from `backend/`, `npx vitest run <those four paths>
+--pool=threads --maxWorkers=2`). The run completed without being stopped. This checks the hash
+contract, API drift reporting and publication/approval integration with mocked storage; it does
+not verify a deployed database or chain mint.
+
