@@ -7,7 +7,9 @@ import {createRequire} from 'node:module';
 const {filterProjects}=createRequire(import.meta.url)('../../frontend/novogradnje/catalogue.js');
 const hash='c'.repeat(64),floor={id:'typical',label:'Tipični katovi 1.–4.',scope:'floor',levels:[1,2,3,4],hasPlan:true,
     architecture:{schema:'consensus-builder.floor-architecture.v1'},source:{sha256:hash,url:'https://example.test/plan.pdf',page:3}};
-const model={siteKey:'registered:floor-example',label:'Primjer',inventory:{kind:'existing',constructionYear:2007,apartments:[],floorPlans:[floor]},sources:[]};
+const model={siteKey:'registered:floor-example',label:'Primjer',location:{status:'located'},
+    envelope:{footprint:{type:'Polygon',coordinates:[[[15,45],[15.001,45],[15.001,45.001],[15,45]]]}},
+    inventory:{kind:'existing',constructionYear:2007,apartments:[],floorPlans:[floor]},sources:[]};
 const row={site_key:model.siteKey,model,built_at:'2026-10-19T00:00:00Z'};
 const db={query:async sql=>({rows:sql.startsWith('SELECT site_key')?[row]:sql.startsWith('SELECT sha256')?[{sha256:hash,media_type:'application/pdf'}]:[]})};
 describe('whole-floor drawings in the public catalogue',()=>{
