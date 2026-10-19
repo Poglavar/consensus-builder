@@ -423,4 +423,3 @@ Seven selected headless Playwright tests passed across `named-plans.spec.ts`,
 The first browser attempt ended during server startup before running any tests; the successful
 run used a local static server. Both completed test runs finished without being stopped. Storage
 and network API boundaries were mocked; no live database or chain was changed.
-
