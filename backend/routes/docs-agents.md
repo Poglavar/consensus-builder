@@ -320,8 +320,12 @@ the supplied arguments, so rerunning the live command demonstrates the same no-d
 lists everything your wallet filed in that city.
 
 **Parcel history.** `GET $(base)/parcels/<parcelUid>/history` (URL-encode the id, e.g. `HR-335347-1208%2F3`)
-is the permanent per-parcel log: `{ parcelUid, anchor: { account, exists, mintedAt?, source }, events }`.
-`anchor.account` is the parcel_nft PDA `["parcel", parcelUid]`; it carries no ownership. `events` merge,
+is the permanent per-parcel log: `{ parcelUid, anchor: { account, exists, source }, events }`.
+`anchor.account` is the parcel_nft PDA `["parcel", parcelUid]`; it carries no ownership. With
+`source: "chain"`, `exists` is the current validated devnet account observation (`true` or `false`).
+RPC failure or invalid network/account evidence gives `exists: null, source: "unavailable"`.
+An ID exceeding the PDA seed limit gives `account: null, exists: false, source: "unseedable"`.
+No anchor creation time is inferred from stored transactions. `events` merge,
 oldest first, `proposal_created` for each proposal listing the parcel and `proposal_chain_observed`
 only for a server-verified mirror of the configured Solana devnet proposal program. The observation
 uses `chainMirror.verifiedAt` and its full `chainRef`; it is not a mint event or mint time. Its lens
@@ -332,8 +336,8 @@ ownerCount, account hash; never the evidence reference), and the `proposal_accep
 `proposal_verdict` and `proposal_lifecycle` land events of those proposals. Each event is
 `{ type, at, proposalId?, proposalAccount?, chainRef?, member?, owner?, transaction?, hash?, link }`; `at` is the
 source's own time (chain block, attestation or mirror-verification time, the record's creation for `proposal_created`) and is
-`null`, sorted last, when the source has none. An unknown parcel returns empty `events` and
-`anchor.exists: false`. Never cached.
+`null`, sorted last, when the source has none. A parcel with no recorded events returns empty
+`events`; anchor existence remains a separate chain observation. Never cached.
 
 ## 7. Answers you can get
 

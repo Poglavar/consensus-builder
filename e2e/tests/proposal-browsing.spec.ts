@@ -156,7 +156,7 @@ test.describe('Proposal browsing @features', () => {
       status: 200, contentType: 'application/json',
       body: JSON.stringify({
         parcelUid: PARCEL_ID,
-        anchor: { account: PROPOSAL_ACCOUNT, exists: true, mintedAt: '2026-08-12T10:00:00Z' },
+        anchor: { account: PROPOSAL_ACCOUNT, exists: null, source: 'unavailable' },
         events: [
           { type: 'proposal_created', at: '2026-08-10T08:00:00Z', title: 'Parcel history proposal' },
           { type: 'proposal_chain_observed', at: '2026-08-10T08:06:00Z', proposalId: 'proposal-42',
@@ -187,7 +187,8 @@ test.describe('Proposal browsing @features', () => {
     await expect(observation.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:06:00Z');
     await expect(observation.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
     await expect(history.locator('[data-history-type="proposal_acceptance"]')).toContainText('Owner said yes');
-    await expect(history.locator('.parcel-history-anchor')).toContainText('Anchored on chain since');
+    await expect(history.locator('.parcel-history-anchor')).toContainText('Parcel anchor status unavailable');
+    await expect(history.locator('.parcel-history-anchor')).not.toContainText('No parcel anchor found');
   });
 
   test('stacked proposals open the visible side-by-side parcel comparison', async ({ mockApi: page }) => {

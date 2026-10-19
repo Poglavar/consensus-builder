@@ -82,18 +82,18 @@
 
     function normalizeHistory(body) {
         const events = body && Array.isArray(body.events) ? body.events.filter(event => event && typeof event.type === 'string') : [];
-        const anchor = body && body.anchor && typeof body.anchor === 'object' ? body.anchor : { account: null, exists: false };
+        const anchor = body && body.anchor && typeof body.anchor === 'object' ? body.anchor : { account: null, exists: null };
         return { parcelUid: body && body.parcelUid, anchor, events };
     }
 
     function buildAnchorHtml(anchor, t = plainT) {
-        if (!anchor || !anchor.account) return `<p class="parcel-history-anchor">${escapeText(t('panel.proposal.parcelHistory.noAnchor', 'This parcel id cannot have an on-chain anchor.'))}</p>`;
+        const unknown = () => t('panel.proposal.parcelHistory.anchorUnknown', 'Parcel anchor status unavailable');
+        if (!anchor || !anchor.account) return `<p class="parcel-history-anchor">${escapeText(anchor?.source === 'unseedable'
+            ? t('panel.proposal.parcelHistory.noAnchor', 'This parcel ID is too long for this Solana anchor.') : unknown())}</p>`;
         const link = `<a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${encodeURIComponent(anchor.account)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeText(shortKey(anchor.account))}</a>`;
-        const state = anchor.exists
-            ? (formatAt(anchor.mintedAt)
-                ? t('panel.proposal.parcelHistory.anchorMinted', 'Anchored on chain since {{at}}', { at: formatAt(anchor.mintedAt) })
-                : t('panel.proposal.parcelHistory.anchorExists', 'Anchored on chain'))
-            : t('panel.proposal.parcelHistory.anchorMissing', 'Not anchored on chain yet');
+        const state = anchor.source !== 'chain' ? unknown() : anchor.exists === true
+            ? t('panel.proposal.parcelHistory.anchorExists', 'Parcel anchor observed on Solana devnet')
+            : anchor.exists === false ? t('panel.proposal.parcelHistory.anchorMissing', 'No parcel anchor found on Solana devnet') : unknown();
         return `<p class="parcel-history-anchor">${escapeText(state)}: ${link}</p>`;
     }
 

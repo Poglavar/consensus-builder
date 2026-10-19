@@ -8,7 +8,7 @@ const card = require('../../frontend/js/proposals/parcel-history-card.js');
 
 const history = {
     parcelUid: 'HR-335347-1208/3',
-    anchor: { account: 'AnchorPda1111111111111111111111111111111111', exists: true, mintedAt: '2026-09-16T10:04:00.000Z' },
+    anchor: { account: 'AnchorPda1111111111111111111111111111111111', exists: true, source: 'chain' },
     events: [
         { type: 'proposal_created', at: '2026-09-16T10:00:00.000Z', proposalId: 'p-1', title: 'Corner <b>', link: '/proposals/p-1' },
         { type: 'proposal_chain_observed', at: '2026-09-16T10:06:00.000Z', proposalId: 'p-1', link: 'https://explorer.solana.com/address/x?cluster=devnet' },
@@ -50,13 +50,25 @@ describe('parcel history card builders', () => {
         expect(html).not.toContain('javascript:');
         expect(html).toContain('Member AMbs…koQ'.replace('koQ', 'mkoQ'));
         expect(html).toContain('2 attested owner(s)');
-        expect(html).toContain('Anchored on chain since 2026-09-16 10:04 UTC');
+        expect(html).toContain('Parcel anchor observed on Solana devnet');
     });
 
     it('describes an empty history and a missing anchor', () => {
-        const html = card.buildTimelineHtml({ parcelUid: 'x', anchor: { account: 'Pda1', exists: false }, events: [] });
-        expect(html).toContain('Not anchored on chain yet');
+        const html = card.buildTimelineHtml({ parcelUid: 'x', anchor: { account: 'Pda1', exists: false, source: 'chain' }, events: [] });
+        expect(html).toContain('No parcel anchor found on Solana devnet');
         expect(html).toContain('Nothing recorded for this parcel yet.');
+    });
+
+    it('keeps unavailable evidence distinct from absence and never renders an inferred mint time', () => {
+        for (const anchor of [null, { account: 'Pda1', exists: null, source: 'unavailable' },
+            { account: 'Pda1', exists: false, source: 'unavailable' },
+            { account: 'Pda1', exists: true, source: 'transaction-store', mintedAt: '2026-09-16T10:04:00Z' }]) {
+            expect(card.buildAnchorHtml(anchor)).toContain('Parcel anchor status unavailable');
+            expect(card.buildAnchorHtml(anchor)).not.toContain('No parcel anchor found');
+        }
+        expect(card.buildAnchorHtml({ ...history.anchor, mintedAt: '2026-09-16T10:04:00Z' })).not.toContain('since');
+        expect(card.buildAnchorHtml({ account: null, exists: false, source: 'unseedable' })).toContain('too long');
+        expect(card.normalizeHistory({}).anchor.exists).toBeNull();
     });
 
     it('builds one collapsible History per parcel', () => {

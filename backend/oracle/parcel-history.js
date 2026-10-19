@@ -8,6 +8,7 @@
 
 import { PublicKey } from '@solana/web3.js';
 import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
 import { EVENT_TYPE as LIFECYCLE_EVENT_TYPE, explorer, PROPOSAL_PROGRAM_ID, VERIFIED_DEVNET_MIRROR_SQL } from './proposal-lifecycle.js';
 import { ACCEPTANCE_EVENT_TYPE, VERDICT_EVENT_TYPE } from './proposal-consent.js';
 
@@ -42,6 +43,30 @@ export function deriveParcelAnchor(parcelUid) {
     return PublicKey.findProgramAddressSync(
         [Buffer.from('parcel'), Buffer.from(String(parcelUid))], new PublicKey(PARCEL_PROGRAM_ID)
     )[0].toBase58();
+}
+
+/** Validate the Parcel account layout and its exact parcel identity, without inferring title. */
+export function parcelAnchorAccountMatches(info, parcelUid) {
+    if (info?.owner?.toBase58?.() !== PARCEL_PROGRAM_ID || info.executable) return false;
+    const data = Buffer.from(info.data || []);
+    const discriminator = createHash('sha256').update('account:Parcel').digest().subarray(0, 8);
+    if (data.length < 12 || !data.subarray(0, 8).equals(discriminator)) return false;
+    let offset = 8;
+    const string = () => {
+        if (offset + 4 > data.length) throw new Error('Truncated Parcel string length.');
+        const length = data.readUInt32LE(offset); offset += 4;
+        if (offset + length > data.length) throw new Error('Truncated Parcel string.');
+        const bytes = data.subarray(offset, offset + length); offset += length;
+        const value = bytes.toString('utf8');
+        if (!Buffer.from(value, 'utf8').equals(bytes)) throw new Error('Invalid Parcel UTF-8.');
+        return value;
+    };
+    try {
+        const id = string();
+        const metadataUri = string();
+        // owner (32 bytes) is a historical payload field, not evidence of real ownership.
+        return id === parcelUid && metadataUri.length > 0 && offset + 33 <= data.length;
+    } catch { return false; }
 }
 
 /**
@@ -171,33 +196,21 @@ export function sortHistory(events) {
     });
 }
 
-/**
- * The anchor as the transaction store saw it: exists when a successful stored transaction touched
- * the PDA; mintedAt is the earliest such block time. `readAnchorAccount(address)` (a chain read)
- * decides `exists` when given and reachable, since the store only holds watched addresses.
- */
-async function loadAnchor(pool, parcelUid, readAnchorAccount) {
+// Current account observation only. A transaction touching a derived address establishes neither
+// an anchor's existence nor its creation time. Unavailable evidence stays unknown, not false.
+async function loadAnchor(parcelUid, readAnchorAccount) {
     const account = deriveParcelAnchor(parcelUid);
     if (!account) return { account: null, exists: false, source: 'unseedable' };
-    const { rows } = await pool.query(`
-        SELECT count(*)::int AS transactions, min(block_time) AS first_block_time
-        FROM consensus.solana_transaction
-        WHERE touched_addresses @> ARRAY[$1]::text[]
-          AND COALESCE(raw->'meta'->'err', raw->'result'->'meta'->'err', 'null'::jsonb) = 'null'::jsonb
-    `, [account]);
-    const stored = rows[0] || {};
-    const mintedAt = isoOrNull(stored.first_block_time);
-    let exists = Number(stored.transactions || 0) > 0;
-    let source = 'transaction-store';
     if (readAnchorAccount) {
         try {
-            exists = Boolean(await readAnchorAccount(account));
-            source = 'chain';
+            const exists = await readAnchorAccount(account, parcelUid);
+            if (typeof exists !== 'boolean') throw new Error('Anchor reader returned no existence observation.');
+            return { account, exists, source: 'chain' };
         } catch (error) {
-            console.warn(`[${new Date().toISOString()}] parcel history: anchor ${account} chain read failed, using the transaction store`, error.message);
+            console.warn(`[${new Date().toISOString()}] parcel history: anchor ${account} status unavailable`, error.message);
         }
     }
-    return compact({ account, exists, mintedAt: mintedAt ?? undefined, source });
+    return { account, exists: null, source: 'unavailable' };
 }
 
 export async function loadParcelHistory(pool, parcelUid, { readAnchorAccount = null } = {}) {
@@ -229,7 +242,7 @@ export async function loadParcelHistory(pool, parcelUid, { readAnchorAccount = n
             ORDER BY source_observed_at, event_id
             LIMIT ${ROW_LIMIT}
         `, [uid, LAND_EVENT_TYPES]),
-        loadAnchor(pool, uid, readAnchorAccount)
+        loadAnchor(uid, readAnchorAccount)
     ]);
     const proposalIdByAccount = new Map(proposals.rows.flatMap(row => {
         const mirror = verifiedDevnetMirror(row);

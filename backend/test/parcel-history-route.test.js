@@ -97,8 +97,9 @@ describe('GET /parcels/:parcelUid/history', () => {
         expect(res.headers['cache-control']).toBe('no-store');
         expect(res.body.parcelUid).toBe(PARCEL);
         expect(res.body.anchor).toEqual({
-            account: deriveParcelAnchor(PARCEL), exists: true, mintedAt: '2026-09-16T10:04:00.000Z', source: 'chain'
+            account: deriveParcelAnchor(PARCEL), exists: true, source: 'chain'
         });
+        expect(pool.calls.some(call => /consensus\.solana_transaction/.test(call.sql))).toBe(false);
         expect(res.body.events.map(e => e.type)).toEqual([
             'proposal_created', 'proposal_chain_observed', 'parcel_ownership', 'proposal_acceptance', 'proposal_lifecycle'
         ]);
@@ -159,14 +160,32 @@ describe('GET /parcels/:parcelUid/history', () => {
             anchor: { account: deriveParcelAnchor('HR-000000-1'), exists: false, source: 'chain' },
             events: []
         });
-        expect(reader).toHaveBeenCalledWith(deriveParcelAnchor('HR-000000-1'));
+        expect(reader).toHaveBeenCalledWith(deriveParcelAnchor('HR-000000-1'), 'HR-000000-1');
     });
 
-    it('falls back to the transaction store when the chain read fails', async () => {
-        const pool = stubPool({ anchorTx: { transactions: 0, first_block_time: null } });
+    it('keeps anchor existence unknown when the chain read fails, regardless of stored transactions', async () => {
+        const pool = stubPool({ anchorTx: { transactions: 2, first_block_time: 123456789 } });
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const history = await loadParcelHistory(pool, 'HR-1-2', { readAnchorAccount: async () => { throw new Error('rpc down'); } });
-        expect(history.anchor).toEqual({ account: deriveParcelAnchor('HR-1-2'), exists: false, source: 'transaction-store' });
+        expect(history.anchor).toEqual({ account: deriveParcelAnchor('HR-1-2'), exists: null, source: 'unavailable' });
+        expect(pool.calls.some(call => /consensus\.solana_transaction/.test(call.sql))).toBe(false);
+        warn.mockRestore();
+    });
+
+    it('preserves unknown when no account reader exists and skips unseedable IDs', async () => {
+        const pool = stubPool();
+        expect((await loadParcelHistory(pool, PARCEL)).anchor)
+            .toEqual({ account: deriveParcelAnchor(PARCEL), exists: null, source: 'unavailable' });
+        const reader = vi.fn();
+        expect((await loadParcelHistory(pool, 'x'.repeat(33), { readAnchorAccount: reader })).anchor)
+            .toEqual({ account: null, exists: false, source: 'unseedable' });
+        expect(reader).not.toHaveBeenCalled();
+    });
+
+    it.each([null, undefined, 'true', 1])('does not coerce an invalid account observation into existence: %j', async value => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const history = await loadParcelHistory(stubPool(), PARCEL, { readAnchorAccount: async () => value });
+        expect(history.anchor).toMatchObject({ exists: null, source: 'unavailable' });
         warn.mockRestore();
     });
 
