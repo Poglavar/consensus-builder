@@ -13,3 +13,27 @@
 /* Each card shows its own stored building envelope without a WebGL context. */
 .building-thumbnail{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain}.thumbnail-unavailable{padding:32px 14px 16px;color:var(--muted);font-size:.75rem;text-align:center}
 .brand-icon{display:block;width:32px;height:32px;border-radius:10px;object-fit:cover}
+
+/* Apartment details use four matching panels; building routes keep the apartment list beside stacked previews. */
+.viewer-grid.apartment-viewer-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px;margin-top:0}
+.viewer-panel{display:flex;flex-direction:column;min-width:0;max-width:none;height:460px;border-radius:12px;background:var(--surface)}
+.viewer-panel h3{min-height:48px;display:flex;align-items:center;padding:12px 14px;font-size:1.03rem}
+.viewer-panel>.viewer-canvas,.viewer-panel>.viewer-host,.viewer-panel>.original-preview{height:300px;min-height:260px;flex:0 0 auto;margin-top:0}
+.viewer-host>.viewer-canvas{height:300px}
+.viewer-host{position:relative}.viewer-host>.viewer-actions{position:absolute;bottom:0;left:0}
+.viewer-panel-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding:10px 12px}.viewer-panel-actions>.source-link{margin:0;font-size:.74rem;padding:6px 8px}
+.viewer-panel>.viewer-copy{margin-top:auto;min-height:54px}
+.viewer-panel>.source-link{align-self:flex-start;margin:12px 14px}
+.viewer-panel .view-toggle{align-self:flex-start;margin-top:auto}
+.viewer-panel .viewer-actions{margin-top:auto;padding-bottom:2px}
+.original-preview.original-unavailable{display:grid;place-items:center;padding:20px;color:var(--muted);font-size:.85rem}
+.building-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;margin-top:20px}
+.building-apartment-column{min-width:0}
+.detail-section-title{font:600 1.35rem Fraunces,Georgia,serif;margin:0 0 12px}
+.building-detail-layout .apartment-list{display:flex;flex-direction:column;gap:0;margin:0}
+.building-detail-layout .apartment-row{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:13px 8px;background:transparent}
+.building-detail-layout .apartment-row:first-child{border-top:1px solid var(--line)}
+.building-detail-layout .apartment-row:hover{background:#fffaf1}
+.building-viewer-stack{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
+.building-viewer-stack .viewer-canvas{height:300px;min-height:260px}
+@media(max-width:760px){.viewer-grid.apartment-viewer-grid,.building-detail-layout{grid-template-columns:minmax(0,1fr)}.building-viewer-stack{grid-template-columns:minmax(0,1fr)}.viewer-panel{height:430px}.viewer-panel>.viewer-canvas,.viewer-panel>.viewer-host,.viewer-panel>.original-preview{height:280px;min-height:240px}.viewer-host>.viewer-canvas{height:280px}}

@@ -15,6 +15,7 @@
     const safeHref=value=>{if(typeof value!=='string'||!value.trim())return null;if(value.startsWith('/'))return value;try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:null;}catch{return null;}};
     const projectPath=p=>safePath(p.url,`/novogradnje/zgrada/${encodeURIComponent(p.slug||p.id)}/`);
     const apartmentPath=(p,a)=>safePath(a.url,`${projectPath(p).replace(/\/$/,'')}/stan/${encodeURIComponent(a.id)}/`);
+    const floorPlanPath=(p,f)=>safePath(f.url,`${projectPath(p).replace(/\/$/,'')}/tlocrt/${encodeURIComponent(f.id)}/`);
     let boot={},catalogue={projects:[],counts:{}},detail=null,activeApartmentId=null,map=null,markerLayer=null,viewers=[],catalogueError='',detailError='';
     try { const raw=byId('novogradnje-boot').textContent.trim(); if(raw&&raw!=='__NOVOGRADNJE_BOOT__')boot=JSON.parse(raw); } catch { /* A missing server payload falls through to the public API. */ }
     if(boot.project){document.body.classList.add('detail-page');}
@@ -45,7 +46,9 @@
         else visual.append(node('span','thumbnail-unavailable','3D obris još nije dostupan'));
         if(tag)visual.append(tag);const body=node('div','card-body'),title=node('h3','card-title',project.name||project.label||project.slug||'Stambeni projekt'),address=node('p','card-address',project.address||text.noAddress);body.append(title,address);
         const chips=node('div','card-chips');chips.append(node('span','chip',text.year(project)));if(project.kind==='new_build')chips.append(node('span','chip amber','Novogradnja'));if(project.kind==='unknown')chips.append(node('span','chip','Vrsta nije utvrđena'));
-        const facts=node('div','card-count'),count=node('strong','',(project.apartments||[]).length?text.project(project.apartments.length):'Broj stanova nije naveden'),planCount=node('span','',text.plans(project.planCount||0));facts.append(count,planCount);body.append(chips,facts);link.append(visual,body);article.append(link);
+        const facts=node('div','card-count'),apartmentCount=(project.apartments||[]).length,floorPlanCount=(project.floorPlans||[]).length;
+        const countLabel=[apartmentCount?text.project(apartmentCount):floorPlanCount?'': 'Broj stanova nije naveden',floorPlanCount?`${floorPlanCount} ${floorPlanCount===1?'tlocrt kata':'tlocrta katova'}`:''].filter(Boolean).join(' · ');
+        const count=node('strong','',countLabel),planCount=node('span','',floorPlanCount?'':text.plans(project.planCount||0));facts.append(count,planCount);body.append(chips,facts);link.append(visual,body);article.append(link);
         const pills=node('div','plan-pills');(project.apartments||[]).slice(0,4).forEach(apartment=>{if(!apartment.hasPlan)return;const a=node('a','plan-pill',apartment.label||'Tlocrt stana');a.href=apartmentPath(project,apartment);a.addEventListener('click',ev=>ev.stopPropagation());pills.append(a);});if(pills.childNodes.length)article.append(pills);
         return article;
     }
@@ -64,17 +67,20 @@
     }
     function clearViewers(){viewers.forEach(v=>v.dispose());viewers=[];}
     function addSourceLink(host,href,label){const safe=safeHref(href);if(!safe)return;const a=node('a','source-link',label);a.href=safe;if(/^https?:/.test(safe)){a.target='_blank';a.rel='noopener noreferrer';}host.append(a);}
-    function addOriginal(host,source){
+    function addOriginal(host,source,links=host){
         const href=safeHref(source?.assetUrl);if(!href)return;
         const type=String(source.mediaType||'').toLowerCase(),pdf=type==='application/pdf'||/\.pdf(?:[?#]|$)/i.test(href),viewer=node('div','original-preview');
-        if(pdf){const frame=node('iframe');frame.title='Izvorni tlocrt u PDF-u';frame.src=href;viewer.append(frame);}
+        if(pdf){const frame=node('iframe');frame.title='Izvorni tlocrt u PDF-u';frame.src=Number.isFinite(source.page)&&source.page>0?`${href}#page=${Math.floor(source.page)}`:href;viewer.append(frame);}
         else {const image=node('img');image.src=href;image.alt='Izvorna slika tlocrta';image.loading='lazy';viewer.append(image);}
-        host.append(viewer);addSourceLink(host,href,'Otvori izvorni tlocrt ↗');
+        host.append(viewer);addSourceLink(links,href,'Otvori izvorni tlocrt ↗');
     }
     function renderDetail(project,apartmentId){
         clearViewers();const host=byId('detail');host.replaceChildren();if(!project)return;
         document.body.classList.add('detail-page');
-        const apartments=project.apartments||[],selected=apartmentId?apartments.find(a=>String(a.id)===String(apartmentId)):null;
+        const apartments=project.apartments||[],floorPlans=project.floorPlans||[],selectedId=apartmentId?String(apartmentId):null;
+        const selectedApartment=selectedId?apartments.find(a=>String(a.id)===selectedId):null;
+        const selectedFloorPlan=selectedId?floorPlans.find(f=>String(f.id)===selectedId):null;
+        const selected=selectedApartment||selectedFloorPlan||null,isFloorPlan=Boolean(selectedFloorPlan);
         const card=node('article','detail-card');
         if(selected){
             const breadcrumb=node('nav','detail-breadcrumb');breadcrumb.setAttribute('aria-label','Putanja projekta');
@@ -82,59 +88,79 @@
         }
         const head=node('div','detail-head'),left=node('div');
         const projectName=project.name||project.label||'Stambeni projekt',addressText=project.address||text.noAddress;
-        const title=selected?`${selected.label||'Stan'} · ${projectName}${projectName===addressText?'':` — ${addressText}`}`:projectName;
+        const title=selected?`${selected.label||(isFloorPlan?'Tlocrt katova':'Stan')} · ${projectName}${projectName===addressText?'':` — ${addressText}`}`:projectName;
         const h=node('h1','detail-title',title),address=node('p','detail-address',addressText);left.append(h,address);
         const links=node('div','detail-links'),home=node('a','', selected?'Povratak na pretragu':'← Povratak na pretragu');home.href='/novogradnje/';links.append(home);head.append(left,links);card.append(head);
         card.append(node('p','confidence-note',`${text.kinds[project.kind]||text.kinds.unknown} · ${text.year(project)}. Oznake ovise o dostupnim izvorima.`));
-        if(!apartments.length)card.append(node('p','confidence-note','Projekt je pronađen kod izvora. Još nemamo podatke o pojedinim stanovima ni tlocrte za pregled. Pogledajte projekt kod izvora ili pretražite dostupne stanove.'));
-        if(!selected){
-            const sources=project.sources||[];
-            if(sources.length){
-                const projectSources=node('details','detail-sources'),summary=node('summary','',`Izvori oglasa (${sources.length})`),sourceList=node('div','detail-source-list');
-                projectSources.open=!apartments.length;
-                for(const source of sources)addSourceLink(sourceList,source.url,source.label||'Otvori oglas ↗');
-                projectSources.append(summary,sourceList);card.append(projectSources);
-            }
-        }
-        const visibleApartments=apartmentId?(selected?[selected]:[]):apartments,list=node('div',`apartment-list${selected?' single-apartment':''}`);
+        if(!apartments.length&&!floorPlans.length)card.append(node('p','confidence-note','Projekt je pronađen kod izvora. Još nemamo tlocrte za pregled.'));
+        if(project.archiveEvidence?.description)card.append(node('p','confidence-note',project.archiveEvidence.description));
+        const visibleApartments=selected?[]:apartments,list=node('div','apartment-list');
         for(const apartment of visibleApartments){
-            const row=node('div',selected?'apartment-row selected-apartment':'apartment-row');
-            const route=node(selected?'div':'a','apartment-route');
-            if(!selected)route.href=apartmentPath(project,apartment);
+            const row=node('div','apartment-row');
+            const route=node('a','apartment-route');
+            route.href=apartmentPath(project,apartment);
             route.append(node('strong','',apartment.label||'Stan'),node('span','apartment-facts',apartmentFacts(apartment).join(' · ')));
             row.append(route);
-            if(apartment.hasPlan)row.append(node('span','apartment-plan-status','Tlocrt dostupan'));
-            if(apartment.postingUrl)addSourceLink(row,apartment.postingUrl,'Otvori izvor oglasa ↗');
             list.append(row);
         }
-        if(visibleApartments.length)card.append(list);
+        if(!selected){
+            const layout=node('div','building-detail-layout'),apartmentColumn=node('section','building-apartment-column'),listTitle=node('h2','detail-section-title','Stanovi u projektu');
+            apartmentColumn.append(listTitle);
+            if(visibleApartments.length)apartmentColumn.append(list);
+            else if(!floorPlans.length)apartmentColumn.append(node('p','viewer-copy','Popis stanova nije dostupan.'));
+            if(floorPlans.length){
+                const floorsTitle=node('h2','detail-section-title floor-plan-list-title','Tlocrti katova'),floorList=node('div','apartment-list floor-plan-list');
+                for(const floorPlan of floorPlans){
+                    const row=node('div','apartment-row floor-plan-row'),route=node('a','apartment-route');route.href=floorPlanPath(project,floorPlan);
+                    const levels=Array.isArray(floorPlan.levels)&&floorPlan.levels.length?`Katovi ${floorPlan.levels.join(', ')}`:'Katovi nisu navedeni';
+                    route.append(node('strong','',floorPlan.label||'Tlocrt katova'),node('span','floor-plan-levels',levels));row.append(route);floorList.append(row);
+                }
+                apartmentColumn.append(floorsTitle,floorList);
+            }
+            const right=node('div','building-viewer-stack');
+            const envelope=node('section','viewer-panel'),envelopeTitle=node('h3','', 'Obris i katovi zgrade'),envelopeHost=node('div','viewer-canvas');
+            envelope.append(envelopeTitle,envelopeHost,node('p','viewer-copy','Dostupni obris i katovi zgrade. Visine mogu biti procijenjene iz izvora.'));
+            viewers.push(V.mountEnvelope(envelopeHost,project.model,null));
+            const context=node('section','viewer-panel context-panel'),contextTitle=node('h3','','Kontekst zgrade'),contextHost=node('div','viewer-canvas');
+            context.append(contextTitle,contextHost,node('p','viewer-copy','Okolica prikazana prema dostupnim podacima. Novije promjene možda nisu uključene.'));
+            viewers.push(V.mountContext(contextHost,project));right.append(envelope,context);layout.append(apartmentColumn,right);card.append(layout);
+        }
         if(selected){
             const hasGeometry=Boolean(selected.architecture);
             const hasOriginal=Boolean(safeHref(selected.source?.assetUrl));
             const hasPlan=selected.hasPlan||hasGeometry||hasOriginal;
             const review=!hasPlan?'Tlocrt još nije obrađen.':hasGeometry?(selected.reviewStatus==='reviewed'||selected.reviewStatus==='published'?'Pregledana geometrija tlocrta.':'Procijenjena rekonstrukcija tlocrta; potrebna je provjera.'):'Dostupan je izvorni tlocrt.';
-            card.append(node('p','confidence-note',`${review} Orijentacije i površine prikazane su samo kada su navedene u izvoru.`));
-            const grid=node('div','viewer-grid');
-            if(hasPlan){
-                const plan=node('section','viewer-panel'),planTitle=node('h3','',hasGeometry?'Tlocrt i 3D prikaz':'Izvorni tlocrt');plan.append(planTitle);
-                if(hasGeometry){const planHost=node('div','');plan.append(planHost);viewers.push(V.mountApartment(planHost,selected));}
-                if(hasOriginal){addOriginal(plan,selected.source);if(!hasGeometry)plan.append(node('p','viewer-copy','3D rekonstrukcija još nije izrađena.'));}
-                addSourceLink(plan,selected.source?.url||selected.source?.publicUrl,'Otvori izvor tlocrta ↗');grid.append(plan);
-            }
-            if(C.hasEnvelope(project.model)){
-                const building=node('section','viewer-panel'),buildingTitle=node('h3','', 'Obris i katovi zgrade'),buildingHost=node('div','viewer-canvas');building.append(buildingTitle,buildingHost);
+            const grid=node('div','viewer-grid apartment-viewer-grid');
+            const plan=node('section','viewer-panel'),planTitle=node('h3','','Tlocrt i 3D prikaz'),planHost=node('div','viewer-host');
+            plan.append(planTitle,planHost);
+            if(hasGeometry)viewers.push(V.mountApartment(planHost,selected));
+            else {planHost.append(node('div','viewer-canvas'),node('p','viewer-copy','3D rekonstrukcija tlocrta nije dostupna.'));if(!hasPlan)planHost.firstChild.textContent='Tlocrt nije dostupan.';}
+            grid.append(plan);
+
+            const envelope=node('section','viewer-panel'),envelopeTitle=node('h3','','Obris i katovi zgrade'),envelopeHost=node('div','viewer-canvas');
+            envelope.append(envelopeTitle,envelopeHost);
+            if(isFloorPlan)envelope.append(node('p','viewer-copy',`Tlocrt obuhvaća ${Array.isArray(selected.levels)&&selected.levels.length?`katove ${selected.levels.join(', ')}`:'nepoznate katove'}; položaj stana nije prikazan.`));
+            else {
                 const placement=selected.placement,floorAvailable=Number.isFinite(selected.floor)&&(project.model?.envelope?.storeys||[]).some(s=>s.level===selected.floor&&Number.isFinite(s.elevationM));
                 const placementText=placement?.status==='placed'&&floorAvailable?'Procijenjeni položaj prema tlocrtu i obrisu zgrade.':placement?.status==='ambiguous'?'Položaj nije jednoznačan; tlocrt nije postavljen u zgradu.':'Položaj stana nije prikazan jer kat ili siguran položaj nisu poznati.';
-                building.append(node('p','viewer-copy',placementText));viewers.push(V.mountEnvelope(buildingHost,project.model,selected));grid.append(building);
+                envelope.append(node('p','viewer-copy',placementText));
             }
-            if(grid.childNodes.length)card.append(grid);
-        } else if(C.hasEnvelope(project.model)) {
-            const envelope=node('section','viewer-panel'),title=node('h3','', 'Obris i katovi zgrade'),canvas=node('div','viewer-canvas');envelope.append(title,canvas,node('p','viewer-copy','Model prikazuje dostupni obris zgrade i katove; visine mogu biti procijenjene iz izvora.'));viewers.push(V.mountEnvelope(canvas,project.model,null));card.append(envelope);
-        }
-        if(C.hasEnvelope(project.model)) {
-            const context=node('section','viewer-panel context-panel'),title=node('h3','','Zgrada u susjedstvu'),canvas=node('div','viewer-canvas');
-            context.append(title,canvas,node('p','viewer-copy','Projekt je označen zlatnom bojom. Okolica: gradska 3D snimka iz 2022.; novije promjene možda nisu prikazane. Povuci za zakretanje i nagib.'));
-            viewers.push(V.mountContext(canvas,project));card.append(context);
+            viewers.push(V.mountEnvelope(envelopeHost,project.model,isFloorPlan?null:selected));grid.append(envelope);
+
+            const original=node('section','viewer-panel'),originalTitle=node('h3','','Izvorni tlocrt'),originalLinks=node('div','viewer-panel-actions');original.append(originalTitle);
+            if(hasOriginal)addOriginal(original,selected.source,originalLinks);
+            else original.append(node('div','original-preview original-unavailable','Izvorni tlocrt nije dostupan.'));
+            const sourceHref=safeHref(selected.source?.url||selected.source?.publicUrl);
+            if(sourceHref&&sourceHref!==safeHref(selected.source?.assetUrl))addSourceLink(originalLinks,sourceHref,'Otvori izvor tlocrta ↗');
+            if(selected.postingUrl)addSourceLink(originalLinks,selected.postingUrl,'Otvori izvor oglasa ↗');
+            original.append(originalLinks);
+            grid.append(original);
+
+            const context=node('section','viewer-panel context-panel'),contextTitle=node('h3','','Kontekst zgrade'),contextHost=node('div','viewer-canvas');
+            context.append(contextTitle,contextHost,node('p','viewer-copy','Okolica prikazana prema dostupnim podacima. Novije promjene možda nisu uključene.'));
+            viewers.push(V.mountContext(contextHost,project));grid.append(context);
+            card.append(grid);
+            card.append(node('p','confidence-note',isFloorPlan?review:`${review} Orijentacije i površine prikazane su samo kada su navedene u izvoru.`));
         }
         host.append(card);if(detailError)host.append(node('p','confidence-note',detailError));if(apartmentId&&!selected)host.append(node('p','confidence-note','Traženi stan nije dostupan u trenutnom katalogu.'));
     }
@@ -143,7 +169,7 @@
         if(boot.catalogue)catalogue=boot.catalogue;
         else try{const r=await fetch('/novogradnje/api/projects',{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);catalogue=await r.json();}catch(error){catalogueError=`Katalog trenutačno nije dostupan. ${error.message||'Provjerite vezu i pokušajte ponovno.'}`;}
         renderResults();
-        detail=boot.project||null;activeApartmentId=boot.apartmentId||null;
+        detail=boot.project||null;activeApartmentId=boot.apartmentId||boot.floorPlanId||null;
         if(detail&&!detail.model)try{const response=await fetch(`/novogradnje/api/projects/${encodeURIComponent(detail.id||detail.slug)}`,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);detail=await response.json();}catch(error){detailError=`Detalji projekta nisu se učitali. Prikazujemo samo podatke dostupne na ovoj stranici. ${error.message||''}`;}
         if(detail)renderDetail(detail,activeApartmentId);
     }

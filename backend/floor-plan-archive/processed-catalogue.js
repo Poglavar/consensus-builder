@@ -1,6 +1,7 @@
 // Read current interpreted plans and shape them for the floor-plan review API.
 import { fingerprint } from '../buildings/floor-models.js';
 import { centroid } from './review-catalogue.js';
+import { listingUnitId } from '../floor-plans/original-plan-sources.js';
 
 export const PROCESSED_CURRENT_SQL = `
  SELECT p.id,p.task_id,p.region_id,p.city,p.source,p.owner_id,p.building_id,p.source_sha256,
@@ -30,7 +31,6 @@ export const PROCESSED_CURRENT_SQL = `
    AND ( (p.city IS NULL AND p.source IS NULL AND p.building_id IS NULL
            AND pt.context->'building' IS NULL AND pt.context->>'listingUrl'=l.url
            AND pt.context->'facts'->>'floor' IS NOT DISTINCT FROM l.facts->>'floor'
-           AND pt.context->'facts'->>'unitId' IS NOT DISTINCT FROM l.facts->>'unitId'
            AND pt.context->'facts'->>'areaM2' IS NOT DISTINCT FROM l.facts->>'areaM2')
       OR (l.match_status='verified' AND l.building_city=p.city AND l.building_source=p.source
            AND COALESCE(l.building_owner_id,'')=p.owner_id AND l.building_id=p.building_id
@@ -68,7 +68,7 @@ const hasCurrentAssociation = row => row.target_sha256 === row.source_sha256
     && (sourceOnly(row)
         ? row.task_city==null && row.task_listing_url===row.listing_url
             && (row.task_floor??null)===(row.listing_floor??null)
-            && (row.task_unit_id??null)===(row.listing_unit_id??null)
+            && (row.task_unit_id??null)===listingUnitId({unitId:row.listing_unit_id,title:row.listing_title},row.listing_url)
             && (row.task_area_m2??null)===(row.listing_area_m2??null)
         : row.listing_match_status === 'verified'
     && row.listing_city === row.city

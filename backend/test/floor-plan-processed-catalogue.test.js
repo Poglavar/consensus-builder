@@ -52,6 +52,13 @@ describe('processed floor-plan catalogue',()=>{
         expect(selectCurrentProcessedRows([{...current,listing_owns_asset:false}])).toEqual([]);
         expect(selectCurrentProcessedRows([{...current,task_floor:'2',listing_floor:'3'}])).toEqual([]);
     });
+    it('compares the same derived unit identity used when the reading task was created',()=>{
+        const listing='https://agency.test/projekti/stan-s2-60m2';
+        const current=sourceOnly({listing_url:listing,task_listing_url:listing,listing_title:'Trosoban stan 60 m²',listing_unit_id:null,task_unit_id:'S2'});
+        expect(selectCurrentProcessedRows([current])).toEqual([current]);
+        expect(selectCurrentProcessedRows([{...current,task_unit_id:'S3'}])).toEqual([]);
+        expect(selectCurrentProcessedRows([{...current,listing_unit_id:'S4'}])).toEqual([]);
+    });
     it('hides a published source-only plan if its recorded publication identity is rebound',()=>{
         const verified=sourceOnly({status:'published',listing_match_status:'verified',listing_city:'zagreb',
             listing_source:'survey',listing_building_id:'b-7',listing_footprint:footprint});
