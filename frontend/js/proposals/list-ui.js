@@ -166,12 +166,12 @@ function handleProposalParcelClick(parcelId, event) {
     event.stopPropagation();
     event.preventDefault();
 
-    // Check if this is a removed ancestor parcel
+    // A source replaced in the map model keeps its location without selecting a live input face.
     const parcelItem = event.currentTarget;
-    const isRemoved = parcelItem && parcelItem.getAttribute('data-parcel-removed') === 'true';
+    const isReplaced = parcelItem && parcelItem.getAttribute('data-parcel-replaced') === 'true';
 
-    if (isRemoved) {
-        // Focus on the location where the parcel was, but don't try to select it
+    if (isReplaced) {
+        // Focus on its source location; an unloaded source instead follows the normal details path.
         focusOnRemovedParcelLocation(parcelId, parcelItem);
         return false;
     }

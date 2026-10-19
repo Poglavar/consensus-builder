@@ -135,14 +135,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         })();
 
         const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(canonicalId) : false;
-        const isRemoved = isReplaced || !displayFeature.geometry;
+        const referenceState = window.ProposalPanelPresentation.parcelReferenceState({
+            hasGeometry: !!geometry, replacedInModel: isReplaced
+        });
 
         return {
             parcelId: getParcelIdFromFeature(displayFeature) || canonicalId,
             parcel: null,
             feature: displayFeature,
             geometry,
-            isRemoved
+            referenceState
         };
     };
 
@@ -175,7 +177,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (!parentParcel) return '';
         const parcelId = parentParcel.parcelId;
         const feature = parentParcel.feature;
-        const isRemoved = parentParcel.isRemoved;
+        const isReplaced = parentParcel.referenceState === 'replaced';
+        const isUnloaded = parentParcel.referenceState === 'unloaded';
         const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
         // This avatar comes from a browser-local model assignment, not a rights register.
@@ -200,45 +203,44 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // plots that came out of it after. Same session as the panel's own "Before / after".
         const parcelCompare = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
         const proposalKeyForCompare = (typeof getProposalKey === 'function' ? getProposalKey(fullProposal || proposal) : null) || (fullProposal || proposal).proposalId;
-        // (An applied readjustment lists its input parcels as "Removed": that is the case to compare.)
+        // An applied readjustment can replace its inputs in the map model: that is the case to compare.
         const parcelCompareHtml = ((fullProposal || proposal).reparcellization && parcelCompare && proposalKeyForCompare
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
             ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
                     onclick="event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () => toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} }));"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
             : '';
-        const parcelTooltip = isRemoved
-            ? tProposal('panel.proposal.parcels.tooltipRemoved', 'Click to focus on where this parcel was')
+        const parcelTooltip = isReplaced
+            ? tProposal('panel.proposal.parcels.tooltipReplaced', 'Click to focus on the source parcel location')
             : tProposal('panel.proposal.parcels.tooltip', 'Click to view parcel details');
         const acceptedLabel = tProposal('panel.proposal.acceptance.accepted', 'Accepted');
         const pendingLabel = tProposal('panel.proposal.acceptance.pending', 'Pending');
-        // A readjustment does not remove its parcels: it pools them into the new plots.
-        const removedLabel = (fullProposal || proposal).reparcellization
-            ? tProposal('panel.proposal.parcels.pooled', 'Pooled into the new plots')
-            : tProposal('panel.proposal.parcels.removed', 'Removed');
+        // Any applied formation may replace this source; the viewed proposal need not be its producer.
+        const replacedLabel = tProposal('panel.proposal.parcels.replacedInModel', 'Replaced in map model');
+        const unloadedLabel = tProposal('panel.proposal.parcels.sourceUnloaded', 'Source geometry not loaded');
 
-        // Store geometry data for removed parcels so we can focus on location
-        const removedGeometry = isRemoved
+        // Store source geometry for replaced parcels so we can focus on location.
+        const sourceGeometry = isReplaced
             ? (parentParcel.geometry || (feature && feature.geometry) || null)
             : null;
-        const geometryDataAttr = removedGeometry
-            ? `data-parcel-geometry='${JSON.stringify(removedGeometry)}'`
+        const geometryDataAttr = sourceGeometry
+            ? `data-parcel-geometry='${JSON.stringify(sourceGeometry)}'`
             : '';
-        const removedDataAttr = isRemoved ? 'data-parcel-removed="true"' : '';
+        const replacedDataAttr = isReplaced ? 'data-parcel-replaced="true"' : '';
 
         // The row and its status take their look from classes (css/proposal-details.css):
         // execution.js toggles is-accepted and parcel-status-* when an owner accepts.
         return `
-            <div class="proposal-parcel-item proposal-parcel-row${hasAccepted ? ' is-accepted' : ''}${isRemoved ? ' is-removed' : ''}" data-parcel-id="${parcelId}" ${removedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
+            <div class="proposal-parcel-item proposal-parcel-row${hasAccepted ? ' is-accepted' : ''}${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
                 <div class="parcel-info proposal-parcel-row__info">
                     <div class="proposal-parcel-row__main">
                         ${ownerAvatarHtml}
                         <div class="proposal-parcel-row__text">
                             <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}">${safeAgentText(parcelLabelText)}</span>
                             ${parcelCompareHtml}
-                            ${isRemoved
-                ? `<span class="parcel-status parcel-status-removed">${removedLabel}</span>`
-                : (hasAccepted ?
+                            ${isReplaced
+                ? `<span class="parcel-status parcel-status-replaced">${replacedLabel}</span>`
+                : (isUnloaded ? `<span class="parcel-status parcel-status-unloaded">${unloadedLabel}</span>` : hasAccepted ?
                     `<span class="parcel-status parcel-status-accepted">${acceptedLabel}</span>` :
                     `<span class="parcel-status parcel-status-pending">${pendingLabel}</span>`)
             }

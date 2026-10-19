@@ -16,6 +16,35 @@ function extractBetween(source, startMarker, endMarker) {
 }
 
 describe('proposal panel presentation', () => {
+    it('keeps source loading independent of observed map replacement', () => {
+        expect(Presentation.parcelReferenceState()).toBe('unloaded');
+        expect(Presentation.parcelReferenceState({ hasGeometry: true })).toBe('available');
+        expect(Presentation.parcelReferenceState({ replacedInModel: true })).toBe('replaced');
+        expect(Presentation.parcelReferenceState({ hasGeometry: true, replacedInModel: true })).toBe('replaced');
+    });
+
+    it('opens unloaded source details and only uses location focus for a replaced source', () => {
+        const source = readFileSync(new URL('../../frontend/js/proposals/list-ui.js', import.meta.url), 'utf8');
+        const clickSource = extractBetween(source, 'function handleProposalParcelClick(', '\nfunction setProposalCreateButtonState(');
+        const details = vi.fn(), location = vi.fn();
+        const click = vm.runInNewContext(`${clickSource}; handleProposalParcelClick;`, {
+            Node: { TEXT_NODE: 3 }, returnToParcelInfo: details, focusOnRemovedParcelLocation: location
+        });
+        const event = replaced => {
+            const row = { getAttribute: key => key === 'data-parcel-replaced' && replaced ? 'true' : null };
+            return { target: row, currentTarget: row, stopPropagation: vi.fn(), preventDefault: vi.fn() };
+        };
+        const unloaded = event(false);
+        click('source-1', unloaded);
+        expect(details).toHaveBeenCalledWith('source-1', unloaded);
+        expect(location).not.toHaveBeenCalled();
+        details.mockClear();
+        const replaced = event(true);
+        click('source-1', replaced);
+        expect(location).toHaveBeenCalledWith('source-1', replaced.currentTarget);
+        expect(details).not.toHaveBeenCalled();
+    });
+
     it('keeps a minimized same-proposal refresh compact while new and explicit requests choose their mode', () => {
         expect(Presentation.resolve({ sameProposal: true, visible: true, minimized: true })).toBe('compact');
         expect(Presentation.resolve({ sameProposal: true, visible: false, minimized: true })).toBe('details');

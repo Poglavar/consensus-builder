@@ -11,6 +11,7 @@ const displayText = require('../../frontend/js/proposals/display-text.js');
 const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
 const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
 const displayState = require('../../frontend/js/proposals/display-state.js');
+const panelPresentation = require('../../frontend/js/proposals/panel-presentation.js');
 // A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
 const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: 'Prog1111', tokenId: 'Token1111111111111111111111111111111111' });
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
@@ -19,7 +20,7 @@ const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false } = {}) {
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false, sourceFeature = null, sourceReplaced = false } = {}) {
     const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
@@ -60,7 +61,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
         MapShell: { closeSheets() {} },
         ProposalDisplayText: displayText,
         __proposalDisplayState: displayState,
-        ProposalPanelPresentation: { resolve: () => 'compact' },
+        ProposalPanelPresentation: panelPresentation,
+        CadastralParcelRepository: { get: () => sourceFeature },
         ProposalSupportView: supportView,
         ProposalKind,
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
@@ -104,7 +106,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         getProposalKey: item => item.proposalId, resolveProposalIdKey: value => value,
         computeProposalArea: () => 0, getProposalParcelCount: () => 0,
         getParcelDisplayNumberFromProperties: (_props, id) => id, getProposalActionTypeLabel: () => '',
-        isParcelReplacedByChildren: () => false, ensureParcelIdOnFeature: feature => feature,
+        isParcelReplacedByChildren: () => sourceReplaced, ensureParcelIdOnFeature: feature => feature,
         getParcelIdFromFeature: feature => feature.properties.parcelId,
         canEditProposalGeometry: () => !road, editProposalGeometry() {},
         isProposalOpenSaleOffer: item => !!item.saleOffer, simulateSaleOfferPurchase() {},
@@ -134,6 +136,30 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it.each([false, true])('does not describe unloaded source geometry as removed or pooled (readjustment: %s)', readjustment => {
+        const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'],
+            ...(readjustment ? { reparcellization: { polygons: [] } } : {}) };
+        const row = parse(render(proposal).content.innerHTML)('.proposal-parcel-row');
+        expect(row.attr('data-reference-state')).toBe('unloaded');
+        expect(row.attr('data-parcel-replaced')).toBeUndefined();
+        expect(row.find('.parcel-status').text()).toBe('Source geometry not loaded');
+        expect(row.hasClass('is-replaced')).toBe(false);
+    });
+
+    it('shows replacement only from current map evidence and retains the source geometry for focus', () => {
+        const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'], reparcellization: { polygons: [] } };
+        const geometry = { type: 'Polygon', coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
+        const sourceFeature = { type: 'Feature', properties: { parcelId: 'source-1' }, geometry };
+        const available = parse(render(proposal, { sourceFeature }).content.innerHTML)('.proposal-parcel-row');
+        expect(available.attr('data-reference-state')).toBe('available');
+        expect(available.find('.parcel-status').text()).toBe('Pending');
+        const replaced = parse(render(proposal, { sourceFeature, sourceReplaced: true }).content.innerHTML)('.proposal-parcel-row');
+        expect(replaced.attr('data-parcel-replaced')).toBe('true');
+        expect(replaced.hasClass('is-replaced')).toBe(true);
+        expect(replaced.find('.parcel-status').text()).toBe('Replaced in map model');
+        expect(JSON.parse(replaced.attr('data-parcel-geometry'))).toEqual(geometry);
+    });
+
     it.each([
         { goal: 'ownership-transfer-from-me', funded: false },
         { goal: 'parcelBased', ownershipTransferProposal: { direction: 'from-me' }, funded: true },

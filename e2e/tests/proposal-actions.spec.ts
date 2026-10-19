@@ -124,6 +124,27 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('unloaded source references are not presented as removed parcels', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const id = await page.evaluate(parcelId => {
+      const w = window as any;
+      return w.proposalStorage.addProposal({ title: 'Source reference states', goal: 'as-is', lifecycleStatus: 'Active',
+        cadastreParcelIds: [parcelId, 'source-not-loaded'] });
+    }, PARCEL_ID);
+    await showProposal(page, id);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const rows = page.locator('#proposal-details-panel .proposal-parcel-row');
+    const source = page.locator('#proposal-details-panel .proposal-parcel-row[data-parcel-id="source-not-loaded"]');
+    await expect(source).toHaveAttribute('data-reference-state', 'unloaded');
+    await expect(source.locator('.parcel-status')).toHaveText('Source geometry not loaded');
+    await expect(source).not.toHaveAttribute('data-parcel-replaced', 'true');
+    await expect(rows.filter({ hasText: 'Removed' })).toHaveCount(0);
+    await expect(page.locator(`#proposal-details-panel .proposal-parcel-row[data-parcel-id="${PARCEL_ID}"]`))
+      .toHaveAttribute('data-reference-state', 'available');
+  });
+
   test('ownership counts distinguish declared parties, local entries and modeled road estimates', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
