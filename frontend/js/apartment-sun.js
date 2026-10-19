@@ -10,25 +10,15 @@
    ...part,baseM:architecture.wallHeightM,heightM:architecture.slabThicknessM
   }));
  }
- function ceilingLampPositions(architecture,navigation){
-  // Close doorways for this room lookup; lamps belong inside rooms rather than corridors between them.
-  const nav=navigation.buildNavigation({...architecture,openings:architecture.openings.map(o=>o.kind==='door'?{...o,kind:'glazedDoor'}:o)});
-  if(!nav)return [];
-  return nav.components.filter(ids=>ids.length*nav.step*nav.step>=.8).slice(0,8).map(ids=>{
-   const centre=ids.reduce((p,id)=>[p[0]+nav.points[id][0]/ids.length,p[1]+nav.points[id][1]/ids.length],[0,0]);
-   const id=ids.reduce((best,id)=>Math.hypot(nav.points[id][0]-centre[0],nav.points[id][1]-centre[1])<Math.hypot(nav.points[best][0]-centre[0],nav.points[best][1]-centre[1])?id:best,ids[0]);
-   return nav.points[id];
-  });
- }
- function buildNightLights(THREE,architecture,navigation){
+ function buildNightLights(THREE,architecture,rooms){
   const group=new THREE.Group();group.name='ApartmentNightLights';
   const geometry=new THREE.CylinderGeometry(.17,.17,.045,16).rotateX(Math.PI/2);
   const material=new THREE.MeshBasicMaterial({color:0xffe4b0}),lights=[];
-  for(const [x,y] of ceilingLampPositions(architecture,navigation)){
+  for(const [index,[x,y]] of rooms.lampPositions(architecture).entries()){
    const fixture=new THREE.Mesh(geometry,material);fixture.name='CeilingLamp';fixture.position.set(x,y,architecture.wallHeightM-.07);
    const light=new THREE.SpotLight(0xffdfaa,0,architecture.wallHeightM*3,Math.PI*.43,.55,2);
    light.name='ApartmentNightLamp';light.position.set(x,y,architecture.wallHeightM-.13);light.target=new THREE.Object3D();light.target.position.set(x,y,0);
-   light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.normalBias=.015;light.shadow.bias=-.0001;
+   light.castShadow=index<8;light.shadow.mapSize.set(512,512);light.shadow.normalBias=.015;light.shadow.bias=-.0001;
    light.shadow.camera.near=.05;light.shadow.camera.far=architecture.wallHeightM*3;
    group.add(fixture,light,light.target);lights.push(light);
   }
@@ -64,7 +54,7 @@
   originalLights.forEach(({light})=>{if(!light.isHemisphereLight)light.intensity=0;});
   group.traverse(object=>{if(object.isMesh){object.castShadow=castsShadow(object);object.receiveShadow=castsShadow(object);object.material.needsUpdate=true;}});
   const ceiling=buildCeiling(THREE,architecture,env.__buildingFloorPlans);group.add(ceiling.group);
-  const nightLights=buildNightLights(THREE,architecture,env.__apartmentPeopleNavigation);group.add(nightLights.group);
+  const nightLights=buildNightLights(THREE,architecture,env.__apartmentLightRooms);group.add(nightLights.group);
   const size=Math.hypot(...architecture.dimensionsM,architecture.wallHeightM),radius=size/2+1,distance=size*3;
   const target=new THREE.Object3D();target.position.set(architecture.dimensionsM[0]/2,architecture.dimensionsM[1]/2,architecture.wallHeightM/2);
   const sun=new THREE.DirectionalLight(0xfff2da,3.2);sun.name='ApartmentSun';sun.castShadow=true;sun.target=target;
@@ -72,19 +62,31 @@
   Object.assign(sun.shadow.camera,{left:-radius,right:radius,top:radius,bottom:-radius,near:Math.max(.1,distance-radius*2),far:distance+radius*2});
   sun.shadow.camera.up.set(0,0,1);sun.shadow.camera.updateProjectionMatrix();scene.add(sun,target);
   const ui=doc.createElement('div');ui.className='apartment-sun-controls';ui.setAttribute('aria-label','Sunce i sjene');
-  const timeline=doc.createElement('div');timeline.className='sun-timeline';
-  const pause=doc.createElement('button');pause.type='button';pause.className='sun-pause';
+  const dials=doc.createElement('div');dials.className='sun-dials';
+  const clockWrap=doc.createElement('div');clockWrap.className='sun-clock-wrap';
+  const clock=doc.createElement('button');clock.type='button';clock.className='sun-clock';
+  for(const [label,position] of [['12','top'],['3','right'],['6','bottom'],['9','left']]){
+   const number=doc.createElement('span');number.className=`dial-mark dial-${position}`;number.textContent=label;clock.append(number);
+  }
+  const hourHand=doc.createElement('span');hourHand.className='clock-hand clock-hour';
+  const minuteHand=doc.createElement('span');minuteHand.className='clock-hand clock-minute';
+  const pivot=doc.createElement('span');pivot.className='dial-pivot';clock.append(hourHand,minuteHand,pivot);
   const time=doc.createElement('output');time.className='sun-time';
-  const slider=doc.createElement('input');slider.type='range';slider.min='0';slider.max='1000';slider.step='1';slider.className='sun-slider';slider.setAttribute('aria-label','Vrijeme dana');
-  const phase=doc.createElement('span');phase.className='sun-phase';timeline.append(pause,time,slider,phase);
-  const options=doc.createElement('div');options.className='sun-options';
-  const dateLabel=doc.createElement('label');dateLabel.textContent='Datum';
+  const phase=doc.createElement('span');phase.className='sun-phase';clockWrap.append(clock,time,phase);
+  const dateLabel=doc.createElement('label');dateLabel.className='sun-date';dateLabel.textContent='Datum';
   const date=doc.createElement('input');date.type='date';date.value=day.date;dateLabel.append(date);
-  const northLabel=doc.createElement('label');northLabel.textContent='Smjer N ↻';
-  const north=doc.createElement('input');north.type='number';north.min='0';north.max='359';north.step='1';north.value=String(Math.round(rotation));north.setAttribute('aria-label','Smjer sjevera u stupnjevima udesno od vrha tlocrta');northLabel.append(north);
-  options.append(dateLabel,northLabel);
+  const compassWrap=doc.createElement('div');compassWrap.className='sun-compass-wrap';
+  const compass=doc.createElement('div');compass.className='sun-compass';compass.tabIndex=0;
+  compass.setAttribute('role','slider');compass.setAttribute('aria-label','Zakreni sjever');compass.setAttribute('aria-valuemin','0');compass.setAttribute('aria-valuemax','359');
+  compass.title='Povuci za smjer sjevera; tipke sa strelicama zakreću za 5°.';
+  const needle=doc.createElement('span');needle.className='compass-needle';
+  const northMark=doc.createElement('span');northMark.className='compass-north';northMark.textContent='N';needle.append(northMark);
+  const compassPivot=doc.createElement('span');compassPivot.className='dial-pivot';compass.append(needle,compassPivot);
+  const bearing=doc.createElement('output');bearing.className='sun-bearing';
+  const compassHint=doc.createElement('span');compassHint.className='sun-phase';compassHint.textContent='Povuci N';compassWrap.append(compass,bearing,compassHint);
+  dials.append(clockWrap,dateLabel,compassWrap);
   const note=doc.createElement('p');note.className='sun-note';
-  ui.append(timeline,options,note);controlsHost.append(ui);
+  ui.append(dials,note);controlsHost.append(ui);
   function paint(){
    const sample=state.sampleSun({sunCalc:env.SunCalc,day,progress,latitude,longitude,rotationDeg:rotation}),d=sample.direction;
    sun.position.copy(target.position).addScaledVector(new THREE.Vector3(d.x,d.y,d.z),distance);
@@ -94,8 +96,13 @@
    nightLights.setNight(!sample.daylight);
    if(ambient)ambient.intensity=.26+daylight*.3;
    scene.background=new THREE.Color('#1d2937').lerp(new THREE.Color('#eef3f5'),daylight);
-   time.textContent=sample.time;phase.textContent=sample.daylight?'Dan':'Noć';slider.value=String(Math.round(progress*1000));slider.setAttribute('aria-valuetext',sample.time);
-   pause.textContent=paused?'▶':'Ⅱ';pause.setAttribute('aria-label',paused?'Pokreni izmjenu dana i noći':'Pauziraj izmjenu dana i noći');pause.setAttribute('aria-pressed',String(paused));
+   const hands=state.clockHands(sample.time);
+   hourHand.style.transform=`rotate(${hands.hourDeg}deg)`;minuteHand.style.transform=`rotate(${hands.minuteDeg}deg)`;
+   time.textContent=sample.time;phase.textContent=`${sample.daylight?'Dan':'Noć'}${paused?' · pauza':''}`;
+   clock.setAttribute('aria-label',`${sample.time} · ${paused?'Pokreni':'Pauziraj'} izmjenu dana i noći`);clock.setAttribute('aria-pressed',String(paused));
+   clock.title=paused?'Klikni za pokretanje':'Klikni za pauzu';clock.dataset.paused=String(paused);
+   needle.style.transform=`rotate(${rotation}deg)`;bearing.textContent=`N ${Math.round(rotation)%360}°`;
+   compass.setAttribute('aria-valuenow',String(Math.round(rotation)%360));compass.setAttribute('aria-valuetext',`${Math.round(rotation)%360} stupnjeva udesno od vrha tlocrta`);
    const northText=manualNorth?'Ručno postavljen N':orientation.status==='placed'?'N prema poravnanju':'Smjer N nije potvrđen';
    note.textContent=`${northText} · strop pretpostavljen · ${knownLocation?'bez okolnih zgrada':'približna lokacija u Zagrebu'}`;
    note.title='Sjene prema rekonstruiranim zidovima i prozorima, uz pretpostavljen zatvoren strop. Smjer N je kut udesno od vrha tlocrta; okolne zgrade nisu uključene.';
@@ -108,10 +115,23 @@
    frame=env.requestAnimationFrame(tick);
   }
   function sync(){if(frame)env.cancelAnimationFrame(frame);frame=0;lastTime=null;if(active())frame=env.requestAnimationFrame(tick);}
-  pause.addEventListener('click',()=>{paused=!paused;paint();sync();});
-  slider.addEventListener('input',()=>{paused=true;progress=Number(slider.value)/1000;paint();sync();});
+  clock.addEventListener('click',()=>{paused=!paused;paint();sync();});
+  clock.addEventListener('keydown',event=>{
+   const delta={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[event.key];if(!delta)return;
+   event.preventDefault();paused=true;progress=(progress+delta*3600000/day.durationMs+1)%1;paint();sync();
+  });
   date.addEventListener('change',()=>{try{day=state.dayBounds(date.value);progress=state.progressAtTime(day,12);}catch{date.value=day.date;}paint();sync();});
-  north.addEventListener('change',()=>{const value=Number(north.value);if(north.value!==''&&Number.isFinite(value)){rotation=((value%360)+360)%360;manualNorth=true;north.value=String(rotation);}else north.value=String(rotation);paint();});
+  function setNorth(value){rotation=((value%360)+360)%360;manualNorth=true;paint();}
+  function pointNorth(event){const box=compass.getBoundingClientRect(),value=state.compassBearing(event.clientX-box.left-box.width/2,event.clientY-box.top-box.height/2);if(value!==null)setNorth(value);}
+  let dragPointer=null;
+  compass.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();dragPointer=event.pointerId;compass.setPointerCapture(event.pointerId);compass.focus();pointNorth(event);});
+  compass.addEventListener('pointermove',event=>{if(event.pointerId===dragPointer)pointNorth(event);});
+  function finishDrag(event){if(event.pointerId===dragPointer)dragPointer=null;}
+  compass.addEventListener('pointerup',finishDrag);compass.addEventListener('pointercancel',finishDrag);compass.addEventListener('lostpointercapture',finishDrag);
+  compass.addEventListener('keydown',event=>{
+   const delta={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[event.key];if(!delta&&event.key!=='Home')return;
+   event.preventDefault();setNorth(event.key==='Home'?0:rotation+delta*(event.shiftKey?1:5));
+  });
   const motionChanged=()=>{if(media.matches)paused=true;paint();sync();};
   const observer=new env.IntersectionObserver(entries=>{onscreen=entries.some(e=>e.isIntersecting);sync();});observer.observe(host);
   doc.addEventListener('visibilitychange',sync);media?.addEventListener('change',motionChanged);paint();sync();
@@ -120,5 +140,5 @@
    delete host.dataset.sunTime;delete host.dataset.sunDate;delete host.dataset.sunAltitude;delete host.dataset.sunlightState;
   };
  }
- return {mount,ceilingParts,ceilingLampPositions,castsShadow};
+ return {mount,ceilingParts,castsShadow};
 });

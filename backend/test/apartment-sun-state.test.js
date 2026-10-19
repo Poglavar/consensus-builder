@@ -44,6 +44,34 @@ describe('apartment solar clock', () => {
     });
 });
 
+describe('apartment sunlight dials', () => {
+    it.each([
+        ['00:00', 0, 0],
+        ['12:00', 0, 0],
+        ['03:15', 97.5, 90],
+        ['23:59', 359.5, 354]
+    ])('positions both clock hands at %s', (time, hourDeg, minuteDeg) => {
+        expect(Sun.clockHands(time)).toEqual({ hourDeg, minuteDeg });
+    });
+    it.each(['24:00', '12:60', '3:15', '', null, undefined])('rejects invalid clock time %s', time => {
+        expect(() => Sun.clockHands(time)).toThrow(RangeError);
+    });
+    it.each([
+        [0, -1, 0], [1, 0, 90], [0, 1, 180], [-1, 0, 270],
+        [1, -1, 45], [-1, -1, 315], [-1e-6, -1, 359.9999427042205]
+    ])('reads a clockwise bearing from screen vector (%s, %s)', (x, y, expected) => {
+        const bearing = Sun.compassBearing(x, y);
+        expect(bearing).toBeCloseTo(expected, 10);
+        expect(bearing).toBeGreaterThanOrEqual(0);
+        expect(bearing).toBeLessThan(360);
+    });
+    it.each([[0, 0], [-0, -0], [NaN, 1], [1, Infinity], [-Infinity, 1], [null, -1], [1, undefined], ['1', -1]])(
+        'preserves the bearing at the centre or invalid vector (%s, %s)', (x, y) => {
+            expect(Sun.compassBearing(x, y)).toBeNull();
+        }
+    );
+});
+
 describe('apartment solar coordinate contract', () => {
     it('remaps the sibling solar convention to apartment east/north/up axes', () => {
         vectorClose(Sun.sunDirection(0, -Math.PI / 2), { x: 1, y: 0, z: 0 });

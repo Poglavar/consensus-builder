@@ -13,7 +13,7 @@ const { filterProjects, decodeFilters } = require('../../frontend/novogradnje/ca
 const directory = fileURLToPath(new URL('../../frontend/novogradnje/', import.meta.url));
 const shared = fileURLToPath(new URL('../../frontend/js/', import.meta.url));
 const vendor = fileURLToPath(new URL('../../frontend/vendor/', import.meta.url));
-const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 'floor-plan-review-geometry.js', 'floor-plan-review-renderer.js', 'site-model-geometry.js', 'three-context-buildings.js', 'photoreal-frame.js', 'photoreal-ground.js', 'photoreal-attribution.js', 'apartment-people-navigation.js', 'apartment-people.js', 'apartment-sun-state.js', 'apartment-sun.js']);
+const sharedFiles = new Set(['building-floor-plans.js', 'three-floor-plans.js', 'floor-plan-review-geometry.js', 'floor-plan-review-renderer.js', 'site-model-geometry.js', 'three-context-buildings.js', 'photoreal-frame.js', 'photoreal-ground.js', 'photoreal-attribution.js', 'apartment-people-navigation.js', 'apartment-people.js', 'apartment-sun-state.js', 'apartment-sun.js', 'apartment-light-rooms.js']);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
 const kindLabel = kind => ({ new_build: 'Novogradnja', existing: 'Starogradnja', unknown: 'Vrsta nije utvrđena' })[kind] || 'Vrsta nije utvrđena';

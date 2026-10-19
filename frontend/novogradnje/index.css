@@ -13,8 +13,24 @@
 /* Each card shows its own stored building envelope without a WebGL context. */
 .building-thumbnail{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain}.thumbnail-unavailable{padding:32px 14px 16px;color:var(--muted);font-size:.75rem;text-align:center}
 .brand-icon{display:block;width:32px;height:32px;border-radius:10px;object-fit:cover}
-.viewer-panel>.viewer-host.apartment-lit-host{--apartment-preview-height:300px;display:flex;flex-direction:column;height:auto;min-height:0;flex:1}.apartment-lit-host>.viewer-canvas{flex:0 0 auto}.viewer-host.apartment-lit-host>.viewer-actions{top:calc(var(--apartment-preview-height) - 44px);bottom:auto}.apartment-sun-controls{margin-top:auto;padding:6px 12px 8px;border-top:1px solid var(--line);font-size:.7rem}.sun-timeline{display:flex;align-items:center;gap:7px;min-height:26px}.sun-pause{border:1px solid var(--line);border-radius:6px;background:white;color:var(--ink);width:29px;height:25px;padding:0}.sun-time{font-variant-numeric:tabular-nums;font-weight:700;min-width:35px}.sun-slider{min-width:25px;width:100%;height:20px;accent-color:var(--green)}.sun-phase{min-width:25px;color:var(--muted)}.sun-options{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:3px}.sun-options label{display:flex;align-items:center;gap:5px;white-space:nowrap;color:var(--muted)}.sun-options input{height:25px;min-width:0;border:1px solid var(--line);border-radius:5px;padding:2px 4px;background:white;color:var(--ink);font-size:.68rem}.sun-options input[type=date]{width:116px}.sun-options input[type=number]{width:49px}.sun-note{margin:4px 0 0;color:var(--muted);font-size:.62rem;line-height:1.2}
-@media(max-width:760px){.viewer-panel>.viewer-host.apartment-lit-host{--apartment-preview-height:280px}}
+.viewer-panel>.viewer-host.apartment-lit-host{--apartment-preview-height:300px;display:flex;flex-direction:column;height:auto;min-height:0;flex:1}.viewer-panel>.apartment-lit-host>.viewer-canvas{flex:0 0 auto;height:var(--apartment-preview-height);min-height:0}.viewer-host.apartment-lit-host>.viewer-actions{top:calc(var(--apartment-preview-height) - 44px);bottom:auto}.apartment-sun-controls{margin-top:auto;padding:5px 12px 6px;border-top:1px solid var(--line);font-size:.7rem}
+.sun-dials{display:grid;grid-template-columns:70px minmax(0,1fr) 70px;align-items:center;gap:6px}
+.sun-clock-wrap,.sun-compass-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sun-clock,.sun-compass{position:relative;display:block;width:58px;height:58px;border:1px solid #b6b6a6;border-radius:50%;padding:0;background:repeating-conic-gradient(#8b9388 0deg 2deg,#fffdf8 2deg 30deg);color:var(--ink);flex-shrink:0;cursor:pointer;touch-action:none;user-select:none}
+.sun-clock::before,.sun-compass::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--surface)}
+.sun-clock[data-paused="true"]{border-color:#bd7d1c;box-shadow:0 0 0 2px var(--amber-soft)}
+.sun-clock:focus-visible,.sun-compass:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.dial-mark{position:absolute;z-index:1;font-size:7px;line-height:1;font-weight:700}
+.dial-top{top:5px;left:50%;transform:translateX(-50%)}.dial-bottom{bottom:5px;left:50%;transform:translateX(-50%)}.dial-right{right:6px;top:50%;transform:translateY(-50%)}.dial-left{left:6px;top:50%;transform:translateY(-50%)}
+.clock-hand{position:absolute;z-index:2;bottom:50%;left:calc(50% - 1px);width:2px;border-radius:2px;transform-origin:50% 100%;pointer-events:none}.clock-hour{height:14px;background:var(--ink)}.clock-minute{height:20px;background:var(--green)}
+.dial-pivot{position:absolute;z-index:3;left:calc(50% - 3px);top:calc(50% - 3px);width:6px;height:6px;border-radius:50%;background:var(--ink);pointer-events:none}
+.sun-time,.sun-bearing{font-variant-numeric:tabular-nums;font-weight:700;font-size:.68rem;line-height:1.1}
+.sun-phase{color:var(--muted);font-size:.58rem;line-height:1.1;white-space:nowrap}
+.sun-date{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:.65rem}
+.sun-date input{height:27px;min-width:0;width:113px;max-width:100%;border:1px solid var(--line);border-radius:5px;padding:2px 4px;background:white;color:var(--ink);font-size:.68rem}
+.sun-compass{cursor:grab}.sun-compass:active{cursor:grabbing}.compass-needle{position:absolute;z-index:2;inset:11px;pointer-events:none;transform-origin:center}.compass-needle::before{content:"";position:absolute;inset:0;background:linear-gradient(#b34a35 50%,#8c958d 50%);clip-path:polygon(50% 0,72% 50%,50% 100%,28% 50%)}.compass-north{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:#a73624}
+.sun-note{margin:4px 0 0;color:var(--muted);font-size:.58rem;line-height:1.2}
+@media(max-width:760px){.viewer-panel>.viewer-host.apartment-lit-host{--apartment-preview-height:266px}}
 
 /* Apartment details use four matching panels; building routes keep the apartment list beside stacked previews. */
 .viewer-grid.apartment-viewer-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px;margin-top:0}

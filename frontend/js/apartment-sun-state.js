@@ -62,6 +62,20 @@
         return (localClock(day.date, hour, minute).getTime() - day.start.getTime()) / day.durationMs;
     }
 
+    function clockHands(timeString) {
+        if (typeof timeString !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(timeString)) {
+            throw new RangeError('Invalid clock time');
+        }
+        const [hour, minute] = timeString.split(':').map(Number);
+        return { hourDeg: (hour % 12) * 30 + minute / 2, minuteDeg: minute * 6 };
+    }
+
+    // Screen coordinates increase rightward and downward; north is the top of the dial.
+    function compassBearing(x, y) {
+        if (!finite(x) || !finite(y) || (x === 0 && y === 0)) return null;
+        return ((Math.atan2(x, -y) / RAD) + 360) % 360;
+    }
+
     // SunCalc azimuth: south=0, west=PI/2. Apartment coordinates: X right, Y up-page, Z up.
     // rotationDeg maps apartment XY to geographic east/north with a counterclockwise rotation.
     // Equivalently, it is north's clockwise bearing from apartment +Y towards apartment +X.
@@ -86,6 +100,6 @@
             direction: sunDirection(altitude, azimuth, rotationDeg), daylight: altitude > 0 };
     }
 
-    return { TIME_ZONE, CYCLE_SECONDS, localDate, dayBounds, advanceProgress, dateAtProgress, progressAtTime,
+    return { TIME_ZONE, CYCLE_SECONDS, localDate, dayBounds, advanceProgress, dateAtProgress, progressAtTime, clockHands, compassBearing,
         formatTime: date => timeFormatter.format(date), sunDirection, orientationFromPlacement, sampleSun };
 });

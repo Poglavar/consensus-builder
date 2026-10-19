@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url);
-const {mount,ceilingParts,ceilingLampPositions,castsShadow}=require('../../frontend/js/apartment-sun.js');
+const {mount,ceilingParts,castsShadow}=require('../../frontend/js/apartment-sun.js');
 const geometry=require('../../frontend/js/building-floor-plans.js');
-const navigation=require('../../frontend/js/apartment-people-navigation.js');
+const rooms=require('../../frontend/js/apartment-light-rooms.js');
 const state=require('../../frontend/js/apartment-sun-state.js');
 const SunCalc=require('../../frontend/vendor/suncalc.min.js');
 const architecture={schema:'consensus-builder.floor-architecture.v1',dimensionsM:[6,5],wallHeightM:2.7,slabThicknessM:.2,
@@ -35,16 +35,18 @@ function fixture({reduced=false}={}){
         constructor(){super();this.color=new Color();this.shadow={mapSize:new Vector(),camera:{up:new Vector(),updateProjectionMatrix:vi.fn()},dispose:vi.fn()};}
     }
     class Element extends EventTarget{
-        constructor(tag){super();this.tag=tag;this.children=[];this.dataset={};this.value='';}
+        constructor(tag){super();this.tag=tag;this.children=[];this.dataset={};this.value='';this.style={};}
         append(...elements){elements.forEach(element=>{element.parentElement=this;this.children.push(element);});}
         setAttribute(key,value){this[key]=value;}
         remove(){this.parentElement.children=this.parentElement.children.filter(child=>child!==this);}
-        getBoundingClientRect(){return {top:0,bottom:300,left:0,right:500};}
+        getBoundingClientRect(){return {top:0,bottom:58,left:0,right:58,width:58,height:58};}
+        setPointerCapture(){}
+        focus(){}
     }
     const doc=new EventTarget();doc.hidden=false;doc.createElement=tag=>new Element(tag);
     const media=new EventTarget();media.matches=reduced;
     const env={document:doc,innerWidth:1000,innerHeight:900,SunCalc,
-        __apartmentSunState:{...state,dayBounds:date=>state.dayBounds(date||'2026-06-21')},__buildingFloorPlans:geometry,__apartmentPeopleNavigation:navigation,
+        __apartmentSunState:{...state,dayBounds:date=>state.dayBounds(date||'2026-06-21')},__buildingFloorPlans:geometry,__apartmentLightRooms:rooms,
         matchMedia:()=>media,requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id),
         IntersectionObserver:class{constructor(callback){this.callback=callback;this.disconnect=vi.fn();observers.push(this);}observe(){}}
     };
@@ -56,14 +58,14 @@ function fixture({reduced=false}={}){
     const scene=new Group(),ambient={isLight:true,isHemisphereLight:true,intensity:2.4},oldLight={isLight:true,intensity:2};scene.add(ambient,oldLight);
     const host=new Element('host'),controlsHost=new Element('controls'),renderer={shadowMap:{enabled:false,type:0}},render=vi.fn();
     const dispose=mount({THREE,scene,group,renderer,render,host,controlsHost,architecture,location:{lat:45.815,lng:15.982}},env);
-    const ui=controlsHost.children[0],timeline=ui.children[0],options=ui.children[1];
+    const ui=controlsHost.children[0],dials=ui.children[0];
     const sun=scene.children.find(child=>child.name==='ApartmentSun');
     const nightLights=group.children.find(child=>child.name==='ApartmentNightLights');
     const lamps=nightLights?.children.filter(child=>child.name==='ApartmentNightLamp');
     const fixtures=nightLights?.children.filter(child=>child.name==='CeilingLamp');
     const step=now=>{const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
     return {group,glass,wall,sun,nightLights,lamps,fixtures,renderer,render,host,controlsHost,frames,step,dispose,doc,media,observers,ambient,oldLight,resources,
-        pause:timeline.children[0],slider:timeline.children[2],north:options.children[1].children[0]};
+        clock:dials.children[0].children[0],compass:dials.children[2].children[0],date:dials.children[1].children[0]};
 }
 
 describe('apartment sunlight and shadow ownership',()=>{
@@ -100,40 +102,22 @@ describe('apartment sunlight and shadow ownership',()=>{
         for(const lamp of f.lamps)expect(lamp.intensity).toBe(0);
         f.dispose();
     });
-    it('chooses safe ceiling positions outside floor holes and walls',()=>{
-        const positions=ceilingLampPositions(architecture,navigation),nav=navigation.buildNavigation(architecture);
-        expect(positions).toHaveLength(1);
-        for(const point of positions){
-            expect(nav.canWalk(point)).toBe(true);
-            expect(point[0]>=2.4&&point[0]<=3.6&&point[1]>=2&&point[1]<=3).toBe(false);
-            expect(point[1]).toBeLessThan(4.8);
-        }
+    it('pauses and resumes by clicking the analogue clock and advances its hands with time',()=>{
+        const f=fixture(),hour=f.clock.children[4],minute=f.clock.children[5];
+        expect(hour.style.transform).toBe('rotate(0deg)');expect(minute.style.transform).toBe('rotate(0deg)');
+        f.clock.dispatchEvent(new Event('click'));expect(f.frames.size).toBe(0);expect(f.clock['aria-pressed']).toBe('true');
+        const key=new Event('keydown',{cancelable:true});key.key='ArrowRight';f.clock.dispatchEvent(key);
+        expect(f.host.dataset.sunTime).toBe('13:00');expect(hour.style.transform).toBe('rotate(30deg)');
+        f.clock.dispatchEvent(new Event('click'));expect(f.frames.size).toBe(1);f.dispose();
     });
-    it('lights each room separately even when an ordinary open door connects them',()=>{
-        const divided={...architecture,slabs:[[[[0,0],[1,0],[1,1],[0,1]]]],
-            walls:[[[[.48,0],[.52,0],[.52,.4],[.48,.4]]],[[[.48,.6],[.52,.6],[.52,1],[.48,1]]]],
-            openings:[{kind:'door',a:[.5,.4],b:[.5,.6],hinge:[.5,.4],openTip:[.65,.4],sillM:0,heightM:2.1,depthM:.2}]};
-        expect(navigation.buildNavigation(divided).components).toHaveLength(1);
-        const positions=ceilingLampPositions(divided,navigation);
-        expect(positions).toHaveLength(2);
-        expect(positions.filter(point=>point[0]<3)).toHaveLength(1);
-        expect(positions.filter(point=>point[0]>3)).toHaveLength(1);
-        for(const point of positions)expect(navigation.buildNavigation(divided).canWalk(point)).toBe(true);
-    });
-    it('limits ceiling lamps to eight rooms',()=>{
-        const manyRooms={...architecture,dimensionsM:[30,5],slabs:[[[[0,0],[1,0],[1,1],[0,1]]]],
-            walls:Array.from({length:9},(_,i)=>{const x=(i+1)/10;return [[[x-.003,0],[x+.003,0],[x+.003,1],[x-.003,1]]];})};
-        const nav=navigation.buildNavigation(manyRooms);
-        expect(nav.components).toHaveLength(10);
-        const positions=ceilingLampPositions(manyRooms,navigation);
-        expect(positions).toHaveLength(8);
-        for(const point of positions)expect(nav.canWalk(point)).toBe(true);
-    });
-    it('supports pausing, manual time and an explicitly illustrative north adjustment',()=>{
-        const f=fixture();f.pause.dispatchEvent(new Event('click'));expect(f.frames.size).toBe(0);
-        f.slider.value='0';f.slider.dispatchEvent(new Event('input'));expect(f.sun.intensity).toBe(0);
-        f.north.value='90';f.north.dispatchEvent(new Event('change'));
-        expect(f.controlsHost.children[0].children[2].textContent).toContain('Ručno postavljen N');f.dispose();
+    it('rotates north with compass dragging and keyboard controls without changing the clock',()=>{
+        const f=fixture();f.clock.dispatchEvent(new Event('click'));
+        function pointer(type,x,y){const event=new Event(type,{cancelable:true});Object.assign(event,{button:0,pointerId:1,clientX:x,clientY:y});f.compass.dispatchEvent(event);}
+        pointer('pointerdown',58,29);expect(f.compass['aria-valuenow']).toBe('90');
+        pointer('pointermove',29,58);expect(f.compass['aria-valuenow']).toBe('180');
+        pointer('pointerup',29,58);pointer('pointermove',0,29);expect(f.compass['aria-valuenow']).toBe('180');
+        const key=new Event('keydown',{cancelable:true});key.key='Home';f.compass.dispatchEvent(key);expect(f.compass['aria-valuenow']).toBe('0');
+        expect(f.controlsHost.children[0].children[1].textContent).toContain('Ručno postavljen N');expect(f.host.dataset.sunTime).toBe('12:00');f.dispose();
     });
     it('suspends offscreen and hidden animations and starts paused for reduced motion',()=>{
         const f=fixture();f.observers[0].callback([{isIntersecting:false}]);expect(f.frames.size).toBe(0);
