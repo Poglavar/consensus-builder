@@ -59,6 +59,18 @@ function seedAcceptance(proposal) {
 }
 
 describe('local owner consent evidence', () => {
+    it('refuses unknown lifecycle before a wallet or local acceptance and hides Accept', async () => {
+        const { context, proposal, bridge, alert } = fixture();
+        delete proposal.lifecycleStatus;
+        const state = context.getProposalOwnerAcceptanceState(proposal, 'base-a');
+        expect(state.entries[0].canAccept).toBe(false);
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(bridge.acceptProposal).not.toHaveBeenCalled();
+        expect(await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a')).toBeNull();
+        expect(proposal.ownerAcceptances['base-a'].acceptedOwnerKeys).toEqual([]);
+        expect(alert).toHaveBeenCalledWith('proposal_lifecycle_unknown', expect.stringContaining('status is unknown'));
+        expect(context.proposalStorage.save).not.toHaveBeenCalled();
+    });
     function chainAcceptance(context, bridge, code = 1) {
         const nft = { chain: '84532', contract: `0x${'a'.repeat(40)}`, tokenId: '5' };
         context.getProposalNftInfo = () => nft;

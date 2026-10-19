@@ -1818,6 +1818,7 @@
             },
             "lifecycle": {
                 "active": "Active",
+                "unknown": "Status unknown",
                 "cancelled": "Withdrawn",
                 "expired": "Expired",
                 "executed": "Executed",
@@ -5027,6 +5028,7 @@
             "building_proposal_workflow_is_unavailable": "Building proposal workflow is unavailable.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Cannot undo acceptance from an executed proposal that has descendant parcels.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "Could not prepare building data for the proposal. Please try again.",
+            "proposal_lifecycle_unknown": "The proposal status is unknown. Reload it before accepting.",
             "proposal_terms_unavailable": "The current proposal terms could not be verified. Reload the proposal before accepting.",
             "acceptance_confirmed_status_unavailable": "Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.",
             "readjustment_terms_invalid": "Complete and correct the readjustment allocations and cash terms before accepting.",

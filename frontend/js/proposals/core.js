@@ -1233,6 +1233,10 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         showProposalAlertMessage('community_vote_has_no_owner_action', 'A community vote is decided by residents through its organiser; owners have nothing to accept.');
         return;
     }
+    if (getLifecycleStatus(proposal) === 'Unknown') {
+        showProposalAlertMessage('proposal_lifecycle_unknown', 'The proposal status is unknown. Reload it before accepting.');
+        return;
+    }
 
     // Validate the current terms before opening a wallet flow. The local receipt must bind to
     // exactly the reviewed terms; a malformed allocation must not reach a chain call first.

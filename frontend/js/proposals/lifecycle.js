@@ -93,8 +93,10 @@ function parseExpiryTime(timeStr) {
 }
 
 function isProposalExpired(proposal) {
-    if (!proposal || !proposal.expiresAt) return false;
-    if (lifecyclePhaseOf(proposal) === 'Executed') return false; // Executed proposals no longer expire
+    const phase = lifecyclePhaseOf(proposal);
+    if (phase === 'Expired') return true;
+    // Only an Active proposal can expire; a deadline cannot fill unknown lifecycle evidence.
+    if (phase !== 'Active' || !proposal.expiresAt) return false;
     return new Date(proposal.expiresAt).getTime() <= Date.now();
 }
 
@@ -130,10 +132,10 @@ function initializeExpiryCountdown() {
     const proposalId = countdownEl.getAttribute('data-proposal-id');
     if (!expiresAtStr) return;
 
-    // If proposal is executed, do not start countdown
+    // Only Active proposals have a running expiry countdown.
     if (proposalId && typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.getProposal(proposalId);
-        if (lifecyclePhaseOf(p) === 'Executed') {
+        if (lifecyclePhaseOf(p) !== 'Active') {
             return;
         }
     }
@@ -143,6 +145,13 @@ function initializeExpiryCountdown() {
     const labelEl = countdownEl.querySelector('.expiry-label');
 
     function updateCountdown() {
+        if (proposalId && typeof proposalStorage !== 'undefined'
+            && lifecyclePhaseOf(proposalStorage.getProposal(proposalId)) !== 'Active') {
+            clearInterval(expiryCountdownInterval);
+            expiryCountdownInterval = null;
+            countdownEl.remove();
+            return;
+        }
         const now = Date.now();
         const remaining = expiresAt - now;
 
@@ -279,16 +288,14 @@ function getProposalVoteStatusLabel(proposal) {
 }
 
 function getProposalLifecycleKey(proposal) {
-    if (!proposal) return 'active';
-    // Both vote kinds have their own lifecycle: "Open for voting" until the deadline, then
-    // "Vote concluded". They never execute, so this is checked before the executed/active keys.
+    const lifecycleField = lifecyclePhaseOf(proposal).toLowerCase();
+    if (['unknown', 'draft', 'cancelled', 'executed'].includes(lifecycleField)) return lifecycleField;
+    // Known voting records read "Open for voting" until the deadline, then "Vote concluded".
+    // Missing evidence and explicit draft/terminal states are preserved above.
     if (isNonBindingProposal(proposal)) {
         return isProposalExpired(proposal) ? 'vote-concluded' : 'vote-open';
     }
-    const lifecycleField = lifecyclePhaseOf(proposal).toLowerCase();
-    if (lifecycleField === 'executed') return 'executed';
     if (lifecycleField === 'expired') return 'expired';
-    if (lifecycleField === 'cancelled') return 'cancelled';
     if (isProposalExpired(proposal)) return 'expired';
     // Funding readiness does not establish owner consent and cannot override a terminal state.
     if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
@@ -312,8 +319,12 @@ function getProposalLifecycleLabel(key) {
             return t('panel.proposal.lifecycle.cancelled', 'Withdrawn');
         case 'awaiting-funding':
             return t('panel.proposal.lifecycle.awaitingFunding', 'Awaiting funding');
-        default:
+        case 'draft':
+            return t('common.lifecycle.draft', 'Draft');
+        case 'active':
             return t('panel.proposal.lifecycle.active', 'Active');
+        default:
+            return t('panel.proposal.lifecycle.unknown', 'Status unknown');
     }
 }
 
@@ -331,6 +342,10 @@ function getProposalLifecycleClass(key) {
             return 'cancelled';
         case 'awaiting-funding':
             return 'active';
+        case 'unknown':
+            return 'unknown';
+        case 'draft':
+            return 'draft';
         default:
             return 'active';
     }

@@ -124,6 +124,35 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('unknown lifecycle stays visible after import and cannot grant owner consent', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const proposalId = await page.evaluate(parcelId => {
+      const w = window as any;
+      const imported = w.proposalStorage.importProposal({
+        proposalId: 'unknown-lifecycle', title: 'Unreported lifecycle', goal: 'parcelBased',
+        cadastreParcelIds: [parcelId], expiresAt: '2020-01-01T00:00:00Z',
+      });
+      return imported.proposalId;
+    }, PARCEL_ID);
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await expect(page.locator('#proposal-details-panel .cb-badge').filter({ hasText: 'Status unknown' })).toBeVisible();
+    await expect(page.locator('#proposal-details-panel .proposal-expiry-countdown')).toHaveCount(0);
+    await openProposalSection(page, 'land');
+    const ownerRow = page.locator('#proposal-details-panel .owner-acceptance-row').first();
+    await expect(ownerRow).toBeVisible();
+    await expect(ownerRow.getByRole('button', { name: 'Accept', exact: true })).toHaveCount(0);
+    const proposal = await proposalState(page, proposalId);
+    expect(proposal.lifecycleStatus).toBe('Unknown');
+    expect(proposal.acceptedParcelIds).toEqual([]);
+    expect(proposal.applied).toBe(false);
+    await page.evaluate(({ id, parcelId }) => (window as any).handleUserAcceptProposal(id, parcelId), { id: proposalId, parcelId: PARCEL_ID });
+    await expect(page.getByText('The proposal status is unknown. Reload it before accepting.', { exact: true })).toBeVisible();
+    expect((await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+  });
+
   test('parcel flags and hashless owner records cannot manufacture acceptance', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
@@ -501,6 +530,8 @@ test.describe('Proposal actions @features', () => {
     expect(offer.facets).toMatchObject({ landUse: 'as-is', parcels: 'as-is', ownership: 'third-party' });
     expect(offer.ownershipTransferProposal).toMatchObject({ direction: 'from-me', recipientScope: 'any' });
     const authored = await page.evaluate(() => (window as any).__createdSellerOffer);
+    expect(authored.lifecycleStatus).toBe('Active');
+    expect(offer.lifecycleStatus).toBe('Active');
     expect(authored.acceptedParcelIds).toEqual([]);
     expect(authored.ownerAcceptances).toEqual({});
     expect(authored.ownershipTransferProposal).not.toHaveProperty('status');

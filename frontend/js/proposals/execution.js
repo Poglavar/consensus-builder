@@ -9,9 +9,13 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
         return { entries: [] };
     }
     if (usesAbstractProposalApproval(proposal)) {
-        return window.ProposalApprovalRuntime?.state(proposal, parcelId,
+        const state = window.ProposalApprovalRuntime?.state(proposal, parcelId,
             typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null,
             currentConsentBindingHash(proposal)) || { entries: [], ownershipResolved: false };
+        if (getLifecycleStatus(proposal) === 'Unknown') {
+            state.entries = state.entries.map(entry => ({ ...entry, canAccept: false }));
+        }
+        return state;
     }
 
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
@@ -30,7 +34,7 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
         const isAccepted = acceptedKeys.has(ownerKey);
         const slotType = slot.type || 'unknown';
         const slotAgentId = slot.agentId || null;
-        let canAccept = !isAccepted && !!currentUser;
+        let canAccept = !isAccepted && !!currentUser && getLifecycleStatus(proposal) !== 'Unknown';
         if (slotType === 'agent' && slotAgentId && (!currentUser || slotAgentId !== currentUser.id)) {
             canAccept = false;
         }
@@ -1180,7 +1184,7 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
     const minted = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
     const nft = minted && !window.ProposalApprovalAnchor?.chainRef(proposal) ? minted : null;
     const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
-    if (nft || !hash || status === 'Cancelled' || status === 'Expired'
+    if (nft || !hash || status === 'Unknown' || status === 'Cancelled' || status === 'Expired'
         || (!withdraw && status === 'Executed')
         || (typeof isProposalExpired === 'function' && isProposalExpired(proposal))) {
         showProposalAlertMessage(nft ? 'abstract_approval_chain_unsupported' : 'readjustment_terms_invalid',
@@ -1294,6 +1298,10 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
             notifyAcceptIssue('proposal_not_found', 'Proposal not found.');
+            return null;
+        }
+        if (getLifecycleStatus(proposal) === 'Unknown') {
+            notifyAcceptIssue('proposal_lifecycle_unknown', 'The proposal status is unknown. Reload it before accepting.');
             return null;
         }
         if (usesAbstractProposalApproval(proposal)) {

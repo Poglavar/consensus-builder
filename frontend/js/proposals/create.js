@@ -1002,6 +1002,7 @@ async function createProposal() {
 
         const proposal = {
             author,
+            lifecycleStatus: 'Active',
             title: proposalName || proposalType, // Keep a stable human-readable title
             name: proposalName || proposalType,
             proposalName: proposalName || proposalType,

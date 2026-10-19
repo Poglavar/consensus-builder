@@ -28,6 +28,7 @@
     // Lifecycle keys (proposals/lifecycle.js getProposalLifecycleKey) that add a modifier badge to the
     // rung, with the badge tone each uses.
     const MODIFIER_TONES = Object.freeze({
+        unknown: 'cb-badge--expired',
         cancelled: 'cb-badge--expired',
         expired: 'cb-badge--expired',
         'vote-open': 'cb-badge--published',

@@ -3,7 +3,7 @@
 // road (and vice-versa). Every read of proposal status must go through one of these two functions so
 // the axes can never be confused again:
 //
-//   getLifecycleStatus(p) -> 'Active' | 'Executed' | 'Cancelled' | 'Expired' | 'draft'
+//   getLifecycleStatus(p) -> 'Active' | 'Executed' | 'Cancelled' | 'Expired' | 'draft' | 'Unknown'
 //       The marketplace / on-chain lifecycle (mirrors the Solidity/Solana ProposalStatus enum).
 //
 //   isApplied(p, sub)     -> boolean
@@ -28,21 +28,22 @@ function norm(value) {
     return String(value == null ? '' : value).trim().toLowerCase();
 }
 
-// Canonical marketplace/on-chain lifecycle value. Legacy application words ('applied'/'unapplied')
-// that leaked into the old `status` field collapse to 'Active' — they were never a lifecycle state.
+// Canonical marketplace/on-chain lifecycle value. Missing/unrecognized values (including old
+// application words) are Unknown; neither map application nor a deadline establishes Active.
 function getLifecycleStatus(proposal) {
-    if (!proposal) return 'Active';
+    if (!proposal) return 'Unknown';
     return canonicalLifecycle(proposal.lifecycleStatus);
 }
 
 function canonicalLifecycle(value) {
     switch (norm(value)) {
+        case 'active': return 'Active';
         case 'executed': return 'Executed';
         case 'cancelled': return 'Cancelled';
         case 'expired': return 'Expired';
         case 'draft': return 'draft';
-        // 'active', 'applied', 'unapplied', '' and anything unrecognised are all a live proposal.
-        default: return 'Active';
+        // Unknown describes unavailable evidence, not a new marketplace/chain lifecycle.
+        default: return 'Unknown';
     }
 }
 

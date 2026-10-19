@@ -686,7 +686,7 @@ const proposalStorage = {
             isConditional: !!raw.isConditional,
             imageURI: raw.imageURI || '',
             acceptancePossible: raw.acceptancePossible !== false,
-            lifecycleStatus: raw.lifecycleStatus || raw.status || 'Active',
+            lifecycleStatus: getLifecycleStatus({ lifecycleStatus: raw.lifecycleStatus ?? raw.status }),
             ethBalance: raw.ethBalance || '0',
             tokenBalance: raw.tokenBalance || '0',
             acceptanceCount: raw.acceptanceCount || '0',
@@ -1039,7 +1039,7 @@ const proposalStorage = {
         const parked = this.readRecovery();
         if (!parked) return 0;
         parked.proposals.forEach(entry => {
-            try { this.addProposal({ ...entry }); } catch (error) {
+            try { this.addProposal({ ...entry, lifecycleStatus: getLifecycleStatus(entry) }); } catch (error) {
                 console.error('[proposalStorage] could not restore a parked proposal', error);
             }
         });
@@ -1142,7 +1142,9 @@ const proposalStorage = {
         // A live selection is authoring input, not proposal data. Project it exactly once here and
         // keep generated parcel ids out of the record passed to normalization/persistence.
         const candidate = proposalWithAuthoredSelection(
-            { ...proposal },
+            // This is the authoring entrypoint: a newly created record starts Active. Imports and
+            // recovery supply their observed lifecycle (including Unknown) before reaching here.
+            { lifecycleStatus: 'Active', ...proposal },
             options.selectedParcelIds
         );
         const normalized = this._normalizeProposal(candidate);

@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const status = require('../../frontend/js/proposals/status.js');
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
@@ -39,7 +40,9 @@ function bootStore() {
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
     install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
-    install('normalizeProposalStatusAxes', proposal => proposal);
+    install('normalizeProposalStatusAxes', status.normalizeProposalStatusAxes);
+    install('getLifecycleStatus', status.getLifecycleStatus);
+    install('parkProposalForImport', status.parkProposalForImport);
     install('normalizeProposalGoalKey', value => String(value || '').trim().toLowerCase());
     install('isLocalProposalId', value => /^local-/.test(String(value || '')));
     install('PersistentStorage', {
@@ -59,6 +62,27 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it('initializes authored records as Active but preserves unknown lifecycle on import and reload', () => {
+        const { storage, persisted } = bootStore();
+        const record = { proposalId: 'new-record', title: 'New design', goal: 'as-is', cadastreParcelIds: ['HR-1'] };
+        const id = storage.addProposal(record);
+        expect(storage.getProposal(id).lifecycleStatus).toBe('Active');
+        expect(record).not.toHaveProperty('lifecycleStatus');
+        const imported = storage.importProposal({ ...record, proposalId: 'imported-record' });
+        expect(imported.lifecycleStatus).toBe('Unknown');
+        persisted.set('proposal:stored-record', JSON.stringify({ ...record, proposalId: 'stored-record' }));
+        storage.load();
+        expect(storage.getProposal('stored-record').lifecycleStatus).toBe('Unknown');
+    });
+
+    it('restores parked records without assigning them a new initial lifecycle', () => {
+        const { storage, persisted } = bootStore();
+        persisted.set('cadastre_proposals_recovery', JSON.stringify({ records: [
+            { proposalId: 'parked-record', goal: 'as-is', cadastreParcelIds: ['HR-1'] }
+        ] }));
+        expect(storage.restoreRecovery()).toBe(1);
+        expect(storage.getProposal('parked-record').lifecycleStatus).toBe('Unknown');
+    });
     it.each([false, true])('reconstructs the complete minted record from chain and IPFS alone (local draft present: %s)', async localDraft => {
         const { storage, persisted } = bootStore();
         install('__chainRecord', chainRecord);
@@ -90,6 +114,7 @@ describe('proposalStorage authored-log persistence', () => {
         install('fetch', fetch);
         const result = await loadChainProposalFromRef({ chainType: 'evm', chainId: '84532', contract: '0xC', tokenId: '77' });
         expect(result.ok).toBe(true);
+        expect(result.proposal.lifecycleStatus).toBe('Unknown');
         expect(result.proposal).toMatchObject(source);
         expect(result.proposal.onchain).toMatchObject({ proposalId: '77', metadataUri: 'ipfs://committed-metadata' });
         expect(result.proposal).not.toHaveProperty('preparation');

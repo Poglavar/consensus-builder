@@ -89,7 +89,7 @@ describe('seller offer state', () => {
         expect(context.getProposalLifecycleKey(proposal)).toBe('active');
     });
 
-    it.each(['Executed', 'Cancelled', 'Expired'])('keeps %s ahead of unfunded sale intent', lifecycleStatus => {
+    it.each(['Executed', 'Cancelled', 'Expired', 'Unknown'])('keeps %s ahead of unfunded sale intent', lifecycleStatus => {
         const { context, proposal, save, transfer } = fixture({ lifecycleStatus });
         expect(context.getProposalLifecycleKey(proposal)).toBe(lifecycleStatus.toLowerCase());
         expect(context.isProposalOpenSaleOffer(proposal)).toBe(false);

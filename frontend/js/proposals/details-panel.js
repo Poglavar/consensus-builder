@@ -780,12 +780,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </section>`;
     })();
 
-    // Build expiry countdown HTML if proposal has an expiry set and is not executed
+    // Only Active/Expired proposals can make a deadline-based expiry claim.
     let expiryCountdownHtml = '';
-    if (proposal.expiresAt && getLifecycleStatus(proposal) !== 'Executed') {
-        const expiresAt = new Date(proposal.expiresAt).getTime();
-        const now = Date.now();
-        const isExpired = expiresAt <= now;
+    if (proposal.expiresAt && ['Active', 'Expired'].includes(getLifecycleStatus(proposal))) {
+        const isExpired = isProposalExpired(proposal);
 
         // The look is the state's (css/proposal-details.css): warning while it runs, danger in the
         // last minute (is-urgent, lifecycle.js) and once expired.

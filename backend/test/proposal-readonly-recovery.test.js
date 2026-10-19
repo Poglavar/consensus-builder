@@ -11,6 +11,8 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+const { getLifecycleStatus } = createRequire(import.meta.url)('../../frontend/js/proposals/status.js');
 
 const dataSrc = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
 
@@ -19,6 +21,7 @@ const dataSrc = readFileSync(new URL('../../frontend/js/proposals/data.js', impo
 function bootStore({ secondaryTab }) {
     const store = new Map();
     globalThis.window = globalThis;
+    globalThis.getLifecycleStatus = getLifecycleStatus;
     globalThis.__formationDepth = {
         stripDerivedRecordData: record => structuredClone(record),
         encodeRoadRecord: record => record,

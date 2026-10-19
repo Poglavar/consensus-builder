@@ -11,6 +11,10 @@ const published = (extra = {}) => ({ proposalId: 'c2-uh980k1g32gls', serverPropo
 const stateOf = (proposal, inputs = {}) => displayState.of(proposal, { lifecycleKey: undefined, serial: proposal.serverProposalId || null, ...inputs });
 
 describe('proposal display state', () => {
+    it('shows unavailable lifecycle without inferring it from publication or map application', () => {
+        expect(stateOf(published({ applied: true }), { applied: true }))
+            .toMatchObject({ lifecycle: 'Unknown', rung: 'published', modifier: 'unknown', applied: true, mapAction: 'unapply' });
+    });
     it('shows a cancelled proposal applied in this browser as neither Applied nor unappliable', () => {
         const state = stateOf(published({ lifecycleStatus: 'Cancelled', applied: true }), { applied: true, lifecycleKey: 'cancelled' });
         expect(state).toMatchObject({
