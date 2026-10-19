@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {geometryIssues} from '../floor-plans/geometry-quality.js';
 import {reviewRoutes} from './stanovanje-plus-review/routes.mjs';
+import {buildingOutline} from './stanovanje-plus-review/building-model.mjs';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const root=path.join(repo,'backend/logs/stanovanje-plus-ten-20261019');
@@ -23,7 +24,10 @@ const items=selection.map(source=>{
  const manualReview=review&&review.modelSha256===modelSha256?review:null;
  const validation=model?validateArchitecture(model.architecture):['No processed model available.'];
  const issues=model&&!validation.length?geometryIssues(model.architecture,{rooms:model.rooms||[]}):[];
- return {source,revision,model,modelSha256,validation,geometryReviewIssues:issues,manualReview,refinementGeometry:optional(path.join(dir,'refinement-geometry.json')),frame:optional(path.join(dir,'frame.json')),
+ const evidence=optional(path.join(dir,'building-evidence.json'));
+ const building=model&&!validation.length?buildingOutline(evidence,model.architecture):null;
+ if(building)fs.writeFileSync(path.join(dir,'building-outline.json'),JSON.stringify(building,null,2));
+ return {source,revision,model,modelSha256,building,validation,geometryReviewIssues:issues,manualReview,refinementGeometry:optional(path.join(dir,'refinement-geometry.json')),frame:optional(path.join(dir,'frame.json')),
   image:`/source/${source.code}/source.png`,download:`/model/${source.code}/${file}`,
   originalReceipt:optional(path.join(dir,'response.json'))&&{file:'response.json'},
   refinementReceipt:optional(path.join(dir,'refinement-response.json'))&&{file:'refinement-response.json'}};
@@ -32,7 +36,7 @@ const manifest={schema:'stanovanje-plus.private-review.v2',createdAt:new Date().
  publication:'none',geographicRegistration:'none; local drawing coordinates only',
  qualityGate:'Per-model manual review is bound to its exact file hash. Format validation and geometry checks do not establish usability.',
  originalRunManifest:originalManifest,
- models:items.map(i=>({code:i.source.code,revision:i.revision,model:i.download,formatValid:!i.validation.length,manualReview:i.manualReview,validation:i.validation,geometryReviewIssues:i.geometryReviewIssues,
+ models:items.map(i=>({code:i.source.code,revision:i.revision,model:i.download,buildingOutline:i.building?{aboveGroundCount:i.building.aboveGroundCount,belowGroundCount:i.building.belowGroundCount,heightBasis:i.building.heightBasis,outlineBasis:i.building.outlineBasis}:null,formatValid:!i.validation.length,manualReview:i.manualReview,validation:i.validation,geometryReviewIssues:i.geometryReviewIssues,
   originalReceipt:i.originalReceipt,refinementReceipt:i.refinementReceipt})),
  accounting:'Original run totals are preserved above. Refinement receipts are separate; no aggregate or 200-building projection is recomputed here.'};
 fs.writeFileSync(path.join(root,'review-manifest.json'),JSON.stringify(manifest,null,2));
@@ -41,7 +45,7 @@ for(const [from,to] of [['index.html','review.html'],['review.css','review.css']
 if(process.argv.includes('--serve')){
  const port=Number(process.argv.find(v=>v.startsWith('--port='))?.split('=')[1]||8603);
  const routes=reviewRoutes(root,repo,items);
- const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png'};
+ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png'};
  const server=http.createServer((req,res)=>{
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405,{Allow:'GET, HEAD'}).end();return;}
   const file=routes.get(new URL(req.url,'http://localhost').pathname);
