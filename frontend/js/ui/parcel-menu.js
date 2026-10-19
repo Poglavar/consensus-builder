@@ -163,7 +163,7 @@
         close.setAttribute('aria-label', closeLabel);
         close.title = closeLabel;
         const identityTitle = model.parcelIdentityTitle(facts.identityKind);
-        el.querySelector('.parcel-menu__title').textContent = facts.isGround
+        el.querySelector('.parcel-menu__title').textContent = facts.isGround && facts.identityKind !== 'plotPiece'
             ? t('parcelMenu.groundTitle', 'Open ground')
             : t(identityTitle.key, identityTitle.fallback, { number: facts.displayId });
         const line = factsLine(facts);

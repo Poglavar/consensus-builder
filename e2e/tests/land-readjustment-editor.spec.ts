@@ -32,6 +32,42 @@ async function plotRows(page: Page): Promise<string[]> {
 
 const algorithm = (page: Page) => page.locator('input[name="reparcel-algorithm"]:checked').inputValue();
 
+test('authored plot references survive apply and reload and label their live pieces', async ({ mockApi: page }) => {
+  const modal = await openReadjustment(page);
+  await modal.locator('[data-reparcel-commit]').click();
+  await expect(modal).toHaveCount(0);
+  const proposalId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+    .find((proposal: any) => proposal.applied && proposal.reparcellization)?.proposalId);
+  expect(proposalId).toBeTruthy();
+  const references = () => page.evaluate(id => {
+    const w = window as any;
+    const proposal = w.proposalStorage.getProposal(id);
+    return {
+      authored: proposal.reparcellization.polygons.map((plot: any) => w.ReparcellizationDeal.plotFingerprint(plot)).sort(),
+      materialized: w.LiveParcelFabric.producedBy(id).filter((piece: any) => piece.properties.readjustmentPiece?.role === 'plot')
+        .map((piece: any) => piece.properties.readjustmentPiece.plotFingerprint).sort(),
+      authoredHasRuntimeMetadata: proposal.reparcellization.polygons.some((plot: any) => plot.readjustmentPiece != null)
+    };
+  }, proposalId);
+  const before = await references();
+  expect(before.materialized).toEqual(before.authored);
+  expect(before.authoredHasRuntimeMetadata).toBe(false);
+  const pieceId = await page.evaluate(id => {
+    const w = window as any;
+    const feature = w.LiveParcelFabric.producedBy(id).find((piece: any) => piece.properties.readjustmentPiece?.role === 'plot');
+    w.hideProposalDetailsPanel();
+    w.ParcelMenu.open({ parcelId: feature.properties.parcelId, feature });
+    return feature.properties.parcelId;
+  }, proposalId);
+  await expect(page.locator('#parcel-menu .parcel-menu__title')).toHaveText(`Plot piece ${pieceId}`);
+  await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Details', exact: true }).click();
+  await expect(page.locator('#parcel-info-title')).toHaveText(`Plot piece ${pieceId}`);
+  await expect(page.locator('#info-content [role="note"]')).toContainText('Ground derived from one authored readjustment plot');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => (window as any).ProposalManager?._initialReapplyDone === true);
+  expect(await references()).toEqual(before);
+});
+
 // A point 30% along the first draggable boundary segment, in page coordinates: not its midpoint,
 // where the insert handle sits.
 async function segmentPoint(page: Page): Promise<{ x: number; y: number }> {

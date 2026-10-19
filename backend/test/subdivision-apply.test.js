@@ -25,6 +25,7 @@ const finalize = require('../../frontend/js/proposals/apply/finalize.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 const subdivision = require('../../frontend/js/proposals/subdivision.js');
 const sitePlots = require('../../frontend/js/proposals/site-plots.js');
+const deal = require('../../frontend/js/reparcellization-deal.js');
 
 // A small grid near Šibenik, in units of 1e-4 degree (≈ 8 m east, 11 m north).
 const LON = 15.876;
@@ -240,6 +241,8 @@ describe('subdivision on bare ground (empty binding)', () => {
         const hash = await siteHash.siteHashHex(record.site);
         const pieces = fabric.list();
         expect(pieces).toHaveLength(record.reparcellization.polygons.length);
+        const plotReferences = record.reparcellization.polygons.map(deal.plotFingerprint).sort();
+        expect(pieces.map(piece => piece.properties.readjustmentPiece.plotFingerprint).sort()).toEqual(plotReferences);
         pieces.forEach(piece => {
             expect(piece.properties.cadastreParcelIds).toEqual([]);
             expect(piece.properties.groundIds).toEqual([`ground:${hash}`]);
@@ -265,6 +268,7 @@ describe('subdivision on bare ground (empty binding)', () => {
         globalThis.proposalStorage.getProposal('sub-bare').applied = true;
         await expect(manager.rebuildAppliedFabric({ silent: true })).resolves.toMatchObject({ ok: true, applied: 1, failed: [] });
         expect(fabric.list().map(piece => [piece.properties.parcelId, JSON.stringify(piece.geometry)]).sort()).toEqual(applied);
+        expect(fabric.list().map(piece => piece.properties.readjustmentPiece.plotFingerprint).sort()).toEqual(plotReferences);
     });
 
     it('refuses a subdivision whose plots leave its declared site uncovered, before changing the fabric', async () => {
@@ -323,6 +327,8 @@ describe('subdivision of a site partly over parcels (mixed pool)', () => {
         const pieces = fabric.list();
         const plots = pieces.filter(piece => piece.properties.producedByProposalId === 'sub-mixed' && turf.booleanWithin(turf.centroid(piece), turf.feature(MIXED_SITE)));
         expect(plots).toHaveLength(record.reparcellization.polygons.length);
+        expect(plots.map(piece => piece.properties.readjustmentPiece.plotFingerprint).sort())
+            .toEqual(record.reparcellization.polygons.map(deal.plotFingerprint).sort());
         const onParcel = plots.filter(piece => piece.properties.cadastreParcelIds.length);
         const onGround = plots.filter(piece => piece.properties.groundIds && piece.properties.groundIds.length);
         expect(onParcel.length).toBeGreaterThan(0);
@@ -336,6 +342,7 @@ describe('subdivision of a site partly over parcels (mixed pool)', () => {
         // HR-1's part outside the site is its remainder, with its owner; the open ground has none.
         const rest = pieces.filter(piece => !plots.includes(piece));
         expect(rest).toHaveLength(1);
+        expect(rest[0].properties.readjustmentPiece).toEqual({ role: 'remainder' });
         expect(rest[0].properties.cadastreParcelIds).toEqual(['HR-330264-1']);
         expect(rest[0].properties.groundIds).toBeUndefined();
         expect(area(rest[0])).toBeCloseTo(area(rect(0, 0, 3, 6)), 0);

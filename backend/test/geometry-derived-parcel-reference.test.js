@@ -7,6 +7,7 @@ import { createContext, runInContext } from 'node:vm';
 const require = createRequire(import.meta.url);
 const parcelIds = require('../../frontend/js/proposals/parcel-id.js');
 const parcelMenu = require('../../frontend/js/ui/parcel-menu-model.js');
+const openGround = require('../../frontend/js/proposals/open-ground.js');
 const format = require('../../frontend/js/format.js');
 const panelSource = readFileSync(new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url), 'utf8');
 const parcelCss = readFileSync(new URL('../../frontend/css/parcel-menu.css', import.meta.url), 'utf8');
@@ -56,6 +57,7 @@ function renderParcelPanel(properties) {
         console,
         CbFormat: format,
         ParcelMenuModel: parcelMenu,
+        __openGround: openGround,
         SQM_AVG_PRICE: 0,
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
@@ -150,6 +152,27 @@ describe('geometry-derived parcel references', () => {
         expect(rendered.title).toBe('Source parcel part part-A');
         expect(rendered.info).toContain('identity.sourcePartNote');
         expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it.each([false, true])('identifies a plot piece, including on open ground (%s)', onOpenGround => {
+        const rendered = renderParcelPanel({
+            parcelId: 'plot-piece', producedByProposalId: 'design',
+            cadastreParcelIds: onOpenGround ? [] : ['source'],
+            ...(onOpenGround ? { groundIds: ['ground:' + 'a'.repeat(64)] } : {}),
+            readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' }
+        });
+        expect(rendered.title).toBe('Plot piece plot-piece');
+        expect(rendered.info).toContain('identity.plotNote');
+        expect(rendered.info).not.toContain('identity.formedNote');
+    });
+
+    it('labels readjustment leftover ground separately from authored plot pieces', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'rest', producedByProposalId: 'design', cadastreParcelIds: ['source'],
+            readjustmentPiece: { role: 'remainder' }
+        });
+        expect(rendered.title).toBe('Ground remainder rest');
+        expect(rendered.info).toContain('identity.remainderNote');
     });
 
     it('shows and copies the formed piece identity instead of inherited source metadata', () => {

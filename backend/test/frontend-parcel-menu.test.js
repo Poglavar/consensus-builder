@@ -136,6 +136,8 @@ describe('parcel identity presentation', () => {
         [{ cadastreParcelIds: ['opaque#source'] }, 'opaque#source', 'source'],
         [{ cadastralPart: true, cadastreParcelIds: ['source'] }, 'component', 'sourcePart'],
         [{ producedByProposalId: 'design', cadastralPart: true }, 'piece', 'formed'],
+        [{ producedByProposalId: 'design', readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' } }, 'piece', 'plotPiece'],
+        [{ producedByProposalId: 'design', readjustmentPiece: { role: 'remainder' } }, 'piece', 'remainder'],
         [{ liveParcelDerivation: 'corridor-arrangement' }, 'remainder', 'formed'],
         [{ cadastreParcelIds: ['source'] }, 'slice', 'formed'],
         [{ formedByProposalIds: ['design'] }, 'piece', 'formed'],
@@ -148,6 +150,10 @@ describe('parcel identity presentation', () => {
         expect(Model.displayParcelId({
             producedByProposalId: 'design', parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
         }, 'piece')).toBe('piece');
+        expect(Model.displayParcelId({
+            producedByProposalId: 'design', readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' },
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
+        }, 'plot-piece')).toBe('plot-piece');
     });
 });
 

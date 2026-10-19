@@ -126,10 +126,12 @@
     }
 
     // Presentation follows explicit provenance, never the spelling of a source or runtime id.
-    // A producer alone cannot distinguish an authored plot from its leftover ground.
+    // A readjustment's explicit output role distinguishes plot pieces from leftover ground.
     function parcelIdentityKind(props, parcelId) {
         const p = props || {};
         const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+        if (p.producedByProposalId && p.readjustmentPiece?.role === 'plot') return 'plotPiece';
+        if (p.producedByProposalId && p.readjustmentPiece?.role === 'remainder') return 'remainder';
         if (p.producedByProposalId || p.liveParcelDerivation || p.formedByProposalIds?.length) return 'formed';
         if (p.cadastralPart === true) return 'sourcePart';
         const sources = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.map(String) : [];
@@ -141,6 +143,8 @@
         const titles = {
             source: ['panel.parcel.identity.source', 'Source parcel {{number}}'],
             sourcePart: ['panel.parcel.identity.sourcePart', 'Source parcel part {{number}}'],
+            plotPiece: ['panel.parcel.identity.plotPiece', 'Plot piece {{number}}'],
+            remainder: ['panel.parcel.identity.remainder', 'Ground remainder {{number}}'],
             formed: ['panel.parcel.identity.formed', 'Formed ground piece {{number}}']
         };
         const [key, fallback] = titles[kind] || ['panel.parcel.multi.parcelLabel', 'Parcel {{number}}'];
@@ -152,7 +156,7 @@
     function displayParcelId(props, parcelId) {
         const p = props || {};
         const kind = parcelIdentityKind(p, parcelId);
-        if (kind !== 'formed' && kind !== 'sourcePart'
+        if ((kind === 'source' || kind === 'unknown')
             && p.parcelIdentityKind === 'geometry-sha256-v1' && String(p.geometryDisplayId || '').trim()) {
             return String(p.geometryDisplayId).trim();
         }

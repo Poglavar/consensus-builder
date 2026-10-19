@@ -283,7 +283,13 @@
         const displayId = identityModel.displayParcelId(identityProps, parcelId);
         let identityNoteKey = '';
         let identityNoteFallback = '';
-        if (identityKind === 'formed') {
+        if (identityKind === 'plotPiece') {
+            identityNoteKey = 'panel.parcel.identity.plotNote';
+            identityNoteFallback = 'Ground derived from one authored readjustment plot. Several live pieces can refer to the same plot.';
+        } else if (identityKind === 'remainder') {
+            identityNoteKey = 'panel.parcel.identity.remainderNote';
+            identityNoteFallback = 'Ground left outside the authored plots by this readjustment. It is kept separately from the plot outputs.';
+        } else if (identityKind === 'formed') {
             identityNoteKey = 'panel.parcel.identity.formedNote';
             identityNoteFallback = 'Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.';
         } else if (identityKind === 'sourcePart') {
@@ -809,12 +815,12 @@
             const resolvedId = displayId || displayParcelId || brojValue;
             titleElement.textContent = '';
             // A piece on open ground (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: its id is a
-            // proposal-local name, so the title says what the ground is instead of "Parcel <id>".
+            // proposal-local name, so the title uses its explicit plot role or says "Open ground".
             let groundPiece = false;
             try {
                 groundPiece = !!(global.__openGround && global.__openGround.isGroundPiece(identityFeature));
             } catch (_) { groundPiece = false; }
-            if (groundPiece) {
+            if (groundPiece && identityKind !== 'plotPiece') {
                 titleElement.textContent = tParcel('parcelMenu.groundTitle', {}, 'Open ground');
             } else if (resolvedId) {
                 const numberMarker = '__PARCEL_NUMBER__';

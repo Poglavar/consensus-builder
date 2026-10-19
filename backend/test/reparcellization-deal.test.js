@@ -73,6 +73,35 @@ function browserDeal() {
 }
 
 describe('ReparcellizationDeal shared fingerprint', () => {
+    it('derives plot references from the committed plot content, identically in browser and node', () => {
+        const record = proposal();
+        const before = structuredClone(record);
+        const slice = record.reparcellization.polygons[0];
+        const committed = deal.content(record).plots.find(plot => plot.owners.length === 2);
+        const expected = createHash('sha256').update(deal.stableStringify({
+            schema: 'land-readjustment-plot/v1', plot: committed
+        }), 'utf8').digest('hex');
+        expect(deal.plotFingerprint(slice)).toBe(`lr-plot1-sha256:${expected}`);
+        expect(browserDeal().plotFingerprint(slice)).toBe(deal.plotFingerprint(slice));
+        const reordered = structuredClone(slice);
+        reordered.owners.reverse();
+        reordered.displayName = 'Cosmetic label';
+        reordered.area = 999;
+        expect(deal.plotFingerprint(reordered)).toBe(deal.plotFingerprint(slice));
+        record.reparcellization.polygons.reverse();
+        expect(record.reparcellization.polygons.map(deal.plotFingerprint).sort())
+            .toEqual(before.reparcellization.polygons.map(deal.plotFingerprint).sort());
+        expect(deal.fingerprint(record)).toBe(deal.fingerprint(before));
+    });
+
+    it.each(['geometry', 'allocation'])('changes the plot reference when its %s changes', field => {
+        const slice = proposal().reparcellization.polygons[0];
+        const edited = structuredClone(slice);
+        if (field === 'geometry') edited.geometry.coordinates[0][1][0] += 1e-12;
+        else edited.owners[0].ownerKey = 'another-party';
+        expect(deal.plotFingerprint(edited)).not.toBe(deal.plotFingerprint(slice));
+    });
+
     it('uses the versioned SHA-256 digest of its canonical payload, including Unicode in UTF-8', () => {
         const record = proposal();
         const content = deal.content(record);

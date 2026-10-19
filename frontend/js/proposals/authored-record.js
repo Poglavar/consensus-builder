@@ -17,7 +17,7 @@
         'parcelId', 'parcel_id', 'sourceParcelId', 'sourceParcelIds',
         'parentParcelId', 'parentParcelIds', 'parentParcelNumber', 'parentParcelNumbers',
         'rootParcelId', 'rootParcelNumber', 'baseParcelIds', 'cadastreParcelIds',
-        'proposalId', 'proposalState', 'producedByProposalId', 'ancestorProposal',
+        'proposalId', 'proposalState', 'producedByProposalId', 'ancestorProposal', 'readjustmentPiece',
         'buildingIndex', 'BROJ_CESTICE', 'broj_cestice'
     ]);
     const GENERATED_CADASTRE_TOKEN = /(HR-\d+-[A-Za-z0-9./-]+)(?:#[A-Za-z0-9._-]+|_[a-z0-9]+_\d+)/gi;

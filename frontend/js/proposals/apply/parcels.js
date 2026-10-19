@@ -68,6 +68,12 @@
             throw error;
         }
 
+        const deal = (typeof window !== 'undefined' && window.ReparcellizationDeal)
+            || (typeof require === 'function' ? require('../../reparcellization-deal.js') : null);
+        if (!deal) throw new Error('Readjustment plot commitments are unavailable.');
+        // Capture the authored content before later corridors alter/filter the private slices.
+        const plotFingerprints = new WeakMap(plan.polygons.map(slice => [slice, deal.plotFingerprint(slice)]));
+
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
@@ -85,6 +91,7 @@
                         const geometry = carved.geometries[index];
                         if (!geometry) return null;
                         const next = { ...slice, geometry };
+                        plotFingerprints.set(next, plotFingerprints.get(slice));
                         if (slice && slice.area !== undefined) next.area = _calculateGeoJsonArea(geometry);
                         return next;
                     })
@@ -232,6 +239,7 @@
                 geometry: slice.geometry,
                 properties: {
                     producedByProposalId: proposalId,
+                    readjustmentPiece: { role: 'plot', plotFingerprint: plotFingerprints.get(slice) },
                     cadastreParcelIds: liveParents.cadastreIds.slice(),
                     rootParcelId,
                     rootParcelNumber,
@@ -251,7 +259,6 @@
 
             return feature;
         }).filter(Boolean);
-        const authoredChildren = new Set(childFeatures);
 
         if (!childFeatures.length) {
             if (typeof updateStatus === 'function') {
@@ -409,6 +416,7 @@
                         remainder.geometry = leftover.geometry;
                         remainder.properties = remainder.properties || {};
                         remainder.properties.producedByProposalId = proposalId;
+                        remainder.properties.readjustmentPiece = { role: 'remainder' };
                         remainder.properties.calculatedArea = Math.round(leftoverArea);
                         remainder.properties.isProposed = true;
                         delete remainder.properties.color;
@@ -457,7 +465,7 @@
                 // untransferred (no phantom owner). skipAgentSync defers the per-agent owned-parcels
                 // rebuild to one pass after the loop — per-child it re-scanned the whole keyspace
                 // (O(children²), the ~1s-per-parcel freeze).
-                if (authoredChildren.has(feature) && typeof transferParcelOwnership === 'function') {
+                if (feature.properties.readjustmentPiece?.role === 'plot' && typeof transferParcelOwnership === 'function') {
                     let agentId = null;
                     const owners = feature.properties.ownershipDetails?.owners || [];
                     const resolveOwnerAgent = owner => {

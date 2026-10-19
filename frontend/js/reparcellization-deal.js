@@ -78,6 +78,13 @@
         };
     }
 
+    // Content identity within a proposal, derived from the same plot payload the deal commits.
+    // It is independent of array position and runtime cuts, not a continuing identity after edits.
+    function plotFingerprint(slice) {
+        const payload = { schema: 'land-readjustment-plot/v1', plot: plot(slice) };
+        return 'lr-plot1-sha256:' + crypto().sha256Hex(stableStringify(payload));
+    }
+
     function isReadjustment(proposal) {
         return !!proposal && (proposal.goal === 'reparcellization' || !!proposal.reparcellization);
     }
@@ -200,5 +207,5 @@
         return 'lr-design2-sha256:' + crypto().sha256Hex(stableStringify(design));
     }
 
-    return { SCHEMA, HASH_PREFIX, isReadjustment, content, schedule, netCash, cashFields, fingerprint, designFingerprint, stableStringify, moneyCents };
+    return { SCHEMA, HASH_PREFIX, isReadjustment, content, plotFingerprint, schedule, netCash, cashFields, fingerprint, designFingerprint, stableStringify, moneyCents };
 });
