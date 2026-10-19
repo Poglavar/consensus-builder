@@ -524,11 +524,29 @@
         if (!isActive || !planningSourcesGroup || !window.PlanningViews) return;
         clearGroupChildren(planningSourcesGroup);
         const view = window.PlanningViews.getPolicy();
-        planningSourcesGroup.visible = view.permitted !== 'off' && !realisticLayerActive;
+        const inspected = window.PlanningViews.getSelected();
+        const builtSelection = inspected?.role === 'existing' && view.existing !== 'off';
+        planningSourcesGroup.visible = (view.permitted !== 'off' || builtSelection) && !realisticLayerActive;
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
         const color = window.PlanningViews.color('permitted');
-        for (const item of window.PlanningViews.getItems()) {
+        for (const item of view.permitted === 'off' ? [] : window.PlanningViews.getItems()) {
+            for (const area of item.areas || []) {
+                const material = new THREE.MeshBasicMaterial({ color, transparent: true,
+                    opacity: view.permitted === 'solid' ? 0.55 : 0.15, depthWrite: false, side: THREE.DoubleSide });
+                const meshes = polygonFeatureToMeshes({ type: 'Feature', geometry: area.geometry }, material, 0.01, 0);
+                if (!meshes.length) material.dispose();
+                for (const mesh of meshes) {
+                    markOwnedMaterial(mesh, material); mesh.userData.planningRepresentationId = item.id;
+                    mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
+                }
+                if (item.id === selectedId) {
+                    const line = new THREE.LineBasicMaterial({ color, depthWrite: false });
+                    const borders = polygonFeatureToBorderLines({ geometry: area.geometry }, line, 0.025);
+                    if (!borders.length) line.dispose();
+                    for (const border of borders) { markOwnedMaterial(border, line); planningSourcesGroup.add(border); }
+                }
+            }
             for (const feature of window.PlanningScene.volumeFeatures(item)) {
                 const selected = item.id === selectedId;
                 const material = new THREE.MeshPhongMaterial({ color, emissive: selected ? color : 0, emissiveIntensity: selected ? 0.15 : 0,
@@ -549,6 +567,21 @@
                     edges.renderOrder = 4;
                     planningSourcesGroup.add(edges);
                 }
+            }
+        }
+        if (builtSelection) {
+            const tint = window.PlanningViews.color('existing');
+            for (const feature of window.PlanningScene.volumeFeatures(inspected)) {
+                const material = new THREE.MeshBasicMaterial();
+                const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
+                for (const mesh of meshes) {
+                    const geometry = new THREE.EdgesGeometry(mesh.geometry);
+                    const line = new THREE.LineBasicMaterial({ color: tint, depthTest: false, transparent: true, opacity: 1 });
+                    const edges = new THREE.LineSegments(geometry, line);
+                    markOwnedGeometry(edges, geometry); markOwnedMaterial(edges, line);
+                    edges.renderOrder = 5; planningSourcesGroup.add(edges); mesh.geometry.dispose();
+                }
+                material.dispose();
             }
         }
         invalidateThreeView();
@@ -924,6 +957,7 @@
     // ground rule (which figures are site metrics, which need a binding) is in gain.js
     // summarizeProposalGround: on open ground the totals are the site's and there is no parcel count.
     function updateProposalInfoPanel(proposal, idSet) {
+        if (window.PlanningViews?.getSelected()?.role === 'proposed') { hideParcelInfoPanel(); return; }
         const panel = ensureParcelInfoPanel();
         if (!panel) return;
         const siteStats = window.__siteStats || null;
@@ -4570,8 +4604,15 @@
                 origin: origin3857 ? { x: origin3857.x, y: origin3857.y } : null
             });
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
+                const observed = new Map((window.buildingFeaturePool || []).map(feature =>
+                    [String(window.buildingPoolFeatureKey(feature)), feature]));
                 await sceneWork.forEach(nearbyProposalBuildings, bld => {
                     try {
+                        const inspectionFeature = window.PlanningRepresentations.observedMeshFeature(bld, observed.get(String(bld.object_id)));
+                        const addObserved = mesh => {
+                            mesh.userData.planningBuiltFeature = inspectionFeature;
+                            targetGroup.add(mesh);
+                        };
                         const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords)
                             || structureClearanceCarve(bld, structureRegions);
                         const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
@@ -4579,10 +4620,10 @@
                             if (!renderParts.detailed) return;
                             if (appendBuildingFloorPlans({ type: 'Feature', geometry: bld.floorModel?.footprint, properties: {
                                 ...bld.properties, floorPlans: bld.floorPlans || bld.properties?.floorPlans
-                            } }, buildingMaterial, building3DHeightMeters(bld))) return;
+                            } }, buildingMaterial, building3DHeightMeters(bld), inspectionFeature)) return;
                             const mesh = buildMeshFromBuilding3D(bld, buildingMaterial, meshDedupeState);
                             if (mesh) {
-                                targetGroup.add(mesh);
+                                addObserved(mesh);
                             }
                             return;
                         }
@@ -4596,17 +4637,17 @@
                             const demolished = asFeature(carve.demolished);
                             if (renderParts.remainder && remainder) {
                                 polygonFeatureToMeshes(remainder, buildingMaterial, 0, height)
-                                    .forEach(m => targetGroup.add(m));
+                                    .forEach(addObserved);
                             }
                             if (renderParts.demolished && demolished) {
                                 polygonFeatureToMeshes(demolished, demolishedMaterial, 0, height)
-                                    .forEach(m => targetGroup.add(m));
+                                    .forEach(addObserved);
                             }
                             return;
                         }
                         if (!renderParts.detailed) return;
                         const mesh = buildMeshFromBuilding3D(bld, demolishedMaterial, meshDedupeState);
-                        if (mesh) targetGroup.add(mesh);
+                        if (mesh) addObserved(mesh);
                     } catch (e) {
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
                     }
@@ -6035,6 +6076,10 @@
             ? buildingFeature.geometry.coordinates[0][0][0] : buildingFeature.geometry.coordinates[0][0];
         const metresPerUnit = Math.cos(point[1] * Math.PI / 180);
         const prepareFacades = (meshes, owner = facadeSource, ownsMaterial = false) => {
+            // Preserve the authored identity across parcel slices.
+            for (const mesh of meshes) {
+                if (buildingFeature.properties?.proposalId) mesh.userData.proposalId = String(buildingFeature.properties.proposalId);
+            }
             if (!hasFacade || !meshes.length) return meshes;
             // Use the actual intersected parcel, not the source volume's parcel hint. This
             // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
@@ -6765,12 +6810,12 @@
             for (const slice of planned.slices) {
                 if (!slice.result.floorPlans) continue;
                 const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: { ...props, floorPlans: slice.result.floorPlans } };
-                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, slice.result.summary.heightM - 0.002))) suggestedPlanTotals.existing++;
+                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, slice.result.summary.heightM - 0.002), feature)) suggestedPlanTotals.existing++;
             }
         }
     }
 
-    function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM) {
+    function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM, inspectionFeature = null) {
         const plans = feature?.properties?.floorPlans;
         if (!xrayEnabled || !floorPlanGroup || !plans) return false;
         // A building can have several parcel slices or appear in both data families. Its
@@ -6781,6 +6826,7 @@
             const group = floorPlanRenderer.createBuildingGroup(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry, { proxyMaterial, proxyHeightM });
             if (group) {
+                if (inspectionFeature) group.userData.planningBuiltFeature = inspectionFeature;
                 floorPlanRenderer.setCutaway(group, floorCutawayLevel);
                 floorPlanGroup.add(group);
                 renderedFloorPlanKeys.add(key);
@@ -7736,7 +7782,9 @@
         try {
             const hideLeafletParcelInfo = window.Parcels?.uiParcelPanel?.hideParcelInfoPanel
                 || window.hideParcelInfoPanel;
-            if (typeof hideLeafletParcelInfo === 'function') hideLeafletParcelInfo();
+            if (typeof hideLeafletParcelInfo === 'function') hideLeafletParcelInfo({
+                preserveProposalSelection: window.PlanningViews?.getSelected()?.role === 'proposed'
+            });
         } catch (_) { }
         try { hideParcelInfoPanel(); } catch (_) { }
         try { typeof hideProposalDetailsPanel === 'function' && hideProposalDetailsPanel(); } catch (_) { }
@@ -7973,8 +8021,8 @@
     });
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
-    window.addEventListener('planningselectionchange', event => {
-        if (isActive && event.detail?.id) { clearIsolation(); hideParcelInfoPanel(); }
+    window.addEventListener('planningselectionchange', () => {
+        if (isActive) { clearIsolation(); hideParcelInfoPanel(); }
         rebuildPlanningSources3D();
     });
     window.addEventListener('planningviewchange', syncPlanningView3D);
@@ -8137,16 +8185,19 @@
             let proposalId = null;
             let parcelId = null;
             let planningId = null;
+            let builtFeature = null;
             let visible = true;
             while (obj) {
                 if (obj.visible === false) visible = false;
                 if (obj.userData?.planningRepresentationId) planningId = obj.userData.planningRepresentationId;
+                if (obj.userData?.planningBuiltFeature) builtFeature = obj.userData.planningBuiltFeature;
                 if (!proposalId && obj.userData?.proposalId) proposalId = String(obj.userData.proposalId);
                 if (!parcelId && obj.userData?.parcelId) parcelId = String(obj.userData.parcelId);
                 obj = obj.parent;
             }
             if (!visible) continue;
             if (planningId) return { planningId };
+            if (builtFeature && !proposalId) return { builtFeature, parcelId };
             if (proposalId || parcelId) return { proposalId, parcelId };
         }
         return null;
@@ -8174,6 +8225,10 @@
         const picked = pickMapSubjectFromEvent(evt);
         if (picked?.planningId) {
             window.PlanningViews.select(picked.planningId);
+            return;
+        }
+        if (picked?.builtFeature) {
+            window.PlanningViews.inspectBuilding(picked.builtFeature);
             return;
         }
         window.PlanningViews?.select(null);
@@ -8513,7 +8568,9 @@
     // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
-        if (planningSourcesGroup) planningSourcesGroup.visible = !realisticLayerActive && window.PlanningViews?.getPolicy().permitted !== 'off';
+        if (planningSourcesGroup) planningSourcesGroup.visible = !realisticLayerActive
+            && (window.PlanningViews?.getPolicy().permitted !== 'off'
+                || (window.PlanningViews?.getSelected()?.role === 'existing' && window.PlanningViews.getPolicy().existing !== 'off'));
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;

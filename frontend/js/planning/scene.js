@@ -58,6 +58,8 @@
     }
     // The joined ground projection has one boundary. Height-part boundaries are an explicit detail.
     function mapFeatures(item, detail, deps) {
+        if (item.areas?.length) return item.areas.map(area => ({ type: 'Feature', geometry: area.geometry,
+            properties: { representationId: item.id, role: item.role, geometryRole: 'zoning-area' } }));
         const features = volumeFeatures(item);
         if (detail === 'steps' || features.length < 2) return features;
         const joined = features.reduce((result, feature) => result ? deps.union(result, feature) : feature, null);

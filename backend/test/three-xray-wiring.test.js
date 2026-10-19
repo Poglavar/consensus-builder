@@ -31,6 +31,7 @@ describe('three-mode Xray wiring', () => {
         const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }] };
         const ineligibleBuildingsGroup = { children: [{ id: 'ineligible-survives' }] };
         const stubs = {
+            window: {},
             enabled, built, planned, isolated, existingGroup: existingBuildingsGroup, proposedGroup: proposedBuildingsGroup, ineligibleGroup: ineligibleBuildingsGroup,
             clearGroupChildren: vi.fn(), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },

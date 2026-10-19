@@ -26,8 +26,8 @@ const response = (profiles, extra = {}) => ({ rows: [{ cached_count: 20, profile
 describe('planning source adapters', () => {
     it('preserves cached identity, elevations and evidence without creating or mutating proposals', () => {
         const input = row(), before = JSON.stringify(input), result = gupRepresentation(input);
-        expect(result.proposalId).toBeNull(); expect(result.id).toBe('zagreb-gup-2025:HR-1-17/2');
-        expect(result.source.recordId).toBe('2025:17'); expect(result.source.storage).toBe('public.parcel_build_envelope');
+        expect(result.proposalId).toBe('source:zagreb-gup-2025:HR-1-17/2'); expect(result.id).toBe('zagreb-gup-2025:HR-1-17/2');
+        expect(result.source.recordId).toBe('HR-1-17/2'); expect(result.source.storage).toBe('public.parcel_build_envelope');
         expect(result.source.computedAt).toBe(input.computed_at); expect(result.source.solverVersion).toBe('v44');
         expect(result.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 6], [6, 9]]);
         expect(result.volumes[1].geometry).toBe(inset);
@@ -91,12 +91,12 @@ describe('planning source adapters', () => {
         expect(result.summary.awaitingRefresh).toBe(2);
         expect(pool.query).toHaveBeenCalledTimes(1);
         const [sql, parameters] = pool.query.mock.calls[0];
-        expect(sql).toContain('FROM public.parcel_build_envelope'); expect(sql).toContain('e.current AND e.gup_id = 2025');
+        expect(sql).toContain('FROM public.parcel_build_envelope'); expect(sql).toContain('e.current AND e.gup_id = $7');
         expect(sql).toContain('LEFT JOIN public.envelope_cache_error');
         expect(sql).not.toContain('f.error_detail'); // Internal diagnostics are not a public source explanation.
         expect(sql).toContain('e.geom && ST_Transform'); expect(sql).toContain('ST_Intersects');
         expect(sql).not.toMatch(/\b(?:proposal|INSERT|UPDATE|DELETE|CREATE)\b/i);
-        expect(parameters).toEqual([10, 40, 10.01, 40.01, 3, null]);
+        expect(parameters).toEqual([10, 40, 10.01, 40.01, 3, null, 2025]);
         expect(sql).toContain('cestica_id > $6'); expect(sql).toContain('ORDER BY cestica_id LIMIT $5');
     });
     it('reads changed upstream results on the next request instead of retaining another cache', async () => {
@@ -122,7 +122,7 @@ describe('planning source adapters', () => {
         expect(first.items).toEqual([]); expect(first.omitted).toBe(1); expect(first.nextAfter).toBe('18');
         const last = await queryZagrebGup(pool, { ...query, after: first.nextAfter });
         expect(last.items).toHaveLength(1); expect(last.nextAfter).toBeNull();
-        expect(pool.query.mock.calls[1][1]).toEqual([...query.bbox, 2, '18']);
+        expect(pool.query.mock.calls[1][1]).toEqual([...query.bbox, 2, '18', 2025]);
     });
     it('rejects an invalid source position before querying the database', async () => {
         const pool = { query: vi.fn() };
@@ -305,7 +305,7 @@ describe('shared planning scene', () => {
         expect(features.map(f => f.properties.height)).toEqual([6, 6]);
         expect(features[1].properties.baseM).toBe(3); expect(features[1].properties.partId).toBe('zagreb-gup-2025:HR-1-17/2:floor:2');
         expect(features[1].geometry).toEqual(inset); expect(features[1].properties.role).toBe('permitted');
-        expect(features[1].properties.sourceProposalId).toBeNull();
+        expect(features[1].properties.sourceProposalId).toBe(item.proposalId);
     });
     it('refuses an unsupported coordinate frame or invalid vertical range', () => {
         const item = gupRepresentation(row()); item.spatialReference.vertical = 'unknown-datum';

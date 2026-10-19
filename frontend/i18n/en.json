@@ -7574,7 +7574,12 @@
     "constraint": {
       "dwellings": "Maximum dwellings",
       "floorArea": "Maximum floor area",
-      "naturalGround": "Minimum natural ground"
+      "naturalGround": "Minimum natural ground",
+      "frontSetback": "Minimum front setback",
+      "sideSetback": "Minimum side setback",
+      "rearSetback": "Minimum rear setback",
+      "height": "Maximum height",
+      "lotArea": "Minimum lot area"
     },
     "photoNote": "Explore permitted massing in the map or 3D model view.",
     "openModel": "Open 3D model view",
@@ -7587,7 +7592,7 @@
     "permittedOff": "Permitted massing is hidden.",
     "coverageTitle": "What does this source cover?",
     "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
-    "inspectHint": "Click a massing to inspect its source and limits.",
+    "inspectHint": "Select a building or source geometry to inspect it.",
     "inspectMassing": "Inspect permitted massing on {{parcel}}",
     "heightParts": "Height parts: {{heights}}",
     "cacheSummary": "{{count}} saved results in this area: {{shapes}} with geometry, {{missing}} without geometry.",
@@ -7606,7 +7611,52 @@
       "procedure_required": "Planning procedure required",
       "route": "Another planning route",
       "unresolved_context": "Context unresolved",
-      "unsupported_calculation": "Calculation unsupported"
-    }
+      "unsupported_calculation": "Calculation unsupported",
+      "allowed": "Recorded as allowed",
+      "hearing": "Hearing required",
+      "prohibited": "Recorded as prohibited",
+      "overlay": "Overlay conditions apply",
+      "nomention": "Use not mentioned",
+      "clear": "Public screen: no mapped conflict found",
+      "flagged": "Public screen: mapped conflicts found"
+    },
+    "savedResult": "Saved planning result",
+    "inspectResult": "Inspect result",
+    "savedWithdrawn": "This saved result is not currently displayed as massing.",
+    "recorded": "Recorded {{date}}",
+    "sourceEdition": "Source / edition",
+    "evidenceOnly": "Saved screening evidence only. This source provides no accepted envelope geometry.",
+    "savedNoShape": "This saved result contains no displayed massing.",
+    "builtRecord": "Observed building",
+    "proposedRecord": "Authored proposal",
+    "observedNote": "Source building data. Missing measurements remain unknown.",
+    "authoredNote": "An authored design. Displaying it does not establish permission or construction.",
+    "proposalActions": "Proposal actions",
+    "footprintArea": "Footprint area",
+    "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
+    "referencedSource": "Source: {{source}} · {{revision}}",
+    "referenceUnavailable": "The referenced source record is unavailable.",
+    "scenarioLabel": "Housing type",
+    "zoningAreaNote": "Source zoning areas and recorded constraints. These areas are not building envelopes. Applicability remains unchecked.",
+    "areasLoaded": {
+      "one": "{{count}} source zoning area in view",
+      "other": "{{count}} source zoning areas in view"
+    },
+    "scenario": {
+      "family1": "One-family",
+      "family2": "Two-family",
+      "family3": "Three-family",
+      "family4": "Four-or-more-family",
+      "accessory": "Accessory housing",
+      "plannedresidential": "Planned residential",
+      "cached-calculation": "Saved calculation",
+      "new-attached-multifamily": "New attached multifamily"
+    },
+    "evidence": {
+      "direct": "Direct source value",
+      "estimated": "Source estimate"
+    },
+    "zoningArea": "Source zoning area",
+    "inspectArea": "Inspect source zoning area {{parcel}}"
   }
 }

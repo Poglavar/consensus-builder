@@ -813,9 +813,9 @@ function buildingLayerOptions() {
     if (!map.getPane('observedBuildings')) map.createPane('observedBuildings');
     return {
         pane: 'observedBuildings',
-        // Context only: existing buildings must never intercept clicks meant for the parcels
-        // beneath them (they are inspectable in 3D, not in 2D).
-        interactive: false,
+        // The shared inspector handles observed buildings in either view. Edit tools still
+        // own pointer events while their map lock is held.
+        interactive: true,
         style: buildingStyleForFeature,
         onEachFeature: (feature, layer) => {
             const id = buildingPoolFeatureKey(feature);
@@ -823,6 +823,11 @@ function buildingLayerOptions() {
             const layers = buildingRenderedLayersById.get(id) || [];
             layers.push(layer);
             buildingRenderedLayersById.set(id, layers);
+            layer.on('click', event => {
+                if (window.__mapEditLock?.isHeld()) return;
+                L.DomEvent.stopPropagation(event);
+                window.PlanningViews?.inspectBuilding(feature, id);
+            });
         }
     };
 }

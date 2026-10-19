@@ -7,11 +7,13 @@
         solid: 'threeMode.controls.stateSolid', ghost: 'threeMode.controls.stateGhost', off: 'threeMode.controls.stateOff',
         surviving: 'threeMode.controls.stateSurviving', removed: 'threeMode.controls.stateRemoved',
         massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
-        both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', reroll: 'threeMode.controls.reroll', retry: 'bets.retry' };
+        both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', reroll: 'threeMode.controls.reroll', retry: 'bets.retry', close: 'common.close' };
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0, loadedKey = '';
-    let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false;
+    let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
+    let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
+    let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     const number = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
     const area = value => typeof value === 'number' && Number.isFinite(value)
@@ -26,20 +28,98 @@
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
     function policy() { return core.displayPolicy(store?.get()); }
-    function selected() { return items.find(item => item.id === store?.get().selectedId) || null; }
+    function selected() { return (focusedRecord?.id === store?.get().selectedId ? focusedRecord : null)
+        || items.find(item => item.id === store?.get().selectedId) || null; }
     function notifyGeometry() { root.dispatchEvent(new CustomEvent('planninggeometrychange')); }
     function select(id) {
-        if (id && !items.some(item => item.id === id)) return;
+        if (!ready) return;
+        if (id && !items.some(item => item.id === id) && focusedRecord?.id !== id) return;
         if (id) {
-            root.ProposalSelection?.clear();
-            root.Parcels?.uiParcelPanel?.hideParcelInfoPanel?.();
+            const target = focusedRecord?.id === id ? focusedRecord : items.find(item => item.id === id);
+            if (target?.role !== 'proposed') root.ProposalSelection?.clear();
+            root.Parcels?.uiParcelPanel?.hideParcelInfoPanel?.({ preserveProposalSelection: target?.role === 'proposed' });
             root.hideProposalDetailsPanel?.();
             root.hideRoadInfoPanel?.();
         }
+        else if (selected()?.role === 'proposed') root.ProposalSelection?.clear();
+        actionsOpen = false;
+        restoreId = null;
         store.select(id);
+        renderInspector();
+    }
+    function selectRecord(record) { focusedRecord = record; referenceStatus = null; select(record?.id || null); }
+    function inspectBuilding(feature, key) {
+        const record = root.PlanningRepresentations.built(feature, { key: key || root.buildingPoolFeatureKey?.(feature),
+            city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null });
+        if (record) selectRecord(record);
+    }
+    function inspectProposal(proposal) {
+        const key = root.getProposalKey?.(proposal) || proposal.proposalId || proposal.hash;
+        const record = root.PlanningRepresentations.proposed(proposal, { key,
+            city: root.CityConfigManager.getCurrentCityId(), applied: root.isProposalApplied?.(proposal) === true });
+        if (record) {
+            selectRecord(record);
+            if (!root.ProposalSelection?.is(key)) root.ProposalSelection?.select(proposal);
+        }
+    }
+    function resultLabel(value) {
+        const key = `planningViews.resultStatus.${value}`;
+        const label = root.i18n.t(key);
+        return label === key ? String(value || '') : label;
+    }
+    async function parcelRecords(parcel, signal, context = {}) {
+        const url = new URL(`${root.getBackendBase()}/planning/parcel`);
+        url.searchParams.set('city', context.city || root.CityConfigManager.getCurrentCityId());
+        url.searchParams.set('parcel', parcel);
+        if (context.source || sourceId) url.searchParams.set('source', context.source || sourceId);
+        const response = await fetch(url, { signal, cache: 'no-store' });
+        if (!response.ok) throw new Error(`Planning parcel HTTP ${response.status}`);
+        const answer = await response.json();
+        if (answer.parcel !== parcel || !Array.isArray(answer.items)) throw new Error('Invalid planning parcel response');
+        return answer.items;
+    }
+    async function sourceRecord(reference) {
+        const url = new URL(`${root.getBackendBase()}/planning/record`);
+        for (const [key, value] of Object.entries({ city: reference.city, source: reference.providerId,
+            recordId: reference.recordId, scenario: reference.scenario })) if (value) url.searchParams.set(key, value);
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Planning record HTTP ${response.status}`);
+        const answer = await response.json();
+        if (answer.recordId !== reference.recordId || !Array.isArray(answer.items)) throw new Error('Invalid source record response');
+        return answer.items;
+    }
+    // Add only evidence actually returned by the cache. An absent row adds no diagnosis.
+    async function showParcelEvidence(container, parcel) {
+        if (!container || !parcel) return;
+        parcelPanel = { container, parcel };
+        container.querySelector('.planning-parcel-evidence')?.remove();
+        const section = element('section', 'planning-parcel-evidence'); section.hidden = true;
+        container.append(section);
+        try {
+            const records = await parcelRecords(parcel);
+            if (!section.isConnected) return;
+            for (const record of records) {
+                section.hidden = false;
+                section.append(element('h3', '', t('savedResult')),
+                    element('p', '', `${record.source.label} · ${resultLabel(record.assessment.status)}`));
+                if (record.assessment.reason) section.append(element('p', 'planning-cache-reason', record.assessment.reason));
+                const inspect = element('button', 'btn', t('inspectResult'));
+                inspect.type = 'button'; inspect.addEventListener('click', () => selectRecord(record));
+                section.append(inspect);
+            }
+        } catch (error) {
+            console.error('[planning] Could not read parcel evidence', error);
+            if (section.isConnected) { section.hidden = false; section.append(element('p', '', t('error'))); }
+        }
     }
     function drawMap() {
         if (!ready) return;
+        selectionLayer.clearLayers();
+        const selection = selected();
+        if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
+            root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
+                style: { color: color(selection.role), weight: 3, fill: false, opacity: 1 } }).addTo(selectionLayer);
+        }
         layer.clearLayers();
         if (policy().permitted === 'off') return;
         for (const item of items) {
@@ -64,7 +144,7 @@
                     const node = part.getElement?.();
                     if (!node) return;
                     node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
-                    node.setAttribute('aria-label', t('inspectMassing', { parcel: label }));
+                    node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
                     node.addEventListener('keydown', event => {
                         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
                     });
@@ -80,29 +160,39 @@
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
         if (!items.length) return t('empty');
-        const text = t(payload.omitted ? 'partial' : 'loaded', { count: items.length });
+        const text = t(payload.omitted ? 'partial' : payload.sources.some(source => source.capabilities.areas) ? 'areasLoaded' : 'loaded', { count: items.length });
         const pending = (payload.summaries || []).reduce((sum, entry) => sum + (entry.awaitingRefresh || 0), 0);
         return pending ? `${text} · ${t('refreshCount', { count: pending })}` : text;
     }
     function renderInspector() {
         const item = selected();
-        inspector.hidden = !item || policy().permitted === 'off' || isPhoto();
+        inspector.hidden = !item || actionsOpen || isPhoto();
         inspector.replaceChildren();
         if (!item) return;
         const header = element('header', 'planning-inspector__header');
         const heading = element('div');
-        heading.append(element('p', 'planning-eyebrow', t('sourceProposal')), element('h2', '', item.title));
+        const sourceResult = item.role === 'permitted';
+        heading.append(element('p', 'planning-eyebrow', t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
         close.addEventListener('click', () => { select(null); panel.querySelector('[data-planning-setting="permitted"]')?.focus(); });
         header.append(heading, close);
         inspector.append(header);
         const badges = element('div', 'planning-inspector__badges');
-        badges.append(element('span', 'cb-badge', t('obligatory')), element('span', 'cb-badge cb-badge--warning',
+        badges.append(element('span', 'cb-badge', t(sourceResult ? 'obligatory' : item.role)));
+        if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         inspector.append(badges, element('p', 'planning-inspector__description',
-            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate' : 'oneOption')));
+            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
+                : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
+                    : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
+                        : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
+                        : item.role === 'existing' ? 'observedNote' : 'authoredNote')));
+        if (item.assessment.status) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+        if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
+        if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
+        if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
         if (item.assessment.refresh) {
             const key = `planningViews.refreshCause.${item.assessment.refresh.code}`;
             const reason = root.i18n.t(key);
@@ -110,47 +200,98 @@
         }
         const metrics = element('dl', 'planning-metrics');
         const unitLimit = item.constraints?.find(constraint => constraint.quantity === 'dwellings')?.value;
-        for (const [label, value] of [[t('floorArea'), area(item.metrics.floorAreaM2)],
-            [t('height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })],
-            [t('dwellingLimit'), number(unitLimit)]]) {
+        const displayedMetrics = [];
+        if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
+        if (item.metrics.heightM != null) displayedMetrics.push([t('height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
+        if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
+        if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
+        for (const [label, value] of displayedMetrics) {
             const entry = element('div'); entry.append(element('dt', '', label), element('dd', '', value)); metrics.append(entry);
         }
-        inspector.append(metrics);
+        if (displayedMetrics.length) inspector.append(metrics);
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
-        inspector.append(assessment);
+        if (item.role === 'proposed' || (sourceResult && item.volumes.length)) inspector.append(assessment);
         if (item.constraints?.length) {
             const limits = element('dl', 'planning-limits');
             for (const constraint of item.constraints) {
+                const digits = constraint.value === 0 ? 0 : Math.min(20, Math.max(6, 2 - Math.floor(Math.log10(Math.abs(constraint.value)))));
+                const measured = root.CbFormat.formatNumber(constraint.value, { maxFractionDigits: digits });
                 const value = constraint.unit === 'm2' ? area(constraint.value)
-                    : constraint.unit === 'percent' ? `${number(constraint.value)}%` : number(constraint.value);
-                limits.append(element('dt', '', t(`constraint.${constraint.quantity}`)), element('dd', '', value));
+                    : constraint.unit === 'percent' ? `${measured}%`
+                        : constraint.unit === 'count' ? number(constraint.value) : `${measured} ${constraint.unit}`;
+                const evidence = constraint.evidence ? ` · ${t(`evidence.${constraint.evidence}`)}` : '';
+                limits.append(element('dt', '', t(`constraint.${constraint.quantity}`)), element('dd', '', value + evidence));
             }
             inspector.append(limits);
         }
         const evidence = element('details', 'planning-evidence');
         evidence.append(element('summary', '', t('sourceDetails')));
-        evidence.append(element('p', '', item.source.label));
+        if (item.source.label) evidence.append(element('p', '', item.source.label));
         if (item.source.computedAt) evidence.append(element('p', '', t('computed', { date: root.CbFormat.formatDate(item.source.computedAt) })));
+        if (item.source.fetchedAt) evidence.append(element('p', '', t('recorded', { date: root.CbFormat.formatDate(item.source.fetchedAt) })));
         if (item.source.solverVersion) evidence.append(element('p', '', t('solverVersion', { version: item.source.solverVersion })));
         if (item.source.parcel) evidence.append(element('p', '', item.source.parcel));
+        if (item.proposal) evidence.append(element('pre', 'planning-evidence__terms', JSON.stringify(item.proposal, null, 2)));
         // Source terms remain inspectable even when an adapter has no executable constraint mapping.
         if (item.sourceEvidence) {
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
         inspector.append(evidence);
+        for (const reference of item.sourceEvidence?.sourceReferences || []) {
+            const button = element('button', 'btn btn-sm', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
+            button.type = 'button'; button.addEventListener('click', async () => {
+                button.disabled = true;
+                try {
+                    const records = await sourceRecord(reference);
+                    if (selected()?.id !== item.id) return;
+                    const source = records.find(record => record.proposalId === reference.proposalId);
+                    if (!source) { button.textContent = t('referenceUnavailable'); return; }
+                    const comparison = root.PlanningSourceProposal.compareReference(reference, source.proposal);
+                    selectRecord(source); referenceStatus = comparison; renderInspector();
+                } catch (error) { console.error('[planning] Referenced source read failed', error); button.textContent = t('error'); }
+                finally { button.disabled = false; }
+            });
+            inspector.append(button);
+        }
         const footer = element('footer', 'planning-inspector__footer');
-        const link = element('a', 'cb-link cb-link--external', t('readSource'));
-        link.href = item.source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
-        footer.append(link);
+        if (item.source.url) {
+            const link = element('a', 'cb-link cb-link--external', t('readSource'));
+            link.href = item.source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            footer.append(link);
+        }
+        if (item.role === 'proposed') {
+            const action = element('button', 'btn', t('proposalActions'));
+            action.type = 'button'; action.addEventListener('click', async () => {
+                const proposal = root.getProposalByIdOrHash?.(item.proposalId);
+                if (!proposal) return;
+                if (root.__mapModeState?.desired === 'model') await root.requestMapMode('2d');
+                actionsOpen = true; renderInspector();
+                root.showProposalInfo(proposal, root.ProposalSelection?.getParcelId(), null, { planningActions: true });
+            });
+            footer.append(action);
+        }
         inspector.append(footer);
     }
     function render() {
         if (!ready) return;
         panel.querySelector('.planning-eyebrow').textContent = t('title');
+        panel.querySelector('.planning-source-label').textContent = t('sourceEdition');
+        const sourceSelect = panel.querySelector('.planning-source-select');
+        sourceSelect.setAttribute('aria-label', t('sourceEdition'));
+        sourceSelect.value = sourceId;
+        sourceSelect.disabled = sourceOptions.length < 2;
+        const descriptor = sourceOptions.find(source => source.id === sourceId);
+        panel.querySelector('.planning-source-note').textContent = descriptor?.capabilities.areas ? t('zoningAreaNote')
+            : descriptor?.capabilities.volumes === false ? t('evidenceOnly') : '';
+        const scenario = panel.querySelector('.planning-scenario-select');
+        scenario.value = scenarioId; scenario.setAttribute('aria-label', t('scenarioLabel'));
+        panel.querySelector('.planning-scenario-label').textContent = t('scenarioLabel');
+        scenario.parentElement.hidden = !(descriptor?.scenarios?.length > 1);
+        for (const option of scenario.options) option.textContent = t(`scenario.${option.value}`);
         const reroll = panel.querySelector('.planning-reroll');
         reroll.title = t('reroll'); reroll.setAttribute('aria-label', t('reroll'));
         reroll.disabled = policy().proposed === 'off';
@@ -166,7 +307,7 @@
         for (const key of ['existingScope', 'proposedForm', 'permittedMap']) {
             panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
         }
-        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto();
+        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto() || descriptor?.capabilities.volumes === false;
         panel.querySelector('.planning-view-status').textContent = stateText();
         panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading' && policy().permitted !== 'off'));
         const retry = panel.querySelector('.planning-view-retry');
@@ -220,20 +361,27 @@
         drawMap(); render();
         if (lastSelectedId !== state.selectedId) {
             lastSelectedId = state.selectedId;
+            const url = new URL(location.href);
+            if (state.selectedId) url.searchParams.set('planningSelection', state.selectedId);
+            else url.searchParams.delete('planningSelection');
+            if (sourceId) url.searchParams.set('planningSource', sourceId);
+            if (scenarioId) url.searchParams.set('planningScenario', scenarioId);
+            history.replaceState(history.state, '', url);
             root.dispatchEvent(new CustomEvent('planningselectionchange', { detail: { id: state.selectedId } }));
         }
         if (settingsChanged && view.permitted !== 'off') refresh();
     }
     async function refresh({ force = false } = {}) {
-        if (!ready || policy().permitted === 'off') return;
+        if (!ready || !catalogReady || policy().permitted === 'off') return;
         if (root.map.getZoom() < 16) {
             controller?.abort(); request++; loadedKey = ''; items = []; status = 'zoom'; payload = null;
-            store.select(null); drawMap(); render(); notifyGeometry(); return;
+            if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry(); return;
         }
         const city = root.CityConfigManager.getCurrentCityId();
         const bounds = root.map.getBounds();
         const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-        const key = core.queryKey(city, bbox);
+        const key = `${sourceId}:${scenarioId}:${core.queryKey(city, bbox)}`;
         if (!force && key === loadedKey) return;
         loadedKey = key;
         controller?.abort(); controller = new AbortController();
@@ -242,22 +390,82 @@
         try {
             const url = new URL(`${root.getBackendBase()}/planning/representations`);
             url.searchParams.set('city', city); url.searchParams.set('bbox', bbox.join(','));
+            if (sourceId) url.searchParams.set('source', sourceId);
+            if (scenarioId) url.searchParams.set('scenario', scenarioId);
             const answer = await root.PlanningFeed.loadViewport(url, { city, signal: controller.signal,
                 onProgress(value) { if (generation === request) { progress = value; render(); } } });
             if (generation !== request) return;
             payload = answer; items = answer.items; status = 'ready';
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
+            restoreSelection();
         } catch (error) {
             if (generation !== request || error.name === 'AbortError') return;
             if (error.status === 400) {
                 items = []; payload = null; status = 'zoom';
-                store.select(null); drawMap(); render(); notifyGeometry(); return;
+                if (!selected()) store.select(null);
+                drawMap(); render(); notifyGeometry(); return;
             }
             console.error('[planning] Could not load source representations', error);
             loadedKey = ''; items = []; payload = null; status = 'error';
-            store.select(null); drawMap(); render(); notifyGeometry();
+            if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry();
         }
+    }
+    async function restoreSelection() {
+        if (!restoreId || restoring) return;
+        const id = restoreId;
+        const found = items.find(item => item.id === id);
+        if (found) { select(found.id); return; }
+        const city = root.CityConfigManager.getCurrentCityId();
+        if (id.startsWith(`built:${city}:`)) {
+            const key = id.slice(`built:${city}:`.length);
+            const feature = root.buildingFeaturePool?.find(feature => root.buildingPoolFeatureKey(feature) === key);
+            if (feature) inspectBuilding(feature, key);
+            return;
+        }
+        if (id.startsWith('proposed:')) {
+            const proposal = root.getProposalByIdOrHash?.(id.slice('proposed:'.length));
+            if (proposal) root.ProposalSelection.select(proposal);
+            return;
+        }
+        const provider = sourceOptions.find(source => id.startsWith(`${source.id}:`));
+        if (!provider) return;
+        restoring = true;
+        try {
+            const records = await sourceRecord({ recordId: id.slice(provider.id.length + 1), city, providerId: provider.id, scenario: scenarioId });
+            if (restoreId === id) { const record = records.find(item => item.id === id); if (record) selectRecord(record); }
+        } catch (error) { console.error('[planning] Could not restore source selection', error); }
+        finally { restoring = false; }
+    }
+    async function loadSources() {
+        const generation = ++sourceGeneration;
+        const city = root.CityConfigManager.getCurrentCityId();
+        try {
+            const response = await fetch(`${root.getBackendBase()}/planning/sources?city=${encodeURIComponent(city)}`, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
+            const answer = await response.json();
+            if (generation !== sourceGeneration) return;
+            sourceOptions = answer.sources;
+            catalogReady = true;
+            const requested = new URLSearchParams(location.search).get('planningSource');
+            sourceId = sourceOptions.find(source => source.id === requested)?.id || sourceOptions.find(source => source.default)?.id || '';
+            const input = panel.querySelector('.planning-source-select'); input.replaceChildren();
+            for (const source of sourceOptions) input.add(new Option(source.label, source.id));
+            populateScenarios(new URLSearchParams(location.search).get('planningScenario'));
+            render(); refresh({ force: true }); restoreSelection();
+            if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
+        } catch (error) {
+            if (generation !== sourceGeneration) return;
+            console.error('[planning] Could not read providers', error); status = 'error'; render();
+        }
+    }
+    function populateScenarios(requested) {
+        const descriptor = sourceOptions.find(source => source.id === sourceId);
+        const choices = descriptor?.scenarios || [descriptor?.scenario].filter(Boolean);
+        scenarioId = choices.includes(requested) ? requested : descriptor?.scenario || '';
+        const input = panel.querySelector('.planning-scenario-select'); input.replaceChildren();
+        for (const scenario of choices) input.add(new Option(t(`scenario.${scenario}`), scenario));
     }
     function init() {
         if (ready) return;
@@ -268,6 +476,31 @@
         store = core.createStore(saved);
         panel = document.getElementById('planning-views');
         inspector = document.getElementById('planning-inspector');
+        const sourceField = element('label', 'planning-source-field');
+        sourceField.append(element('span', 'planning-source-label'));
+        const sourceInput = element('select', 'planning-layer-select planning-source-select');
+        sourceField.append(sourceInput); panel.append(sourceField, element('p', 'planning-source-note'));
+        const scenarioField = element('label', 'planning-source-field');
+        scenarioField.append(element('span', 'planning-scenario-label'));
+        const scenarioInput = element('select', 'planning-layer-select planning-scenario-select');
+        scenarioField.append(scenarioInput); panel.append(scenarioField);
+        scenarioInput.addEventListener('change', () => {
+            const previousId = selected()?.role === 'permitted' ? store.get().selectedId : null;
+            scenarioId = scenarioInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
+            if (previousId) { focusedRecord = null; store.select(null); restoreId = previousId; }
+            const url = new URL(location.href); url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
+            drawMap(); notifyGeometry(); refresh({ force: true });
+        });
+        sourceInput.addEventListener('change', () => {
+            const clearSourceSelection = selected()?.role === 'permitted';
+            sourceId = sourceInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
+            populateScenarios();
+            if (clearSourceSelection) { focusedRecord = null; store.select(null); }
+            const url = new URL(location.href); url.searchParams.set('planningSource', sourceId);
+            url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
+            drawMap(); notifyGeometry(); refresh({ force: true });
+            if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
+        });
         const controls = panel.querySelector('.planning-layer-controls');
         const details = { existing: 'existingScope', permitted: 'permittedMap', proposed: 'proposedForm' };
         function control(key) {
@@ -289,6 +522,7 @@
         root.map.createPane('planningSources');
         root.map.getPane('planningSources').classList.add('planning-sources-pane');
         layer = root.L.featureGroup().addTo(root.map);
+        selectionLayer = root.L.featureGroup().addTo(root.map);
         ready = true; panel.hidden = false;
         // Keep the phone sheet below these controls even when coverage text expands or wraps.
         new ResizeObserver(() => document.documentElement.style.setProperty('--planning-panel-height', `${panel.offsetHeight}px`)).observe(panel);
@@ -297,18 +531,29 @@
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
             controller?.abort(); request++; loadedKey = ''; items = []; payload = null; status = 'loading';
-            store.select(null); drawMap(); render(); notifyGeometry(); refresh();
+            sourceOptions = []; sourceId = ''; scenarioId = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
+            store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
         root.addEventListener('proposedBuildingsUpdated', render);
+        root.addEventListener('buildingsLayerUpdated', restoreSelection);
         root.addEventListener('i18n:translationsLoaded', render);
         root.addEventListener('mapmodechange', render);
         root.addEventListener('keydown', event => {
             if (event.key === 'Escape' && selected() && !event.defaultPrevented) { select(null); event.preventDefault(); }
         });
-        root.whenAppBooted().then(() => root.ProposalSelection?.subscribe(proposal => { if (proposal) select(null); }));
+        root.whenAppBooted().then(() => {
+            root.ProposalSelection?.subscribe(proposal => {
+                if (proposal) inspectProposal(proposal);
+                else if (selected()?.role === 'proposed') { focusedRecord = null; store.select(null); }
+            });
+            restoreSelection();
+        });
         syncView();
+        loadSources();
     }
     root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: () => items,
-        getSelected: selected, select, color, refresh, configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
+        getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
+        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
+        configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
     root.whenMapCoreReady().then(init);
 })(window);

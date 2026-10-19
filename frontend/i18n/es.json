@@ -7625,7 +7625,12 @@
     "constraint": {
       "dwellings": "Máximo de viviendas",
       "floorArea": "Superficie construida máxima",
-      "naturalGround": "Terreno natural mínimo"
+      "naturalGround": "Terreno natural mínimo",
+      "frontSetback": "Retiro frontal mínimo",
+      "sideSetback": "Retiro lateral mínimo",
+      "rearSetback": "Retiro posterior mínimo",
+      "height": "Altura máxima",
+      "lotArea": "Superficie mínima de parcela"
     },
     "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
     "openModel": "Abrir el modelo 3D",
@@ -7638,7 +7643,7 @@
     "permittedOff": "Los volúmenes permitidos están ocultos.",
     "coverageTitle": "¿Qué cubre esta fuente?",
     "coverageNote": "Se muestran los cálculos guardados por la fuente. Algunos contienen volúmenes; otros indican falta de pruebas, condiciones incumplidas u otro procedimiento urbanístico. Un resultado sin geometría no demuestra capacidad nula. Los niveles muestran las partes a distintas alturas.",
-    "inspectHint": "Haz clic en un volumen para consultar su fuente y límites.",
+    "inspectHint": "Seleccione un edificio o geometría de la fuente para inspeccionarlo.",
     "inspectMassing": "Inspeccionar el volumen permitido en {{parcel}}",
     "heightParts": "Alturas de las partes: {{heights}}",
     "cacheSummary": "{{count}} resultados guardados en esta área: {{shapes}} con geometría, {{missing}} sin geometría.",
@@ -7657,7 +7662,52 @@
       "procedure_required": "Requiere procedimiento urbanístico",
       "route": "Otra vía urbanística",
       "unresolved_context": "Contexto sin resolver",
-      "unsupported_calculation": "Cálculo no compatible"
-    }
+      "unsupported_calculation": "Cálculo no compatible",
+      "allowed": "Registrado como permitido",
+      "hearing": "Se requiere audiencia",
+      "prohibited": "Registrado como prohibido",
+      "overlay": "Se aplican condiciones de superposición",
+      "nomention": "Uso no mencionado",
+      "clear": "Revisión pública: sin conflictos cartografiados",
+      "flagged": "Revisión pública: conflictos cartografiados"
+    },
+    "savedResult": "Resultado urbanístico guardado",
+    "inspectResult": "Inspeccionar resultado",
+    "savedWithdrawn": "Este resultado guardado no se muestra actualmente como volumen.",
+    "recorded": "Registrado el {{date}}",
+    "sourceEdition": "Fuente / edición",
+    "evidenceOnly": "Solo datos de revisión guardados. Esta fuente no aporta geometría de envolvente aceptada.",
+    "savedNoShape": "Este resultado guardado no contiene un volumen visible.",
+    "builtRecord": "Edificio observado",
+    "proposedRecord": "Propuesta de diseño",
+    "observedNote": "Datos del edificio de la fuente. Las medidas que faltan siguen siendo desconocidas.",
+    "authoredNote": "Un diseño propuesto. Mostrarlo no acredita autorización ni construcción.",
+    "proposalActions": "Acciones de la propuesta",
+    "footprintArea": "Superficie de huella",
+    "referenceChanged": "La fuente cambió desde la versión citada por el diseño. Se muestra el registro guardado actual; la revisión citada no se ha reconstruido.",
+    "referencedSource": "Fuente: {{source}} · {{revision}}",
+    "referenceUnavailable": "El registro de fuente citado no está disponible.",
+    "scenarioLabel": "Tipo de vivienda",
+    "zoningAreaNote": "Áreas de zonificación y restricciones registradas de la fuente. Estas áreas no son envolventes de edificios. La aplicabilidad sigue sin verificar.",
+    "areasLoaded": {
+      "one": "{{count}} área de zonificación de la fuente visible",
+      "other": "{{count}} áreas de zonificación de la fuente visibles"
+    },
+    "scenario": {
+      "family1": "Una familia",
+      "family2": "Dos familias",
+      "family3": "Tres familias",
+      "family4": "Cuatro o más familias",
+      "accessory": "Vivienda accesoria",
+      "plannedresidential": "Residencial planificado",
+      "cached-calculation": "Cálculo guardado",
+      "new-attached-multifamily": "Nueva vivienda multifamiliar adosada"
+    },
+    "evidence": {
+      "direct": "Valor directo de la fuente",
+      "estimated": "Estimación de la fuente"
+    },
+    "zoningArea": "Área de zonificación de la fuente",
+    "inspectArea": "Inspeccionar área de zonificación {{parcel}}"
   }
 }

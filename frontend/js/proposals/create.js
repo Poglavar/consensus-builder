@@ -1037,6 +1037,8 @@ async function createProposal() {
         if (proposalCopySource && proposalCopySource.proposalId) {
             proposal.copiedFromProposalId = String(proposalCopySource.proposalId);
             proposal.copiedFromName = proposalCopySource.name || null;
+            const original = proposalStorage.getProposal(String(proposalCopySource.proposalId));
+            if (original?.sourceReferences) proposal.sourceReferences = JSON.parse(JSON.stringify(original.sourceReferences));
         }
         if (publishingDraftId) {
             const source = window.pendingProposalReplacementSource || {};

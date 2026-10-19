@@ -630,6 +630,8 @@ function showProposalDownloadConfirm() {
 
 function isProposalUIActive() {
     try {
+        const inspector = document.getElementById('planning-inspector');
+        if (inspector && !inspector.hidden && window.PlanningViews?.getSelected()?.role === 'proposed') return true;
         const list = document.querySelector('.proposal-list-modal');
         const listOpen = !!(list && list.style && list.style.display === 'block');
         if (listOpen) return true;

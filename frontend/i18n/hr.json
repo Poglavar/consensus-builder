@@ -7638,7 +7638,12 @@
     "constraint": {
       "dwellings": "Najveći broj stanova",
       "floorArea": "Najveća podna površina",
-      "naturalGround": "Najmanji udio prirodnog terena"
+      "naturalGround": "Najmanji udio prirodnog terena",
+      "frontSetback": "Najmanji prednji odmak",
+      "sideSetback": "Najmanji bočni odmak",
+      "rearSetback": "Najmanji stražnji odmak",
+      "height": "Najveća visina",
+      "lotArea": "Najmanja površina čestice"
     },
     "photoNote": "Dopuštene volumene pregledajte na karti ili u 3D modelu.",
     "openModel": "Otvori 3D model",
@@ -7651,7 +7656,7 @@
     "permittedOff": "Dopušteni volumeni su skriveni.",
     "coverageTitle": "Što obuhvaća ovaj izvor?",
     "coverageNote": "Prikazuju se spremljeni izračuni izvora. Neki sadrže građevnu masu, a drugi navode nedostatak dokaza, neispunjene uvjete ili drugi planski postupak. Rezultat bez geometrije nije dokaz nultog kapaciteta. Visinski dijelovi prikazuju dijelove na različitim visinama.",
-    "inspectHint": "Kliknite volumen za pregled izvora i ograničenja.",
+    "inspectHint": "Odaberite zgradu ili izvornu geometriju za pregled.",
     "inspectMassing": "Pregledaj dopušteni volumen na čestici {{parcel}}",
     "heightParts": "Visinski dijelovi: {{heights}}",
     "cacheSummary": "{{count}} spremljenih rezultata u ovom području: {{shapes}} s geometrijom, {{missing}} bez geometrije.",
@@ -7670,7 +7675,53 @@
       "procedure_required": "Potreban je planski postupak",
       "route": "Drugi planski put",
       "unresolved_context": "Kontekst nije razriješen",
-      "unsupported_calculation": "Izračun nije podržan"
-    }
+      "unsupported_calculation": "Izračun nije podržan",
+      "allowed": "Zabilježeno kao dopušteno",
+      "hearing": "Potrebna rasprava",
+      "prohibited": "Zabilježeno kao zabranjeno",
+      "overlay": "Primjenjuju se uvjeti dodatnog sloja",
+      "nomention": "Namjena nije navedena",
+      "clear": "Javna provjera: nije pronađen kartirani sukob",
+      "flagged": "Javna provjera: pronađeni kartirani sukobi"
+    },
+    "savedResult": "Spremljeni planski rezultat",
+    "inspectResult": "Pregledaj rezultat",
+    "savedWithdrawn": "Ovaj spremljeni rezultat trenutačno se ne prikazuje kao volumen.",
+    "recorded": "Zabilježeno {{date}}",
+    "sourceEdition": "Izvor / izdanje",
+    "evidenceOnly": "Samo spremljeni podaci provjere. Ovaj izvor nema prihvaćenu geometriju ovojnice.",
+    "savedNoShape": "Ovaj spremljeni rezultat nema prikazani volumen.",
+    "builtRecord": "Postojeća zgrada",
+    "proposedRecord": "Autorski prijedlog",
+    "observedNote": "Izvorni podaci o zgradi. Nedostajuće mjere ostaju nepoznate.",
+    "authoredNote": "Autorski projekt. Njegov prikaz ne potvrđuje dozvolu ni izgradnju.",
+    "proposalActions": "Radnje prijedloga",
+    "footprintArea": "Tlocrtna površina",
+    "referenceChanged": "Izvor se promijenio od verzije navedene u projektu. Prikazuje se trenutačno spremljeni zapis; navedena verzija nije rekonstruirana.",
+    "referencedSource": "Izvor: {{source}} · {{revision}}",
+    "referenceUnavailable": "Navedeni izvorni zapis nije dostupan.",
+    "scenarioLabel": "Vrsta stanovanja",
+    "zoningAreaNote": "Izvorna područja zoniranja i zabilježena ograničenja. Ta područja nisu ovojnice zgrada. Primjenjivost nije provjerena.",
+    "areasLoaded": {
+      "one": "{{count}} izvorno područje zoniranja u prikazu",
+      "few": "{{count}} izvorna područja zoniranja u prikazu",
+      "other": "{{count}} izvornih područja zoniranja u prikazu"
+    },
+    "scenario": {
+      "family1": "Jednoobiteljsko",
+      "family2": "Dvije obitelji",
+      "family3": "Tri obitelji",
+      "family4": "Četiri ili više obitelji",
+      "accessory": "Pomoćno stanovanje",
+      "plannedresidential": "Planirano stanovanje",
+      "cached-calculation": "Spremljeni izračun",
+      "new-attached-multifamily": "Nova višestambena izgradnja u nizu"
+    },
+    "evidence": {
+      "direct": "Izravna izvorna vrijednost",
+      "estimated": "Procjena izvora"
+    },
+    "zoningArea": "Izvorno područje zoniranja",
+    "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}"
   }
 }

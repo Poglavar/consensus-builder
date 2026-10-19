@@ -6,6 +6,7 @@ const requireCjs = createRequire(import.meta.url);
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 const siteBinding = requireCjs('../../frontend/js/proposals/site-binding.js');
 const chainRecord = requireCjs('../../frontend/js/proposals/chain-record.js');
+const sourceProposal = requireCjs('../../frontend/js/planning/source-proposal.js');
 
 const isPolygonGeometry = value => !!value && typeof value === 'object'
     && (value.type === 'Polygon' || value.type === 'MultiPolygon') && Array.isArray(value.coordinates);
@@ -130,6 +131,9 @@ const clearRoadDemolition = definition => {
 
 export function stripLocalProposalState(proposal) {
     if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return proposal;
+    // Authored designs may pin a source revision; serialization must never follow the latest
+    // cache value and silently replace that reference or treat its authority as owner consent.
+    sourceProposal.validateReferences(proposal.sourceReferences);
     const sanitized = JSON.parse(JSON.stringify(proposal));
     [
         'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
