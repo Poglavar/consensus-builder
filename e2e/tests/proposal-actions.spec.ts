@@ -316,6 +316,7 @@ test.describe('Proposal actions @features', () => {
     expect(accepted.lifecycleStatus).toBe('Active');
     expect(accepted.executedAt).toBeFalsy();
     expect(accepted.applied).toBe(true);
+    expect(await page.evaluate(() => (window as any).__proposalEvmStatusRead)).toEqual({ proposalId: '5', blockTag: '0x1' });
     expect(await page.evaluate(() => {
       const w = window as any;
       return w.__proposalEvmSubmitted?.data?.slice(0, 10)
@@ -332,6 +333,44 @@ test.describe('Proposal actions @features', () => {
         === w.ethers.id('withdrawAcceptance(uint256,string,bytes32,bytes32,bytes32)').slice(0, 10);
     })).toBe(true);
   });
+
+  for (const statusRead of ['Executed', 'unavailable'] as const) {
+    test(`EVM acceptance refreshes lifecycle from its receipt block: ${statusRead}`, async ({ mockApi: page }) => {
+      await injectMockEvmWallet(page, { chainIdHex: '0x14a34', walletKind: 'metamask' });
+      await openCity(page);
+      await establishLocalProfile(page);
+      await loadParcelOwnershipFixture(page);
+      await connectWalletByConnectorId(page, 'metamask');
+      await installProposalEvmBoundary(page, { acceptanceStatusCode: 1, failAcceptanceStatusRead: statusRead === 'unavailable' });
+      const proposalId = await page.evaluate(({ parcelId, contract }) => (window as any).proposalStorage.addProposal({
+        title: 'Receipt-block lifecycle', goal: 'parcelBased', kind: 'owner-deal', lifecycleStatus: 'Active',
+        funded: true, isConditional: true, cadastreParcelIds: [parcelId],
+        nft: { chain: '84532', contract, tokenId: '5' },
+      }), { parcelId: PARCEL_ID, contract: PROPOSAL_EVM_CONTRACT });
+      await showProposal(page, proposalId);
+      await expandProposalDetails(page);
+      await openProposalSection(page, 'land');
+      const ownerBefore = await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID);
+      await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Accept', exact: true }).click();
+      await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
+      await expect.poll(async () => (await proposalState(page, proposalId)).lifecycleStatus)
+        .toBe(statusRead === 'Executed' ? 'Executed' : 'Active');
+      const accepted = await proposalState(page, proposalId);
+      expect(accepted.executedAt).toBeFalsy();
+      expect(accepted.applied).toBe(false);
+      expect(await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID)).toBe(ownerBefore);
+      expect(await page.evaluate(() => (window as any).__proposalEvmStatusRead)).toEqual({ proposalId: '5', blockTag: '0x1' });
+      const profile = await page.evaluate(() => (window as any).getCurrentUserAgent());
+      expect(profile.proposalsAccepted).toContain(proposalId);
+      expect(profile.proposalsExecuted).not.toContain(proposalId);
+      if (statusRead === 'unavailable') {
+        await expect(page.getByText('Acceptance was confirmed on-chain, but the proposal status could not be refreshed.', { exact: false })).toBeVisible();
+      } else {
+        await expect(page.locator('#proposal-details-panel').getByRole('link', { name: /^Executed/ })).toBeVisible();
+        await expect(page.locator('#proposal-details-panel details[data-proposal-section="land"]')).toHaveAttribute('open', '');
+      }
+    });
+  }
 
   test('minted proposal support opens the donation dialog and confirms the mocked chain transaction', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });

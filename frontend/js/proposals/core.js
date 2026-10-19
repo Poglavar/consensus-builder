@@ -1331,17 +1331,21 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    let chainResult = null;
     if (isOnChain) {
         try {
             if (typeof updateStatus === 'function') {
                 updateStatus(isVote ? 'Submitting vote on chain...' : 'Submitting acceptance on chain...');
             }
-            await bridge[bridgeMethod]({
+            chainResult = await bridge[bridgeMethod]({
                 proposalId: nftInfo.tokenId,
                 parcelId: normalizedParcelId,
                 chainId: nftInfo.chain,
                 contractAddress: nftInfo.contract
             });
+            if (typeof updateStatus === 'function') {
+                updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
+            }
         } catch (onchainErr) {
             console.warn(isVote ? 'On-chain vote failed:' : 'On-chain acceptance failed:', onchainErr);
             const friendlyMessage = parseOnChainErrorMessage(onchainErr);
@@ -1356,13 +1360,27 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         acceptedByName: userAgent.name
     });
 
-    if (!result) {
-        return;
+    // Local consent cannot establish execution. The EVM bridge separately reads the exact
+    // confirmed block; update only lifecycle, and only while the record still names that NFT.
+    if (isOnChain && !isVote) {
+        const current = proposalStorage.getProposal(proposalId);
+        const lifecycle = window.ProposalChainStatus?.confirmedAcceptanceLifecycle(
+            chainResult, nftInfo, getProposalNftInfo(current));
+        if (current && lifecycle) {
+            current.lifecycleStatus = lifecycle;
+            proposalStorage._indexProposal?.(current);
+            proposalStorage.save();
+            const detailsContent = document.getElementById('proposal-details-content');
+            if (detailsContent?.dataset.proposalId === String(current.proposalId)) {
+                showProposalInfo(current, parcelId, true);
+            }
+        } else {
+            showProposalAlertMessage('acceptance_confirmed_status_unavailable',
+                'Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.');
+        }
     }
 
-    if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
-    }
+    if (!result) return;
 
     const ownerLabel = targetSlot.shareText
         ? `${targetSlot.displayName} (${targetSlot.shareText})`

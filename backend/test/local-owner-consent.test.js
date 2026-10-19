@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const bookkeeping = require('../../frontend/js/proposals/owner-acceptance.js');
 const flow = require('../../frontend/js/proposals/ownership-flow.js');
 const status = require('../../frontend/js/proposals/status.js');
+const chainStatus = require('../../frontend/js/proposals/chain-status.js');
 const execution = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
 const core = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
 const agents = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
@@ -29,6 +30,7 @@ function fixture() {
         proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id), normalizeParcelIdList: ids => ids.map(String),
         proposalStorage: { getProposal: () => proposal, save: vi.fn() },
         showProposalAlertMessage: alert, ProposalChainBridge: bridge,
+        ProposalChainStatus: chainStatus,
         getProposalNftInfo: () => ({ chain: 'evm', tokenId: '1', contract: 'fixture' }),
         ProposalManager: { applyProposal: vi.fn() }, transferParcelOwnership: vi.fn(),
         resolveProposalRecipientAgentId: () => 'recipient-a',
@@ -36,6 +38,7 @@ function fixture() {
         AgentSupportSimulation: { settle: vi.fn() },
         agentStorage: { updateAgent: vi.fn() },
         document: { getElementById: () => null, querySelector: () => null },
+        showProposalInfo: vi.fn(), updateStatus: vi.fn(),
         addUserActionToGameLog: vi.fn()
     });
     context.window = context;
@@ -56,6 +59,70 @@ function seedAcceptance(proposal) {
 }
 
 describe('local owner consent evidence', () => {
+    function chainAcceptance(context, bridge, code = 1) {
+        const nft = { chain: '84532', contract: `0x${'a'.repeat(40)}`, tokenId: '5' };
+        context.getProposalNftInfo = () => nft;
+        bridge.acceptProposal.mockResolvedValue({ chainId: nft.chain, contractAddress: nft.contract, proposalId: '5',
+            blockNumber: 42, lifecycle: { statusCode: code, blockNumber: 42 } });
+        return nft;
+    }
+
+    it.each([['Active', 0], ['Executed', 1]])('reads %s from confirmed EVM acceptance without model or payment effects', async (lifecycleStatus, code) => {
+        const { context, proposal, agent, bridge, alert } = fixture();
+        chainAcceptance(context, bridge, code);
+        context.document.getElementById = id => id === 'proposal-details-content'
+            ? { dataset: { proposalId: proposal.proposalId } } : null;
+        proposal.applied = true;
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(proposal).toMatchObject({ lifecycleStatus, applied: true, acceptedParcelIds: ['base-a'] });
+        expect(proposal.executedAt).toBeUndefined();
+        expect(agent.proposalsAccepted).toEqual([proposal.proposalId]);
+        expect(agent.proposalsExecuted).toEqual([]);
+        expect(agent.ethBalance).toBe(100);
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(context.transferParcelOwnership).not.toHaveBeenCalled();
+        expect(context.AgentSupportSimulation.settle).not.toHaveBeenCalled();
+        expect(alert).not.toHaveBeenCalled();
+        expect(context.showProposalInfo).toHaveBeenCalledWith(proposal, 'base-a', true);
+        expect(context.updateStatus).toHaveBeenLastCalledWith('Acceptance recorded on chain.');
+    });
+
+    it('does not replace a different proposal panel after wallet confirmation', async () => {
+        const { context, proposal, bridge } = fixture();
+        chainAcceptance(context, bridge);
+        context.document.getElementById = id => id === 'proposal-details-content'
+            ? { dataset: { proposalId: 'different-proposal' } } : null;
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(proposal.lifecycleStatus).toBe('Executed');
+        expect(context.showProposalInfo).not.toHaveBeenCalled();
+    });
+
+    it.each([null, { statusCode: null, blockNumber: 42 }, { statusCode: 9, blockNumber: 42 }])(
+        'preserves confirmed consent and old lifecycle when status is unavailable: %s', async lifecycle => {
+            const { context, proposal, bridge, alert } = fixture();
+            const nft = chainAcceptance(context, bridge);
+            bridge.acceptProposal.mockResolvedValue({ chainId: nft.chain, contractAddress: nft.contract, proposalId: '5', blockNumber: 42, lifecycle });
+            await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+            expect(proposal.lifecycleStatus).toBe('Active');
+            expect(proposal.acceptedParcelIds).toEqual(['base-a']);
+            expect(bridge.acceptProposal).toHaveBeenCalledOnce();
+            expect(alert).toHaveBeenCalledWith('acceptance_confirmed_status_unavailable', expect.stringContaining('Acceptance was confirmed'));
+        });
+
+    it('still refreshes the chain lifecycle if local consent bookkeeping cannot complete', async () => {
+        const { context, proposal, bridge, agent } = fixture();
+        chainAcceptance(context, bridge);
+        context.document.getElementById = id => id === 'proposal-details-content'
+            ? { dataset: { proposalId: proposal.proposalId } } : null;
+        context.acceptProposal = vi.fn(async () => null);
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(proposal.lifecycleStatus).toBe('Executed');
+        expect(context.showProposalInfo).toHaveBeenCalledWith(proposal, 'base-a', true);
+        expect(context.updateStatus).toHaveBeenLastCalledWith('Acceptance recorded on chain.');
+        expect(agent.proposalsAccepted).toEqual([]);
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
+    });
+
     it.each([true, false, undefined])('final local acceptance records consent only with funded=%s', async funded => {
         const { context, proposal } = fixture();
         if (funded !== undefined) proposal.funded = funded;
