@@ -18,7 +18,9 @@ import signal
 import subprocess
 import sys
 import time
+import threading
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -403,6 +405,104 @@ class Runner:
         self.known_sources_rel: str | None = None
         self.known_sources_sha256: str | None = None
         self._state_was_present = self.state_path.exists()
+        self.pipeline_jobs = {}
+
+    def _refresh_shared_runtime(self):
+        shared = getattr(self.args, "shared_root", None)
+        if not shared:
+            return {}
+        import parcel_shared_runtime as runtime
+        with runtime.runtime_lock(shared):
+            marker = self.root / "tmp/parcel-shared-runtime/write-in-progress.json"
+            if marker.exists():
+                transaction = json_read(marker)
+                pid = transaction["pid"]
+                identity = process_start_identity(pid)
+                if identity is not None and identity == transaction.get("pidStartIdentity"):
+                    raise RuntimeError("shared adapter write is still owned by a live process")
+                runtime.restore_runtime(shared, self.root, runtime.current_runtime(shared),
+                                        transaction["beforePaths"])
+                marker.unlink()
+                self.log("recovered interrupted shared adapter write; qualified artifacts retained")
+            result = runtime.sync_runtime(shared, self.root)
+        self.state["sharedRuntime"] = {key: result[key] for key in ("generation", "codeGeneration")}
+        return result
+
+    @contextmanager
+    def _shared_write(self):
+        shared = getattr(self.args, "shared_root", None)
+        if not shared:
+            yield {}
+            return
+        import parcel_shared_runtime as runtime
+        with runtime.runtime_lock(shared):
+            self.shared_write_rolled_back = False
+            self._refresh_shared_runtime()
+            before = runtime.current_runtime(shared)
+            paths = runtime.runtime_paths(self.root)
+            marker = self.root / "tmp/parcel-shared-runtime/write-in-progress.json"
+            atomic_json(marker, {"pid": os.getpid(), "pidStartIdentity": process_start_identity(os.getpid()),
+                                 "generation": before["generation"], "beforePaths": paths})
+            try:
+                yield before
+                published = runtime.publish_runtime(shared, self.root, expected_generation=before["generation"])
+                # The caller's live marker is expected during this final audit.
+                runtime.sync_runtime(shared, self.root)
+                self.state["sharedRuntime"] = {key: published[key] for key in ("generation", "codeGeneration")}
+            except BaseException:
+                runtime.restore_runtime(shared, self.root, before, paths)
+                self.shared_write_rolled_back = True
+                raise
+            finally:
+                marker.unlink(missing_ok=True)
+
+    def _qualification_fingerprint(self, city, saved):
+        from parcel_source_stage import _artifact_hashes
+        root = saved.get("artifactRoot")
+        current = _artifact_hashes(self.root, Path(root)) if root and Path(root).is_dir() else {}
+        return hashlib.sha256(json.dumps({"receipt": saved.get("receiptSha256"), "artifacts": current},
+                                         sort_keys=True).encode()).hexdigest()
+
+    def _learning_prompt(self, city, stage):
+        shared = getattr(self.args, "shared_root", None)
+        if not shared:
+            return ""
+        from parcel_shared_learning import context_for_task
+        city = dict(city)
+        packet = self._packet(city, self._queue_path().parent)
+        receipt = self._reviewed_city_receipt(city, packet)
+        source = receipt.get("source", {}) if receipt else {}
+        if source.get("adapter"):
+            city["adapter"] = source["adapter"]
+        if source.get("endpoint"):
+            from urllib.parse import urlsplit
+            city["provider"] = urlsplit(source["endpoint"]).hostname
+        context = context_for_task(shared, city, stage, max_records=12)
+        return ("\nLatest shared source and adapter findings (evidence, status and scope remain binding; "
+                "unverified or failed findings are leads, never proof). Read relevant current adapters and "
+                "improve or build them when this stage permits code changes. Preserve transferable endpoint, "
+                "protocol, schema, CRS, paging and identity lessons in durable evidence. "
+                f"Evidence paths below resolve against the shared knowledge root `{shared}`.\n" +
+                json.dumps(context, ensure_ascii=False))
+
+    def _record_shared_learning(self, city, lane, row):
+        shared = getattr(self.args, "shared_root", None)
+        if not shared:
+            return
+        from parcel_shared_learning import append_finding, build_city_finding
+        evidence = dict(row)
+        packet = self._packet(city, self._queue_path().parent)
+        for key in ("cityPath", "reviewPath"):
+            if packet.get(key):
+                evidence[key] = str(packet[key])
+        receipt_path = self._receipt_path(f"city:{city['cityCode']}")
+        if receipt_path.is_file():
+            evidence["receiptPath"] = str(receipt_path)
+            evidence["reviewedSource"] = json_read(receipt_path).get("source", {})
+        record = build_city_finding(self.root, city, lane, evidence, shared_root=shared)
+        if record:
+            finding = append_finding(shared, record)
+            row.setdefault("sharedFindings", {})[lane] = finding
 
     def _model(self, role: str) -> dict[str, Any]:
         if self.models is None:
@@ -443,6 +543,10 @@ class Runner:
             self.state["activeProcesses"].extend(
                 {**item, "role": "qualification", "worktree": str(worker.root)}
                 for item in worker.state.get("activeProcesses", []))
+        self.state["pipelineActive"] = [
+            {"pid": job["process"].pid, "lane": job["spec"]["lane"],
+             "cityCodes": job["spec"]["cityCodes"], "directory": str(job["directory"])}
+            for job in self.pipeline_jobs.values()]
         self.state["discoveryCounts"] = discovery_outcomes.counts(self.state)
         atomic_json(self.state_path, self.state)
 
@@ -563,8 +667,10 @@ class Runner:
                     hosts.append(parsed.hostname.lower().rstrip("."))
         return """
 NEW-SOURCE-ONLY POLICY (mandatory for this run): a candidate must use a source ID and service endpoint that are absent from both the frozen known-source snapshot and the current live catalog. Query-string, fragment, trailing-slash, or HTTP-to-HTTPS changes do not make an endpoint new; compare host, pathname and normalized port. Explicit known provider hosts are excluded too. Do not retry or repackage a known provider as a new source. Search this city's municipal/local registry, regional/state/provincial agencies, national cadastre or geodata alternatives, and English plus local-language web sources for a genuinely different cadastral dataset and public service. Probe for first-party parcel purpose and an observed positive polygon within this city's actual coverage. If the bounded search finds only known services, record a completed rejection; a known service with a concrete temporary access blocker may be recorded as blocked, never candidate. Use already-supported only for a verified existing city binding.
-Known IDs/endpoints from the snapshot and current catalog:
-""" + json.dumps({"sources": entries, "knownProviderHosts": hosts}, ensure_ascii=False, indent=2)
+Before probing a proposed endpoint, check its source ID, endpoint and host against both complete files:
+""" + json.dumps({"knownSnapshot": self.known_sources_rel,
+                  "liveCatalog": "backend/parcels/source-catalog.json",
+                  "knownSourceCount": len(entries), "knownProviderHosts": hosts}, ensure_ascii=False)
 
     def request_stop(self, _signum: int | None = None, _frame: Any = None) -> None:
         self.stop_requested = True
@@ -598,6 +704,14 @@ Known IDs/endpoints from the snapshot and current catalog:
                 "--json", "--output-schema", str(schema_path), "--output-last-message", str(answer_path), "-"]
 
     def _start_call(self, call: dict[str, Any]) -> dict[str, Any]:
+        permit = None
+        if getattr(self.args, "shared_root", None):
+            from parcel_model_slots import acquire_model_slot
+            role = "qualification" if getattr(self.args, "pipeline_lane", None) == "qualification" else (
+                "review" if call["role"] in {"review", "reviewer"} else "research")
+            permit = acquire_model_slot(self.args.shared_root, role=role, limit=self.args.model_slots,
+                                        stop_requested=lambda: self.stop_requested, task_id=call.get("taskId"))
+            permit.__enter__()
         call_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-{uuid.uuid4().hex[:8]}"
         call["callId"] = call_id
         call_dir = self.run_dir / call_id
@@ -623,7 +737,17 @@ Known IDs/endpoints from the snapshot and current catalog:
         except Exception:
             out_stream.close()
             err_stream.close()
+            if permit:
+                permit.__exit__(None, None, None)
             raise
+        if permit:
+            def release_when_finished():
+                try:
+                    while proc.poll() is None:
+                        time.sleep(0.1)
+                finally:
+                    permit.__exit__(None, None, None)
+            threading.Thread(target=release_when_finished, daemon=True).start()
         return {"call": call, "process": proc, "started": self.clock(), "startedAt": utc_now(),
                 "termSentAt": None, "timedOut": False, "interrupted": False,
                 "out": out_stream, "err": err_stream, "answerPath": answer_path,
@@ -742,6 +866,7 @@ Known IDs/endpoints from the snapshot and current catalog:
         learning_files = getattr(self.args, "learning_file", [])
         learning_block = "\nRead these current integration learning files before investigating this city:\n" + "\n".join(
             f"- `{path}`" for path in learning_files) if learning_files else ""
+        learning_block += self._learning_prompt(city, "research")
         novelty_block = self._source_novelty_prompt()
         if previous_errors:
             retry_block = """
@@ -801,6 +926,7 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
         receipt_dir = self._receipt_dir().relative_to(self.root).as_posix()
         if self.discovery_workflow():
             novelty_block = self._source_novelty_prompt()
+            novelty_block += "\n".join(self._learning_prompt(city, "review") for city in city_items)
             return f"""You are the serial evidence reviewer for a finite city cadastral discovery queue.
 Review only the city packets listed below. Write durable review receipts and supplemental request/response evidence under `{receipt_dir}`;
 do not edit registry, catalog, runtime, generated reports, queue identity or another city's packet.
@@ -1573,6 +1699,12 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         self.log("queue loaded", count=len(cities), rankStart=start_rank, rankEnd=end_rank,
                  validatedReviewedOnResume=validated_done, workers=self.args.workers)
 
+        if getattr(self.args, "shared_root", None):
+            from parcel_continuous_pipeline import ContinuousPipeline
+            if not self.discovery_workflow():
+                raise ValueError("--shared-root requires a finite discovery/adapters queue")
+            return ContinuousPipeline(self, cities, cohort_dir).run(), end_rank
+
         # Start the existing qualification backlog promptly after a restart.
         if getattr(self.args, "qualification_workers", 1) == 2:
             if self._advance_candidate(cities, cohort_dir) and once:
@@ -1762,6 +1894,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help="official local WUP 2025 gzip source for later ranges")
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
+    parser.add_argument("--shared-root", type=Path, help="canonical shared runtime and source learning root")
+    parser.add_argument("--model-slots", type=int, default=4, help="global concurrent model-call limit across shared jobs")
+    parser.add_argument("--pipeline-task", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
     parser.add_argument("--research-model", help="override the shared cheap Codex research model")
     parser.add_argument("--review-model", help="override the shared Codex review model")
@@ -1778,6 +1913,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.pipeline_task:
+        from parcel_continuous_pipeline import execute_task
+        return execute_task(Runner, args)
     if args.status or args.stop:
         root = args.repo_root.resolve()
         state_dir = (root / args.state_dir).resolve() if not args.state_dir.is_absolute() else args.state_dir.resolve()
@@ -1883,6 +2021,12 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--new-sources-only requires --with-adapters")
     if args.known_sources and not args.new_sources_only:
         parser.error("--known-sources requires --new-sources-only")
+    if args.shared_root and (not args.stop_after_queue or not (args.discovery_only or args.with_adapters)):
+        parser.error("--shared-root requires a finite discovery/adapters queue")
+    if args.shared_root and args.with_adapters and args.qualification_workers != 2:
+        parser.error("--shared-root with adapters requires two isolated qualification workers")
+    if args.model_slots < 1 or args.model_slots > 4:
+        parser.error("--model-slots must be between 1 and 4")
     if not 1 <= args.max_turn_minutes <= 90:
         parser.error("--max-turn-minutes must be between 1 and 90")
     if not 1 <= args.max_retries <= MAX_RETRIES:

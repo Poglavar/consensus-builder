@@ -34,10 +34,12 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         (self.parent / ".gitignore").write_text(".env\n**/.env\nbackend/node_modules/\ntmp/\n")
         (self.parent / "scripts/lib").mkdir(parents=True)
         for rel in ("scripts/run-parcel-adapter-build.py", "scripts/lib/parcel_source_stage.py",
-                    "scripts/lib/parcel_discovery_outcomes.py"):
+                    "scripts/lib/parcel_discovery_outcomes.py", "scripts/lib/parcel_qualification_policy.py"):
             dst = self.parent / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(REPO / rel, dst)
+        shutil.copy2(REPO / "scripts/lib/parcel-qualification-policy.json",
+                     self.parent / "scripts/lib/parcel-qualification-policy.json")
         (self.parent / "backend/parcels").mkdir(parents=True)
         (self.parent / "backend/parcels/adapter.js").write_text("export const baseline = true;\n")
         (self.parent / "backend/parcels/source-catalog.json").write_text('{"sources":[]}\n')
@@ -150,6 +152,29 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertEqual(rows["backend/parcels/adapter.js"]["kind"], "file")
         self.assertEqual(rows["backend/test/base.test.cjs"]["kind"], "deleted")
         self.assertEqual(rows["backend/test/generated.test.cjs"]["kind"], "file")
+        self.assertTrue(next_workspace["stateDir"].is_dir())
+
+    def test_reuse_refreshes_latest_canonical_snapshot_and_rescues_failed_edits(self):
+        workspace = self.prepare()
+        child = workspace["root"]
+        worker_change = child / "backend/parcels/adapter.js"
+        worker_change.write_text("export const failedAttempt = true;\n")
+        workspaces.finish_workspace(workspace)
+
+        canonical = self.parent / "backend/parcels/adapter.js"
+        canonical.write_text("export const latestShared = true;\n")
+        run_git(self.parent, "add", "backend/parcels/adapter.js")
+        run_git(self.parent, "commit", "-m", "new canonical adapter")
+
+        next_workspace = self.prepare()
+        self.assertEqual(worker_change.read_text(), "export const latestShared = true;\n")
+        self.assertEqual(run_git(child, "rev-parse", "HEAD"), run_git(self.parent, "rev-parse", "HEAD"))
+        history = self.state_dir / "qualification-workspaces/history" / workspace["runId"]
+        manifest = json.loads((history / "manifest.json").read_text())
+        row = next(entry for entry in manifest["entries"]
+                   if entry["path"] == "backend/parcels/adapter.js")
+        self.assertEqual((history / row["storedPath"]).read_text(),
+                         "export const failedAttempt = true;\n")
         self.assertTrue(next_workspace["stateDir"].is_dir())
 
     def test_unexpected_post_finish_drift_refuses_reuse_without_overwriting_it(self):

@@ -7,6 +7,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -79,8 +80,11 @@ class ParallelTests(unittest.TestCase):
         self.inputs = patch.object(stage, "_input_hashes", return_value={"fixture": "immutable"})
         self.support.start()
         self.inputs.start()
+        self.browser = patch.object(parallel, "_rebuild_and_validate_browser_adapters")
+        self.browser.start()
         self.addCleanup(self.support.stop)
         self.addCleanup(self.inputs.stop)
+        self.addCleanup(self.browser.stop)
         self.addCleanup(self.temp.cleanup)
 
     def write(self, root, rel, content):
@@ -110,9 +114,11 @@ class ParallelTests(unittest.TestCase):
         (attempt / "result.json").write_text(json.dumps(result))
         return result
 
-    def isolated(self, changes=None):
+    def isolated(self, changes=None, *, scoped=False):
         self.write(self.root, "backend/parcels/adapter.js", "base")
         self.write(self.root, "backend/parcels/other.js", "unchanged")
+        if scoped:
+            self.write(self.root, "backend/parcels/arcgis-source.js", "export const adapter = 'base';\n")
         ws = self.prepare(self.root, self.runner.state_dir, 1, self.city, {}, {})
         parent_attempt = self.runner.state_dir / "qualification/cities/42/attempt-03"
         parent_attempt.mkdir(parents=True)
@@ -122,6 +128,11 @@ class ParallelTests(unittest.TestCase):
         child = Harness(SimpleNamespace(repo_root=ws["root"], state_dir=ws["stateDir"]))
         child.qualification_attempt_name = parent_attempt.name
         document = {"result": self.result(child, self.city), "usage": {"call-1": {"recorded": True}}}
+        if scoped:
+            attempt = Path(document["result"]["artifactRoot"])
+            (attempt / "candidate.json").write_text(json.dumps({"descriptor": {"adapter": "arcgis"}}))
+            document["result"]["artifactHashes"] = stage._artifact_hashes(child.root, attempt)
+            (attempt / "result.json").write_text(json.dumps(document["result"]))
         isolation = {"workspace": stage._jsonable(ws), "runId": "run-1", "parentAttempt": str(parent_attempt),
                      "resultPath": str(self.runner.state_dir / "worker-result.json"), "baseBackendAdapters": base_backend}
         self.runner._city_entry(self.city)["qualification"] = {"status": "ready-isolated", "isolation": isolation,
@@ -173,6 +184,16 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual((self.root / "backend/parcels/adapter.js").read_text(), "base")
         self.assertTrue((Path(isolation["parentAttempt"]) / "native.bin").exists())
 
+    def test_scoped_import_ignores_unrelated_adapter_change(self):
+        ws, isolation, document = self.isolated(
+            {"backend/parcels/arcgis-source.js": "export const adapter = 'worker';\n"}, scoped=True)
+        self.write(self.root, "backend/parcels/other.js", "another admitted city")
+        result = parallel._import_result(self.runner, self.city, {}, {}, isolation, document)
+        self.assertEqual(result["status"], "adapter-ready")
+        self.assertEqual((self.root / "backend/parcels/arcgis-source.js").read_text(),
+                         "export const adapter = 'worker';\n")
+        self.assertEqual((self.root / "backend/parcels/other.js").read_text(), "another admitted city")
+
     def test_test_file_conflict_is_not_silently_overwritten(self):
         ws, isolation, document = self.isolated({"backend/test/source.test.cjs": "worker"})
         self.write(self.root, "backend/test/source.test.cjs", "concurrent")
@@ -198,6 +219,62 @@ class ParallelTests(unittest.TestCase):
         self.assertNotIn("adapterStageBlocked", self.runner.state)
         self.assertEqual((self.root / "backend/parcels/adapter.js").read_text(), "base")
         self.assertEqual(self.runner.state["usage"], document["usage"])
+
+    def test_collect_holds_shared_write_only_for_import_and_admission(self):
+        _ws, isolation, document = self.isolated()
+        events = []
+        @contextmanager
+        def shared_write():
+            events.append("enter")
+            try:
+                yield {"generation": "fixture"}
+            finally:
+                events.append("exit")
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner._shared_write = shared_write
+        original_import = parallel._import_result
+        original_admit = parallel._admit
+        def checked_import(*args):
+            self.assertEqual(events, ["enter"])
+            return original_import(*args)
+        def checked_admit(*args):
+            self.assertEqual(events, ["enter"])
+            return original_admit(*args)
+        with patch.object(parallel, "_import_result", side_effect=checked_import), \
+                patch.object(parallel, "_admit", side_effect=checked_admit), \
+                patch.object(parallel, "admit_candidate", return_value={"status": "integrated", "summary": "ok"}):
+            parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        self.assertEqual(events, ["enter", "exit"])
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
+
+    def test_post_admission_failure_uses_shared_rollback_without_permanent_block(self):
+        _ws, isolation, document = self.isolated()
+        managed = self.root / "backend/parcels/source-catalog.json"
+        managed.write_text("before\n")
+        @contextmanager
+        def shared_write():
+            self.runner.shared_write_rolled_back = False
+            before = managed.read_bytes()
+            try:
+                yield {"generation": "fixture"}
+            except Exception:
+                managed.write_bytes(before)
+                self.runner.shared_write_rolled_back = True
+                raise
+        def admit_with_write(*_args):
+            managed.write_text("partially admitted\n")
+            return {"status": "integrated", "summary": "admitted before bundle check"}
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner._shared_write = shared_write
+        with patch.object(parallel, "admit_candidate", side_effect=admit_with_write), \
+                patch.object(parallel, "_rebuild_and_validate_browser_adapters",
+                             side_effect=RuntimeError("missing browser adapter family")):
+            parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        qualification = self.runner._city_entry(self.city)["qualification"]
+        self.assertEqual(qualification["status"], "failed")
+        self.assertTrue(qualification["workspaceUnchangedAfterFailure"])
+        self.assertNotIn("adapterStageBlocked", self.runner.state)
+        self.assertEqual(managed.read_text(), "before\n")
 
     def test_parent_test_failure_blocks_after_import(self):
         ws, isolation, document = self.isolated({"backend/parcels/adapter.js": "worker", "backend/test/source.test.cjs": "test"})

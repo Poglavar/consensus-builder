@@ -341,3 +341,7 @@ Baseline verification: all 90 distinct local source-link targets existed; the il
 | Date | Change |
 | --- | --- |
 | 2026-10-19 | Initial code-grounded vocabulary, relationship map, 18 open audit findings, existing JSON-LD inventory and proposed standards mappings. No application behavior or schema changed. |
+
+## Continuous parcel-source processing
+
+A **pipeline task** owns one bounded research, review, or isolated qualification invocation; the job coordinator alone merges its result into the durable city checkpoint. Research slots continue while review and qualification consume completed city evidence. A **shared runtime generation** identifies an immutable, hashed snapshot of current runner code, adapters, application source configuration and generated browser adapters. New tasks synchronize that generation before starting a fresh interpreter. Active research packets remain owned by their original jobs. A **shared finding** is an immutable statement with scope, verification status, provenance and evidence references; later tasks retrieve relevant findings without treating failed or unverified observations as accepted sources. Only a successful, serialized import and admission publishes adapter changes to the next runtime generation. Model slots cap concurrent calls across jobs. Observed implementation: `scripts/lib/parcel_continuous_pipeline.py`, `parcel_shared_runtime.py`, `parcel_shared_learning.py`, and `parcel_model_slots.py`.
