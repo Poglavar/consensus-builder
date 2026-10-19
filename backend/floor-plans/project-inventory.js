@@ -87,10 +87,9 @@ export function projectInventory(postings, plans, options = {}) {
             // A reader's sole generic region name does not rename an unnamed apartment offer.
             // Retain the original's null unit and stable link when its geometry becomes available.
             const unnamedOriginal = !establishedUnit && (generatedUnit || plan?.kind === 'original')
-                && ownedPlans.some(p => p.kind === 'original' && !p.model?.unitId && p.sha256 === plan.sha256
-                    && (p.model?.source?.page || 1) === (model.source?.page || 1))
-                && new Set(sameSourceUnits.filter(Boolean)).size === 1
-                && sameSourceUnits.filter(Boolean).every(unit => /^(?:plan|unit|apartment|region)[\s_-]/i.test(unit));
+                && ownedPlans.some(p => p.kind === 'original' && !p.model?.unitId)
+                && new Set(ownedPlans.map(p => p.model?.unitId).filter(Boolean)).size === 1
+                && ownedPlans.map(p => p.model?.unitId).filter(Boolean).every(unit => /^(?:plan|unit|apartment|region)[\s_-]/i.test(unit));
             const candidateUnit = unnamedOriginal ? null
                 : (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
                     || one(ownedPlans.map(p => p.model?.unitId));

@@ -1,4 +1,4 @@
-// An address claim is required before retaining an advertised property or portfolio project.
+// Source-backed floor plans can be retained and read before their location is resolved.
 import * as cheerio from 'cheerio';
 import { extractExplicitLocation,listingIdentity,propertyDetailId } from './explicit-location.js';
 import { fold, hasLocationSignal,listingSignals } from './site-signals.js';
@@ -8,28 +8,53 @@ import { extractDeveloperProject } from './developer-projects.js';
 export const EXCLUSION_REASON='missing-explicit-street-and-house-number';
 export const ORPHAN_ASSET_REASON='no-address-qualified-owner';
 export const LOCATION_POLICY='explicit-address-v1';
-// A posting qualifies with an explicit street and number, or with any other location signal
-// (street name, map pin, cited permit KLASA or parcel); site location then weighs the evidence.
+// Location signals retain a posting for location work; owned drawings/documents also retain it
+// for source-plan work while location remains unknown.
 export function eligibleListingSql(alias='l') {
  return `(((${alias}.facts#>>'{explicitLocation,schema}'='explicit-listing-location.v1'
   AND COALESCE(btrim(${alias}.facts#>>'{explicitLocation,street}'),'')<>''
   AND COALESCE(btrim(${alias}.facts#>>'{explicitLocation,houseNumber}'),'')<>'')
-  OR ${alias}.facts->>'hasLocationSignal'='true')
+  OR ${alias}.facts->>'hasLocationSignal'='true'
+  OR ${alias}.facts->>'hasPlanAsset'='true')
   AND ${alias}.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
   AND ${alias}.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'excluded'
   AND NOT EXISTS(SELECT 1 FROM floor_plan.exclusion x WHERE x.url=${alias}.url
    OR x.identity=(SELECT source_identity FROM floor_plan.target policy_target WHERE policy_target.url=${alias}.url)))`;
 }
+export function ownedPlanAssetSql(listing='l',url='t.url') {
+ return `(${['floor-plan','document'].map(kind=>`${listing}.asset_urls @> jsonb_build_array(jsonb_build_object('url',${url},'listingOwned',true,'kind','${kind}'))`).join(' OR ')})`;
+}
+
+export function resolvedListingSql(listing='l') {
+ return `(${listing}.location_status IN ('located','probable')
+  OR (${listing}.match_status='verified' AND ${listing}.building_id IS NOT NULL
+   AND ${listing}.building_evidence->>'locationPolicy'='${LOCATION_POLICY}'
+   AND COALESCE(btrim(${listing}.building_city),'')<>''
+   AND COALESCE(btrim(${listing}.building_source),'')<>''
+   AND COALESCE(btrim(${listing}.building_id),'')<>''))`;
+}
+
+// Unknown-location owners permit only identified drawings/documents, never the whole photo gallery.
+export function sourcePlanAssetSql(listing='l',target='t') {
+ return `(${eligibleListingSql(listing)}
+ AND ${target}.kind='asset' AND ${target}.exclusion_reason IS NULL
+ AND NOT EXISTS(SELECT 1 FROM floor_plan.exclusion asset_exclusion
+  WHERE asset_exclusion.url=${target}.url OR asset_exclusion.identity=${target}.source_identity)
+ AND NOT COALESCE((${target}.image_classified_sha256=${target}.current_sha256 AND ${target}.image_kind IN ('photo','render')),false)
+ AND ${listing}.asset_urls @> jsonb_build_array(jsonb_build_object('url',${target}.url,'listingOwned',true))
+ AND (${ownedPlanAssetSql(listing,`${target}.url`)}
+  OR (${target}.image_classified_sha256=${target}.current_sha256 AND ${target}.image_kind IN ('floor_plan','uncertain'))
+  OR ${resolvedListingSql(listing)}))`;
+}
 export const ELIGIBLE_ASSET_SQL=`EXISTS(SELECT 1 FROM floor_plan.listing policy_listing
- WHERE ${eligibleListingSql('policy_listing')}
- AND policy_listing.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true)))`;
+ WHERE ${sourcePlanAssetSql('policy_listing')})`;
 export const ALLOWED_TARGET_SQL=`(t.exclusion_reason IS NULL
  AND NOT EXISTS(SELECT 1 FROM floor_plan.exclusion x WHERE x.url=t.url OR x.identity=t.source_identity)
  AND (t.kind<>'asset' OR ${ELIGIBLE_ASSET_SQL}))`;
 
 export function listingQualifies(listing) {
  if(!listing||['not-a-listing','excluded'].includes(listing.sourceEvidenceStatus)) return false;
- return Boolean(listing.explicitLocation||listing.hasLocationSignal);
+ return Boolean(listing.explicitLocation||listing.hasLocationSignal||listing.hasPlanAsset);
 }
 
 export function removeDeveloperProjectTitleNumbers(signals) {
@@ -71,7 +96,8 @@ export function qualifyPageEvidence(html,url,evidence,{document=null}={}) {
  const {schema,...locationSignals}=signals;
  return {...evidence,listing:{...evidence.listing,explicitLocation,
   ...(explicitLocation?{address:explicitLocation.address}:{}),
-  locationSignals,hasLocationSignal:Boolean(explicitLocation)||hasLocationSignal(signals)}};
+  locationSignals,hasLocationSignal:Boolean(explicitLocation)||hasLocationSignal(signals),
+  hasPlanAsset:(evidence.assets||[]).some(asset=>asset.listingOwned===true&&['floor-plan','document'].includes(asset.kind))}};
 }
 
 export async function isExcluded(db,url,sourceId=null) {

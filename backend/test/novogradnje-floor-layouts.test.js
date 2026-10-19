@@ -1,9 +1,12 @@
+import {readPublicCatalogue,readPublicProject} from '../floor-plan-archive/public-catalogue.js';
 import {describe,it,expect} from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import {publicProject,readPublicCatalogue} from '../floor-plan-archive/public-catalogue.js';
-import {setupNovogradnjeRoute} from '../routes/novogradnje.js';
+import {setupNovogradnjeRoute as setupSharedNovogradnjeRoute} from '../routes/novogradnje.js';
 import {createRequire} from 'node:module';
+const setupNovogradnjeRoute=(app,pool)=>setupSharedNovogradnjeRoute(app,pool,{catalogue:{read:()=>readPublicCatalogue(pool),project:token=>readPublicProject(pool,token),sourceUrl:hash=>`https://shared.test/api/floor-plans/sources/${hash}`}});
+
 const {filterProjects}=createRequire(import.meta.url)('../../frontend/novogradnje/catalogue.js');
 const hash='c'.repeat(64),floor={id:'typical',label:'Tipični katovi 1.–4.',scope:'floor',levels:[1,2,3,4],hasPlan:true,
     architecture:{schema:'consensus-builder.floor-architecture.v1'},source:{sha256:hash,url:'https://example.test/plan.pdf',page:3}};

@@ -76,7 +76,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
                 url text PRIMARY KEY, agency_id bigint, source_id text, facts jsonb NOT NULL,
                 asset_urls jsonb NOT NULL DEFAULT '[]', building_id text, building_source text,
                 building_city text, building_owner_id text DEFAULT '', building_evidence jsonb,
-                match_status text DEFAULT 'unresolved', match_checked_at timestamptz,
+                location_status text, match_status text DEFAULT 'unresolved', match_checked_at timestamptz,
                 last_observed_at timestamptz DEFAULT now(), updated_at timestamptz DEFAULT now()
             ) ON COMMIT DROP;
             CREATE TEMP TABLE exclusion (
@@ -387,6 +387,9 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
         await db.query(`INSERT INTO floor_plan.target(url,kind) VALUES($1,'page')`, [pageUrl]);
         await db.query(`INSERT INTO floor_plan.listing(url,source_id,facts,asset_urls)
             VALUES($1,'1',$2,$3)`, [pageUrl, JSON.stringify({ explicitLocation: validLocation }), JSON.stringify([listedAsset(assetUrl)])]);
+        // An address claim alone does not authorize an unresolved listing's entire photo gallery.
+        expect(await enqueue(db, assetUrl, { kind: 'asset', from: pageUrl })).toBe(false);
+        await db.query('UPDATE floor_plan.listing SET asset_urls=$1', [JSON.stringify([{ ...listedAsset(assetUrl), kind: 'floor-plan' }])]);
         expect(await enqueue(db, assetUrl, { kind: 'asset', from: pageUrl })).toBe(true);
         expect((await db.query('SELECT url,kind FROM floor_plan.target ORDER BY url')).rows)
             .toEqual([{ url: assetUrl, kind: 'asset' }, { url: pageUrl, kind: 'page' }]);

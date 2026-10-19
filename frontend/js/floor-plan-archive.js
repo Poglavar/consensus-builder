@@ -6,11 +6,12 @@ const lang=translations[(params.get('lang')||'en').slice(0,2)]?(params.get('lang
 const tr=key=>translations[lang][key]||translations.en[key]||key,el=id=>document.getElementById(id);
 document.documentElement.lang=lang;document.title=tr('title');document.querySelector('[role=tablist]').setAttribute('aria-label',tr('title'));document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=tr(node.dataset.i18n));window.CbPageHeader.apply(lang);
 for(const [id,key] of [['agency-search','search'],['source-filter','sourceSearch']]){el(id).placeholder=tr(key);el(id).setAttribute('aria-label',tr(key));}
-const backend=window.__floorPlanArchiveApi.apiBase(location),geometry=window.__floorPlanReviewGeometry,renderer=window.__floorPlanReviewRenderer;
+const backend=window.__floorPlanArchiveApi.apiBase(location),geometry=window.__floorPlanReviewGeometry,renderer=window.__floorPlanReviewRenderer,published=window.__publishedFloorPlans;
 let catalogue={buildings:[],sources:[]},building=null,plans=[],agencies=[],mode='2d',map=null;
 let selectionGeneration=0,planGeneration=0,buildingGeneration=0,disposePlan=null,disposeBuilding=null,activeTab='buildings';
 const selected=()=>plans[Number(el('unit').value)];
-async function get(path){const response=await fetch(backend+path,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json();}
+async function getJson(url){const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json();}
+const get=path=>getJson(backend+path);
 function textNode(tag,text,className){const node=document.createElement(tag);node.textContent=text;if(className)node.className=className;return node;}
 function safeURL(value){try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)?u:null;}catch{return null;}}
 function sourceLink(url,label){const u=safeURL(url);if(!u)return textNode('span',label);const a=textNode('a',label,'cb-link cb-link--external');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';return a;}
@@ -37,13 +38,16 @@ async function drawPlan(plan){
  catch(error){if(token===planGeneration)el('plan').replaceChildren(textNode('p',`${tr('renderFailed')}: ${error.message}`,'empty'));console.error(error);}
 }
 function showSource(plan){
- const source=plan.source||{},sha=plan.archivedSha256;const original=safeURL(source.url||plan.sourceUrl),url=sha?`${backend}/floor-plan-archive/asset/${sha}`:original?.href;
+ const source=plan.source||{},sha=plan.archivedSha256;const original=safeURL(source.url||plan.sourceUrl),url=plan.sourceAssetUrl||(sha?`${backend}/floor-plan-archive/asset/${sha}`:original?.href);
  el('source-link').replaceChildren();
  if(original)el('source-link').append(sourceLink(original.href,tr('openDrawing')));
- if(source.listingUrl)el('source-link').append(sourceLink(source.listingUrl,tr('source')));
+ const postings=[...new Set([source.listingUrl,...(source.urls||[])].filter(url=>url&&url!==original?.href))];
+ for(const url of postings)el('source-link').append(sourceLink(url,tr('source')));
+ if(source.label)el('source-link').append(textNode('span',source.label));
+ if(source.attribution)el('source-link').append(textNode('span',source.attribution));
  if(source.page)el('source-link').append(textNode('span',` · ${tr('page')} ${source.page}`));
  if(!url){empty('asset','noDrawing');return;}
- const pdf=plan.mediaType==='application/pdf'||/\.pdf(?:[?#]|$)/i.test(url);
+ const pdf=plan.mediaType==='application/pdf'||/\.pdf(?:[?#]|$)/i.test(original?.href||url);
  if(pdf){const frame=document.createElement('iframe');frame.title=tr('original');frame.src=url+(source.page?`#page=${source.page}`:'');el('asset').replaceChildren(frame);}
  else{const image=document.createElement('img');image.src=url;image.alt=`${tr('original')} · ${plan.label||plan.id||''}`;image.addEventListener('error',()=>{if(el('asset').contains(image))empty('asset','noDrawing');},{once:true});el('asset').replaceChildren(image);}
 }
@@ -61,7 +65,7 @@ function renderPlan(plan){
   if(plan.verticalDimensionsBasis)el('processing-note').append(textNode('p',plan.verticalDimensionsBasis));
   if(plan.processing.costUsd!==null&&Number.isFinite(Number(plan.processing.costUsd)))el('processing-note').append(textNode('p',`${tr('processingCost')}: $${Number(plan.processing.costUsd).toFixed(4)}`));
  }
- el('geometry-note').textContent=tr(!plan.architecture?'noGeometry':building?.kind==='registered'?'registeredNote':'localNote');
+ el('geometry-note').textContent=tr(!plan.architecture?'noGeometry':'localNote');
  drawPlan(plan);status(plan.sourceFloorConflict?'conflict':plan.reviewStatus==='needs_review'?'needs_review':'ready');
 }
 async function choosePlan(){
@@ -78,23 +82,17 @@ async function choosePlan(){
 function renderMap(){
  map?.remove();map=null;el('map').replaceChildren();el('map-note').replaceChildren();
  if(!geometry.locationValid(building?.location)){empty('map','noLocation');return;}
- const {latitude,longitude,basis}=building.location;
+ const {latitude,longitude}=building.location;
  if(!window.L){empty('map','unavailable');}else{
  map=L.map(el('map'),{zoomAnimation:false,fadeAnimation:false,markerZoomAnimation:false}).setView([latitude,longitude],17);
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
  L.circleMarker([latitude,longitude],{radius:6,color:'#12695e',fillOpacity:1}).addTo(map);
  if(building.footprint){const outline=L.geoJSON(building.footprint,{style:{color:'#147a6a',weight:2,fillOpacity:.17}}).addTo(map);if(outline.getBounds().isValid())map.fitBounds(outline.getBounds().pad(.7),{maxZoom:18,animate:false});}
  }
- el('map-note').append(textNode('span',`${tr(basis==='registered-footprint'?'mapBasis':'landmarkBasis')} · `),sourceLink(`https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=18/${latitude}/${longitude}`,tr('openMap')));
+ el('map-note').append(textNode('span',`${tr('location')} · `),sourceLink(`https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=18/${latitude}/${longitude}`,tr('openMap')));
 }
-async function drawBuilding(){
- stopBuilding();const token=buildingGeneration,current=building;el('show-building').disabled=!current?.wholeBuilding;
- if(!current?.wholeBuilding){empty('building-3d','noWhole');return;}
- empty('building-3d','loading');
- try{
- const data=current.wholeBuilding.type==='landmark'?await get(current.wholeBuilding.url):null;if(token!==buildingGeneration)return;
- disposeBuilding=await renderer.preview(el('building-3d'),THREE=>data?renderer.landmark(THREE,data,current.location):window.__threeFloorPlans.createBuildingGroup(THREE,{type:'Feature',geometry:current.footprint,properties:{floorPlans:current.floorPlans,name:current.name}},geometry.projectAt(current.location),window.__buildingFloorPlans),()=>token===buildingGeneration);
- }catch(error){if(token===buildingGeneration)el('building-3d').replaceChildren(textNode('p',`${tr('renderFailed')}: ${error.message}`,'empty'));console.error(error);}
+function drawBuilding(){
+ stopBuilding();el('show-building').disabled=true;empty('building-3d','noWhole');
 }
 function fillPlans(preferred){
  el('unit').replaceChildren(...plans.map((plan,i)=>{const option=textNode('option',plan.label||plan.id||plan.sha256);option.value=i;return option;}));
@@ -107,9 +105,9 @@ async function chooseBuilding(preferred){
  const id=el('building').value,token=++selectionGeneration;stopPlan();stopBuilding();building=null;plans=[];el('unit').replaceChildren();el('unit').disabled=true;el('plan-details').hidden=true;el('conflict').hidden=true;el('asset').replaceChildren();empty('plan','loading');empty('building-3d','loading');renderMap();status('loading');
  el('source-filter-label').hidden=id!=='archive';el('building-context').hidden=id==='archive';
  if(id==='archive'){el('selection-name').textContent=tr('archive');el('selection-note').textContent=tr('allSources');el('building-note').textContent='';el('show-building').disabled=true;empty('building-3d','noWhole');sourcePlans(preferred);return;}
- try{const result=await get(`/floor-plan-archive/building/${encodeURIComponent(id)}`);if(token!==selectionGeneration)return;building=result;plans=result.plans||[];
- el('selection-name').textContent=result.name;el('selection-note').textContent=`${plans.length} ${tr('planCount')} · ${tr(result.kind==='units'?'unitCollectionNote':'registeredNote')}`;
- el('building-note').textContent=tr(result.wholeBuilding?.type==='landmark'?'exteriorNote':'stackNote');renderMap();fillPlans(preferred);if(activeTab==='buildings')drawBuilding();else empty('building-3d','load3d');
+ try{const result=catalogue.buildings.find(entry=>entry.id===id);if(!result)throw new Error(tr('noResults'));if(token!==selectionGeneration)return;building=result;plans=result.plans||[];
+ el('selection-name').textContent=result.name;el('selection-note').textContent=`${plans.length} ${tr('planCount')} · ${tr(result.location?'location':'noLocation')}`;
+ el('building-note').textContent=tr('noWhole');renderMap();fillPlans(preferred);if(activeTab==='buildings')drawBuilding();else empty('building-3d','load3d');
  }catch(error){if(token===selectionGeneration)fail(error);}
 }
 function renderAgencies(){
@@ -124,12 +122,18 @@ function setTab(tab){activeTab=tab;el('status').hidden=tab==='agencies';for(cons
 async function init(){
  status('loading');
  try{
- const [result,summary,registry]=await Promise.all([get('/floor-plan-archive/catalogue'),get('/floor-plan-archive/status'),get('/floor-plan-archive/agencies?limit=500')]);catalogue=result;agencies=registry.agencies||[];
+ const results=await Promise.allSettled([published.readCatalogue(getJson),get('/floor-plan-archive/catalogue'),get('/floor-plan-archive/status'),get('/floor-plan-archive/agencies?limit=500')]);
+ const [publicResult,archiveResult,statusResult,agencyResult]=results;
+ const result=publicResult.status==='fulfilled'?publicResult.value:{buildings:[],counts:{floors:'—',units:'—'}};
+ catalogue={...result,sources:archiveResult.status==='fulfilled'?archiveResult.value.sources||[]:[]};
+ agencies=agencyResult.status==='fulfilled'?agencyResult.value.agencies||[]:[];
+ const summary=statusResult.status==='fulfilled'?statusResult.value:null;
  for(const entry of catalogue.buildings){const option=textNode('option',`${entry.name} · ${entry.planCount}`);option.value=entry.id;el('building').append(option);}const archive=textNode('option',`${tr('archive')} · ${catalogue.sources.length}`);archive.value='archive';el('building').append(archive);
- cards('coverage',[['buildings',catalogue.buildings.length],['floors',catalogue.buildings.filter(b=>b.kind==='registered').reduce((s,b)=>s+b.planCount,0)],['units',catalogue.buildings.filter(b=>b.kind==='units').reduce((s,b)=>s+b.planCount,0)],['sources',catalogue.sources.length]]);
- cards('agency-coverage',[['agencies',summary.coverage.agencies.total],['websites',summary.coverage.agencies.websites]]);renderAgencies();
- const preferred=params.get('building');el('building').value=[...el('building').options].some(o=>o.value===preferred)?preferred:catalogue.buildings.find(b=>b.id==='avenue-v')?.id||catalogue.buildings[0]?.id||'archive';
+ cards('coverage',[['buildings',publicResult.status==='fulfilled'?catalogue.buildings.length:'—'],['floors',catalogue.counts.floors],['units',catalogue.counts.units],['sources',catalogue.sources.length]]);
+ cards('agency-coverage',[['agencies',summary?.coverage?.agencies?.total??'—'],['websites',summary?.coverage?.agencies?.websites??'—']]);renderAgencies();
+ const preferred=params.get('building');el('building').value=[...el('building').options].some(o=>o.value===preferred)?preferred:catalogue.buildings[0]?.id||'archive';
  activeTab=TABS.includes(params.get('tab'))?params.get('tab'):'buildings';await chooseBuilding(params.get('plan'));setTab(activeTab);
+ const errors=results.filter(result=>result.status==='rejected').map(result=>result.reason);if(errors.length)fail(new Error(errors.map(error=>error.message).join(' · ')));
  }catch(error){fail(error);}
 }
 el('building').addEventListener('change',()=>chooseBuilding());el('unit').addEventListener('change',choosePlan);el('source-filter').addEventListener('input',()=>sourcePlans());el('agency-search').addEventListener('input',renderAgencies);

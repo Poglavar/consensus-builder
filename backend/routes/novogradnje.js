@@ -4,8 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import * as cheerio from 'cheerio';
-import { BASE_PATH, PUBLIC_ORIGIN, projectId, readPublicCatalogue, readPublicProject } from '../floor-plan-archive/public-catalogue.js';
-import { readBlobRow } from '../floor-plans/blob-store.js';
+import { BASE_PATH, PUBLIC_ORIGIN, projectId } from '../floor-plan-archive/public-catalogue.js';
 import { buildingThumbnailSvg } from '../floor-plan-archive/building-thumbnail.js';
 import { readBuildingContext } from '../floor-plan-archive/building-context.js';
 
@@ -50,7 +49,7 @@ export function structuredData(catalogue, project = null, apartment = null, page
         description:'Izvorni tlocrt kata i procijenjena 3D rekonstrukcija.',isPartOf:{'@type':'ApartmentComplex',name:project.name,url:`${PUBLIC_ORIGIN}${project.url}`}}]};
     return { '@context': 'https://schema.org', '@graph': [webpage, { '@type': apartment ? 'Apartment' : 'ApartmentComplex',
         '@id': `${PUBLIC_ORIGIN}${selected.url}`, name: apartment ? `${apartment.label} · ${project.name}` : project.name,
-        url: `${PUBLIC_ORIGIN}${selected.url}`, address: { '@type': 'PostalAddress', streetAddress: project.address, addressLocality: 'Zagreb', addressCountry: 'HR' },
+        url: `${PUBLIC_ORIGIN}${selected.url}`, ...(project.location ? { address: { '@type': 'PostalAddress', streetAddress: project.address, addressLocality: 'Zagreb', addressCountry: 'HR' } } : {}),
         ...(project.location ? { geo: { '@type': 'GeoCoordinates', latitude: project.location.lat, longitude: project.location.lng } } : {}),
         ...(apartment?.areaM2 ? { floorSize: { '@type': 'QuantitativeValue', value: apartment.areaM2, unitCode: 'MTK' } } : {}),
         ...(apartment?.rooms ? { numberOfRooms: apartment.rooms } : {}) }] };
@@ -81,7 +80,9 @@ export async function renderPublicPage({ catalogue, project = null, apartment = 
     return $.html();
 }
 
-export function setupNovogradnjeRoute(app, pool) {
+export function setupNovogradnjeRoute(app, pool, { catalogue } = {}) {
+    if(!catalogue?.read || !catalogue?.project || !catalogue?.sourceUrl)throw Error('A shared publication catalogue is required.');
+    const provider=catalogue;
     const get = (path, action) => app.get(path, async (req, res, next) => {
         res.set('Cache-Control', 'no-store').set('X-Content-Type-Options', 'nosniff');
         try { await action(req, res); } catch (error) { next(error); }
@@ -90,7 +91,7 @@ export function setupNovogradnjeRoute(app, pool) {
     // Keep shared links from the former archive useful during the domain migration.
     get('/novogradnje/legacy', async (req, res) => {
         const rows=(await pool.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
-        const visibleProjects=new Map((await readPublicCatalogue(pool)).projects.map(project=>[project.id,project]));
+        const visibleProjects=new Map((await provider.read()).projects.map(project=>[project.id,project]));
         const site=typeof req.query.site==='string'?req.query.site:null, plan=typeof req.query.plan==='string'?req.query.plan:null;
         for(const row of rows) {
             const project=visibleProjects.get(projectId(row.site_key));
@@ -102,41 +103,36 @@ export function setupNovogradnjeRoute(app, pool) {
         }
         res.redirect(301,BASE_PATH);
     });
-    get('/novogradnje/api/projects', async (_req, res) => res.json(await readPublicCatalogue(pool)));
+    get('/novogradnje/api/projects', async (_req, res) => res.json(await provider.read()));
     get('/novogradnje/api/projects/:id', async (req, res) => {
-        const project = await readPublicProject(pool, req.params.id);
+        const project = await provider.project(req.params.id);
         return project ? res.json(project) : res.status(404).json({ error: 'Projekt nije pronađen.' });
     });
     get('/novogradnje/api/projects/:id/context', async (req, res) => {
-        const project = await readPublicProject(pool, req.params.id);
+        const project = await provider.project(req.params.id);
         const context = project && await readBuildingContext(pool, project);
         return context ? res.json(context) : res.status(404).json({ error: 'Okolica projekta nije dostupna.' });
     });
     get('/novogradnje/api/projects/:id/thumbnail.svg', async (req, res) => {
-        const project = await readPublicProject(pool, req.params.id);
+        const project = await provider.project(req.params.id);
         const image = project && buildingThumbnailSvg(project.model);
         return image ? res.type('image/svg+xml').send(image) : res.status(404).json({ error: '3D obris nije dostupan.' });
     });
     get('/novogradnje/api/source/:hash', async (req, res) => {
         if (!/^[a-f0-9]{64}$/.test(req.params.hash)) return res.status(400).end();
-        const row = (await pool.query(`SELECT b.* FROM floor_plan.blob b WHERE b.sha256=$1 AND EXISTS (
-            SELECT 1 FROM floor_plan.site_model m, jsonb_array_elements(COALESCE(m.model#>'{inventory,apartments}','[]') || COALESCE(m.model#>'{inventory,floorPlans}','[]')) a
-            WHERE a#>>'{source,sha256}'=b.sha256)`, [req.params.hash])).rows[0];
-        if (!row) return res.status(404).end();
-        if (!row.bytes_available) return res.status(410).end();
-        const type = row.media_type.split(';')[0].toLowerCase();
-        if (!['image/png', 'image/jpeg', 'image/webp', 'application/pdf'].includes(type)) return res.status(415).end();
-        res.type(type).send(await readBlobRow(row));
+        const visible=await provider.read();
+        if(!visible.projects.some(p=>[...p.apartments,...(p.floorPlans||[])].some(a=>a.source?.sha256===req.params.hash)))return res.status(404).end();
+        return res.redirect(302,provider.sourceUrl(req.params.hash));
     });
     get('/novogradnje/sitemap.xml', async (_req, res) => {
-        const catalogue = await readPublicCatalogue(pool);
+        const catalogue = await provider.read();
         const paths = [BASE_PATH, ...catalogue.projects.flatMap(p => [p.url, ...p.apartments.map(a => a.url),...(p.floorPlans||[]).map(p=>p.url)])];
         res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path => `<url><loc>${PUBLIC_ORIGIN}${escape(path)}</loc></url>`).join('')}</urlset>`);
     });
     get('/novogradnje/shared/:file', (req, res) => sharedFiles.has(req.params.file) ? res.sendFile(req.params.file, { root: shared }) : res.status(404).end());
     const page = async (req, res) => {
-        const catalogue = await readPublicCatalogue(pool);
-        const project = req.params.slug ? await readPublicProject(pool, req.params.slug) : null;
+        const catalogue = await provider.read();
+        const project = req.params.slug ? await provider.project(req.params.slug) : null;
         const apartment = req.params.apartment ? project?.apartments.find(a => a.id === req.params.apartment) : null;
         const floorPlan=req.params.floorPlan?project?.floorPlans.find(p=>p.id===req.params.floorPlan):null;
         if ((req.params.slug && !project) || (req.params.apartment && !apartment) || (req.params.floorPlan&&!floorPlan)) return res.status(404).type('html').send('<!doctype html><html lang="hr"><meta name="robots" content="noindex"><title>Nije pronađeno · Novogradnje</title><h1>Projekt ili tlocrt nije pronađen.</h1><a href="/novogradnje/">Pretraži novogradnje</a></html>');

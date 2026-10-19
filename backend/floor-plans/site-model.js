@@ -1,4 +1,4 @@
-// Assembles one located site's model: footprint (permitted building, surveyed building or parcels),
+// Assembles one source-backed site's model: footprint (permitted building, surveyed building or parcels),
 // storey envelope (step 2a) and the fit of every processed plan posted for that site (step 2b).
 // Read-only: returns the model for review; nothing here publishes geometry.
 import { buildEnvelope } from './envelope.js';
@@ -139,9 +139,26 @@ export async function sitePlans(db, listingUrls) {
     return [...geometry, ...originals];
 }
 
+// Source-only groups have no map geometry or fitted placements. Their drawing geometry remains
+// in its local frame; a printed plan outline is never treated as a geographic building footprint.
+export function sourceOnlySiteKey(url) { return `listing:${fingerprint(url).slice(0, 24)}`; }
+export function sourceOnlySiteModel(listing, plans) {
+    const inventory = projectInventory([listing], plans);
+    const floors = plans.filter(p => p.model?.scope === 'floor' && hasUsableGeometry(p.model));
+    inventory.floorPlans = floors.map(p => ({ id: p.id, label: p.model.label || 'Tlocrt kata', scope: 'floor',
+        levels: Number.isInteger(p.model.floor) ? [p.model.floor] : [], hasPlan: true,
+        architecture: p.model.architecture, source: p.model.source, reviewStatus: p.status || 'needs_review' }));
+    return { schema: 'site-model.v1', siteKey: sourceOnlySiteKey(listing.url),
+        label: listing.facts?.title || 'Projekt s tlocrtom', listingUrl: listing.url, siblings: [listing.url],
+        location: { status: 'unknown' }, footprint: null, envelope: null, placements: [],
+        inventory, sources: projectSources([listing]), parcels: [] };
+}
+
 export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
     const listing = (await db.query(`SELECT url, facts, location, location_status FROM floor_plan.listing WHERE url = $1`, [listingUrl])).rows[0];
-    if (!listing?.location?.candidates?.length) throw new Error('The listing has no located site.');
+    if (!listing) throw new Error('The listing does not exist.');
+    if (!['located','probable'].includes(listing.location_status) || !listing.location?.candidates?.length)
+        return sourceOnlySiteModel(listing, await sitePlans(db, [listingUrl]));
     const top = listing.location.candidates[0];
     const key = siteKey(top);
     // Every posting whose best site is the same place contributes its plans and facts.
@@ -205,10 +222,10 @@ export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
         parcels: (top.parcels || []).map(p => ({ ko: p.ko, kc: p.kc })) };
 }
 
-// Build and store one model per located site (grouped by site key). Idempotent: an unchanged model
+// Build and store one model per identified site or source-only listing group. Idempotent: an unchanged model
 // keeps its row; a changed one replaces it. Sites whose postings carry no plans are still stored,
 // because their envelope and location are reviewable on their own. A pass over every site also
-// removes the models of sites no longer located (the table is derived, so nothing is lost).
+// removes listing-derived models whose sources are no longer eligible.
 function validateListingUrls(urls) {
     if (urls === undefined) return;
     if (!Array.isArray(urls) || urls.length === 0 || urls.some(value => {
@@ -223,12 +240,20 @@ function validateListingUrls(urls) {
 export async function buildSiteModels(db, { limit = 500, log = console.log, build = siteModel, deadline = Infinity,
     urls = undefined, referencesDb = db } = {}) {
     validateListingUrls(urls);
-    const rows = (await db.query(`SELECT url, location FROM floor_plan.listing
-        WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL
+    const rows = (await db.query(`SELECT l.url, l.location, l.location_status FROM floor_plan.listing l
+        WHERE l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'excluded'
+          AND l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
+          AND ((location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL)
+            OR EXISTS(SELECT 1 FROM floor_plan.processed_plan p JOIN floor_plan.plan_task pt ON pt.id=p.task_id
+              WHERE pt.listing_url=l.url AND p.status IN ('ready','needs_review','published') AND p.model ? 'architecture')
+            OR EXISTS(SELECT 1 FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256 AND b.bytes_available
+              WHERE t.kind='asset' AND t.image_kind='floor_plan' AND t.image_classified_sha256=t.current_sha256
+                AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))))
           AND ($1::text[] IS NULL OR url = ANY($1::text[])) ORDER BY url`, [urls])).rows;
     const bySite = new Map();
     for (const row of rows) {
-        const key = siteKey(row.location.candidates[0]);
+        const key = ['located','probable'].includes(row.location_status) && row.location?.candidates?.length
+            ? siteKey(row.location.candidates[0]) : sourceOnlySiteKey(row.url);
         if (key && !bySite.has(key)) bySite.set(key, row.url);
     }
     const result = { sites: bySite.size, built: 0, changed: 0, failed: 0, retired: 0, deferred: 0 };
@@ -258,7 +283,7 @@ export async function buildSiteModels(db, { limit = 500, log = console.log, buil
         // own source registry and do not become retired when absent from the listing crawl.
         const retired = await db.query(`DELETE FROM floor_plan.site_model
             WHERE split_part(site_key, ':', 1) = ANY($2::text[])
-              AND NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()], ['permit', 'address', 'parcels']]);
+              AND NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()], ['permit', 'address', 'parcels', 'listing']]);
         result.retired = retired.rowCount || 0;
     }
     result.status = result.failed || result.deferred ? 'partial' : 'complete';

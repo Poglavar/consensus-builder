@@ -1,8 +1,7 @@
 // One explicitly invoked subscription-CLI chunk, sharing the existing readers and task identities.
 import { createCliLlm } from '../../../agents/lib/llm-cost/cli.mjs';
 import { DEFAULT_MAX_TOKENS } from '../../../agents/lib/llm-cost/llm.mjs';
-import { eligibleListingSql } from './source-policy.js';
-import { locatedListingSql } from './building-location.js';
+import { eligibleListingSql, sourcePlanAssetSql } from './source-policy.js';
 
 const TABLES = { buildings: 'building_task', images: 'image_task', plans: 'plan_task' };
 
@@ -13,11 +12,11 @@ export function cliTaskSelection(adapter, { taskIds = false } = {}) {
         ? `t.url=l.url AND l.location->>'sourceSha256'=q.source_sha256
            AND l.location_status IN ('ambiguous','probable')
            AND jsonb_array_length(COALESCE(l.location->'candidates','[]'))>0`
-        : `t.url=q.source_url AND ${locatedListingSql()}
+        : `t.url=q.source_url AND ${sourcePlanAssetSql()}
            AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))`;
     const ownership = adapter.stage === 'images'
         ? `EXISTS (SELECT 1 FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256
-             JOIN floor_plan.listing l ON ${locatedListingSql()}
+             JOIN floor_plan.listing l ON ${sourcePlanAssetSql()}
                AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))
              WHERE t.kind='asset' AND t.current_sha256=q.source_sha256 AND b.bytes_available)`
         : `EXISTS (SELECT 1 FROM floor_plan.listing l JOIN floor_plan.target t ON ${currentOwner}

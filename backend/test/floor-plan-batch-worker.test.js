@@ -48,16 +48,16 @@ function makeDb({queued=[],batches=[],tasks=[],used=0,failQuery=null}={}) {
   if(sql.includes("FROM floor_plan.ai_batch WHERE status='unknown'")) return {rows:[{n:state.batches.filter(row=>row.status==='unknown').length}]};
   if(sql.includes('COALESCE(sum(CASE WHEN b.status')) return {rows:[{usd:used}]};
   if(sql.includes('count(*) AS n FROM floor_plan.plan_task')&&sql.includes('AND NOT EXISTS'))
-   return {rows:[{n:state.tasks.filter(row=>row.status==='queued'&&row.processor===args[0]&&row.located===false).length}]};
+   return {rows:[{n:state.tasks.filter(row=>row.status==='queued'&&row.processor===args[0]&&row.sourceCurrent===false).length}]};
   if(sql.includes("count(*) AS n FROM floor_plan.plan_task WHERE status='queued'"))
    return {rows:[{n:state.tasks.filter(row=>row.status==='queued'&&row.processor===args[0]).length}]};
   if(sql.includes("count(*) AS n FROM floor_plan.plan_task WHERE status='error'"))
    return {rows:[{n:state.tasks.filter(row=>row.status==='error'&&row.processor===args[0]).length}]};
   if(sql.includes("FROM floor_plan.plan_task WHERE status='queued'"))
-   return {rows:state.tasks.filter(row=>row.status==='queued'&&(row.selectable??row.located!==false)).slice(0,Number(args[0])||20)};
+   return {rows:state.tasks.filter(row=>row.status==='queued'&&(row.selectable??row.sourceCurrent!==false)).slice(0,Number(args[0])||20)};
   if(sql.includes('FROM floor_plan.listing l JOIN floor_plan.target t')) {
    const task=state.tasks.find(row=>row.listing_url===args[0]);
-   return {rows:task?[{url:task.listing_url,match_status:'candidate',building_located:task.located!==false,
+   return {rows:task&&task.sourceCurrent!==false?[{url:task.listing_url,match_status:'candidate',building_located:task.located!==false,
     asset_urls:[{url:task.source_url,listingOwned:true}],facts:task.context.facts}]:[]};
   }
   if(sql.startsWith('INSERT INTO floor_plan.ai_batch')) {
@@ -141,7 +141,7 @@ describe('floor-plan paid batch worker',()=>{
    context:{listingUrl:url,facts:{floor:'3',unitId:null,areaM2:73,title:'Trosoban stan 73 m²'}}};
   const db=makeDb({tasks:[task],batches:[{id:'unit-batch',status:'submitted',provider_id:'provider-batch-1',reserved_usd:.25,created_at:new Date().toISOString()}]});
   const remote=fakeClient(),runRender=vi.fn(),options={submit:false,client:remote.client,render:runRender,price,log:()=>{}};
-  expect(await interpretPlans(db,options)).toMatchObject({collected:1,associationReview:1,locationReview:0,needsReview:1});
+  expect(await interpretPlans(db,options)).toMatchObject({collected:1,associationReview:1,needsReview:1});
   expect(db.state.tasks[0]).toMatchObject({status:'needs_review',result:{reading:{method:'association-gate',plans:[]}}});
   expect(runRender).not.toHaveBeenCalled();
   expect(db.state.calls.some(({sql})=>sql.startsWith('INSERT INTO floor_plan.processed_plan'))).toBe(false);
@@ -180,13 +180,13 @@ describe('floor-plan paid batch worker',()=>{
   expect(db.state.calls.some(({sql})=>sql.startsWith('UPDATE floor_plan.plan_task SET batch_id=')||sql.startsWith('INSERT INTO floor_plan.ai_batch'))).toBe(false);
  });
 
- it('leaves an older unlocated task queued while an eligible sibling submits',async()=>{
+ it('leaves an older stale-source task queued while an unknown-location sibling submits',async()=>{
   const blocked={...baseTask(),id:'c'.repeat(64),listing_url:'https://agency.test/listing/2',
-   context:{...context,listingUrl:'https://agency.test/listing/2'},located:false};
-  const eligible=baseTask(),db=makeDb({queued:[blocked,eligible]}),remote=fakeClient();
+   context:{...context,listingUrl:'https://agency.test/listing/2'},sourceCurrent:false};
+  const eligible={...baseTask(),located:false},db=makeDb({queued:[blocked,eligible]}),remote=fakeClient();
   render.mockClear();
   const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render,price,log:()=>{}});
-  expect(result).toMatchObject({status:'partial',submitted:1,deferredLocation:1,failed:0,errors:0});
+  expect(result).toMatchObject({status:'partial',submitted:1,deferredSource:1,failed:0,errors:0});
   expect(db.state.tasks.map(task=>task.status)).toEqual(['queued','submitted']);
   expect(db.state.calls.find(({sql})=>sql.includes("SELECT * FROM floor_plan.plan_task WHERE status='queued'")).sql)
    .toContain('plan_task.listing_url');
@@ -195,12 +195,12 @@ describe('floor-plan paid batch worker',()=>{
   expect(remote.countTokens).toHaveBeenCalledOnce();
  });
 
- it('rechecks a location lost after queue selection before rendering or token counting',async()=>{
-  const task={...baseTask(),selectable:true,located:false},db=makeDb({queued:[task]}),remote=fakeClient();
+ it('rechecks a source association lost after selection before rendering or token counting',async()=>{
+  const task={...baseTask(),selectable:true,sourceCurrent:false},db=makeDb({queued:[task]}),remote=fakeClient();
   render.mockClear();
   const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render,price,log:()=>{}});
-  expect(result).toMatchObject({status:'partial',submitted:0,deferredLocation:1,failed:0,errors:0});
-  expect(db.state.tasks[0].status).toBe('queued');
+  expect(result).toMatchObject({status:'partial',submitted:0,deferredSource:0,failed:1,errors:1});
+  expect(db.state.tasks[0].status).toBe('error');
   expect(render).not.toHaveBeenCalled();
   expect(remote.countTokens).not.toHaveBeenCalled();
   expect(remote.create).not.toHaveBeenCalled();
@@ -312,7 +312,7 @@ describe('floor-plan paid batch worker',()=>{
   expect(remote.results).toHaveBeenCalledOnce();
  });
 
- it('accounts for a paid response once but makes no geometry after location is lost',async()=>{
+ it('accounts for a paid response once after location is lost and retains the source reading',async()=>{
   const task={...baseTask(),status:'submitted',located:false,batch_id:'local-batch',result:{image:{width:100,height:100}}};
   const db=makeDb({tasks:[task],batches:[{id:'local-batch',provider_id:'provider-batch-1',model:LAYER_MODEL,
    status:'submitted',reserved_usd:0.25,created_at:new Date().toISOString()}]});
@@ -320,9 +320,9 @@ describe('floor-plan paid batch worker',()=>{
   render.mockClear();
   const options={dailyBudgetUsd:0,client:remote.client,render,log:()=>{}};
   const first=await interpretPlans(db,options);
-  expect(first).toMatchObject({status:'partial',collected:1,costUsd:cost,locationReview:1,needsReview:1});
-  expect(db.state.tasks[0]).toMatchObject({status:'needs_review',cost_usd:cost,
-   result:{reading:{method:'location-gate'},paidResponse:{model:LAYER_MODEL}}});
+  expect(first).toMatchObject({status:'complete',collected:1,costUsd:cost,notPlan:1});
+  expect(db.state.tasks[0]).toMatchObject({status:'not_plan',cost_usd:cost,
+   result:{paidResponse:{model:LAYER_MODEL}}});
   expect(db.state.calls.some(({sql})=>sql.includes('INSERT INTO floor_plan.processed_plan'))).toBe(false);
   expect(render).not.toHaveBeenCalled();
   expect(ledgerRows().length).toBe(before+1);
