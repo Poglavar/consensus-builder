@@ -320,7 +320,11 @@
             ? `<p class="plan-view-note plan-view-note--info">${escapeText(t('plans.view.newer', 'A newer version of this plan exists:'))} ${plan.supersededBy.map(slug => `<button type="button" class="cb-link" data-plan-open="${escapeText(slug)}">${escapeText(slug)}</button>`).join(', ')}</p>`
             : '';
         panel.querySelector('[data-plan-region="body"]').innerHTML = `
-            <p class="plan-view-hint">${escapeText(t('plans.view.hint', 'Hatched on the map: what this plan would build. Nothing changes until you apply it.'))}</p>
+            <p class="plan-view-hint">${escapeText(state.applied.size > 0
+                ? t('plans.view.appliedHint', '{{applied}} of {{total}} proposals are applied on this map.', {
+                    applied: state.applied.size, total: (plan.proposalRowIds || []).length
+                })
+                : t('plans.view.hint', 'Hatched on the map: what this plan would build. Nothing changes until you apply it.'))}</p>
             ${newer}
             ${status}
             ${state.plan ? actionsHtml(plan) : ''}
@@ -342,7 +346,12 @@
             const slug = state.slug;
             hide();
             win.__currentNamedPlan = { ...state.plan, slug };
-            await win.handleSharedPlanRoute(ids);
+            await win.handleSharedPlanRoute(ids, 0, {
+                explicitApply: true,
+                suppressDetails: true,
+                suppressFocus: true
+            });
+            await open(slug);
         });
     }
 

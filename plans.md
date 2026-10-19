@@ -74,6 +74,13 @@ One plan → one on-chain proposal account → one `proposal_market` pool. No pr
   Expired (lifecycle lens verdict) → NO.
 - A single proposal stays bettable on its own; a plan of one is never required.
 
+A named plan has its own after/before image pair, rendered from all unchanged members in one
+frame. Individual member thumbnails are not used as a whole-plan preview. The bet dialog shows
+the pair with a divider; link unfurls use its side-by-side image. These derived images do not
+change the plan hash. Creation queues rendering, and `scripts/backfill-plan-thumbnails.mjs`
+retries interrupted or missing renders (`--slug`, dry run by default; `--apply --base-url <origin>`
+for writes). A changed or incomplete member snapshot is not rendered.
+
 ## Contests
 
 `GET /markets` still groups by shared land. A named plan is an entry of its own (kind `plan`),

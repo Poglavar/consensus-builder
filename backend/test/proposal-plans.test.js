@@ -3,10 +3,28 @@
 // are left out everywhere: a revision replaces its predecessor.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const Plans = require('../../frontend/js/proposals/plans.js');
 const MenuModel = require('../../frontend/js/ui/parcel-menu-model.js');
+const plansSource = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/plans.js', import.meta.url)), 'utf8');
+
+function loadBrowserPlans({ yieldToBrowser, now = () => 0 } = {}) {
+    const root = {
+        normalizeCityCodeForApi: () => '', resolveCurrentCityCode: () => '',
+        resolveBackendBaseUrl: () => '', yieldToBrowser, performance: { now }
+    };
+    const module = { exports: {} };
+    vm.runInNewContext(plansSource, {
+        window: root, module, URLSearchParams, Date, setTimeout,
+        fetch: async () => ({ ok: true, json: async () => ({ plans: [{ slug: 'one', proposalRowIds: ['1', '2', '3'] }] }) }),
+        console
+    });
+    return module.exports;
+}
 
 const harbor = { slug: 'harbor-v2', title: 'Harbor <b>', proposalRowIds: ['1', '2'], memberCount: 2, superseded: false, author: 'Ana', place: 'Borovje' };
 const harborOld = { slug: 'harbor', title: 'Harbor', proposalRowIds: ['1'], memberCount: 1, superseded: true };
@@ -76,5 +94,53 @@ describe('the parcel menu offers the Proposals tab', () => {
 
     it('not on open ground, where no proposal declares a parcel', () => {
         expect(MenuModel.availableActions(facts({ isGround: true }))).not.toContain('proposals');
+    });
+});
+
+describe('proposal plan row decoration', () => {
+    function fixture(size = 3) {
+        const rows = Array.from({ length: size }, (_, index) => ({ id: String(index + 1), line: false,
+            querySelector: selector => selector === '.proposal-plan-line' && rows[index].line ? {} : null }));
+        const container = { dataset: {}, isConnected: true, addEventListener() {}, querySelectorAll: () => rows };
+        return { container, rows };
+    }
+
+    it('yields between work slices when the 8ms budget is exhausted', async () => {
+        let clock = 0;
+        let yields = 0;
+        const api = loadBrowserPlans({ now: () => clock += 9, yieldToBrowser: async () => { yields += 1; } });
+        const { container, rows } = fixture();
+        await api.decorateRows(container, {
+            rowSelector: 'row', serverIdOf: row => row.id,
+            place: row => { row.line = true; }
+        });
+        expect(rows.every(row => row.line)).toBe(true);
+        expect(yields).toBe(3);
+    });
+
+    it('cancels stale work after a yield and leaves existing plan lines alone', async () => {
+        let clock = 0;
+        let releaseFirstYield;
+        let yields = 0;
+        const api = loadBrowserPlans({
+            now: () => clock += 9,
+            yieldToBrowser: () => {
+                yields += 1;
+                return yields === 1 ? new Promise(resolve => { releaseFirstYield = resolve; }) : Promise.resolve();
+            }
+        });
+        const { container, rows } = fixture();
+        let placed = 0;
+        const options = { rowSelector: 'row', serverIdOf: row => row.id,
+            place: row => { row.line = true; placed += 1; } };
+        const staleJob = api.decorateRows(container, options);
+        while (!releaseFirstYield) await Promise.resolve();
+        const currentJob = api.decorateRows(container, options);
+        await currentJob;
+        releaseFirstYield();
+        await staleJob;
+        await api.decorateRows(container, options);
+        expect(rows.every(row => row.line)).toBe(true);
+        expect(placed).toBe(3);
     });
 });

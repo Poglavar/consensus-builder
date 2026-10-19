@@ -12,7 +12,8 @@ const MEMBER_COLUMNS = `p.id, p.proposal_id, COALESCE(p.title, p.name) AS title,
 
 // The stored proposal_ids column contains row IDs; the route exposes it as proposalRowIds.
 const PLAN_COLUMNS = `slug, proposal_ids, title, description, author, place, city, member_hashes, plan_hash,
-    supersedes, onchain_data, created_at, (site IS NOT NULL) AS has_site`;
+    supersedes, onchain_data, thumbnail_url, thumbnail_before_url, thumbnail_pair_url,
+    created_at, (site IS NOT NULL) AS has_site`;
 
 // A plan (alias `alias`) has a member filed in the city bound to `param`.
 export const PLAN_IN_CITY_SQL = (alias, param) => `EXISTS (

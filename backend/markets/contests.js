@@ -120,6 +120,7 @@ function proposalEntry(proposal, markets, statuses) {
         proposalRole: proposal.proposalRole || null,
         screenshotUrl: proposal.screenshotUrl || null,
         screenshotBeforeUrl: proposal.screenshotBeforeUrl || null,
+        screenshotPairUrl: proposal.screenshotPairUrl || null,
         parcelIds: normalizeParcelIds(proposal.parcelIds),
         siteName: proposal.siteName || null,
         proposalAccount,
@@ -144,6 +145,9 @@ function planEntry(plan, markets, statuses, proposalsById) {
         createdAt: plan.createdAt,
         expiresAt: null,
         author: plan.author,
+        screenshotUrl: plan.screenshotUrl,
+        screenshotBeforeUrl: plan.screenshotBeforeUrl,
+        screenshotPairUrl: plan.screenshotPairUrl,
         parcelIds: plan.parcelIds,
         siteName: plan.place,
         proposalAccount: plan.proposalAccount

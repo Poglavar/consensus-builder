@@ -333,3 +333,40 @@ describe('proposal rows: a record is stored only in its own city', () => {
         expect(rowKeys(storage)).toEqual([]);
     });
 });
+
+// The shared-plan save phase must represent completion of the IndexedDB write.
+describe('proposal batch save completion', () => {
+    it('retries the record rows after a failed durable write', async () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.proposals.set('p1', record('p1'));
+        const error = new Error('storage unavailable');
+        const report = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const atomic = storage.atomicWrite;
+        storage.atomicWrite = async () => { throw error; };
+        await expect(store.save()).rejects.toBe(error);
+        storage.atomicWrite = atomic;
+        await store.save();
+        expect(storage.writes[0].puts.has('proposal:p1')).toBe(true);
+        expect(JSON.parse(storage.values.get('proposal:p1')).proposalId).toBe('p1');
+        report.mockRestore();
+    });
+
+
+    it('returns the pending durable write when the outer batch ends', async () => {
+        const storage = fakeStorage();
+        let finish;
+        storage.atomicWrite = () => new Promise(resolve => { finish = resolve; });
+        const store = bootStore(storage);
+        store.proposals.set('p1', record('p1'));
+        store.beginBatch();
+        store.save();
+        let settled = false;
+        const write = store.endBatch().then(() => { settled = true; });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+        finish();
+        await write;
+        expect(settled).toBe(true);
+    });
+});

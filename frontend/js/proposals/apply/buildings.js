@@ -38,17 +38,9 @@
 
         const step1Time = performance.now();
         const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
-        // Content buildings (blocks, rows, parcel-based, imported plans) sit on the existing parcels
-        // and partition nothing, so a defect in the cadastral source (two live parcels covering the
-        // same ground) must not refuse them; only a building that forms its own parcel needs a clean
-        // partition. The resolver is told which case this is.
-        const earlyGoalKey = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
-            ? window.__applyRoute.normalizeGoalKey(proposalData.goal)
-            : String(proposalData.goal || '');
-        const authoredCount = Array.isArray(proposalData.geometry?.buildings)
-            ? proposalData.geometry.buildings.filter(feature => feature && feature.geometry).length : 0;
-        const contentOnly = !shouldFormOwnBuildingParcel(proposalData, earlyGoalKey, authoredCount);
-        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', { ...options, contentOnly });
+        // Every building proves its live host ground, including any overlap inherited from
+        // distinct cadastral source outlines.
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', options);
         if (!liveParents.ok) return false;
         const uniqueParentIds = liveParents.ids;
         const flatParentIds = liveParents.cadastreIds.slice();
@@ -233,13 +225,21 @@
             } catch (_) { }
             return { ok: false };
         }
+        const arrangement = typeof window !== 'undefined' ? window.__parcelArrangement : null;
+        const clip = (operation, left, right) => arrangement && typeof arrangement.clip === 'function'
+            ? arrangement.clip(operation, left, right) : turfRef[operation](left, right);
         const takeCtx = {
-            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            area: feature => turfRef.area(feature),
             intersectionArea: (a, b) => {
-                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
+                const hit = clip('intersect', a, b);
+                return hit ? turfRef.area(hit) : 0;
             }
         };
         const footprint = { type: 'Feature', properties: {}, geometry: footprintGeometry };
+        // A valid small building can straddle several live pieces, each smaller than the usual
+        // 1 m² tolerance. Keep its material hosts and anchors at the footprint's own scale.
+        const hostToleranceM2 = Math.min(formationEdit.DEFAULT_TOLERANCE_M2,
+            takeCtx.area(footprint) * formationEdit.DEFAULT_TOLERANCE_PCT / 100);
 
         const candidateIds = declaredParentIds.slice();
         const candidateFeatures = Array.isArray(resolvedParentFeatures)
@@ -256,7 +256,7 @@
         const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
         const asPlain = geometry => ({ type: 'Feature', properties: {}, geometry });
         const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(footprint, asPlain(entry.feature.geometry))
-            >= formationEdit.DEFAULT_TOLERANCE_M2);
+            >= hostToleranceM2);
         // Ground provenance of what the building parcel takes: the open-ground host and any formed
         // pieces on open ground among its parents.
         const groundIdsWith = features => Array.from(new Set([
@@ -266,8 +266,7 @@
         // The footprint's ground on the open-ground host(s): exactly footprint ∩ host.
         const groundTakeGeometries = [];
         takenHosts.forEach(entry => {
-            let hit = null;
-            try { hit = turfRef.intersect(footprint, asPlain(entry.feature.geometry)); } catch (_) { hit = null; }
+            const hit = clip('intersect', footprint, asPlain(entry.feature.geometry));
             if (hit && hit.geometry) groundTakeGeometries.push(hit.geometry);
         });
         const hostOverlapM2 = groundTakeGeometries.reduce((sum, geometry) => sum + takeCtx.area(asPlain(geometry)), 0);
@@ -405,7 +404,7 @@
         candidates.forEach(entry => {
             const parcelFeature = { type: 'Feature', properties: {}, geometry: entry.feature.geometry };
             const overlap = takeCtx.intersectionArea(footprint, parcelFeature);
-            if (overlap < formationEdit.DEFAULT_TOLERANCE_M2) return;
+            if (!(overlap > 0) || overlap < hostToleranceM2) return;
             coveredM2 += overlap;
             hosts.push(entry);
         });
@@ -428,7 +427,7 @@
         const primary = hostFeatures[0];
         const parentEntries = hosts.flatMap(entry => formationEdit.cadastreIdsOfFeature(entry.feature)
             .map(baseId => ({ baseId, feature: entry.feature })));
-        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx);
+        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx, { minM2: hostToleranceM2 });
         const groundIds = groundIdsWith(hostFeatures);
         if (!buildingCadastreIds.length && !groundIds.length) {
             throw new Error('Building formation has no explicit cadastral anchors under its footprint.');
@@ -471,7 +470,7 @@
         const safeDifference = (aGeometry, bFeature) => {
             const a = { type: 'Feature', properties: {}, geometry: aGeometry };
             try {
-                return { result: turfRef.difference(a, bFeature), threw: false };
+                return { result: clip('difference', a, bFeature), threw: false };
             } catch (error) {
                 console.error('[_formBuildingParcel] difference failed on host geometry', error);
                 return { result: null, threw: true };

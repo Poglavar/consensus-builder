@@ -32,7 +32,8 @@ const PROPOSAL_BY_ACCOUNT_SQL = `
 
 // A named plan minted as its own account (plans.md), and its members for the land and the image.
 const PLAN_BY_ACCOUNT_SQL = `
-    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, city
+    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, city,
+        thumbnail_url, thumbnail_before_url, thumbnail_pair_url
     FROM ens_plan
     WHERE LOWER(COALESCE(onchain_data->>'chainId', '')) LIKE 'solana%' AND onchain_data->>'proposalId' = $1
     LIMIT 1`;
@@ -52,8 +53,8 @@ async function betSubject(pool, proposalAccount) {
     const plan = rowToPlan(planRows[0]);
     const { rows: memberRows } = await pool.query(PLAN_MEMBERS_SQL, [plan.memberIds.map(Number)]);
     const members = memberRows.map(rowToProposal);
-    const byId = new Map(members.map(member => [String(member.id), member]));
-    const image = plan.memberIds.map(id => byId.get(String(id))).map(member => member && (member.screenshotPairUrl || member.screenshotUrl)).find(Boolean) || null;
+    // A plan preview has to represent the whole named plan; an individual member's image is not a substitute.
+    const image = plan.screenshotPairUrl || null;
     return { city: planRows[0].city || null, title: plan.title || plan.slug, screenshotUrl: image, proposals: members, plans: [plan] };
 }
 

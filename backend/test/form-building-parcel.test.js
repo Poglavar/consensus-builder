@@ -124,6 +124,63 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         expect(bp).not.toHaveProperty('childParcelIds');
     });
 
+    it('keeps both hosts and all ground for a 1.15 m² triangle split into sub-1 m² takes', async () => {
+        // The observed triangle is 1.153 m², split 0.324 + 0.829 m² by the host boundary.
+        // A fixed 1 m² per-host floor lost both hosts even though their union covers it.
+        const footprint = { type: 'Polygon', coordinates: [[
+            [LON, LAT], [LON + 0.02966e-3, LAT],
+            [LON + 0.02966e-3, LAT + 0.009e-3], [LON, LAT]
+        ]] };
+        const left = parcelOf('HR-A', 0, 0.01572);
+        const right = parcelOf('HR-B', 0.01572, 0.02966);
+        left.geometry = rect(0, -0.02, 0.01572, 0.03);
+        right.geometry = rect(0.01572, -0.02, 0.02966, 0.03);
+        const hosts = [left, right];
+        const footprintFeature = turf.feature(footprint);
+        const takes = hosts.map(host => turf.area(turf.intersect(footprintFeature, host)));
+        expect(turf.area(footprintFeature)).toBeCloseTo(1.153, 2);
+        expect(takes[0]).toBeCloseTo(0.324, 2);
+        expect(takes[1]).toBeCloseTo(0.829, 2);
+        expect(takes.every(area => area < 1)).toBe(true);
+
+        const manager = makeManager(hosts);
+        const result = await manager._formBuildingParcel('tiny', { author: 'Ana' }, {},
+            footprint, [], 'tiny');
+
+        expect(result.ok).toBe(true);
+        expect(result.parentIds).toEqual(['HR-A', 'HR-B']);
+        expect(manager.hidden.map(host => host.properties.parcelId).sort()).toEqual(['HR-A', 'HR-B']);
+        const building = manager.added.find(feature => feature.properties.buildingParcel === true);
+        expect(building.properties.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
+        expect(turf.area(building)).toBeCloseTo(turf.area(footprintFeature), 2);
+        for (const host of hosts) {
+            const anchor = host.properties.parcelId;
+            const retained = manager.added.filter(feature => feature !== building
+                && feature.properties.cadastreParcelIds.includes(anchor));
+            expect(retained.length).toBeGreaterThan(0);
+            expect(retained.every(feature => feature.properties.ownershipDetails.owners[0].name === `Owner ${anchor}`)).toBe(true);
+            const groundAfter = retained.reduce((sum, feature) => sum + turf.area(feature), 0)
+                + turf.area(turf.intersect(building, host));
+            expect(Math.abs(groundAfter - turf.area(host))).toBeLessThan(0.02);
+        }
+    });
+
+    it('propagates an intersection failure before changing live ground', async () => {
+        const hosts = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
+        const manager = makeManager(hosts);
+        window.__parcelArrangement = {
+            clip(operation, left, right) {
+                if (operation === 'intersect') throw new Error('intersection failed explicitly');
+                return turf[operation](left, right);
+            }
+        };
+        await expect(manager._formBuildingParcel('p-bld', { author: 'Ana' }, {},
+            rect(1, 0.5, 3, 1.5), [], 'p-bld'))
+            .rejects.toThrow('intersection failed explicitly');
+        expect(manager.added).toHaveLength(0);
+        expect(manager.hidden).toHaveLength(0);
+    });
+
     it('refuses a footprint hanging off the live fabric', async () => {
         const parcels = [parcelOf('HR-A', 0, 2)];
         const manager = makeManager(parcels);

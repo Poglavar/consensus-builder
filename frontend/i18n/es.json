@@ -7571,6 +7571,7 @@
             "loading": "Cargando el plan…",
             "error": "No se pudo cargar el plan: {{reason}}",
             "hint": "Rayado en el mapa: lo que construiría este plan. Nada cambia hasta que lo apliques.",
+            "appliedHint": "Se han aplicado {{applied}} de {{total}} propuestas en este mapa.",
             "newer": "Existe una versión más reciente de este plan:",
             "membersHeading": "Propuestas de este plan",
             "changed": {

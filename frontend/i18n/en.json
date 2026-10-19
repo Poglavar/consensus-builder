@@ -7520,6 +7520,7 @@
             "loading": "Loading the plan…",
             "error": "The plan could not be loaded: {{reason}}",
             "hint": "Hatched on the map: what this plan would build. Nothing changes until you apply it.",
+            "appliedHint": "{{applied}} of {{total}} proposals are applied on this map.",
             "newer": "A newer version of this plan exists:",
             "membersHeading": "Proposals in this plan",
             "changed": {

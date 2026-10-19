@@ -626,6 +626,24 @@ function reportSharedPlanProgress(event) {
 // Each parked member goes directly through the canonical replay materializer. It keeps the rollback
 // boundary, but avoids the explicit-click state transition and rival pass that used to run
 // before the same materializer. Package dependency order remains immutable inside each phase.
+// An explicit Apply plan click chooses its members over existing geometric rivals. A link
+// import still uses the non-displacing shared-ground gate below.
+async function materializeExplicitProposalPlan(proposalIds) {
+    const ids = orderQueuedSharedProposalIds(proposalIds);
+    const result = await ProposalManager.applyProposalPlan(ids, { onProgress: reportSharedPlanProgress });
+    if (result && result.ok === true) return { appliedIds: ids, failedIds: [] };
+    const summary = ProposalManager._lastFailedPlanApplySummary;
+    const failure = summary?.failed?.[0];
+    ids.forEach(id => {
+        if (ProposalManager.getLastApplyFailure?.(id)) return;
+        ProposalManager._setLastApplyFailure?.(id, {
+            code: failure?.code || 'plan-apply-failed',
+            message: failure?.reason || failure?.message || 'The plan could not be applied; the previous map was kept.'
+        });
+    });
+    return { appliedIds: [], failedIds: ids };
+}
+
 async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // Package dependencies outrank URL and creation order: corridors form road-bounded blocks
     // before readjustments partition them. Buildings and public spaces follow. Immutable input
@@ -854,9 +872,9 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
         try {
             // Imports may have suppressed their own save. Ensure the outer batch has one pending
             // write even if every queued member was refused before reaching a type handler.
-            if (batchStore && typeof batchStore.save === 'function') batchStore.save();
+            if (batchStore && typeof batchStore.save === 'function') await batchStore.save();
         } finally {
-            if (storageBatched) batchStore.endBatch();
+            if (storageBatched) await batchStore.endBatch();
         }
         storageMs = now() - storageStarted;
 
@@ -2398,10 +2416,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     if (serverId) sharedPlanMemberIds.add(String(serverId));
                 } catch (_) { }
             });
-            const scoped = await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
-                recordFetchProfile,
-                planMemberIds: sharedPlanMemberIds
-            });
+            const scoped = options.explicitApply === true
+                ? await materializeExplicitProposalPlan(applied.map(entry => entry.id))
+                : await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
+                    recordFetchProfile,
+                    planMemberIds: sharedPlanMemberIds
+                });
             const scopedFailures = new Set(scoped.failedIds.map(String));
             for (let i = applied.length - 1; i >= 0; i -= 1) {
                 const entry = applied[i];
@@ -2489,7 +2509,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             && typeof window.focusThreeModeOnProposals === 'function') {
             // The scene is up and the 2D map frozen under it: take the camera there instead.
             window.focusThreeModeOnProposals([lastProposalId]);
-        } else if (lastProposalId && typeof map !== 'undefined' && map && !userTookOver()) {
+        } else if (!options.suppressFocus && lastProposalId && typeof map !== 'undefined' && map && !userTookOver()) {
             try {
                 const beforeCenter = (typeof map.getCenter === 'function') ? map.getCenter() : null;
                 const beforeZoom = (typeof map.getZoom === 'function') ? map.getZoom() : null;

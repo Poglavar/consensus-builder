@@ -407,7 +407,7 @@ const proposalStorage = {
         }
         if (this._suspendSaveCount === 0 && this._hasPendingSave) {
             this._hasPendingSave = false;
-            this._persist();
+            return this._persist();
         }
     },
     _ensureIndexes() {
@@ -1017,7 +1017,7 @@ const proposalStorage = {
             this._hasPendingSave = true;
             return;
         }
-        this._persist();
+        return this._persist();
     },
 
     _persist() {
@@ -1066,10 +1066,14 @@ const proposalStorage = {
             });
             if (PersistentStorage.getItem(PROPOSALS_STORAGE_KEY) != null) deletes.push(PROPOSALS_STORAGE_KEY);
             puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
-            this._persistFragments = fragments;
-            Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes })).catch(error => {
+            const write = Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes }))
+                .then(() => { this._persistFragments = fragments; });
+            // Fire-and-forget callers still report failures. A plan's final save awaits the same
+            // promise, so its saving phase cannot finish before the durable write does.
+            write.catch(error => {
                 console.error('proposalStorage.save: Failed to persist proposals', error);
             });
+            return write;
         } catch (error) {
             console.error('proposalStorage.save: Failed to persist proposals', error);
             throw error;

@@ -7584,6 +7584,7 @@
             "loading": "Učitavanje plana…",
             "error": "Plan nije bilo moguće učitati: {{reason}}",
             "hint": "Šrafirano na mapi: šta bi ovaj plan izgradio. Ništa se ne menja dok ga ne primenite.",
+            "appliedHint": "Na ovoj karti je primenjeno {{applied}} od {{total}} predloga.",
             "newer": "Postoji novija verzija ovog plana:",
             "membersHeading": "Predlozi u ovom planu",
             "changed": {

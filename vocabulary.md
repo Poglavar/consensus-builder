@@ -72,7 +72,7 @@ Every member hash commits to the decision `kind` and site from `proposal_data` (
 
 ### Working plan / applied composition — `WorkingComposition`
 
-The proposals currently applied in one browser, together with their materialized effects. “Share entire plan” can turn this composition into a named plan, but an arbitrary composition has no `ens_plan` identity. Application and replay are local operations. Replay orders formations by `authoredAt || createdAt`, then numeric record ID, then record key; `epochYear` is a presentation bucket, not a dependency or replay order. [Sharing flows](frontend/js/proposals/sharing-routes.js), [proposal manager](frontend/js/proposal-manager.js), [ordering](frontend/js/proposals/plan-order.js) (`formationTime`, `compareFormationOrder`), [epoch](frontend/js/proposals/epoch.js).
+The proposals currently applied in one browser, together with their materialized effects. “Share entire plan” can turn this composition into a named plan, but an arbitrary composition has no `ens_plan` identity. Application and replay are local operations. The named-plan panel’s explicit Apply plan action chooses its members over geometrically overlapping applied rivals in one atomic mutation; a failed member keeps the previous composition. Passive shared-record imports retain the non-displacing ground check. Replay orders formations by `authoredAt || createdAt`, then numeric record ID, then record key; `epochYear` is a presentation bucket, not a dependency or replay order. [Sharing flows](frontend/js/proposals/sharing-routes.js), [proposal manager](frontend/js/proposal-manager.js), [ordering](frontend/js/proposals/plan-order.js) (`formationTime`, `compareFormationOrder`), [epoch](frontend/js/proposals/epoch.js).
 
 Other uses of “plan” need qualification: a statutory planning document, a floor-plan drawing, and the nested `reparcellization` layout are different objects.
 
@@ -87,6 +87,8 @@ The common Croatian identifier is `HR-<cadastral municipality>-<parcel number>`;
 A face of the currently materialized land fabric: unchanged cadastral ground, a proposed body, or a remainder created by applying formations. It has a runtime identity and provenance back to cadastral anchors and/or synthetic open ground. One base parcel can produce several pieces; a resulting piece can span several base parcels. A piece is not a newly registered cadastral parcel.
 
 `LiveParcelFabric` is the mutable derived land representation. `ParcelPresenter` renders its revision. `ParcelMutation` coordinates atomic publication of proposal state, fabric and related local state. Neither a Leaflet layer nor its visibility determines cadastral identity. [Ground service](frontend/js/parcels/ground-service.js), [mutation transaction](frontend/js/proposals/apply/transaction.js), [claims](frontend/js/proposals/claims.js), [open-ground hosts](frontend/js/proposals/open-ground.js).
+
+Distinct source parcels can have overlapping outlines. Live pieces with disjoint cadastral anchors may retain only overlap already present in their immutable source outlines; an apply does not choose an owner for that source conflict. Pieces sharing a source anchor must remain disjoint, and coverage of a proposal counts overlapping source ground once.
 
 ### Proposal site — `ProposalSite`
 

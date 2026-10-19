@@ -2966,6 +2966,63 @@ const ProposalManager = {
         }
     },
 
+    // Choosing a plan is one explicit edit of the working composition. Collect every rival
+    // before changing any flags, then derive the resulting composition once. A refused member
+    // rolls back both the incoming plan and the released rivals through ParcelMutation.
+    async applyProposalPlan(proposalIds, options = {}) {
+        const ids = Array.from(new Set((proposalIds || []).map(String).filter(Boolean)));
+        if (!ids.length) return { ok: true, applied: 0, failed: [] };
+        if (!options._parcelMutation) {
+            this._lastFailedPlanApplySummary = null;
+            return _runProposalMutationBoundary(this, 'apply-plan', ids[0], options,
+                (_context, transactionOptions) => this.applyProposalPlan(ids, transactionOptions));
+        }
+        const store = _proposalStore(options);
+        const members = ids.map(id => _getProposalRecord(id, options));
+        if (members.some(record => !record || !proposalDisplayStateApi.isApplicable(record))) {
+            this._lastFailedPlanApplySummary = { failed: [{
+                code: 'plan-member-unavailable', reason: 'A plan member is missing or cannot be applied.'
+            }] };
+            return false;
+        }
+        const memberIds = new Set(members.map(record => String(record.proposalId)));
+        const candidates = _peekProposals(store).filter(record => appliedOf(record)
+            && !memberIds.has(String(record.proposalId)));
+        const released = new Map();
+        for (let i = 0; i < members.length; i += 1) {
+            const member = members[i];
+            this._clearLastApplyFailure?.(member.proposalId);
+            this._collectAppliedAlternativesForExplicitApply(member, candidates, options)
+                .forEach(record => released.set(String(record.proposalId), record));
+            _emitProposalProgress(options.onProgress, {
+                phase: 'proposal-apply', label: member.title || member.proposalId,
+                done: i + 1, total: members.length
+            });
+            if (i % 8 === 0 && typeof window !== 'undefined' && window.yieldToBrowser) {
+                await window.yieldToBrowser();
+            }
+        }
+        released.forEach(record => {
+            setProposalApplied(record, false, { stamp: false });
+            store._indexProposal?.(record);
+        });
+        members.forEach(record => {
+            setProposalApplied(record, true);
+            store._indexProposal?.(record);
+        });
+        const summary = await this.rebuildAppliedFabric({
+            ...options,
+            silent: true,
+            statusMode: 'apply'
+        });
+        if (!summary || summary.ok !== true) {
+            this._lastFailedPlanApplySummary = summary || { failed: [] };
+            return false;
+        }
+        store.save?.();
+        return { ...summary, ok: true, releasedIds: Array.from(released.keys()) };
+    },
+
     // Shared plans never stand down unrelated work: a plan member whose ground an applied record
     // outside the plan holds is refused, so a parked shared record can go straight through the
     // one-boundary replay apply instead of first paying a separate mark-state transaction.
@@ -3678,9 +3735,11 @@ const ProposalManager = {
         let candidates = [];
         let hits = [];
         let coverage = 0;
+        let coveredArea = 0;
+        let footprintArea = 0;
         try {
             footprint = order.footprintOf(proposalData);
-            const footprintArea = footprint && typeof t.area === 'function' ? Number(t.area(footprint)) : 0;
+            footprintArea = footprint && typeof t.area === 'function' ? Number(t.area(footprint)) : 0;
             if (!(footprintArea > 0)) throw new Error('authored footprint is empty');
             // entriesForCadastre excludes corridors by default: roads are takes from ground, never
             // host parcels a park/building/readjustment may consume.
@@ -3697,7 +3756,8 @@ const ProposalManager = {
                 feature
             })));
             hits = measured.hits;
-            coverage = Math.max(0, Math.min(1, measured.coveredArea / footprintArea));
+            coveredArea = measured.coveredArea;
+            coverage = Math.max(0, Math.min(1, coveredArea / footprintArea));
         } catch (error) {
             const message = `Cannot apply ${formationLabel}: cadastral-scope coverage could not be evaluated.`;
             try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-evaluation-failed', message, error: error?.message }); } catch (_) { }
@@ -3724,8 +3784,9 @@ const ProposalManager = {
             return { ok: false, ids, features: [], coverage, message };
         }
 
-        // One partition means selected live parents may touch at borders but may not overlap in
-        // area. Refuse a corrupted fabric instead of multiplying its overlap into another replay.
+        // Pieces of one cadastral source form a partition. Distinct immutable source outlines can
+        // overlap; their live descendants may inherit only that existing overlap. Refuse any new
+        // double-cover instead of multiplying it into another replay.
         //
         // This was 5 m² to tolerate "kerf" — sliver debris along the boundaries turf had just cut.
         // That debris was never turf's: it came from reading geometry back through Leaflet's
@@ -3736,6 +3797,7 @@ const ProposalManager = {
         // back to the measured-noise scale, and a genuine double-cover is caught instead of waved
         // through under 5 m².
         const OVERLAP_REFUSAL_M2 = 0.25;
+        const inheritedOverlapPairs = [];
         try {
             if (typeof turf !== 'undefined' && typeof turf.intersect === 'function' && typeof turf.area === 'function') {
                 // Live pieces are produced by parcel-arrangement's snapped/retrying clipper. Read
@@ -3749,6 +3811,29 @@ const ProposalManager = {
                 const intersectParents = arrangement && typeof arrangement.clip === 'function'
                     ? (left, right) => arrangement.clip('intersect', left, right)
                     : (left, right) => turf.intersect(left, right);
+                const clip = arrangement && typeof arrangement.clip === 'function'
+                    ? (operation, left, right) => arrangement.clip(operation, left, right)
+                    : (operation, left, right) => turf[operation](left, right);
+                const repository = _cadastralParcelRepository();
+                const sourceScopeCache = new Map();
+                const sourceScope = cadastreIds => {
+                    const key = cadastreIds.slice().sort().join('\u0000');
+                    if (sourceScopeCache.has(key)) return sourceScopeCache.get(key);
+                    if (!repository || (typeof repository.peekMany !== 'function'
+                        && typeof repository.getMany !== 'function')) return null;
+                    const facts = typeof repository.peekMany === 'function'
+                        ? repository.peekMany(cadastreIds) : repository.getMany(cadastreIds);
+                    if (facts.length !== cadastreIds.length) return null;
+                    const scope = facts.reduce((union, fact) => union ? clip('union', union, fact) : fact, null);
+                    if (!scope || !scope.geometry) return null;
+                    sourceScopeCache.set(key, scope);
+                    return scope;
+                };
+                const anchorsOf = feature => Array.from(new Set(
+                    (Array.isArray(feature?.properties?.cadastreParcelIds)
+                        ? feature.properties.cadastreParcelIds : [])
+                        .map(value => String(value || '').trim()).filter(Boolean)
+                ));
                 // Bounding boxes first. Two polygons whose boxes are disjoint CANNOT intersect, so
                 // this skips nothing a real overlap could hide behind — it only replaces a boolean
                 // op with four number comparisons. Parcels tile the plane, so almost every pair is
@@ -3764,10 +3849,20 @@ const ProposalManager = {
                         if (boxesDisjoint(boxes[i], boxes[j])) continue;
                         const hit = intersectParents(features[i], features[j]);
                         if (hit && turf.area(hit) > OVERLAP_REFUSAL_M2) {
-                            // Content that partitions nothing (apply/buildings.js contentOnly) may stand
-                            // on a source defect; it is named, not waved through silently.
-                            if (options && options.contentOnly === true) {
-                                console.warn(`[${new Date().toISOString()}] [${formationLabel}] live parcels ${ids[i]} and ${ids[j]} overlap (${Math.round(turf.area(hit))} m², a cadastral source defect); applying as content on them anyway`);
+                            // Two distinct cadastral outlines can themselves cover the same ground.
+                            // A cut may inherit exactly that overlap, but it cannot create any new
+                            // double-cover or turn two pieces of the same source into overlapping land.
+                            const leftIds = anchorsOf(features[i]);
+                            const rightIds = anchorsOf(features[j]);
+                            const separateSources = leftIds.length && rightIds.length
+                                && !leftIds.some(id => rightIds.includes(id));
+                            const leftSource = separateSources ? sourceScope(leftIds) : null;
+                            const rightSource = separateSources ? sourceScope(rightIds) : null;
+                            const sourceOverlap = leftSource && rightSource
+                                ? intersectParents(leftSource, rightSource) : null;
+                            const newOverlap = sourceOverlap ? clip('difference', hit, sourceOverlap) : hit;
+                            if (sourceOverlap && (!newOverlap || turf.area(newOverlap) <= OVERLAP_REFUSAL_M2)) {
+                                inheritedOverlapPairs.push([i, j]);
                                 continue;
                             }
                             const message = `Cannot apply ${formationLabel}: live parcels ${ids[i]} and ${ids[j]} overlap.`;
@@ -3776,10 +3871,48 @@ const ProposalManager = {
                         }
                     }
                 }
+                if (inheritedOverlapPairs.length) {
+                    // measureCoverage sums parcel intersections. That double-counts inherited
+                    // cadastral overlap and can disguise a real hole in the proposal footprint.
+                    // Recompute only connected groups containing an inherited overlap, clipping
+                    // every member to the footprint before unioning their much smaller shapes.
+                    const groups = new Map();
+                    const parent = features.map((_, index) => index);
+                    const find = index => parent[index] === index ? index : (parent[index] = find(parent[index]));
+                    inheritedOverlapPairs.forEach(([i, j]) => { parent[find(j)] = find(i); });
+                    inheritedOverlapPairs.forEach(([i, j]) => {
+                        for (const index of [i, j]) {
+                            const root = find(index);
+                            if (!groups.has(root)) groups.set(root, new Set());
+                            groups.get(root).add(index);
+                        }
+                    });
+                    groups.forEach(indices => {
+                        let sum = 0;
+                        let union = null;
+                        indices.forEach(index => {
+                            const part = intersectParents(footprint, features[index]);
+                            if (!part) return;
+                            sum += turf.area(part);
+                            union = union ? clip('union', union, part) : part;
+                            if (!union || !union.geometry) throw new Error('Inherited-overlap coverage union is empty.');
+                        });
+                        coveredArea -= sum - (union ? turf.area(union) : 0);
+                    });
+                    coverage = Math.max(0, Math.min(1, coveredArea / footprintArea));
+                    console.warn(`[${new Date().toISOString()}] [${formationLabel}] ${inheritedOverlapPairs.length} live-parent overlaps inherited from distinct cadastral source outlines; coverage counted their union`);
+                }
             }
         } catch (error) {
             const message = `Cannot apply ${formationLabel}: live-fabric overlap validation failed.`;
             try { this._setLastApplyFailure(idLabel, { code: 'live-fabric-invalid', message, error: error && error.message }); } catch (_) { }
+            return { ok: false, ids, features: [], coverage, message };
+        }
+
+        if (coverage < 0.95) {
+            const message = `The live fabric covers only ${Math.round(coverage * 100)}% of this ${formationLabel}'s footprint; nothing was cut.`;
+            try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-unresolved', message, coverage, missingIds: [] }); } catch (_) { }
+            try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
             return { ok: false, ids, features: [], coverage, message };
         }
 

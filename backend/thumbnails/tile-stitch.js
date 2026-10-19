@@ -165,6 +165,7 @@ function outerRingOf(norm) {
 export function computeStitchFrame(options = {}) {
     const {
         polygon,
+        polygonParts = null,
         padding = 0.05,
         parcelPolygons = [],
         zoom = DEFAULT_STITCH_ZOOM,
@@ -174,14 +175,14 @@ export function computeStitchFrame(options = {}) {
         maxTilesPerAxis = MAX_STITCH_TILES_PER_AXIS
     } = options;
 
-    const geoCoords = normalizeToGeoJSON(polygon, polygonOrder);
-    const outerRing = outerRingOf(geoCoords);
-    if (!outerRing || outerRing.length < 3) {
+    const rawParts = Array.isArray(polygonParts) && polygonParts.length ? polygonParts : [polygon];
+    const geoCoordsParts = rawParts.map(part => normalizeToGeoJSON(part, polygonOrder));
+    if (geoCoordsParts.some(coords => !outerRingOf(coords) || outerRingOf(coords).length < 3)) {
         throw new Error('Invalid polygon for tile stitch capture');
     }
 
     // Coordinates are GeoJSON [lng, lat] once normalized; the caller states the input order.
-    const bbox = thumbnailBbox.bboxOfLngLat(geoCoords);
+    const bbox = thumbnailBbox.bboxOfLngLat(geoCoordsParts);
     const expandBbox = (coords) => thumbnailBbox.extendBbox(bbox, coords);
 
     const normalizeOrder = (order) => (order === 'lnglat' || order === 'latlng') ? order : 'auto';
@@ -193,9 +194,10 @@ export function computeStitchFrame(options = {}) {
     // loaded, which in practice was nothing — every client-generated thumbnail we still have shows
     // zero neighbour outlines. Re-creating it from the parcel table drowns the subject of the picture
     // in 200 black dashed polygons, which is the opposite of what the layer was for.
-    const polygons = [
-        { coords: geoCoords, role: 'proposal', style: { color: '#ff6600', weight: 3, opacity: 0.9, fillColor: '#ff6600', fillOpacity: 0.18, lineJoin: 'round', lineCap: 'round' } }
-    ];
+    const proposalStyle = { color: '#ff6600', weight: 3, opacity: 0.9, fillColor: '#ff6600', fillOpacity: 0.18, lineJoin: 'round', lineCap: 'round' };
+    // Keep independent member paths separate: holes stay local to their polygon, and overlapping
+    // fills cannot cancel under the even-odd fill rule.
+    const polygons = geoCoordsParts.map(coords => ({ coords, role: 'proposal', style: proposalStyle }));
 
     if (Array.isArray(parcelPolygons)) {
         for (const p of parcelPolygons) {
@@ -437,6 +439,7 @@ function drawParcelLabel(ctx, frame, parcelLabel, polygons) {
  *
  * @param {Object} options - same shape as the browser's captureViaTileStitch
  * @param {Array|Object} options.polygon - proposal geometry (rings or GeoJSON geometry)
+ * @param {Array} [options.polygonParts] - independent polygon geometries drawn in the same frame
  * @param {Array} [options.parcelPolygons] - parent parcel outlines (expand the frame)
  * @param {number} [options.padding=0.05]
  * @param {number} [options.zoom=19] - maximum zoom; lowered automatically to cap the tile count
