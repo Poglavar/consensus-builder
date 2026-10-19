@@ -24,7 +24,10 @@ if [[ ! -e "$destination" ]]; then
     printf '%s\n' "$release" > "$temporary/RELEASE"
     mv "$temporary" "$destination"
 fi
-pm2 startOrReload "$destination/ecosystem.config.cjs" --only autokatastar-review --update-env >/dev/null
+# PM2 reload preserves a previous executable/cwd even when the ecosystem file changes them.
+# Each immutable release has a new cwd; replace this one registration before starting it.
+pm2 delete autokatastar-review >/dev/null 2>&1 || true
+pm2 start "$destination/ecosystem.config.cjs" --only autokatastar-review --update-env >/dev/null
 for attempt in {1..20}; do
     if curl -fsS http://127.0.0.1:8791/autokatastar/pregled/api/health >/dev/null 2>&1; then break; fi
     [[ "$attempt" -lt 20 ]] || { echo 'Annotation service did not become ready.' >&2; exit 1; }
