@@ -19,6 +19,12 @@ const lineage = (page: Page) => page.locator('#proposal-details-panel [data-prop
 
 test('the original lists its counterproposals, each opens, and an unpublished source is named as a draft', async ({ mockApi: page }) => {
   test.setTimeout(60_000);
+  const server = createSharedProposalServer();
+  server.records.set('901', {
+    id: 901, proposalId: 'c2-published-fork', title: 'Published counterproposal', goal: 'single-building',
+    lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID], geometry: { type: 'Polygon', coordinates: square },
+  });
+  await attachSharedProposalServer(page, server);
   await page.route('**/proposals/879/lineage', route => route.fulfill({ json: {
     id: 879, proposalId: 'c2-original',
     source: { published: false, proposalId: 'p-draft', title: 'First sketch' },
@@ -28,7 +34,7 @@ test('the original lists its counterproposals, each opens, and an unpublished so
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   const original = await seed(page, { proposalId: 'c2-original', serverProposalId: '879', title: 'Original plan',
     sourceProposalId: 'p-draft', copiedFromName: 'First sketch' });
-  await seed(page, { title: 'Local counterproposal', sourceProposalId: original, copiedFromName: 'Original plan' });
+  await seed(page, { proposalId: '901', title: 'Local counterproposal', sourceProposalId: original, copiedFromName: 'Original plan' });
 
   await showProposal(page, original);
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
@@ -47,11 +53,17 @@ test('the original lists its counterproposals, each opens, and an unpublished so
   await expect(page.locator('#proposal-details-panel')).toContainText('Local counterproposal');
   // The fork links back to the original it was made from.
   await expect(page.locator('#proposal-details-panel .proposal-based-on-link')).toHaveText('Original plan');
+  await showProposal(page, original);
+  if (await expand.isVisible()) await expand.click();
+  await lineage(page).getByRole('button', { name: 'Published counterproposal' }).click();
+  await expect(page.locator('#proposal-details-title')).toHaveText('Published counterproposal');
+  expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('901').title)).toBe('Local counterproposal');
+  expect(await page.evaluate(() => (window as any).proposalStorage.getProposalByServerRowId('901').title)).toBe('Published counterproposal');
 });
 
-// A fork whose source was published but never downloaded here: the Based on name becomes a link,
-// and the link opens the published source from the server.
-test('a published source this browser never held is a Based on link that opens it from the server', async ({ mockApi: page }) => {
+// A server-resolved source replaces any ambiguous local link and opens only the explicitly linked
+// published copy, even when other local keys equal its row ID or authored ID.
+test('a published source link selects its explicit row copy despite local key collisions', async ({ mockApi: page }) => {
   const server = createSharedProposalServer();
   server.records.set('880', {
     id: 880, proposalId: 'c2-published-source', title: 'Published source', goal: 'single-building',
@@ -67,7 +79,9 @@ test('a published source this browser never held is a Based on link that opens i
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   const fork = await seed(page, { proposalId: 'c2-fork', serverProposalId: '902', title: 'Fork of a published source',
     sourceProposalId: 'c2-published-source', copiedFromName: 'Published source' });
-  expect(await page.evaluate(() => (window as any).getProposalByIdOrHash('880'))).toBeFalsy();
+  await seed(page, { proposalId: '880', title: 'Unrelated numeric local record' });
+  await seed(page, { proposalId: 'c2-published-source', title: 'Local authored-key collision' });
+  await seed(page, { proposalId: 'p-actual-source-copy', serverProposalId: '880', title: 'Published source' });
 
   await showProposal(page, fork);
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
@@ -75,7 +89,9 @@ test('a published source this browser never held is a Based on link that opens i
   const link = page.locator('#proposal-details-panel .proposal-based-on-link');
   await expect(link).toHaveText('Published source');
   await link.click();
-  await expect(page.locator('#proposal-details-panel')).toContainText('Published source');
+  await expect(page.locator('#proposal-details-title')).toHaveText('Published source');
+  expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('880').title)).toBe('Unrelated numeric local record');
+  expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('c2-published-source').title)).toBe('Local authored-key collision');
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .some((p: any) => String(p.serverProposalId) === '880'))).toBe(true);
 });

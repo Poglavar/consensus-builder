@@ -72,6 +72,15 @@ The proposal record panel labels its copy action “Copy local ID”: it copies 
 `proposalId`, not its server row or chain token/account. An imported authored ID can be the local
 key, but this control does not assert those namespaces are interchangeable.
 
+The fork list keeps published row references and local record keys separate when merging and
+opening entries. Only an explicit `serverProposalId` deduplicates a local copy against a server
+entry; equal authored/local strings do not. A published link opens the unique row-linked copy or
+imports that row, while a missing local link never falls through to a server lookup. A source
+resolved by the lineage API replaces any locally inferred source link. The stored unqualified
+`sourceProposalId` / `replacementOfProposalId` / `copiedFromProposalId` fields and local parent
+attribution still require a coordinated contract correction; this navigation fix does not make
+those historical references unambiguous. [Lineage presentation](frontend/js/proposals/lineage.js).
+
 Browser chain imports use chain family, network, contract/program and token/account together.
 EVM network/token numbers compare in decimal or hexadecimal form, and EVM contract addresses
 compare without case; Solana and Canton program/account case is preserved. A shared parcel set,

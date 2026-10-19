@@ -15,6 +15,11 @@
 
     const SOURCE_KEYS = ['sourceProposalId', 'replacementOfProposalId', 'copiedFromProposalId'];
     const idOf = value => (value === undefined || value === null ? '' : String(value));
+    const rowIdOf = value => {
+        const read = typeof root?.getSerialProposalId === 'function' ? root.getSerialProposalId
+            : (typeof require === 'function' ? require('./sharing.js').getSerialProposalId : null);
+        return read ? read({ serverProposalId: value }) : null;
+    };
 
     function sourceIdsOf(record) {
         return SOURCE_KEYS.map(key => idOf(record && record[key])).filter(Boolean);
@@ -47,16 +52,18 @@
     }
 
     // One list: the server's published forks first (newest first, as served), then forks that exist
-    // only in this browser. A local copy of a published fork is the same entry, not a second one.
+    // only in this browser. Only an explicit row reference identifies a local copy of a published
+    // fork. Equal local/authored keys in the two lists are not evidence of shared identity.
     function mergeDerived(serverList, localList) {
         const entries = [];
-        const seen = new Set();
+        const seenRows = new Set();
+        const seenLocalKeys = new Set();
         (Array.isArray(serverList) ? serverList : []).forEach(entry => {
-            const keys = [idOf(entry.id), idOf(entry.proposalId)].filter(Boolean);
-            if (!keys.length || keys.some(key => seen.has(key))) return;
-            keys.forEach(key => seen.add(key));
+            const proposalRowId = rowIdOf(entry?.id);
+            if (!proposalRowId || seenRows.has(proposalRowId)) return;
+            seenRows.add(proposalRowId);
             entries.push({
-                lookup: idOf(entry.id) || idOf(entry.proposalId),
+                proposalRowId,
                 title: entry.title || null,
                 author: entry.author || null,
                 status: entry.status || null,
@@ -65,16 +72,18 @@
             });
         });
         (Array.isArray(localList) ? localList : []).forEach(record => {
-            const keys = [idOf(record.serverProposalId), idOf(record.proposalId)].filter(Boolean);
-            if (keys.some(key => seen.has(key))) return;
-            keys.forEach(key => seen.add(key));
+            const localProposalId = idOf(record?.proposalId);
+            const proposalRowId = rowIdOf(record?.serverProposalId);
+            if (!localProposalId || seenLocalKeys.has(localProposalId) || (proposalRowId && seenRows.has(proposalRowId))) return;
+            seenLocalKeys.add(localProposalId);
+            if (proposalRowId) seenRows.add(proposalRowId);
             entries.push({
-                lookup: idOf(record.proposalId),
+                localProposalId,
                 title: record.title || record.name || null,
                 author: record.author || null,
                 status: record.lifecycleStatus || null,
                 landFork: !!record.landFork,
-                published: !!record.serverProposalId
+                published: !!proposalRowId
             });
         });
         return entries;
@@ -148,21 +157,25 @@
         return response.json();
     }
 
-    // Open a related proposal: this browser's record if it has one, else the published record,
-    // fetched the way a Proposals list row opens it.
-    async function open(lookup) {
-        const key = idOf(lookup);
-        if (!key) return;
-        const local = typeof root.getProposalByIdOrHash === 'function' ? root.getProposalByIdOrHash(key) : null;
-        if (local && typeof root.focusProposalDetails === 'function') {
-            root.focusProposalDetails(key, { centerOnProposal: true, showDetails: true });
-            return;
-        }
+    // Navigation keeps the source namespace. A server row can only select an explicitly linked
+    // local copy; a local link never falls through to a request for an equal-looking server row.
+    async function open(reference) {
+        const localProposalId = idOf(reference?.localProposalId);
+        const proposalRowId = rowIdOf(reference?.proposalRowId);
+        if (!!localProposalId === !!proposalRowId) return;
         try {
-            const proposal = await root.importServerProposal(key);
-            root.openProposalFromList(root.getProposalKey(proposal) || key, { proposal, closeSheets: true });
+            let proposal;
+            if (localProposalId) {
+                proposal = root.proposalStorage?.getProposal(localProposalId);
+                if (!proposal || idOf(proposal.proposalId) !== localProposalId) throw new Error('Local proposal not found');
+            } else {
+                proposal = root.proposalStorage?.getProposalByServerRowId(proposalRowId)
+                    || await root.importServerProposal(proposalRowId);
+                if (rowIdOf(proposal?.serverProposalId) !== proposalRowId) throw new Error('Published proposal row mismatch');
+            }
+            root.openProposalFromList(idOf(proposal.proposalId), { proposal, closeSheets: true, centerOnProposal: true });
         } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ProposalLineage] could not open proposal ${key}`, error);
+            console.warn(`[${new Date().toISOString()}] [ProposalLineage] could not open related proposal`, error);
             if (typeof root.showProposalAlertMessage === 'function') {
                 root.showProposalAlertMessage('proposal_with_id_not_found', t('panel.proposal.lineage.openFailed', 'That proposal could not be opened.'));
             }
@@ -176,22 +189,25 @@
             entry.landFork ? t('panel.proposal.lineage.differentLand', 'on different land') : null,
             entry.published ? null : t('panel.proposal.lineage.localOnly', 'only in this browser')
         ].filter(Boolean).join(' · ');
-        return `<li><button type="button" class="cb-link proposal-lineage__link" data-lineage-open="${esc(entry.lookup)}">${esc(title)}</button>${notes ? ` <span class="proposal-lineage__note">${esc(notes)}</span>` : ''}</li>`;
+        const target = entry.proposalRowId ? `data-lineage-row-id="${esc(entry.proposalRowId)}"`
+            : `data-lineage-local-id="${esc(entry.localProposalId)}"`;
+        return `<li><button type="button" class="cb-link proposal-lineage__link" ${target}>${esc(title)}</button>${notes ? ` <span class="proposal-lineage__note">${esc(notes)}</span>` : ''}</li>`;
     }
 
     // The source named by the "Based on" row, when this browser does not hold it: a
     // link when it was published, otherwise said to be a draft that was never shared.
     function patchSourceRow(container, source) {
-        const name = container && container.querySelector('.proposal-based-on-name');
+        const name = container && container.querySelector('.proposal-based-on-name, .proposal-based-on-link');
         if (!name || !source) return;
-        if (source.published) {
+        const proposalRowId = source.published ? rowIdOf(source.id) : null;
+        if (proposalRowId) {
             const link = root.document.createElement('button');
             link.type = 'button';
             link.className = 'cb-link proposal-based-on-link';
             link.textContent = source.title || name.textContent;
-            link.setAttribute('data-lineage-open', idOf(source.id || source.proposalId));
+            link.setAttribute('data-lineage-row-id', proposalRowId);
             name.replaceWith(link);
-        } else {
+        } else if (!source.published && !name.matches('.proposal-based-on-link')) {
             name.textContent = t('panel.proposal.lineage.unpublishedSource', '{{name}} (a draft that was never published)',
                 { name: source.title || name.textContent });
         }
@@ -205,11 +221,11 @@
             slot.dataset.lineageBound = 'true';
             const panel = slot.closest('.proposal-description-row') || slot.parentElement;
             (panel || slot).addEventListener('click', event => {
-                const control = event.target.closest('[data-lineage-open]');
+                const control = event.target.closest('[data-lineage-row-id], [data-lineage-local-id]');
                 if (!control) return;
                 event.preventDefault();
                 event.stopPropagation();
-                open(control.getAttribute('data-lineage-open'));
+                open({ proposalRowId: control.getAttribute('data-lineage-row-id'), localProposalId: control.getAttribute('data-lineage-local-id') });
             });
         }
         let all = [];

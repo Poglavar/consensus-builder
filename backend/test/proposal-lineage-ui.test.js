@@ -1,11 +1,12 @@
 // proposals/lineage.js — forks link back to their source and an original lists what was made from it.
 // The pure parts: renaming a source id to its published record, finding local forks, and merging the
 // server's list with this browser's.
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const Lineage = require('../../frontend/js/proposals/lineage.js');
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 describe('publishedSourceIds', () => {
     it('names a since-published local source by its published record', () => {
@@ -38,9 +39,67 @@ describe('localDerived / mergeDerived', () => {
     it('lists published forks first and does not repeat a local copy of one', () => {
         const server = [{ id: 901, proposalId: 'c2-fork-b', title: 'Fork B', author: 'Owner C', status: 'Active', landFork: true }];
         const merged = Lineage.mergeDerived(server, [forkA, forkB]);
-        expect(merged.map(e => [e.lookup, e.title, e.published, e.landFork])).toEqual([
-            ['901', 'Fork B', true, true],
-            ['p-a', 'Fork A', false, false]
+        expect(merged.map(e => [e.proposalRowId, e.localProposalId, e.title, e.published, e.landFork])).toEqual([
+            ['901', undefined, 'Fork B', true, true],
+            [undefined, 'p-a', 'Fork A', false, false]
         ]);
+    });
+
+    it('keeps local keys distinct from equal row IDs or published authored IDs', () => {
+        const merged = Lineage.mergeDerived([{ id: 42, proposalId: 'p-same', title: 'Published fork' }], [
+            { proposalId: '42', title: 'Numeric local fork' },
+            { proposalId: 'p-same', title: 'Independent local fork' },
+            { proposalId: 'p-copy', serverProposalId: '42', title: 'Actual downloaded copy' }
+        ]);
+        expect(merged.map(e => [e.proposalRowId, e.localProposalId])).toEqual([
+            ['42', undefined], [undefined, '42'], [undefined, 'p-same']
+        ]);
+    });
+
+    it('requires a row ID for server entries and does not infer publication from a local key', () => {
+        const merged = Lineage.mergeDerived([{ proposalId: 'p-no-row' }, { id: 'invalid' }], [
+            { proposalId: '42', id: 42, serverProposalId: 'invalid' }
+        ]);
+        expect(merged).toHaveLength(1);
+        expect(merged[0]).toMatchObject({ localProposalId: '42', published: false });
+    });
+});
+
+describe('qualified lineage navigation', () => {
+    it('opens the explicit local copy of a server row despite an equal local key', async () => {
+        const published = { proposalId: 'p-published', serverProposalId: '42' };
+        const getProposal = vi.fn(() => ({ proposalId: '42', title: 'Unrelated draft' }));
+        const getProposalByServerRowId = vi.fn(() => published);
+        const openProposalFromList = vi.fn();
+        vi.stubGlobal('proposalStorage', { getProposal, getProposalByServerRowId });
+        vi.stubGlobal('openProposalFromList', openProposalFromList);
+        await Lineage.open({ proposalRowId: '42' });
+        expect(getProposal).not.toHaveBeenCalled();
+        expect(getProposalByServerRowId).toHaveBeenCalledWith('42');
+        expect(openProposalFromList).toHaveBeenCalledWith('p-published', expect.objectContaining({ proposal: published }));
+    });
+
+    it('imports a server row when no explicitly linked local copy exists', async () => {
+        const published = { proposalId: 'p-imported', serverProposalId: '42' };
+        const importServerProposal = vi.fn(async () => published);
+        const openProposalFromList = vi.fn();
+        vi.stubGlobal('proposalStorage', { getProposalByServerRowId: () => null });
+        vi.stubGlobal('importServerProposal', importServerProposal);
+        vi.stubGlobal('openProposalFromList', openProposalFromList);
+        await Lineage.open({ proposalRowId: '42' });
+        expect(importServerProposal).toHaveBeenCalledWith('42');
+        expect(openProposalFromList).toHaveBeenCalledWith('p-imported', expect.objectContaining({ proposal: published }));
+    });
+
+    it('never imports a missing local link or substitutes a row alias', async () => {
+        const importServerProposal = vi.fn();
+        const openProposalFromList = vi.fn();
+        vi.stubGlobal('proposalStorage', { getProposal: () => ({ proposalId: 'p-row-copy', serverProposalId: '42' }) });
+        vi.stubGlobal('importServerProposal', importServerProposal);
+        vi.stubGlobal('openProposalFromList', openProposalFromList);
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        await Lineage.open({ localProposalId: '42' });
+        expect(importServerProposal).not.toHaveBeenCalled();
+        expect(openProposalFromList).not.toHaveBeenCalled();
     });
 });
