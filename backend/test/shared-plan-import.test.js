@@ -246,6 +246,51 @@ describe('shared-plan import boundary', () => {
         expect(result.requests).toBe(1);
     });
 
+    it('loads large named plans in ordered batches of at most 1000 unique ids', async () => {
+        const ids = Array.from({ length: 1121 }, (_, index) => `id-${index}`);
+        const fetch = vi.fn(async (_url, options) => {
+            const chunk = JSON.parse(options.body).ids;
+            return { ok: true, json: async () => ({ items: chunk.map(id => ({ id, proposal: { proposalId: id } })) }) };
+        });
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+
+        const result = await fetchSharedProposalBatch([...ids, ids[0], ids[1120]], 'http://api.test');
+
+        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(JSON.parse(fetch.mock.calls[0][1].body).ids).toHaveLength(1000);
+        expect(JSON.parse(fetch.mock.calls[1][1].body).ids).toEqual(ids.slice(1000));
+        expect(result).toMatchObject({ supported: true, requests: 2 });
+        expect(result.records.size).toBe(1121);
+    });
+
+    it('keeps first-chunk results and falls back when a later batch is malformed or unavailable', async () => {
+        const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`);
+        const fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[0], proposal: { proposalId: ids[0] } }] }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ nope: [] }) });
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+
+        const result = await fetchSharedProposalBatch(ids, 'http://api.test');
+
+        expect(result).toMatchObject({ supported: false, requests: 2 });
+        expect(result.records.get(ids[0])).toEqual({ proposalId: ids[0] });
+        expect(result.records.size).toBe(1);
+    });
+
+    it('merges missing and serialization errors from every batch', async () => {
+        const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`);
+        const fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[0], proposal: null, code: 'serialization-error', detail: 'old record' }] }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[1000], proposal: null }] }) });
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch, getShareI18nHelper: () => (_key, fallback) => fallback });
+
+        const result = await fetchSharedProposalBatch(ids, 'http://api.test');
+
+        expect(result).toMatchObject({ supported: false, requests: 2 });
+        expect([...result.missing]).toEqual([ids[0], ids[1000]]);
+        expect(result.errors.get(ids[0])).toContain('old record');
+    });
+
     it('imports a missing proposal parked, ready for the scoped apply pass', async () => {
         const imported = [];
         const proposalStorage = {
