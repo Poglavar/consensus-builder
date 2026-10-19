@@ -1886,11 +1886,12 @@
             "basedOn": "Based on",
             "lineage": {
                 "title": "Counterproposals and forks ({{count}})",
-                "none": "No counterproposals yet. Fork proposal makes one that links back here.",
+                "none": "No related proposals found in this publication store or this browser.",
+                "unavailable": "Published proposal relationships could not be loaded.",
                 "untitled": "Untitled proposal",
                 "differentLand": "on different land",
                 "localOnly": "only in this browser",
-                "unpublishedSource": "{{name}} (a draft that was never published)",
+                "sourceNotFound": "{{name}} (source not found in this publication store)",
                 "openFailed": "That proposal could not be opened."
             },
             "agent": {

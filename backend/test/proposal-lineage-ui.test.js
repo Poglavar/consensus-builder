@@ -37,7 +37,7 @@ describe('localDerived / mergeDerived', () => {
     });
 
     it('lists published forks first and does not repeat a local copy of one', () => {
-        const server = [{ id: 901, proposalId: 'c2-fork-b', title: 'Fork B', author: 'Owner C', status: 'Active', landFork: true }];
+        const server = [{ proposalRowId: 901, authoredProposalId: 'c2-fork-b', title: 'Fork B', author: 'Owner C', status: 'Active', landFork: true }];
         const merged = Lineage.mergeDerived(server, [forkA, forkB]);
         expect(merged.map(e => [e.proposalRowId, e.localProposalId, e.title, e.published, e.landFork])).toEqual([
             ['901', undefined, 'Fork B', true, true],
@@ -46,7 +46,7 @@ describe('localDerived / mergeDerived', () => {
     });
 
     it('keeps local keys distinct from equal row IDs or published authored IDs', () => {
-        const merged = Lineage.mergeDerived([{ id: 42, proposalId: 'p-same', title: 'Published fork' }], [
+        const merged = Lineage.mergeDerived([{ proposalRowId: 42, authoredProposalId: 'p-same', title: 'Published fork' }], [
             { proposalId: '42', title: 'Numeric local fork' },
             { proposalId: 'p-same', title: 'Independent local fork' },
             { proposalId: 'p-copy', serverProposalId: '42', title: 'Actual downloaded copy' }
@@ -57,7 +57,7 @@ describe('localDerived / mergeDerived', () => {
     });
 
     it('requires a row ID for server entries and does not infer publication from a local key', () => {
-        const merged = Lineage.mergeDerived([{ proposalId: 'p-no-row' }, { id: 'invalid' }], [
+        const merged = Lineage.mergeDerived([{ authoredProposalId: 'p-no-row' }, { proposalRowId: 'invalid' }], [
             { proposalId: '42', id: 42, serverProposalId: 'invalid' }
         ]);
         expect(merged).toHaveLength(1);

@@ -1911,11 +1911,12 @@
             "basedOn": "Temeljeno na",
             "lineage": {
                 "title": "Protuprijedlozi i kopije ({{count}})",
-                "none": "Još nema protuprijedloga. „Kopiraj prijedlog” stvara jedan koji vodi natrag ovamo.",
+                "none": "Nijedan povezani prijedlog nije pronađen u ovoj bazi objava ni u ovom pregledniku.",
+                "unavailable": "Nije moguće učitati objavljene veze između prijedloga.",
                 "untitled": "Prijedlog bez naziva",
                 "differentLand": "na drugom zemljištu",
                 "localOnly": "samo u ovom pregledniku",
-                "unpublishedSource": "{{name}} (nacrt koji nikad nije objavljen)",
+                "sourceNotFound": "{{name}} (izvor nije pronađen u ovoj bazi objava)",
                 "openFailed": "Taj prijedlog nije moguće otvoriti."
             },
             "agent": {

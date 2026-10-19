@@ -1924,11 +1924,12 @@
             "basedOn": "Basado en",
             "lineage": {
                 "title": "Contrapropuestas y copias ({{count}})",
-                "none": "Aún no hay contrapropuestas. «Duplicar propuesta» crea una que enlaza de vuelta aquí.",
+                "none": "No se encontraron propuestas relacionadas en este registro de publicaciones ni en este navegador.",
+                "unavailable": "No se pudieron cargar las relaciones publicadas entre propuestas.",
                 "untitled": "Propuesta sin título",
                 "differentLand": "en otro terreno",
                 "localOnly": "solo en este navegador",
-                "unpublishedSource": "{{name}} (un borrador que nunca se publicó)",
+                "sourceNotFound": "{{name}} (fuente no encontrada en este registro de publicaciones)",
                 "openFailed": "No se pudo abrir esa propuesta."
             },
             "agent": {

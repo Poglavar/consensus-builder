@@ -1624,7 +1624,8 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     // source's id in proposal_data (sourceProposalId / replacementOfProposalId / copiedFromProposalId,
     // written by the browser, frontend/js/proposals/create.js); this resolves the source when it was
     // published and lists every published record that names this one as its source, so the original
-    // can show its counterproposals. A source that was only ever a local draft is reported as such.
+    // can show its counterproposals. An absent source lookup establishes only that this store
+    // cannot resolve the reference; it says nothing about prior publication or other stores.
     app.get('/proposals/:id/lineage', async (req, res) => {
         try {
             const target = await pool.query(`
@@ -1646,8 +1647,8 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 `, [String(row.source_key)]);
                 const hit = found.rows[0];
                 source = hit
-                    ? { published: true, id: hit.id, proposalId: hit.proposal_id, title: hit.title || hit.name || null, status: hit.effective_status }
-                    : { published: false, proposalId: String(row.source_key), title: row.source_name || null };
+                    ? { resolution: 'resolved', proposalRowId: hit.id, authoredProposalId: hit.proposal_id, title: hit.title || hit.name || null, status: hit.effective_status }
+                    : { resolution: 'not-found', reference: String(row.source_key), title: row.source_name || null };
             }
 
             const keys = [String(row.proposal_id), String(row.id)];
@@ -1663,12 +1664,12 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 LIMIT 50
             `, [keys, row.id]);
             res.json({
-                id: row.id,
-                proposalId: row.proposal_id,
+                proposalRowId: row.id,
+                authoredProposalId: row.proposal_id,
                 source,
                 derived: derived.rows.map(entry => ({
-                    id: entry.id,
-                    proposalId: entry.proposal_id,
+                    proposalRowId: entry.id,
+                    authoredProposalId: entry.proposal_id,
                     title: entry.title || entry.name || null,
                     author: entry.author || null,
                     createdAt: entry.created_at,

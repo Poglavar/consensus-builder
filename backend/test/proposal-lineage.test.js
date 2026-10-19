@@ -25,10 +25,16 @@ describe('GET /proposals/:id/lineage', () => {
         ]);
         const res = await request(server).get('/proposals/879/lineage');
         expect(res.status).toBe(200);
-        expect(res.body.source).toEqual({ published: true, id: 700, proposalId: 'c2-older', title: 'Older plan', status: 'Active' });
-        expect(res.body.derived.map(d => [d.proposalId, d.title, d.landFork])).toEqual([
-            ['c2-fork-b', 'Counter B', false], ['c2-fork-a', 'Counter A', true]
+        expect(res.body).toMatchObject({ proposalRowId: 879, authoredProposalId: 'c2-orig' });
+        expect(res.body.source).toEqual({ resolution: 'resolved', proposalRowId: 700, authoredProposalId: 'c2-older', title: 'Older plan', status: 'Active' });
+        expect(res.body.derived.map(d => [d.proposalRowId, d.authoredProposalId, d.title, d.landFork])).toEqual([
+            [901, 'c2-fork-b', 'Counter B', false], [900, 'c2-fork-a', 'Counter A', true]
         ]);
+        for (const record of [res.body, res.body.source, ...res.body.derived]) {
+            expect(record).not.toHaveProperty('id');
+            expect(record).not.toHaveProperty('proposalId');
+            expect(record).not.toHaveProperty('published');
+        }
         const calls = pool.getCalls();
         expect(calls[0].params).toEqual(['879']);
         expect(calls[1].params).toEqual(['c2-older']);
@@ -39,7 +45,7 @@ describe('GET /proposals/:id/lineage', () => {
         expect(calls[2].sql).toMatch(/id <> \$2/);
     });
 
-    it('reports a source that was never published as an unpublished draft, by its stored name', async () => {
+    it('reports an unresolved source without claiming a publication history or identifier namespace', async () => {
         const { app: server } = app([
             { rows: [{ id: 879, proposal_id: 'c2-orig', source_key: 'p-local', source_name: 'Subdivide · 3 parcels' }] },
             { rows: [] },
@@ -47,7 +53,7 @@ describe('GET /proposals/:id/lineage', () => {
         ]);
         const res = await request(server).get('/proposals/c2-orig/lineage');
         expect(res.status).toBe(200);
-        expect(res.body.source).toEqual({ published: false, proposalId: 'p-local', title: 'Subdivide · 3 parcels' });
+        expect(res.body.source).toEqual({ resolution: 'not-found', reference: 'p-local', title: 'Subdivide · 3 parcels' });
         expect(res.body.derived).toEqual([]);
     });
 

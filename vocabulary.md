@@ -81,6 +81,17 @@ resolved by the lineage API replaces any locally inferred source link. The store
 attribution still require a coordinated contract correction; this navigation fix does not make
 those historical references unambiguous. [Lineage presentation](frontend/js/proposals/lineage.js).
 
+The lineage API names `proposalRowId` and `authoredProposalId` separately for its subject,
+resolved source and derived entries. A source has `resolution: 'resolved'` with those identifiers,
+or `resolution: 'not-found'` with the unqualified stored `reference` and optional title. A failed
+lookup cannot establish that a source was never published, is a draft, or is absent from another
+store. The browser describes missing sources within this publication store and shows an
+unavailable notice when fetching fails; a failed request cannot produce an empty-result claim.
+**2026-10-20 API contract change:** the lineage response replaces `id` / `proposalId` and its
+`published` boolean with the qualified fields and resolution outcome; clients must use this one
+response contract. This changes neither stored lineage nor its historical identity limitations.
+[Lineage route](backend/routes/proposals.js).
+
 Browser chain imports use chain family, network, contract/program and token/account together.
 EVM network/token numbers compare in decimal or hexadecimal form, and EVM contract addresses
 compare without case; Solana and Canton program/account case is preserved. A shared parcel set,

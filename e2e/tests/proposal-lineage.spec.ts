@@ -1,6 +1,6 @@
 // Purpose: an original proposal lists the counterproposals and forks made from it (the server's
-// published ones and this browser's drafts), each opens from the list, and a fork whose source was
-// never published says so instead of showing a dead name.
+// published ones and this browser's drafts), each opens from the list, and a fork whose source
+// is not found in this publication store says so without inventing a publication history.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID, showProposal } from '../helpers/runtime';
 import type { Page } from '@playwright/test';
@@ -17,7 +17,7 @@ async function seed(page: Page, record: Record<string, unknown>): Promise<string
 
 const lineage = (page: Page) => page.locator('#proposal-details-panel [data-proposal-lineage]');
 
-test('the original lists its counterproposals, each opens, and an unpublished source is named as a draft', async ({ mockApi: page }) => {
+test('the original lists its counterproposals, each opens, and a missing source stays unresolved', async ({ mockApi: page }) => {
   test.setTimeout(60_000);
   const server = createSharedProposalServer();
   server.records.set('901', {
@@ -26,9 +26,9 @@ test('the original lists its counterproposals, each opens, and an unpublished so
   });
   await attachSharedProposalServer(page, server);
   await page.route('**/proposals/879/lineage', route => route.fulfill({ json: {
-    id: 879, proposalId: 'c2-original',
-    source: { published: false, proposalId: 'p-draft', title: 'First sketch' },
-    derived: [{ id: 901, proposalId: 'c2-published-fork', title: 'Published counterproposal', author: 'Owner C', status: 'Active', landFork: true }]
+    proposalRowId: 879, authoredProposalId: 'c2-original',
+    source: { resolution: 'not-found', reference: 'p-draft', title: 'First sketch' },
+    derived: [{ proposalRowId: 901, authoredProposalId: 'c2-published-fork', title: 'Published counterproposal', author: 'Owner C', status: 'Active', landFork: true }]
   } }));
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
@@ -45,9 +45,9 @@ test('the original lists its counterproposals, each opens, and an unpublished so
     'Published counterproposal Owner C · on different land',
     'Local counterproposal only in this browser'
   ]);
-  // The source this browser never had is reported by the server as a draft that was never shared.
+  // An absent lookup does not prove that the source was never published.
   await expect(page.locator('#proposal-details-panel .proposal-based-on-row'))
-    .toContainText('First sketch (a draft that was never published)');
+    .toContainText('First sketch (source not found in this publication store)');
 
   await lineage(page).getByRole('button', { name: 'Local counterproposal' }).click();
   await expect(page.locator('#proposal-details-panel')).toContainText('Local counterproposal');
@@ -70,9 +70,10 @@ test('a published source link selects its explicit row copy despite local key co
     lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID], geometry: { type: 'Polygon', coordinates: square },
   });
   await attachSharedProposalServer(page, server);
-  await page.route('**/proposals/902/lineage', route => route.fulfill({ json: {
-    id: 902, proposalId: 'c2-fork',
-    source: { published: true, id: 880, proposalId: 'c2-published-source', title: 'Published source' },
+  let lineageUnavailable = false;
+  await page.route('**/proposals/902/lineage', route => lineageUnavailable ? route.fulfill({ status: 503, json: { error: 'Unavailable' } }) : route.fulfill({ json: {
+    proposalRowId: 902, authoredProposalId: 'c2-fork',
+    source: { resolution: 'resolved', proposalRowId: 880, authoredProposalId: 'c2-published-source', title: 'Published source' },
     derived: []
   } }));
   await openCity(page);
@@ -94,4 +95,9 @@ test('a published source link selects its explicit row copy despite local key co
   expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('c2-published-source').title)).toBe('Local authored-key collision');
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .some((p: any) => String(p.serverProposalId) === '880'))).toBe(true);
+  lineageUnavailable = true;
+  await showProposal(page, fork);
+  if (await expand.isVisible()) await expand.click();
+  await expect(lineage(page)).toContainText('Published proposal relationships could not be loaded.');
+  await expect(lineage(page)).not.toContainText('No related proposals');
 });

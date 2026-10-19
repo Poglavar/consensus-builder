@@ -59,7 +59,7 @@
         const seenRows = new Set();
         const seenLocalKeys = new Set();
         (Array.isArray(serverList) ? serverList : []).forEach(entry => {
-            const proposalRowId = rowIdOf(entry?.id);
+            const proposalRowId = rowIdOf(entry?.proposalRowId);
             if (!proposalRowId || seenRows.has(proposalRowId)) return;
             seenRows.add(proposalRowId);
             entries.push({
@@ -149,7 +149,7 @@
     const esc = value => (typeof root.escapeHtml === 'function' ? root.escapeHtml(idOf(value)) : idOf(value));
 
     async function fetchLineage(proposal) {
-        const id = idOf(proposal && proposal.serverProposalId);
+        const id = rowIdOf(proposal && proposal.serverProposalId);
         if (!id || typeof root.fetch !== 'function') return null;
         const base = (typeof root.getBackendBase === 'function' ? root.getBackendBase() : '').replace(/\/$/, '');
         const response = await root.fetch(`${base}/proposals/${encodeURIComponent(id)}/lineage`);
@@ -194,12 +194,12 @@
         return `<li><button type="button" class="cb-link proposal-lineage__link" ${target}>${esc(title)}</button>${notes ? ` <span class="proposal-lineage__note">${esc(notes)}</span>` : ''}</li>`;
     }
 
-    // The source named by the "Based on" row, when this browser does not hold it: a
-    // link when it was published, otherwise said to be a draft that was never shared.
+    // A resolved source has a row-qualified link. A missing source is only a lookup result in
+    // this publication store; neither its past publication nor its existence elsewhere is known.
     function patchSourceRow(container, source) {
         const name = container && container.querySelector('.proposal-based-on-name, .proposal-based-on-link');
         if (!name || !source) return;
-        const proposalRowId = source.published ? rowIdOf(source.id) : null;
+        const proposalRowId = source.resolution === 'resolved' ? rowIdOf(source.proposalRowId) : null;
         if (proposalRowId) {
             const link = root.document.createElement('button');
             link.type = 'button';
@@ -207,8 +207,8 @@
             link.textContent = source.title || name.textContent;
             link.setAttribute('data-lineage-row-id', proposalRowId);
             name.replaceWith(link);
-        } else if (!source.published && !name.matches('.proposal-based-on-link')) {
-            name.textContent = t('panel.proposal.lineage.unpublishedSource', '{{name}} (a draft that was never published)',
+        } else if (source.resolution === 'not-found' && !name.matches('.proposal-based-on-link')) {
+            name.textContent = t('panel.proposal.lineage.sourceNotFound', '{{name}} (source not found in this publication store)',
                 { name: source.title || name.textContent });
         }
     }
@@ -239,11 +239,15 @@
         if (slot.dataset.lineageFor !== key) return;
         patchSourceRow(slot.parentElement, lineage && lineage.source);
         const entries = mergeDerived(lineage && lineage.derived, local);
-        if (!entries.length && !proposal.serverProposalId) { slot.hidden = true; return; }
+        const publishedRowId = rowIdOf(proposal.serverProposalId);
+        if (!entries.length && !publishedRowId) { slot.hidden = true; return; }
+        const unavailable = !!publishedRowId && !lineage;
         slot.hidden = false;
-        slot.innerHTML = `<p class="proposal-lineage__title">${esc(entries.length
+        const heading = entries.length
             ? t('panel.proposal.lineage.title', 'Counterproposals and forks ({{count}})', { count: entries.length })
-            : t('panel.proposal.lineage.none', 'No counterproposals yet. Fork proposal makes one that links back here.'))}</p>
+            : (unavailable ? '' : t('panel.proposal.lineage.none', 'No related proposals found in this publication store or this browser.'));
+        slot.innerHTML = `${heading ? `<p class="proposal-lineage__title">${esc(heading)}</p>` : ''}
+            ${unavailable ? `<p class="proposal-lineage__note">${esc(t('panel.proposal.lineage.unavailable', 'Published proposal relationships could not be loaded.'))}</p>` : ''}
             ${entries.length ? `<ul class="proposal-lineage__list">${entries.map(entryHtml).join('')}</ul>` : ''}`;
     }
 
