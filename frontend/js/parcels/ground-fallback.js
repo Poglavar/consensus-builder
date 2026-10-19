@@ -249,28 +249,14 @@
         return !(a.east < b.west || a.west > b.east || a.north < b.south || a.south > b.north);
     }
 
-    function hashString(text) {
-        let hash = 2166136261;
-        for (let i = 0; i < text.length; i += 1) {
-            hash ^= text.charCodeAt(i);
-            hash = Math.imul(hash, 16777619);
-        }
-        return (hash >>> 0).toString(16).padStart(8, '0');
-    }
-
-    // The register's own id when it has one; otherwise a digest of the geometry, which is stable
-    // for as long as the geometry is — the only kind of stability an anonymous feature can offer.
-    function externalFeatureId(feature) {
-        const props = feature.properties || {};
-        const candidates = [props.parcelId, props.parcel_id, props.PARCEL_ID, props.id, props.ID, props.OBJECTID, props.FID, props.gml_id, feature.id];
-        const found = candidates.find(value => value !== undefined && value !== null && String(value).trim() !== '');
-        if (found !== undefined) return `URL:${String(found).trim()}`;
-        return `URL:g${hashString(JSON.stringify(feature.geometry.coordinates))}`;
+    function customIdentity() {
+        return global.CustomUrlParcelIdentity
+            || (typeof require === 'function' ? require('./custom-url-identity.js') : null);
     }
 
     // Reads a reply and keeps only what the repository could accept. Rejects rather than repairs:
     // a register that returns points, open rings or coordinates in metres is reported, not guessed at.
-    function validateFeatureCollection(payload, viewBox) {
+    function validateFeatureCollection(payload, viewBox, sourceId) {
         const features = payload && Array.isArray(payload.features) ? payload.features : null;
         if (!features) throw new Error(t('groundFallback.url.notCollection', 'The reply is not a GeoJSON FeatureCollection.'));
         const seen = new Map();
@@ -278,7 +264,8 @@
         let rejected = 0;
         features.forEach(raw => {
             if (!raw || raw.type !== 'Feature' || !geometryIsPlausible(raw.geometry)) { rejected += 1; return; }
-            const id = externalFeatureId(raw);
+            const identity = customIdentity().featureIdentity(raw, sourceId);
+            const id = identity.parcelId;
             const previous = seen.get(id);
             if (previous) {
                 if (JSON.stringify(previous.geometry) !== JSON.stringify(raw.geometry)) {
@@ -286,7 +273,7 @@
                 }
                 return;
             }
-            const props = Object.assign({}, raw.properties || {}, { parcelId: id, id, parcel_id: id, provenance: 'user-url', estimated: false });
+            const props = Object.assign({}, raw.properties || {}, identity, { id, parcel_id: id, provenance: 'user-url', estimated: false });
             const feature = { type: 'Feature', properties: props, geometry: raw.geometry };
             if (viewBox && boxesTouch(geometryBbox(raw.geometry), viewBox)) overlapping += 1;
             seen.set(id, feature);
@@ -322,7 +309,7 @@
         if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error(t('groundFallback.url.invalid', 'That is not a complete URL.'));
         const kind = detectUrlKind(url);
         const payload = await fetchJson(urlForBox(url, kind, viewBox));
-        const sample = validateFeatureCollection(payload, viewBox);
+        const sample = validateFeatureCollection(payload, viewBox, customIdentity().sourceId(url));
         if (!sample.features.length) {
             throw new Error(sample.rejected
                 ? t('groundFallback.url.noPolygons', 'The reply holds {count} feature(s) but none is a closed polygon in longitude/latitude.', { count: sample.rejected })
@@ -335,11 +322,12 @@
     }
 
     function customUrlSource(url, kind, wholeCollection, sample) {
+        const sourceId = customIdentity().sourceId(url);
         const known = new Map();
         const remember = features => features.forEach(feature => known.set(feature.properties.parcelId, feature));
         if (wholeCollection) remember(wholeCollection);
         return {
-            id: `custom-url:${hashString(url)}`,
+            id: sourceId,
             kind: 'custom-url',
             url,
             urlKind: kind,
@@ -353,7 +341,7 @@
                     features = wholeCollection.filter(feature => boxesTouch(geometryBbox(feature.geometry), box));
                 } else {
                     const payload = await fetchJson(urlForBox(url, kind, box));
-                    features = validateFeatureCollection(payload, null).features;
+                    features = validateFeatureCollection(payload, null, sourceId).features;
                     remember(features);
                 }
                 return { features, returnsWGS84: true };
@@ -730,7 +718,6 @@
         detectUrlKind,
         urlForBox,
         validateFeatureCollection,
-        externalFeatureId,
         activeSource,
         installSource,
         clearSource,
