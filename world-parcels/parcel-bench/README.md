@@ -3,14 +3,22 @@
 **Current product target (clarified 2026-10-19):** infer plausible, imagery-supported plots for
 UrbanGameTheory when usable cadastral data is unavailable, especially in African/Asian villages
 and growth areas. Cadastre supplies boundary examples and a secondary check; exact registered
-parcel recovery is not the sole product objective. The next experiment needs imagery-based plot
-annotations and a separate frozen evaluation. Boundary learning, SAM 3 proposals and plot
-reconstruction are candidates to compare; their effectiveness under this target is still untested.
+parcel recovery is not the sole product objective. The first image-only offline diagnostic is complete;
+independent target-settlement imagery and human-reviewed labels are still needed. Boundary learning,
+SAM 3 proposals and plot reconstruction remain candidates for that broader evaluation.
 **Error priority:** preserve real divisions and avoid merging distinct plots. Extra subdivisions
 such as separate house, courtyard and vegetable-bed regions are acceptable even within one
 cadastral parcel. Evaluate false merges and visible-boundary recall first; track fragmentation as
 a secondary cost. Final regions must still have coherent, non-overlapping geometry.
 See [the current product contract and proposed next work](PLAN.md#current-product-target-plausible-plots-where-cadastre-is-unavailable).
+
+**First visible-division diagnostic (2026-10-19):** on nine Croatian images × three baseline seeds,
+disabling the 120 m² small-region merge left all probe outcomes unchanged: six joins across 81
+separation-pair evaluations, with full pair coverage. The comparison exposed invalid contour output;
+exact-cell polygon construction now preserves every assigned raster cell and passed validity,
+overlap and round-trip checks for all 54 candidate outputs. This is an **agent-draft development
+diagnostic**, not village validation or a model promotion. See the [results, evidence and reproduction
+commands](studies/visible-divisions-v1.md). No new training or inference was run.
 
 The cadastral benchmark, principles and results below document the historical experiments. Keep
 their original targets, scorers and decisions; a new product metric does not retroactively promote

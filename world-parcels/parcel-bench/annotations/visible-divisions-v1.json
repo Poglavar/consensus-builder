@@ -1,0 +1,673 @@
+{
+  "purpose": "Image-only physical/use-division probes for a bounded offline reconstruction diagnostic.",
+  "schema": "visible-division-v1",
+  "review_status": "agent-draft",
+  "coordinate_convention": "image-edge pixels: origin top-left, x right, y down; bbox is outer image extent",
+  "crs": "EPSG:3765",
+  "selection_receipt": "output/settlement-study-20261019/context/image-audit-sample.json",
+  "limitations": [
+    "Not human-verified; no legal ownership or registered parcel assertion.",
+    "Nine purposively selected Croatian development images; not independent target-settlement validation.",
+    "No predicted polygons or cadastral overlays used to place these anchors in this comparison.",
+    "Unmarked and occluded edges remain unassessed; same-surface probes are sparse fragmentation checks."
+  ],
+  "samples": [
+    {
+      "id": "tile_3022_33074",
+      "region": "zagreb-v2",
+      "image": "validation/tile_3022_33074.jpg",
+      "image_sha256": "cb039785e8520da49319f2d45e2cff9063c8182d44cd479e34824ea1d7ba9fcd",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        464179.2,
+        5080166.399999999,
+        464332.8,
+        5080320.0
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            500,
+            520
+          ],
+          "b": [
+            500,
+            590
+          ],
+          "evidence": "Light narrow divider between adjacent cultivated strips.",
+          "confidence": "high"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            540,
+            670
+          ],
+          "b": [
+            560,
+            840
+          ],
+          "evidence": "Broad hedge separates the central field from the southern cleared strip.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            480,
+            280
+          ],
+          "b": [
+            520,
+            390
+          ],
+          "evidence": "Crop edge separates planted field from exposed construction ground.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            450,
+            200
+          ],
+          "b": [
+            520,
+            220
+          ],
+          "evidence": "Two interior locations in the continuous northern crop.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_2971_33052",
+      "region": "zagreb-v2",
+      "image": "train/tile_2971_33052.jpg",
+      "image_sha256": "c9fc864af0e616704da2d80549b700a8c109d95d5e9d9900b1e8d8805e44c9cf",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        456345.6,
+        5076787.2,
+        456499.2,
+        5076940.8
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            194,
+            216
+          ],
+          "b": [
+            188,
+            344
+          ],
+          "evidence": "Vegetated dividing strip between the two western white-roof house plots.",
+          "confidence": "high"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            760,
+            470
+          ],
+          "b": [
+            754,
+            604
+          ],
+          "evidence": "Wall and garden strip between the middle eastern apartment plots.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            754,
+            604
+          ],
+          "b": [
+            770,
+            750
+          ],
+          "evidence": "Hedge and wall between the next two eastern apartment plots.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            730,
+            588
+          ],
+          "b": [
+            760,
+            620
+          ],
+          "evidence": "Two points on one flat roof.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_3005_33040",
+      "region": "zagreb-v2",
+      "image": "train/tile_3005_33040.jpg",
+      "image_sha256": "ffd756192caf10d9832fef532a757c8b87b0def0a27952452ca3e8c9708bc525",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        461568.0,
+        5074944.0,
+        461721.6,
+        5075097.6
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            330,
+            780
+          ],
+          "b": [
+            445,
+            710
+          ],
+          "evidence": "Vegetated strip and yard edge between adjacent detached houses southwest of the crossing.",
+          "confidence": "medium"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            830,
+            490
+          ],
+          "b": [
+            945,
+            403
+          ],
+          "evidence": "Garden strip separates the two northeastern houses south of the tram corridor.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            235,
+            440
+          ],
+          "b": [
+            535,
+            260
+          ],
+          "evidence": "Street separates the two developed areas.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            485,
+            260
+          ],
+          "b": [
+            530,
+            290
+          ],
+          "evidence": "Two points within the same roof.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_3262_31398",
+      "region": "split-v2",
+      "image": "validation/tile_3262_31398.jpg",
+      "image_sha256": "e989b0dbcf3f33c828ce8808614fe5e1d905bcfb03860e8ce8def19498efbdb9",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        501043.19999999995,
+        4822732.8,
+        501196.8,
+        4822886.399999999
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            400,
+            400
+          ],
+          "b": [
+            450,
+            550
+          ],
+          "evidence": "Vegetated gap separates the upper roof from the lower building group.",
+          "confidence": "medium"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            380,
+            720
+          ],
+          "b": [
+            550,
+            650
+          ],
+          "evidence": "Straight enclosure edge separates the western garden from the workshop courtyard.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            710,
+            760
+          ],
+          "b": [
+            870,
+            790
+          ],
+          "evidence": "Sharp roof and yard edge against woodland at the southeast enclosure.",
+          "confidence": "medium"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            680,
+            760
+          ],
+          "b": [
+            710,
+            780
+          ],
+          "evidence": "Two points on the continuous southern roof.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_3238_31368",
+      "region": "split-v2",
+      "image": "validation/tile_3238_31368.jpg",
+      "image_sha256": "706eab0b20732ee847bebb869afc031c1a61418cfa8cc9fb7296c54510745a21",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        497356.8,
+        4818124.8,
+        497510.39999999997,
+        4818278.399999999
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            560,
+            330
+          ],
+          "b": [
+            565,
+            440
+          ],
+          "evidence": "Strong crop/use edge between the pale northern bed and dark southern bed.",
+          "confidence": "high"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            570,
+            440
+          ],
+          "b": [
+            725,
+            420
+          ],
+          "evidence": "Narrow pale path separates two dark cultivated beds.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            320,
+            540
+          ],
+          "b": [
+            320,
+            720
+          ],
+          "evidence": "Wall and hedge separate the orchard from the developed southern plot.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            530,
+            440
+          ],
+          "b": [
+            580,
+            460
+          ],
+          "evidence": "Two interior locations in the same dark cultivated bed.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_3227_31368",
+      "region": "split-v2",
+      "image": "train/tile_3227_31368.jpg",
+      "image_sha256": "6c3e42a70e4e9e1d9ed58f2226259bcc368efc2be37ba2b7f4705eca05cb59b5",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        495667.19999999995,
+        4818124.8,
+        495820.8,
+        4818278.399999999
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            225,
+            220
+          ],
+          "b": [
+            225,
+            430
+          ],
+          "evidence": "Vegetated enclosure gap separates the western upper and middle buildings.",
+          "confidence": "medium"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            700,
+            600
+          ],
+          "b": [
+            745,
+            773
+          ],
+          "evidence": "Garden and driveway edge separates the two eastern building plots.",
+          "confidence": "medium"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            230,
+            430
+          ],
+          "b": [
+            700,
+            600
+          ],
+          "evidence": "Central access lane separates western and eastern developed areas.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            205,
+            420
+          ],
+          "b": [
+            220,
+            455
+          ],
+          "evidence": "Two points on the same white roof.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_2620_31790",
+      "region": "zadar-v1",
+      "image": "validation/tile_2620_31790.jpg",
+      "image_sha256": "ec903fc83277465be48f11ed4b65aa54e92ce729b32a2412956fb78af37ede38",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        402432.0,
+        4882944.0,
+        402585.6,
+        4883097.6
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            480,
+            290
+          ],
+          "b": [
+            790,
+            290
+          ],
+          "evidence": "Tree-lined division between the central long field and eastern cultivated bed.",
+          "confidence": "high"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            865,
+            420
+          ],
+          "b": [
+            870,
+            520
+          ],
+          "evidence": "Green strip separates adjacent cultivated beds.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            450,
+            825
+          ],
+          "b": [
+            650,
+            850
+          ],
+          "evidence": "Road and trees separate the two house plots.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            820,
+            360
+          ],
+          "b": [
+            880,
+            350
+          ],
+          "evidence": "Two interior points in the same cultivated bed.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_2620_31791",
+      "region": "zadar-v1",
+      "image": "validation/tile_2620_31791.jpg",
+      "image_sha256": "42c3e3585c800856609f724a6223b054df8770966bf9d0f6d0c2d004420a21e7",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        402432.0,
+        4883097.6,
+        402585.6,
+        4883251.2
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            470,
+            345
+          ],
+          "b": [
+            560,
+            435
+          ],
+          "evidence": "Dense hedge divides the two central house plots.",
+          "confidence": "high"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            470,
+            700
+          ],
+          "b": [
+            610,
+            705
+          ],
+          "evidence": "Garden boundary and wall between adjacent southern houses.",
+          "confidence": "high"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            130,
+            800
+          ],
+          "b": [
+            280,
+            800
+          ],
+          "evidence": "Continuous tree row separates the two long agricultural strips.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            90,
+            850
+          ],
+          "b": [
+            110,
+            890
+          ],
+          "evidence": "Two points within the western open field.",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "tile_2606_31812",
+      "region": "zadar-v1",
+      "image": "validation/tile_2606_31812.jpg",
+      "image_sha256": "879bb6ff95fd5776b87bf0cf9bfa6542a82dfb3b79062521629eb060b3f7931b",
+      "width": 1024,
+      "height": 1024,
+      "bbox": [
+        400281.6,
+        4886323.2,
+        400435.2,
+        4886476.8
+      ],
+      "unassessed": "Tree-obscured, blurred and unmarked divisions; no exhaustive boundary tracing.",
+      "probes": [
+        {
+          "id": "S1",
+          "relation": "separate",
+          "a": [
+            665,
+            500
+          ],
+          "b": [
+            765,
+            540
+          ],
+          "evidence": "Driveway and narrow enclosure edge separate neighbouring eastern houses.",
+          "confidence": "medium"
+        },
+        {
+          "id": "S2",
+          "relation": "separate",
+          "a": [
+            275,
+            780
+          ],
+          "b": [
+            380,
+            770
+          ],
+          "evidence": "Narrow yard division between the two southwestern house plots.",
+          "confidence": "medium"
+        },
+        {
+          "id": "S3",
+          "relation": "separate",
+          "a": [
+            520,
+            750
+          ],
+          "b": [
+            755,
+            760
+          ],
+          "evidence": "Wall and access route separate the southern developed plots.",
+          "confidence": "high"
+        },
+        {
+          "id": "C1",
+          "relation": "same_surface",
+          "a": [
+            510,
+            720
+          ],
+          "b": [
+            510,
+            770
+          ],
+          "evidence": "Two points on one continuous roof.",
+          "confidence": "high"
+        }
+      ]
+    }
+  ]
+}

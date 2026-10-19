@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (plausible imagery-derived plots; missed divisions and false merges take priority over extra subdivisions). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (first visible-division diagnostic complete; exact-cell geometry verified; sampled joins precede size cleanup). Status values: todo · running · done · dropped (with the reason).
 
 ## Current product target: plausible plots where cadastre is unavailable
 
@@ -23,7 +23,8 @@ Preserving discernible physical/use divisions is the priority; extra subdivision
 editing burden. Disjoint subdivision is distinct from overlapping masks that assign the same ground
 to several plots, which still require resolution.
 
-Proposed next work, before further model tuning or rental:
+The first bounded image-only diagnostic below is complete. The broader work remains, before
+further model tuning or rental:
 
 1. Annotate discernible physical/use divisions and areas that must remain separated in the imagery.
    Accept finer garden, courtyard, house and field subdivisions within a larger enclosure; an exact
@@ -68,8 +69,9 @@ Proposed next work, before further model tuning or rental:
 
 Candidate application output is an inferred, editable plot layer with imagery/model provenance and
 boundary support/uncertainty, separate from sourced cadastral records and ownership. This is a
-proposed implementation direction; no runtime fallback, new benchmark, model change or training
-run has been implemented or evaluated under this product contract yet.
+proposed runtime direction. An offline agent-draft annotation/scoring diagnostic and exact-cell
+geometry candidate are now implemented and evaluated below; no runtime fallback, human-reviewed
+target-settlement benchmark, model change or new training run has been delivered under this contract.
 
 Research supports separating visibility from registration: [CadastreVision](https://doi.org/10.1016/j.isprsjprs.2024.08.005)
 explicitly distinguishes visible and non-visible cadastral boundaries. [SAM 3](https://github.com/facebookresearch/sam3)
@@ -83,6 +85,32 @@ sample extents and dataset links. Its overlap analysis is directly relevant to i
 cadastral lines have physical support. It is a research/data preparation resource, not an already
 integrated village plot segmenter. Its README flags unpublished 8 cm imagery and classified-reference
 outputs; actual availability must be checked at the linked data release before depending on them.
+
+## Completed image-only diagnostic (2026-10-19)
+
+**Done; no merge-policy or model promotion.** Frozen 27 separation probes plus nine same-surface
+checks on the nine existing diagnostic images, before viewing compared polygons. All labels are
+agent-draft, Croatian development evidence; no African/Asian or population-level validation claim.
+All 27 saved control polygon collections exactly reproduced. The original contour geometry was
+invalid in 18/27 controls and 23/27 no-small-region-merge outputs, leaving only four valid matched
+pairs. Invalid outputs were retained unscored.
+
+A separately frozen exact-cell construction then rebuilt the unchanged region rasters: all 54
+outputs valid, area preserved, no positive-area overlap beyond numerical tolerance, and every cell
+centre recovered its original label. Comparing the two merge settings with this common geometry
+contract produced **the same six joins / 81 separation evaluations**, zero uncovered/ambiguous pairs,
+and zero splits / 27 same-surface evaluations. Removing the merge added 84 features (774 → 858)
+but fixed none of the sampled misses. The six failures occur at three distinct field/garden
+divisions; two observations already share one learned interior seed before watershed.
+
+Keep the exact-cell constructor as the offline geometry candidate for the next boundary/seed
+comparison. Investigate upstream separation with all nine images retained, and add independent
+human-reviewed target settlements before tuning for the product. Do not infer that all small-region
+merging is harmless, or that these sparse probes measure full boundary recall. Historical
+reconstruction/training/scoring sources remain unchanged. No training/inference/rental was needed.
+
+Evidence, 27 targeted headless unit tests, and review sheets: [diagnostic report](studies/visible-divisions-v1.md),
+[frozen annotations/protocol](annotations/README.md), [tracked receipt](studies/visible-divisions-v1.json).
 
 ## Product priority: suburban and village communities
 
