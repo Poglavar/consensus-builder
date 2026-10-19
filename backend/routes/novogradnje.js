@@ -24,7 +24,8 @@ function apartmentFacts(a) { return [typeof a.areaM2 === 'number' ? `${a.areaM2}
 export function projectMarkup(project) {
     const thumbnail = project.thumbnailUrl ? `<img class="building-thumbnail" src="${escape(project.thumbnailUrl)}" alt="3D obris zgrade ${escape(project.name)}" width="320" height="180" loading="lazy">`
         : '<span class="thumbnail-unavailable">3D obris još nije dostupan</span>';
-    return `<article class="project-card"><a class="card-link" href="${escape(project.url)}"><div class="card-visual">${thumbnail}<span class="building-tag">${kindLabel(project.kind)}</span></div><div class="card-body"><h3 class="card-title">${escape(project.name)}</h3><p class="card-address">${escape(project.address)}</p><div class="card-chips"><span class="chip">${yearLabel(project)}</span></div><p>${project.apartments.length ? `${project.apartments.length} stanova u katalogu` : 'Broj stanova nije naveden'} · ${project.planCount} tlocrta</p></div></a></article>`;
+    const tag = project.kind === 'new_build' ? '' : `<span class="building-tag">${kindLabel(project.kind)}</span>`;
+    return `<article class="project-card"><a class="card-link" href="${escape(project.url)}"><div class="card-visual">${thumbnail}${tag}</div><div class="card-body"><h3 class="card-title">${escape(project.name)}</h3><p class="card-address">${escape(project.address)}</p><div class="card-chips"><span class="chip">${yearLabel(project)}</span></div><p>${project.apartments.length ? `${project.apartments.length} stanova u katalogu` : 'Broj stanova nije naveden'} · ${project.planCount} tlocrta</p></div></a></article>`;
 }
 
 function detailMarkup(project, apartment) {
