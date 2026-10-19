@@ -104,7 +104,7 @@ export function originalPlanSource(row) {
     if (sourceUnits.length > 1 || (listingUnit && sourceUnits.some(unit => unit !== normalizeUnitId(listingUnit)))) return null;
     // A machine region label is a hint, not evidence against the listing or printed source unit.
     const establishedUnit = listingUnit || asset.unitId || reviewed?.unitId || sourceUnits[0] || null;
-    const processedUnit = processed?.unitId && (!establishedUnit
+    const processedUnit = processed?.unitId && !/^(?:plan|unit|apartment|region)[\s_-]/i.test(processed.unitId) && (!establishedUnit
         || normalizeUnitId(processed.unitId) === normalizeUnitId(establishedUnit)) ? processed.unitId : null;
     const type = row.media_type?.split(';')[0].trim().toLowerCase();
     let page = 1;
