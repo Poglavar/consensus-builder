@@ -148,5 +148,17 @@
         });
     }
 
-    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines };
+    // The declared snapshot source and selected lens are configuration, not verified attestations.
+    function reviewBasisLines({ rightsSource = null, lens = [] } = {}, t, memberLabel = String) {
+        const source = [rightsSource?.provider, rightsSource?.reference]
+            .filter(value => typeof value === 'string' && value.trim()).map(value => value.trim()).join(' · ');
+        return [
+            source ? t('proposalApproval.review.rightsSource', 'Declared rights source: {{source}}', { source })
+                : t('proposalApproval.review.rightsSourceUnknown', 'No rights source is specified in this record.'),
+            lens.length ? t('proposalApproval.review.selectedLens', 'Selected verification lens: {{members}}', { members: lens.map(memberLabel).join(', ') })
+                : t('proposalApproval.review.noLens', 'No verification lens is selected.')
+        ];
+    }
+
+    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines, reviewBasisLines };
 });

@@ -244,7 +244,7 @@
         const ids = [...state.ownerIds, ...state.leaseholderIds.filter(id => !state.ownerIds.includes(id))];
         if (!ids.length) return '';
         return `<div class="approval-card__deals" data-approval-deals>
-            <p class="approval-card__deals-title">${esc(t('proposalApproval.deals.title', 'What each owner puts in and gets'))}</p>
+            <p class="approval-card__deals-title">${esc(t('proposalApproval.deals.title', 'Proposed owner contributions and allocations'))}</p>
             <div class="approval-card__actions">${ids.map(id => `<button type="button" class="btn btn-sm" data-approval-action="inspect" data-owner-id="${esc(id)}"${accepted.includes(id) ? ' data-approval-deal-accepted' : ''}>${accepted.includes(id) ? '<i class="fas fa-check" aria-hidden="true"></i> ' : ''}${esc(label(id))}</button>`).join('')}</div>
         </div>`;
     }
@@ -554,22 +554,21 @@
         return `<section class="approval-review__section"><h3>${esc(title)}</h3>${content}</section>`;
     }
 
-    // The review speaks to the owner ("What you contribute") when they are about to accept, and about
-    // the owner ("What Owner C puts in") when anyone opens it from the card's owner row.
+    // The review speaks to the owner when they are about to accept, and about the owner when
+    // anyone opens it from the card's owner row. Both views describe proposed terms.
     function reviewVoice(inspect, owner, kind = 'owner') {
         if (!inspect) {
             return {
                 inspect: false,
                 title: kind === 'authority' ? t('proposalApproval.review.approveAs', 'Approve as {{owner}}', { owner })
                     : t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner }),
-                contributes: t('proposalApproval.review.contributes', 'What you contribute'),
-                receives: t('proposalApproval.review.receives', 'What you get back'),
+                contributes: t('proposalApproval.review.contributes', 'Your proposed contribution'),
+                receives: t('proposalApproval.review.receives', 'Your proposed allocation'),
                 share: share => t('proposalApproval.review.yourShare', 'Your share {{share}}', { share }),
-                landBefore: t('proposalApproval.review.landBefore', 'Land you put in'),
-                landAfter: t('proposalApproval.review.landAfter', 'Land you get back'),
+                landBefore: t('proposalApproval.review.landBefore', 'Land you would contribute'),
+                landAfter: t('proposalApproval.review.landAfter', 'Land allocated to you'),
                 cash: t('proposalApproval.review.cash', 'Cash offered to you'),
-                cashPay: t('proposalApproval.review.cashYouPay', 'Cash you pay'),
-                attestedBy: members => t('proposalApproval.review.attestedBy', 'Ownership and your authority are attested by: {{members}}', { members }),
+                cashPay: t('proposalApproval.review.cashYouPay', 'Cash you would pay'),
                 withAcceptance: progress => t('proposalApproval.review.withYou', 'With your acceptance: {{progress}}', { progress }),
                 passes: t('proposalApproval.review.passesWithYou', 'Your acceptance is enough for the proposal to pass.'),
                 needsMore: t('proposalApproval.review.needsMore', 'More owners must accept after you before it passes.')
@@ -578,14 +577,13 @@
         return {
             inspect: true,
             title: t('proposalApproval.deals.dealOf', '{{owner}}’s deal', { owner }),
-            contributes: t('proposalApproval.deals.contributes', 'What {{owner}} puts in', { owner }),
-            receives: t('proposalApproval.deals.receives', 'What {{owner}} gets', { owner }),
+            contributes: t('proposalApproval.deals.contributes', 'Proposed contribution from {{owner}}', { owner }),
+            receives: t('proposalApproval.deals.receives', 'Proposed allocation to {{owner}}', { owner }),
             share: share => t('proposalApproval.deals.share', 'Share {{share}}', { share }),
-            landBefore: t('proposalApproval.deals.landBefore', 'Land put in'),
-            landAfter: t('proposalApproval.deals.landAfter', 'Land received'),
-            cash: t('proposalApproval.deals.cashReceived', 'Cash received'),
-            cashPay: t('proposalApproval.deals.cashPaid', 'Cash paid'),
-            attestedBy: members => t('proposalApproval.deals.attestedBy', 'Ownership is attested by: {{members}}', { members }),
+            landBefore: t('proposalApproval.deals.landBefore', 'Contributed land area'),
+            landAfter: t('proposalApproval.deals.landAfter', 'Allocated land area'),
+            cash: t('proposalApproval.deals.cashReceived', 'Cash offered'),
+            cashPay: t('proposalApproval.deals.cashPaid', 'Proposed cash payment'),
             withAcceptance: progress => t('proposalApproval.deals.withOwner', 'With {{owner}}’s acceptance: {{progress}}', { owner, progress }),
             passes: t('proposalApproval.deals.passesWithOwner', '{{owner}}’s acceptance would be enough for the proposal to pass.', { owner }),
             needsMore: t('proposalApproval.deals.needsMoreThanOwner', 'More owners besides {{owner}} must accept before it passes.', { owner })
@@ -650,11 +648,11 @@
     // The whole money schedule, so an owner sees who else pays and who covers the rest.
     function moneyLines(schedule) {
         if (!schedule || (!schedule.payOutCents && !schedule.payInCents)) return [];
-        const lines = [t('proposalApproval.money.summary', 'Owners receive {{out}} and pay {{in}} in total.', {
+        const lines = [t('proposalApproval.money.summary', 'Proposed owner cash: {{out}} to receive and {{in}} to pay.', {
             out: money(schedule.payOutCents), in: money(schedule.payInCents) })];
-        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor pays {{amount}}.', { amount: money(-schedule.sponsorCents) }));
-        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor receives {{amount}}.', { amount: money(schedule.sponsorCents) }));
-        else lines.push(t('proposalApproval.money.sponsorNothing', 'Owner payments cover every payout; the sponsor pays nothing.'));
+        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor would pay {{amount}}.', { amount: money(-schedule.sponsorCents) }));
+        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor would receive {{amount}}.', { amount: money(schedule.sponsorCents) }));
+        else lines.push(t('proposalApproval.money.sponsorNothing', 'Proposed owner payments cover all payouts; no sponsor payment is specified.'));
         return lines;
     }
 
@@ -684,7 +682,7 @@
                 ? t('proposalApproval.review.funded', 'Funding is marked ready in this record; payment is not verified.')
                 : t('proposalApproval.review.unfunded', 'Funding is not marked ready in this record.'));
         }
-        lines.push(voice.attestedBy(list(c.lens.map(key => root.LensCore.memberLabel(key, members)))));
+        lines.push(...words().reviewBasisLines(c, t, key => root.LensCore.memberLabel(key, members)));
         return `<ul class="approval-review__conditions">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>
             ${voice.inspect ? '' : `<p class="approval-review__sign-note">${esc(t('proposalApproval.review.signNote', 'Your wallet signs these exact terms. If they change, your acceptance stops counting.'))}</p>`}`;
     }

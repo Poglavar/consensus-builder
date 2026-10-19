@@ -629,14 +629,17 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
 
   const deal = dialog(page);
   await expect(deal.locator('.cb-dialog__title')).toHaveText('Owner D’s deal');
-  await expect(deal).toContainText('What Owner D puts in');
+  await expect(deal).toContainText('Proposed contribution from Owner D');
   await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('Share 1/2');
   await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('co-owned with Owner C');
-  await expect(deal).toContainText('What Owner D gets');
+  await expect(deal).toContainText('Proposed allocation to Owner D');
   await expect(deal.locator('[data-approval-plot="3"]')).toContainText('shared with Owner C');
-  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('Cash received');
+  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('Cash offered');
   await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('7.50');
   await expect(deal.locator('[data-approval-progress-with]')).toContainText('With Owner D’s acceptance: 1 of 4 owners');
+  await expect(deal).toContainText('Selected verification lens: Test notary');
+  await expect(deal).toContainText('Declared rights source:');
+  await expect(deal).not.toContainText('is attested by');
   // Read-only: nothing here signs.
   await expect(deal).not.toContainText('Your wallet signs these exact terms');
   await screenshot(page, testInfo, 'deal-owner-d');
@@ -645,6 +648,9 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
   const review = dialog(page);
   await expect(review.locator('.cb-dialog__title')).toHaveText('Accept as Owner D');
   await expect(review).toContainText('Your share 1/2');
+  await expect(review).toContainText('Your proposed allocation');
+  await expect(review).toContainText('Selected verification lens: Test notary');
+  await expect(review).not.toContainText('are attested by');
   await expect(review.locator('[data-approval-review-status]')).toContainText('first confirm with a lens member');
   expect((await proposalState(page, proposalId)).ownerApprovals || {}).toEqual({});
 });

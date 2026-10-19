@@ -207,6 +207,17 @@ In the approval engine, the misleadingly named `ownerId` is an **opaque party id
 
 Rights snapshots use `parcel-rights/v1` or `v2`, with a source, per-parcel holders, completeness and optional areas; v2 adds leases and public bodies. Shares are exact positive fractions. Complete holder lists must sum to `1/1`; incomplete lists must not exceed it. This is a declared rights model, not an automatic land-registry certification. [Approval model](frontend/js/proposals/approval.js) (`normalizeRights`, `holders`, `contextContent`, `evidenceAllows`), [decision receipts](backend/db/proposal-owner-decision-ddl.sql), [browser profiles](frontend/js/user-management.js).
 
+**Review presentation correction, 2026-10-20:** both signer and read-only owner reviews label
+contributions, plot allocations and cash as proposed terms. “Cash offered” and “Allocated land
+area” do not claim completed payments or transfers. Reviews show the declared rights source and
+selected verification lens separately, with explicit absence states. A configured lens roster is
+not described as having attested ownership or authority: that evidence is verified separately for
+the particular context, party and actor. Directory names are display labels only. Other local
+ownership and approval projections remain under V06/V07.
+[Review presentation](frontend/js/proposals/approval-panel.js),
+[source and lens labels](frontend/js/proposals/approval-text.js): `reviewBasisLines`,
+[evidence verification](frontend/js/proposals/approval-lens-authority.js).
+
 There is also a completely different `owner_id` in the building floor-model registry: for source `proposal` it identifies the **containing proposal**, not a landowner. [Floor-model identities](backend/buildings/floor-models.js) (`validateModelIdentity`, `attachProposalFloorModels`).
 
 #### Identity scopes for parties, signers and allocations

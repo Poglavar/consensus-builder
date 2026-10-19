@@ -159,6 +159,9 @@ test.describe('Proposal actions @features', () => {
     await expect(conditions).toContainText('Authored terms require every owner to accept before payout. This does not confirm funding or payment.');
     await expect(conditions).toContainText('Funding is marked ready in this record; payment is not verified.');
     await expect(conditions).not.toContainText('The cash is funded.');
+    await expect(conditions).toContainText('Declared rights source: upload · payment-terms-fixture');
+    await expect(conditions).toContainText('No verification lens is selected.');
+    await expect(conditions).not.toContainText('attested by');
   });
 
   test('area metrics distinguish site area, partial source sums and unknown measurements', async ({ mockApi: page }) => {

@@ -6,6 +6,8 @@ import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const review = require('../../frontend/js/proposals/approval-review.js');
+const words = require('../../frontend/js/proposals/approval-text.js');
+const t = (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (match, key) => params[key] ?? match);
 
 const owner = (ownerId, share = '1/1') => ({ ownerId, share });
 const square = (x, y, size) => ({ type: 'Polygon', coordinates: [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]] });
@@ -73,6 +75,18 @@ describe('owner acceptance progress', () => {
 });
 
 describe('owner review', () => {
+    it('identifies the authored source and selected lens without claiming verified attestations', () => {
+        const item = review.ownerReview(proposal(), 'owner-a');
+        expect(words.reviewBasisLines(item.conditions, t, key => key === 'member-a' ? 'Selected verifier' : key)).toEqual([
+            'Declared rights source: upload', 'Selected verification lens: Selected verifier'
+        ]);
+        expect(words.reviewBasisLines({}, t)).toEqual([
+            'No rights source is specified in this record.', 'No verification lens is selected.'
+        ]);
+        expect(words.reviewBasisLines({ rightsSource: { provider: ' upload ', reference: ' record-9 ' } }, t)[0])
+            .toBe('Declared rights source: upload · record-9');
+    });
+
     it('shows a co-owner their share of contributed land and what their acceptance changes', () => {
         const item = review.ownerReview(proposal(), 'owner-c', { acceptedOwnerIds: ['owner-a', 'owner-b', 'owner-d'] });
         expect(item.contributes).toEqual([{ parcelId: 'parcel-c', share: '1/2', parcelAreaM2: 25, shareAreaM2: 12.5, coOwnerIds: ['owner-d'] }]);
