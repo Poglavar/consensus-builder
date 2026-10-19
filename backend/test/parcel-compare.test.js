@@ -139,7 +139,7 @@ describe('what a proposal does to this parcel', () => {
         expect(effect.ownership).toEqual({ cededM2: null, destination: 'proposer' });
         expect(effect.offer).toBeNull();
         expect(effect.consent.owners).toBeNull();
-        expect(effect.consent.parcels).toEqual({ accepted: 0, total: 1 });
+        expect(effect.consent.parcels).toBeNull();
 
         // A building without a height: counted, footprint measured, floor area unknown.
         const noHeight = { proposalId: 'nh', goal: 'single', cadastreParcelIds: [PARCEL_ID],
@@ -150,14 +150,23 @@ describe('what a proposal does to this parcel', () => {
         expect(measured.buildings.floors).toBeNull();
     });
 
-    it('reads offers, owner acceptances and status from the record', () => {
+    it('reads offers and status, but refuses raw consent aggregates without a current summary', () => {
         const record = { proposalId: 'offer', goal: 'as-is', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'],
             offer: 200000, offerCurrency: 'EUR', isMinted: true, acceptedParcelIds: [PARCEL_ID],
             ownerAcceptances: { [PARCEL_ID]: { ownerOrder: ['a', 'b'], acceptedOwnerKeys: ['b'] } } };
         const effect = compare.parcelEffect(record, PARCEL, { areaShare: 0.25, channel: 'offer' });
         expect(effect.offer).toEqual({ amount: 200000, currency: 'EUR', parcelShare: 50000 });
-        expect(effect.consent).toMatchObject({ channel: 'offer', needed: false, parcelAccepted: true,
-            owners: { accepted: 1, total: 2 }, parcels: { accepted: 1, total: 2 } });
+        expect(effect.consent).toMatchObject({ channel: 'offer', needed: false, parcelAccepted: null,
+            basis: null, owners: null, parcels: null });
+        const consent = require('../../frontend/js/proposals/consent-summary.js').local(record, [PARCEL_ID], {
+            currentHash: 'now', ownerSlotsByParcel: {
+                [PARCEL_ID]: [{ key: 'a' }, { key: 'b' }], 'HR-1-101': [{ key: 'a' }]
+            }
+        });
+        expect(compare.parcelEffect(record, PARCEL, { consent }).consent).toMatchObject({
+            basis: 'local-records', parcelAccepted: false,
+            owners: { accepted: 0, total: 2 }, parcels: { accepted: 0, total: 2 }
+        });
         expect(effect.status.key).toBe('minted');
         // A parcel act's site is the parcel itself: it covers the whole of it.
         expect(effect.take.extent).toBe('whole');

@@ -56,7 +56,16 @@
         if (base.length === cadastreIds.length && base.length) {
             feature = base[0];
             for (let i = 1; i < base.length; i++) {
-                try { feature = global.turf.union(feature, base[i]) || feature; } catch (_) { /* keep what we have */ }
+                try { feature = global.turf.union(feature, base[i]) || feature; } catch (error) {
+                    // Was: compare against the union so far, part of the parcel missing. Use the
+                    // live piece instead (as when the cadastral parcels are not all known), and
+                    // report the failure (clipHealth(), parcel-arrangement.js).
+                    const clips = global.__parcelArrangement;
+                    if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+                    clips.reportClipFailure('union', error, { site: 'parcel-compare-ui.parcelContext', parcelId: id }, [feature, base[i]]);
+                    feature = live;
+                    break;
+                }
             }
         } else {
             feature = live;
@@ -151,7 +160,24 @@
 
     function effectFor(entry, parcel, channels) {
         const proposal = entry.proposal;
+        let consent = global.ProposalConsentSummary.unknown(null);
+        try {
+            const currentHash = global.currentConsentBindingHash(proposal);
+            if (global.ProposalApprovalRuntime.uses(proposal)) {
+                consent = global.ProposalConsentSummary.signed(proposal, parcel.cadastreIds, {
+                    currentHash,
+                    verifyReceipt: (record, receipt) => global.ProposalApprovalAuthorities.verifyReceipt(record, receipt) === true
+                });
+            } else {
+                const ownerSlotsByParcel = Object.fromEntries((proposal.cadastreParcelIds || [])
+                    .map(id => [String(id), global.getOwnerSlotsForParcel(id)]));
+                consent = global.ProposalConsentSummary.local(proposal, parcel.cadastreIds, { currentHash, ownerSlotsByParcel });
+            }
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [ParcelCompare] current consent unavailable`, error);
+        }
         return api().parcelEffect(proposal, parcel, {
+            consent,
             channel: channels.get(String(proposal.proposalId)) || undefined,
             areaShare: areaShareOf(proposal, parcel),
             lifecycleKey: typeof global.getProposalLifecycleKey === 'function' ? global.getProposalLifecycleKey(proposal) : undefined,
@@ -444,9 +470,17 @@
         row(grid, t('parcelCompare.rows.offer', 'Offer'), both(e => offerText(e.offer)));
         section(grid, t('parcelCompare.sections.consent', 'What you are asked'));
         row(grid, t('parcelCompare.rows.consentNeeded', 'Your consent needed'), both(e => consentText(e.consent)));
-        row(grid, t('parcelCompare.rows.parcelAccepted', 'This parcel accepted'), both(e => [yesNo(e.consent.parcelAccepted)]));
-        row(grid, t('parcelCompare.rows.owners', 'Owners accepted'), both(e => [tally(e.consent.owners)]));
-        row(grid, t('parcelCompare.rows.parcels', 'Parcels accepted (whole proposal)'), both(e => [tally(e.consent.parcels)]));
+        row(grid, t('parcelCompare.rows.consentBasis', 'Consent evidence'), both(e => [e.consent.basis === 'signed-receipts'
+            ? t('parcelCompare.signedConsentBasis', 'Signed decisions verified for current terms and the declared approval context.')
+            : e.consent.basis === 'local-records'
+                ? t('parcelCompare.localConsentBasis', 'Unsigned browser records matched to current terms and owner entries.')
+                : t('parcelCompare.consentUnavailable', 'Current consent evidence unavailable.')]), { dataKey: 'consent-basis' });
+        row(grid, t('parcelCompare.rows.parcelAccepted', 'Consent covers selected references'), both(e => [yesNo(e.consent.parcelAccepted)]), { dataKey: 'parcel-consent' });
+        row(grid, t('parcelCompare.rows.owners', 'Owner consent for selected references'), both(e => [!e.consent.owners ? DASH
+            : e.consent.basis === 'signed-receipts'
+                ? t('parcelCompare.ownerParties', '{{accepted}}/{{total}} declared owner parties', e.consent.owners)
+                : t('parcelCompare.ownerEntries', '{{accepted}}/{{total}} local owner entries', e.consent.owners)]), { dataKey: 'owner-consent' });
+        row(grid, t('parcelCompare.rows.parcels', 'Source references with consent (whole proposal)'), both(e => [tally(e.consent.parcels)]), { dataKey: 'proposal-consent' });
         section(grid, t('parcelCompare.sections.support', 'Support'));
         row(grid, t('parcelCompare.rows.donations', 'Donations'), both(() => [DASH]), { dataKey: 'donations' });
         row(grid, t('parcelCompare.rows.pledges', 'Pledges'), both(() => [DASH]), { dataKey: 'pledges' });
