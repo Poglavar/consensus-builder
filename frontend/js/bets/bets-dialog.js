@@ -122,7 +122,7 @@
         if (found) return found;
         const fallback = { contest: null, row: {
             proposalAccount, proposalId: options.proposalId || null, id: options.id || null, title: options.title || '', author: null, agent: false,
-            createdAt: null, screenshotUrl: null, parcelIds: [], lifecycleStatus: options.lifecycleStatus || 'Active', state: 'closed',
+            createdAt: null, screenshotUrl: null, parcelIds: [], lifecycleStatus: options.lifecycleStatus || 'Unknown', state: 'closed',
             chanceYes: null, chanceNo: null, oneSided: null, pool: null, poolAtomic: 0n, yesPoolAtomic: 0n, noPoolAtomic: 0n, outcome: null,
             paysYes: null, paysNo: null, closesAt: null, marketAddress: null, fromChain: true
         } };
@@ -132,10 +132,10 @@
             const summary = await chain.readSummary(proposalAccount);
             const market = summary && summary.market ? summary.market : null;
             if (summary) {
-                const lifecycleStatus = summary.chainStatus || fallback.row.lifecycleStatus;
-                const active = lifecycleStatus === 'Active';
+                const chainStatus = summary.chainStatus || null;
+                const active = chainStatus === 'Active';
                 const entry = {
-                    proposalAccount, lifecycleStatus, bettable: Boolean(market && !market.resolved && active),
+                    proposalAccount, lifecycleStatus: fallback.row.lifecycleStatus, chainStatus, bettable: Boolean(market && !market.resolved && active),
                     canOpenMarket: !market && active,
                     market: market ? { address: summary.marketAddress, yesPool: market.yesPool, noPool: market.noPool, poolAtomic: BigInt(market.yesPool || 0) + BigInt(market.noPool || 0),
                         resolved: Boolean(market.resolved), outcome: market.resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null } : null
@@ -282,7 +282,7 @@
         if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
         if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
-        return t('bets.row.chance', '{{percent}} chance', { percent: percentText(row.chanceYes) });
+        return t('bets.row.yesPoolShare', 'Yes: {{percent}} of pool', { percent: percentText(row.chanceYes) });
     }
 
     function landLine(row, contest) {
@@ -302,7 +302,7 @@
         const marketModel = row.marketAddress ? {
             exists: true, resolved: row.outcome !== null, outcome: row.outcome, yesPool: row.yesPoolAtomic, noPool: row.noPoolAtomic
         } : { exists: false };
-        const words = v.lifecycle(row.lifecycleStatus, marketModel);
+        const words = v.lifecycle(row.chainStatus || 'Unknown', marketModel);
         return {
             state: t(`panel.proposal.market.state.${words.stateKey}`, words.state),
             next: t(`panel.proposal.market.next.${words.nextKey}`, words.next),
@@ -393,11 +393,10 @@
             fact(t('bets.dialog.paysLabel', 'Pays'), `${t('bets.dialog.yesPays', 'Yes {{multiple}}×', { multiple: row.paysYes.toFixed(2) })} · ${t('bets.dialog.noPays', 'No {{multiple}}×', { multiple: row.paysNo.toFixed(2) })}`);
         }
         if (row.outcome === null) {
-            // The market's deadline; a legacy pool has none, and then the proposal's own expiry is the date.
-            const deadline = row.closesAt || row.expiresAt;
-            fact(t('bets.dialog.settlesLabel', 'Settles'), deadline
-                ? t('bets.dialog.settlesBy', 'By {{date}} at the latest', { date: dateText(deadline) })
-                : t('bets.dialog.noDeadline', 'No deadline set; when the proposal is executed or dropped'));
+            // Closing a pool and an app-level proposal deadline do not promise a settlement time.
+            if (row.closesAt) fact(t('bets.dialog.marketDeadline', 'Pool closes'), dateText(row.closesAt));
+            else if (row.expiresAt) fact(t('bets.dialog.proposalDeadline', 'Proposal deadline'), dateText(row.expiresAt));
+            else fact(t('bets.dialog.settlesLabel', 'Settlement'), t('bets.dialog.noDeadline', 'No deadline set; settlement follows a terminal on-chain status'));
         }
         const author = model() ? model().authorLabel(row.author) : row.author;
         if (author) fact(t('bets.dialog.authorLabel', 'Proposed by'), row.agent ? `${author} · ${t('panel.proposal.agent.badge', 'Agent proposal')}` : author);
@@ -421,7 +420,7 @@
         // A plan says what it builds: its member proposals, folded so the bet stays the headline.
         if (row.kind === 'plan' && row.members.length) {
             const members = el('details', 'bets-dialog__members');
-            members.append(el('summary', null, t('bets.dialog.members', 'What the plan builds: {{count}} proposals', { count: row.members.length })));
+            members.append(el('summary', null, t('bets.dialog.members', 'Plan membership: {{count}} proposals', { count: row.members.length })));
             const list = el('ul');
             row.members.forEach(member => list.append(el('li', null, member.title || member.proposalId)));
             members.append(list);
@@ -490,7 +489,7 @@
         });
         node.append(el('strong', 'bets-bet__side', yes ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')));
         if (multiple !== null && multiple !== undefined) node.append(el('span', 'bets-bet__pays', t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })));
-        node.title = yes ? t('bets.row.yesTitle', 'Bet that this proposal gets built.') : t('bets.row.noTitle', 'Bet that this proposal does not get built.');
+        node.title = yes ? t('bets.row.yesTitle', 'Bet that the proposal reaches Executed on-chain.') : t('bets.row.noTitle', 'Bet that the proposal reaches Cancelled or Expired on-chain.');
         return node;
     }
 
@@ -556,7 +555,7 @@
         p.footer.replaceChildren();
 
         if (row.title) p.body.append(el('p', 'bets-dialog__lead', row.title));
-        p.body.append(el('p', 'bets-dialog__copy', yes ? t('bets.row.yesTitle', 'Bet that this proposal gets built.') : t('bets.row.noTitle', 'Bet that this proposal does not get built.')));
+        p.body.append(el('p', 'bets-dialog__copy', yes ? t('bets.row.yesTitle', 'Bet that the proposal reaches Executed on-chain.') : t('bets.row.noTitle', 'Bet that the proposal reaches Cancelled or Expired on-chain.')));
 
         const field = el('label', 'bets-dialog__amount');
         field.append(el('span', 'bets-dialog__amount-label', t('bets.dialog.amount', 'Amount')));
@@ -698,10 +697,10 @@
             const marketModel = v.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
             if (!marketModel.exists) { pool.remove(); return; }
             const pays = s => (m && typeof m.payoutMultiple === 'function' ? m.payoutMultiple(s, marketModel.yesPool, marketModel.noPool) : null);
-            const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet') : t('bets.row.chance', '{{percent}} chance', { percent: percentText(value) }));
+            const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet') : t('bets.row.poolShare', '{{percent}} of pool', { percent: percentText(value) }));
             pool.replaceChildren(el('p', 'proposal-market-placed__title', t('panel.proposal.market.poolNow', 'The pool after your bet')));
             const list = el('dl', 'proposal-market-placed__pool');
-            [['yes', t('panel.proposal.market.yesSide', 'Yes · gets built'), marketModel.yesPool, marketModel.yesOdds], ['no', t('panel.proposal.market.noSide', 'No · dropped'), marketModel.noPool, marketModel.noOdds]]
+            [['yes', t('panel.proposal.market.yesSide', 'Yes · executed on-chain'), marketModel.yesPool, marketModel.yesOdds], ['no', t('panel.proposal.market.noSide', 'No · cancelled or expired'), marketModel.noPool, marketModel.noOdds]]
                 .forEach(([key, sideLabel, sidePool, odds]) => {
                     list.append(el('dt', null, sideLabel));
                     const value = el('dd');

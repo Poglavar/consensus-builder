@@ -42,11 +42,20 @@ describe('BetsModel.rowState', () => {
         expect(BetsModel.rowState({ ...base, proposalAccount: null })).toBe('not-minted');
         expect(BetsModel.rowState({ ...base, market: { resolved: true, outcome: 'yes' } })).toBe('resolved-yes');
         expect(BetsModel.rowState({ ...base, market: { resolved: true, outcome: 'no' } })).toBe('resolved-no');
-        expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Cancelled', market: { resolved: false } })).toBe('settling');
+        expect(BetsModel.rowState({ ...base, chainStatus: 'Cancelled', market: { resolved: false } })).toBe('settling');
         expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Executed' })).toBe('closed');
         // The chain's word wins over the database's expiry-aware one.
         expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Expired', chainStatus: 'Active', market: { resolved: false } })).toBe('closed');
         expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Active', chainStatus: 'Expired', market: { resolved: false } })).toBe('settling');
+    });
+
+    it('never offers settlement from an app deadline or unknown chain status', () => {
+        for (const lifecycleStatus of [undefined, 'Unknown', 'Active', 'Expired', 'Executed']) {
+            for (const chainStatus of [undefined, null, 'Unknown', 'unsupported']) {
+                expect(BetsModel.rowState({ ...base, lifecycleStatus, chainStatus, market: { resolved: false } })).toBe('closed');
+            }
+        }
+        expect(BetsModel.row({ proposalAccount: 'acct' }).lifecycleStatus).toBe('Unknown');
     });
 });
 
@@ -127,6 +136,10 @@ describe('BetsModel.splitRows and filterRows', () => {
         const { shown, hidden } = BetsModel.splitRows(rows);
         expect(shown.map(r => r.state)).toEqual(['open', 'resolved-no', 'needs-market', 'settling']);
         expect(hidden.map(r => r.state)).toEqual(['not-minted', 'closed']);
+    });
+    it('keeps an existing pool visible when its current chain status is unavailable', () => {
+        const closed = { proposalAccount: 'A', state: 'closed', pool: '0' };
+        expect(BetsModel.splitRows([closed])).toEqual({ shown: [closed], hidden: [] });
     });
     it('filters by open, settled and the wallet\'s own bets', () => {
         expect(BetsModel.filterRows(rows, 'open').map(r => r.proposalAccount)).toEqual(['A', 'D', 'E']);

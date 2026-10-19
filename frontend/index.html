@@ -1026,12 +1026,12 @@
             <div class="map-sheet-body bets-sheet-body">
                 <p class="bets-tagline">
                     <strong data-i18n-key="bets.tagline">Bet on cities</strong>
-                    <span data-i18n-key="bets.intro">Bet yes on the proposals you believe will be built, or no on the ones you doubt. Pools live on Solana devnet and settle when a proposal is executed or dropped.</span>
+                    <span data-i18n-key="bets.intro">These pools settle from proposal status on Solana devnet: Executed means yes; Cancelled or Expired means no.</span>
                 </p>
                 <div id="bets-sheet-content" class="bets-content" aria-live="polite"></div>
                 <details class="bets-how">
                     <summary data-i18n-key="bets.how.title">How bets work</summary>
-                    <p data-i18n-key="bets.how.pools">Every proposal has one yes/no pool. Your bet joins the side you pick and stays there until the proposal is decided.</p>
+                    <p data-i18n-key="bets.how.pools">Each proposal has its own yes/no pool. Groups follow shared parcel references; several proposals in a group can execute.</p>
                     <p data-i18n-key="bets.how.settle">Executed on-chain settles yes; cancelled or expired settles no. The winning side shares the whole pool in proportion to its bets.</p>
                     <p data-i18n-key="bets.how.devnet">Bets use devnet USDC, which has no value. Get devnet SOL and USDC from the faucets.</p>
                     <p class="bets-how-links">
@@ -1911,9 +1911,9 @@
             'js/bets/lmsr.js',
             'js/bets/sha256.js',
             'js/bets/market-question.js',
-            'js/bets/bets-model.js',
-            'js/bets/bets-dialog.js?v=20261014-proposal-entry',
-            'js/bets/bets-sheet.js',
+            'js/bets/bets-model.js?v=20261019-market-evidence',
+            'js/bets/bets-dialog.js?v=20261019-market-evidence',
+            'js/bets/bets-sheet.js?v=20261019-market-evidence',
             'js/mobile-dock-sheet.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261019-plot-provenance',
@@ -2073,7 +2073,7 @@
             'js/proposals/layer-render.js',
             'js/proposals/drill-ui.js',
             'js/proposals/support-view.js',
-            'js/proposals/market-view.js',
+            'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/possibility-timeline.js',
             'js/proposals/parcel-set-relations.js',
             'js/proposals/lens-card.js',
@@ -2081,7 +2081,7 @@
             'js/proposals/parcel-history-card.js',
             'js/proposals/bids-card.js',
             'js/proposals/bet-entry.js?v=20261014',
-            'js/proposals/details-panel.js?v=20261019-unknown-lifecycle',
+            'js/proposals/details-panel.js?v=20261019-market-evidence',
             'js/proposals/parcel-compare.js',
             'js/proposals/parcel-compare-ui.js',
             'js/proposals/binding-drift-panel.js',

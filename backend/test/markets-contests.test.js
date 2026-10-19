@@ -69,6 +69,20 @@ describe('contestId', () => {
 });
 
 describe('buildContests', () => {
+    it('requires observed Active chain status to offer either opening a pool or placing a bet', () => {
+        for (const lifecycleStatus of [undefined, 'Unknown', 'Active', 'Expired']) {
+            for (const existingMarket of [null, market('MKT', 1n, 1n)]) {
+                const { contests } = buildContests({
+                    city: 'test-city', proposals: [proposal({ proposalAccount: ACCOUNT_A, lifecycleStatus })],
+                    markets: new Map(existingMarket ? [[ACCOUNT_A, existingMarket]] : []), statuses: new Map()
+                });
+                expect(contests[0].proposals[0]).toMatchObject({
+                    lifecycleStatus: lifecycleStatus || 'Unknown', chainStatus: null, bettable: false, canOpenMarket: false
+                });
+            }
+        }
+    });
+
     it('keeps only contests someone can bet on, open pools first and settled ones after those still in play', () => {
         const proposals = [
             proposal({ id: 1, proposalId: 'minted-one-sided', parcelIds: ['L1'], proposalAccount: ACCOUNT_A, createdAt: '2026-10-03T00:00:00Z', siteName: 'Candlestick Point' }),
@@ -82,7 +96,9 @@ describe('buildContests', () => {
             [ACCOUNT_B, { address: 'MKT-B', market: null }],
             [ACCOUNT_C, market('MKT-C', 10000n, 10000n, true, 1)]
         ]);
-        const out = buildContests({ city: 'san_francisco', proposals, markets, now: new Date('2026-10-09T00:00:00Z') });
+        const out = buildContests({ city: 'san_francisco', proposals, markets,
+            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Executed']]),
+            now: new Date('2026-10-09T00:00:00Z') });
 
         expect(out.city).toBe('san_francisco');
         expect(out.generatedAt).toBe('2026-10-09T00:00:00.000Z');
@@ -131,6 +147,7 @@ describe('named plans in contests', () => {
         const { contests } = buildContests({
             city: 'zagreb',
             proposals: [street, slab, block, rival],
+            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Active']]),
             plans: [
                 plan({ slug: 'official', place: 'Borovje', memberIds: ['1', '2'], proposalAccount: ACCOUNT_A }),
                 plan({ slug: 'blocks', place: 'Borovje', memberIds: ['1', '3'], proposalAccount: ACCOUNT_B })

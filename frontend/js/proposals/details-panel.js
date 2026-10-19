@@ -1023,13 +1023,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('bets.tagline', 'Bet on cities')}</div>
-                        <h3>${tProposal('bets.contest.titleSingle', 'Does this proposal get built?')}</h3>
+                        <h3>${tProposal('bets.contest.titleSingle', 'Will this proposal execute on-chain?')}</h3>
                     </div>
                     <span class="proposal-funding-state" data-market="state">Loading…</span>
                 </div>
                 <div class="proposal-market-grid" aria-live="polite">
-                    <div><span>${tProposal('panel.proposal.market.yesSide', 'Yes · gets built')}</span><strong data-market="yes">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="yes-odds"></small></div>
-                    <div><span>${tProposal('panel.proposal.market.noSide', 'No · dropped')}</span><strong data-market="no">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="no-odds"></small></div>
+                    <div><span>${tProposal('panel.proposal.market.yesSide', 'Yes · executed on-chain')}</span><strong data-market="yes">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="yes-odds"></small></div>
+                    <div><span>${tProposal('panel.proposal.market.noSide', 'No · cancelled or expired')}</span><strong data-market="no">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="no-odds"></small></div>
                 </div>
                 <div class="proposal-market-lifecycle">
                     <div><strong>${tProposal('panel.proposal.market.ruleTitle', 'How it settles')}</strong><span data-market="rule">${tProposal('panel.proposal.market.ruleLoading', 'Reading the pool rule…')}</span></div>
@@ -1503,7 +1503,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Market reads use the same proposal account and wallet context as pledge hydration, but the
     // market itself is optional: agent runs may open it later. Never make Details wait on RPC.
     if (chainSettlesProposal && window.SolanaMarketBridge?.readSummary) {
-        hydrateProposalMarketCard(nftInfo.tokenId, supportLifecycle);
+        hydrateProposalMarketCard(nftInfo.tokenId);
     }
 
     // If lens missing but on-chain, attempt a lazy fetch to hydrate and enable the button
@@ -1884,12 +1884,12 @@ function setProposalMarketStatus(card, text = '', explorerUrl = '') {
     }
 }
 
-function hydrateProposalMarketCard(proposalAccount, lifecycle) {
+function hydrateProposalMarketCard(proposalAccount) {
     const card = marketCardForProposal(proposalAccount);
     if (!card || !window.SolanaMarketBridge?.readSummary || !window.ProposalMarketView) return;
     Promise.resolve(window.SolanaMarketBridge.readSummary(proposalAccount))
         .then(summary => {
-            renderProposalMarketCard(card, proposalAccount, lifecycle, summary);
+            renderProposalMarketCard(card, proposalAccount, summary);
             hydrateProposalMarketOracle(card, proposalAccount, summary?.marketAddress || '');
             hydrateProposalMarketHistory(card, proposalAccount, card.dataset.proposalId || '');
         })
@@ -2018,13 +2018,13 @@ async function hydrateProposalMarketHistory(card, proposalAccount, proposalId) {
     });
 }
 
-function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
+function renderProposalMarketCard(card, proposalAccount, summary) {
     const view = window.ProposalMarketView;
     const t = getProposalI18nHelper();
     const model = view.model(summary?.market, { yes: summary?.yes, no: summary?.no });
-    // The proposal account's status is what the program resolves from; the app's own lifecycle word
-    // (expiry-aware, possibly ahead of the chain) only stands in when the account could not be read.
-    const lifecycleModel = view.lifecycle(summary?.chainStatus || lifecycle, model);
+    // The proposal account's status is what the program resolves from. An app deadline or stored
+    // lifecycle cannot supply the missing chain observation needed to enable a market action.
+    const lifecycleModel = view.lifecycle(summary?.chainStatus || 'Unknown', model);
     const state = card.querySelector('[data-market="state"]');
     const yes = card.querySelector('[data-market="yes"]');
     const no = card.querySelector('[data-market="no"]');
@@ -2040,7 +2040,7 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
     const money = amount => (typeof CbFormat !== 'undefined' && CbFormat.formatMoney
         ? CbFormat.formatMoney(Number(view.formatAtomic(amount)), 'USDC') : `${view.formatAtomic(amount)} USDC`);
     const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet')
-        : t('bets.row.chance', '{{percent}} chance', { percent: (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
+        : t('bets.row.poolShare', '{{percent}} of pool', { percent: (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
             ? CbFormat.formatPercent(value, { ofHundred: true, maxFractionDigits: 1 }) : `${value}%`) }));
     const connectButton = `<button type="button" class="btn" onclick="handleWalletButtonClick()">${safeAgentText(t('panel.proposal.support.connect', 'Connect Solana wallet'))}</button>`;
     const muted = text => `<span class="proposal-market-muted">${safeAgentText(text)}</span>`;
@@ -2134,7 +2134,7 @@ async function settleProposalMarket(proposalAccount, action, side = null) {
         setProposalMarketStatus(card, view.confirmedText(), result.explorerUrl);
         notifyProposalMarketChanged(proposalAccount);
         await recordHumanProposalSupport({ wallet, action, proposalId: proposalAccount, result, message: `${proposalSupportActor(wallet).name}: ${message}` });
-        hydrateProposalMarketCard(proposalAccount, currentProposalDetailsContext ? getLifecycleStatus(currentProposalDetailsContext) : '');
+        hydrateProposalMarketCard(proposalAccount);
     } catch (error) {
         setProposalMarketStatus(card, view?.errorText?.(error) || error?.message || 'Market transaction failed.', error?.explorerUrl);
     } finally {

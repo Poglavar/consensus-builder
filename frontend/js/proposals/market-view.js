@@ -84,7 +84,7 @@
         open: 'Bets stay in the pool while the proposal is active; there is no early exit.',
         needsPool: 'Any wallet can open the one pool for this active proposal, then bet yes or no.',
         settleYes: 'Anyone can settle it; the program reads Executed straight from the proposal account.',
-        settleNo: 'Anyone can settle it; the program reads the dropped status straight from the proposal account.',
+        settleNo: 'Anyone can settle it; the program reads Cancelled or Expired from the proposal account.',
         settledSplit: 'The winning side shares the whole pool in proportion to its bets. The losing side gets nothing.',
         settledRefund: 'Nobody bet on the winning side, so every bet can be collected back in full.',
         closed: 'The proposal must be active on-chain before a pool can open.'

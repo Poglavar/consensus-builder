@@ -73,18 +73,18 @@
     }
 
     // One word for where a proposal's bet stands. The server says whether a bet is open (from the
-    // proposal account's own status when it could read it); the status words come from the chain
-    // first and the expiry-aware database word second.
+    // proposal account's own status when it could read it). Only a known terminal chain state
+    // permits settlement; an unavailable status or an app deadline supplies no such evidence.
     function rowState(entry) {
         if (!entry) return 'not-minted';
         if (entry.market && entry.market.resolved) return entry.market.outcome === 'yes' ? 'resolved-yes' : 'resolved-no';
         if (entry.bettable) return 'open';
         if (entry.canOpenMarket) return 'needs-market';
         if (!entry.proposalAccount) return 'not-minted';
-        const status = entry.chainStatus || entry.lifecycleStatus || 'Active';
+        const status = entry.chainStatus;
         // Still Active on-chain but not bettable: the server saw a reason (unreadable market); treat it
         // as closed rather than inviting a transaction that would fail.
-        if (status === 'Active') return 'closed';
+        if (!['Executed', 'Cancelled', 'Expired'].includes(status)) return 'closed';
         // The proposal left Active on-chain: the market only needs someone to resolve it from the
         // proposal's terminal status.
         return entry.market ? 'settling' : 'closed';
@@ -118,7 +118,8 @@
             // The same ground without the proposal, when rendered (dividers.md, M3).
             screenshotBeforeUrl: entry.screenshotBeforeUrl || null,
             parcelIds: Array.isArray(entry.parcelIds) ? entry.parcelIds : [],
-            lifecycleStatus: entry.lifecycleStatus || 'Active',
+            lifecycleStatus: entry.lifecycleStatus || 'Unknown',
+            chainStatus: entry.chainStatus || null,
             state: stateOf(entry),
             chanceYes: odds.yes,
             chanceNo: odds.no,
@@ -222,9 +223,10 @@
     const HIDDEN_STATES = ['not-minted', 'closed'];
     function splitRows(rows) {
         const list = Array.isArray(rows) ? rows : [];
+        const withoutPool = item => HIDDEN_STATES.includes(item.state) && item.pool == null;
         return {
-            shown: list.filter(item => !HIDDEN_STATES.includes(item.state)),
-            hidden: list.filter(item => HIDDEN_STATES.includes(item.state))
+            shown: list.filter(item => !withoutPool(item)),
+            hidden: list.filter(withoutPool)
         };
     }
 

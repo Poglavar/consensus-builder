@@ -48,7 +48,7 @@ describe('GET /bets/:proposalAccount', () => {
         expect(pool.query.mock.calls[0][0]).toContain("onchain_data->>'chainId' = 'solana-devnet'");
         expect(pool.query.mock.calls[0][0]).toContain(`onchain_data->>'contractAddress' = '${PROPOSAL_PROGRAM_ID}'`);
         expect(meta(res.text, 'og:title')).toBe('Plan-led infill in &lt;Rudeš&gt; &amp; &quot;more&quot; · Bet on cities');
-        expect(meta(res.text, 'og:description')).toBe('83.3% chance it gets built · Pool 0.3 USDC · Yes pays 1.04×, no pays 1.23×.');
+        expect(meta(res.text, 'og:description')).toBe('Yes: 83.3% of pool · Pool 0.3 USDC · Yes pays 1.04×, no pays 1.23×.');
         expect(meta(res.text, 'og:image')).toBe('https://urbangametheory.xyz/images/og-globe-20261019.jpg');
         expect(meta(res.text, 'og:url')).toBe(`https://urbangametheory.xyz/bets/${ACCOUNT}?city=zg`);
         expect(meta(res.text, 'twitter:card')).toBe('summary_large_image');
@@ -78,9 +78,9 @@ describe('GET /bets/:proposalAccount', () => {
 
     it('words a settled pool and a pool nobody has bet on', async () => {
         const settled = await request(appFor({ market: { yesPool: 250000n, noPool: 50000n, resolved: true, outcome: 0 }, status: 'Expired' }).app).get(`/bets/${ACCOUNT}`);
-        expect(meta(settled.text, 'og:description')).toBe('Settled no: it was dropped · Pool 0.3 USDC.');
+        expect(meta(settled.text, 'og:description')).toBe('Settled no: Cancelled or Expired on-chain · Pool 0.3 USDC.');
         const empty = await request(appFor({ market: { yesPool: 0n, noPool: 0n, resolved: false, outcome: 0 } }).app).get(`/bets/${ACCOUNT}`);
-        expect(meta(empty.text, 'og:description')).toBe('No bets yet · Pool 0 USDC · Bet yes or no on whether it gets built.');
+        expect(meta(empty.text, 'og:description')).toBe('No bets yet · Pool 0 USDC · Bet on on-chain execution status.');
         // A pool with one side only never reads "100% chance".
         const oneSided = await request(appFor({ market: { yesPool: 250000n, noPool: 0n, resolved: false, outcome: 0 } }).app).get(`/bets/${ACCOUNT}`);
         expect(meta(oneSided.text, 'og:description')).toBe('Only yes bets so far · Pool 0.25 USDC · Yes pays 1.00×, no pays 1.25×.');
@@ -129,8 +129,8 @@ describe('describeRow and escapeHtml', () => {
     it('has a sentence for every row state', () => {
         expect(describeRow({ state: 'needs-market', pool: null })).toMatch(/^No pool yet/);
         expect(describeRow({ state: 'settling', pool: '1' })).toBe('Decided on-chain · Pool 1 USDC · Anyone can settle the pool.');
-        expect(describeRow({ state: 'closed', pool: null })).toBe('Decided on-chain before a pool was opened.');
-        expect(describeRow({ state: 'resolved-yes', pool: '2.5' })).toBe('Settled yes: it gets built · Pool 2.5 USDC.');
+        expect(describeRow({ state: 'closed', pool: null })).toBe('Not open for bets.');
+        expect(describeRow({ state: 'resolved-yes', pool: '2.5' })).toBe('Settled yes: Executed on-chain · Pool 2.5 USDC.');
         expect(describeRow(null)).toContain('Bet on cities');
     });
 

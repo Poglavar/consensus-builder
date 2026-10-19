@@ -70,21 +70,21 @@ export function escapeHtml(value) {
 
 // The one line a preview card shows under the title, from the row the sheet would render.
 export function describeRow(row) {
-    if (!row) return `${TAGLINE}: bet yes or no on whether this proposal gets built.`;
+    if (!row) return `${TAGLINE}: bet on a proposal's on-chain execution status.`;
     const pool = row.pool === null || row.pool === undefined ? null : `Pool ${row.pool} USDC`;
     switch (row.state) {
         case 'open': {
             const pays = `Yes pays ${row.paysYes.toFixed(2)}×, no pays ${row.paysNo.toFixed(2)}×.`;
-            if (row.chanceYes === null) return `No bets yet · ${pool} · Bet yes or no on whether it gets built.`;
+            if (row.chanceYes === null) return `No bets yet · ${pool} · Bet on on-chain execution status.`;
             // One side alone is not a chance worth printing: "100%" on a single 0.25 USDC bet misleads.
             if (row.oneSided) return `Only ${row.oneSided} bets so far · ${pool} · ${pays}`;
-            return `${row.chanceYes}% chance it gets built · ${pool} · ${pays}`;
+            return `Yes: ${row.chanceYes}% of pool · ${pool} · ${pays}`;
         }
-        case 'resolved-yes': return `Settled yes: it gets built · ${pool}.`;
-        case 'resolved-no': return `Settled no: it was dropped · ${pool}.`;
-        case 'needs-market': return 'No pool yet · Open the pool and bet yes or no on whether it gets built.';
+        case 'resolved-yes': return `Settled yes: Executed on-chain · ${pool}.`;
+        case 'resolved-no': return `Settled no: Cancelled or Expired on-chain · ${pool}.`;
+        case 'needs-market': return 'No pool yet · Open the pool and bet on on-chain execution status.';
         case 'settling': return `Decided on-chain · ${pool} · Anyone can settle the pool.`;
-        default: return `Decided on-chain before a pool was opened.`;
+        default: return 'Not open for bets.';
     }
 }
 

@@ -8,6 +8,7 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+import { canonicalizeLifecycleStatus } from '../proposals/lifecycle.js';
 
 const require = createRequire(import.meta.url);
 // The sheet's own model (frontend/js/bets/bets-model.js): the same state words and the same order,
@@ -105,12 +106,12 @@ function proposalEntry(proposal, markets, statuses) {
     const proposalAccount = proposal.proposalAccount || null;
     const decoded = proposalAccount ? markets.get(proposalAccount) : null;
     const market = marketEntry(decoded);
-    const lifecycleStatus = String(proposal.lifecycleStatus || 'Active');
+    const lifecycleStatus = canonicalizeLifecycleStatus(proposal.lifecycleStatus) || 'Unknown';
     // What the market program will see: the proposal account's own status when it was readable.
     // The database's expiry-aware status is the display word; it can run ahead of the chain (an
     // app deadline passed, no verdict settled yet), and the program only honours the chain.
     const chainStatus = proposalAccount && statuses && statuses.get(proposalAccount) ? statuses.get(proposalAccount) : null;
-    const active = (chainStatus || lifecycleStatus) === 'Active';
+    const active = chainStatus === 'Active';
     return {
         id: proposal.id,
         kind: 'proposal',
@@ -146,7 +147,7 @@ function planEntry(plan, markets, statuses, proposalsById) {
         proposalId: plan.slug,
         title: plan.title || plan.slug,
         goal: 'plan',
-        lifecycleStatus: 'Active',
+        lifecycleStatus: 'Unknown',
         createdAt: plan.createdAt,
         expiresAt: null,
         author: plan.author,
