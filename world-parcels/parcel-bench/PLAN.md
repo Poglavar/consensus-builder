@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (first visible-division diagnostic complete; exact-cell geometry verified; sampled joins precede size cleanup). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (marker/surface comparison complete; five target-region crops prepared for human review). Status values: todo · running · done · dropped (with the reason).
 
 ## Current product target: plausible plots where cadastre is unavailable
 
@@ -111,6 +111,28 @@ reconstruction/training/scoring sources remain unchanged. No training/inference/
 
 Evidence, 27 targeted headless unit tests, and review sheets: [diagnostic report](studies/visible-divisions-v1.md),
 [frozen annotations/protocol](annotations/README.md), [tracked receipt](studies/visible-divisions-v1.json).
+
+## Completed marker/surface diagnostic (2026-10-19)
+
+The frozen 2×2 comparison retained all nine images and three saved model seeds: native or eroded-core
+markers, each with distance or boundary flooding. All 108 exact-cell outputs passed geometry checks;
+all 27 controls exactly reproduced. Core markers reduced false joins from six to four, both gains in
+seed 1. Core/distance lost unique assignment on one separation pair; core/boundary retained all
+separation pairs but made one same-surface pair ambiguous. Native/boundary fixed one join and created
+another. Ambiguities are shared-edge contacts, retained under the frozen scorer, not area overlaps.
+
+No candidate is promoted. Marker admission remains the more useful lead: a shared starting marker
+still bridges one crop divider, and both tree-row field anchors remain unseeded under every recipe.
+Core admission also adds 148 features and substantially more edges with low predicted-boundary
+support; physical support must be reviewed independently of those model scores. Complete per-seed
+changes, secondary checks, visual diagnosis and reproduction: [evidence](studies/visible-boundary-v1.md).
+
+A [pending human-review packet](annotations/target-review-v1.json) now contains five image-only crops
+from three official OpenAerialMap records in Mozambique and Nepal, with source/crop hashes, dates,
+resolution and licence attribution. The crops show housing, enclosures and open/cultivated ground.
+They are purposive, geographically limited and unlabelled; they are not five independent villages
+or an evaluation holdout. Human annotation, settlement suitability review and geographic role
+assignment remain necessary before prediction comparison. No new training, inference or rental.
 
 ## Product priority: suburban and village communities
 

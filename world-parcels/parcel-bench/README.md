@@ -20,6 +20,14 @@ overlap and round-trip checks for all 54 candidate outputs. This is an **agent-d
 diagnostic**, not village validation or a model promotion. See the [results, evidence and reproduction
 commands](studies/visible-divisions-v1.md). No new training or inference was run.
 
+**Boundary/marker follow-up (2026-10-19):** the frozen four-arm comparison is complete, with all
+108 exact-cell outputs verified. Eroding interior components before marker admission reduced joins
+from six to four, with gains confined to one model seed; every candidate introduced an ambiguous
+anchor assignment. Switching to boundary flooding alone fixed one join and created another. No
+candidate was promoted. Five image-only crops from Mozambique and Nepal are prepared for human
+review, with source/crop receipts; they are not yet annotated or a target-settlement benchmark.
+See [results, paired regressions and the review packet](studies/visible-boundary-v1.md).
+
 The cadastral benchmark, principles and results below document the historical experiments. Keep
 their original targets, scorers and decisions; a new product metric does not retroactively promote
 an old treatment or turn Croatian cadastral scores into village segmentation validation.

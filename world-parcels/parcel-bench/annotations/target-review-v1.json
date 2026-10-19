@@ -1,0 +1,374 @@
+{
+  "human_review_completed": false,
+  "human_review_instructions": [
+    "Confirm the imagery and settlement context are suitable before accepting crops.",
+    "Mark visible physical/use divisions with two interior image-pixel anchors intended to remain separate; add same-surface pairs.",
+    "Record uncertain and occluded boundaries explicitly; do not infer legal ownership.",
+    "Freeze reviewed annotations and geographic development/holdout roles before comparing predictions."
+  ],
+  "licence_source": "https://openaerialmap.org/legal/",
+  "limitations": [
+    "Five crops are three source records, not five independent settlements.",
+    "The two Mozambique records are geographically nearby.",
+    "No small rural-village coverage established; no representative Africa/Asia claim.",
+    "No holdout role assigned or model prediction generated.",
+    "Native UAV detail is finer than typical satellite imagery; 0.15m output spacing is a resampling choice."
+  ],
+  "local_contact": "output/target-review-v1/windows-contact.png",
+  "local_review": "output/target-review-v1/review.html",
+  "preparation_source_sha256": "ab77ed0c40aefce920a8ddc4a254dcbf4bcaf189df366e96db26dda98a357b2d",
+  "purpose": "Five image-only crop candidates for human review before model comparisons; not a frozen evaluation cohort.",
+  "review_artifact_sha256": {
+    "output/target-review-v1/review.html": "c3c7876393d619d90b062f3a89c15d6c5985a6b033b00c73eaec63979615ca7b",
+    "output/target-review-v1/windows-contact.png": "49aa53417be498e7eb5ead35d82b6e4dffcf741c8e37f4625108d73b66308524"
+  },
+  "review_status": "pending-human-review",
+  "samples": [
+    {
+      "acquisition_end": "2024-07-29T10:35:17.966Z",
+      "acquisition_start": "2024-07-28T22:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox": [
+        460151.06436268723,
+        7140507.03701342,
+        460304.6643626872,
+        7140660.6370134195
+      ],
+      "bbox_wgs84": [
+        32.60231468883701,
+        -25.85325679022202,
+        32.60385218194349,
+        -25.851865618958442
+      ],
+      "crs": "EPSG:32736",
+      "fetched_at": "2026-10-19T16:54:14.978776+00:00",
+      "height": 1024,
+      "id": "magoanine-c-west-houses",
+      "image": "magoanine-c-west-houses.jpg",
+      "image_sha256": "51e99d9a06ad6725861775dd662c685a0b6982556b17deab64c667fa32e6958c",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/66a799fd6fc2560001637543",
+      "license": "CC-BY-4.0",
+      "mask_valid_fraction": 1.0,
+      "output_pixel_spacing_m": 0.15,
+      "probes": [],
+      "producer": "#MapeandoMeuBairro",
+      "resampling": "bilinear RGB; nearest mask",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.04488889710141197,
+      "source_id": "magoanine-c",
+      "source_window_pixels": [
+        3165.4092239020983,
+        4055.499223906342,
+        3421.781552196114,
+        3421.781552186899
+      ],
+      "width": 1024
+    },
+    {
+      "acquisition_end": "2024-07-29T10:35:17.966Z",
+      "acquisition_start": "2024-07-28T22:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox": [
+        460588.8478205583,
+        7140171.494752032,
+        460742.4478205583,
+        7140325.094752031
+      ],
+      "bbox_wgs84": [
+        32.60667358284312,
+        -25.856298533005088,
+        32.60821106574538,
+        -25.8549074071517
+      ],
+      "crs": "EPSG:32736",
+      "fetched_at": "2026-10-19T16:54:15.649524+00:00",
+      "height": 1024,
+      "id": "magoanine-c-east-growth-edge",
+      "image": "magoanine-c-east-growth-edge.jpg",
+      "image_sha256": "87d15bc8b7a97a37a82a0ae865d785bc1310b8d6d716a4daf136c20dd8eb4a63",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/66a799fd6fc2560001637543",
+      "license": "CC-BY-4.0",
+      "mask_valid_fraction": 1.0,
+      "output_pixel_spacing_m": 0.15,
+      "probes": [],
+      "producer": "#MapeandoMeuBairro",
+      "resampling": "bilinear RGB; nearest mask",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.04488889710141197,
+      "source_id": "magoanine-c",
+      "source_window_pixels": [
+        12918.009223902409,
+        11530.449223905303,
+        3421.781552196113,
+        3421.7815521868997
+      ],
+      "width": 1024
+    },
+    {
+      "acquisition_end": "2024-01-29T23:00:00Z",
+      "acquisition_start": "2024-01-29T22:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox": [
+        463433.75761155394,
+        7147061.443433697,
+        463587.3576115539,
+        7147215.043433697
+      ],
+      "bbox_wgs84": [
+        32.63525622228575,
+        -25.794156846790386,
+        32.636792565045376,
+        -25.792766014797298
+      ],
+      "crs": "EPSG:32736",
+      "fetched_at": "2026-10-19T16:54:17.156301+00:00",
+      "height": 1024,
+      "id": "djonasse-north-houses",
+      "image": "djonasse-north-houses.jpg",
+      "image_sha256": "8a1900c96ba7f20ee5bfb5ab37637194b87263101c57231ed0d95c17c5b3f5ec",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/67c56b387cc97654af432cab",
+      "license": "CC-BY-4.0",
+      "mask_valid_fraction": 1.0,
+      "output_pixel_spacing_m": 0.15,
+      "probes": [],
+      "producer": "#MapeandoMeuBairro",
+      "resampling": "bilinear RGB; nearest mask",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.08981041122892366,
+      "source_id": "djonasse",
+      "source_window_pixels": [
+        13314.405289568242,
+        11038.215289573458,
+        1710.2694208633638,
+        1710.2694208593075
+      ],
+      "width": 1024
+    },
+    {
+      "acquisition_end": "2024-01-29T23:00:00Z",
+      "acquisition_start": "2024-01-29T22:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox": [
+        464100.3430571525,
+        7146145.889158507,
+        464253.9430571525,
+        7146299.4891585065
+      ],
+      "bbox_wgs84": [
+        32.64188038377104,
+        -25.802440695652987,
+        32.643416758602676,
+        -25.801049932879668
+      ],
+      "crs": "EPSG:32736",
+      "fetched_at": "2026-10-19T16:54:17.803591+00:00",
+      "height": 1024,
+      "id": "djonasse-south-houses",
+      "image": "djonasse-south-houses.jpg",
+      "image_sha256": "04f6d571d2e2ae353af04e00aae69a1b08de060e5058e2733e13a5d334fbd09c",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/67c56b387cc97654af432cab",
+      "license": "CC-BY-4.0",
+      "mask_valid_fraction": 1.0,
+      "output_pixel_spacing_m": 0.15,
+      "probes": [],
+      "producer": "#MapeandoMeuBairro",
+      "resampling": "bilinear RGB; nearest mask",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.08981041122892366,
+      "source_id": "djonasse",
+      "source_window_pixels": [
+        20736.545289568294,
+        21232.515289567236,
+        1710.269420863362,
+        1710.2694208593057
+      ],
+      "width": 1024
+    },
+    {
+      "acquisition_end": "2026-07-06T10:35:32.626000Z",
+      "acquisition_start": "2026-07-05T18:15:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox": [
+        334382.0199248,
+        3070553.5529000005,
+        334535.6199248,
+        3070707.1529
+      ],
+      "bbox_wgs84": [
+        85.31955493840148,
+        27.7492185834828,
+        85.32113415986113,
+        27.750623553019814
+      ],
+      "crs": "EPSG:32645",
+      "fetched_at": "2026-10-19T16:54:19.725833+00:00",
+      "height": 1024,
+      "id": "baniyataar-houses-and-fields",
+      "image": "baniyataar-houses-and-fields.jpg",
+      "image_sha256": "bd987cbbfe2f71a35736c756cd133a147b5483201593662bd6d1405cc8952d87",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/6a7d3b3b782d06d7d0eb4d8d",
+      "license": "CC-BY-4.0",
+      "mask_valid_fraction": 1.0,
+      "output_pixel_spacing_m": 0.15,
+      "probes": [],
+      "producer": "Rabi Shrestha",
+      "resampling": "bilinear RGB; nearest mask",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.022239999999999132,
+      "source_id": "baniyataar",
+      "source_window_pixels": [
+        2846.282589928332,
+        3341.2625899256986,
+        6906.474820142836,
+        6906.474820127134
+      ],
+      "width": 1024
+    }
+  ],
+  "schema": "target-review-packet-v1",
+  "screening": {
+    "baniyataar": "Houses, access roads and cultivated/green strips visible in preview/crop; formal settlement classification unverified.",
+    "djonasse": "Housing, walled yards and partly undeveloped plots visible in preview/crops; formal settlement classification unverified.",
+    "magoanine-c": "Housing, garden enclosures, partly undeveloped ground and roads visible in preview/crops; formal settlement classification unverified.",
+    "mangochi": "Preview retained for provenance but excluded from settlement crop packet: agricultural ground without a clear housing cluster."
+  },
+  "selection": "Purposive preview-based crop selection without model/cadastral overlays; two crops each from two nearby Mozambique neighborhoods and one Kathmandu-area crop.",
+  "source_records": [
+    {
+      "acquisition_end": "2024-07-29T10:35:17.966Z",
+      "acquisition_start": "2024-07-28T22:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox_wgs84": [
+        32.600878,
+        -25.858902,
+        32.610836,
+        -25.850218
+      ],
+      "fetched_at": "2026-10-19T16:52:07.734396+00:00",
+      "id": "magoanine-c",
+      "item_id": "66a799fd6fc2560001637543",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/66a799fd6fc2560001637543",
+      "license": "CC-BY-4.0",
+      "producer": "#MapeandoMeuBairro",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.04488889710141197,
+      "source_metadata_sha256": "84938492443e506fd460487cc51441772893b0f9e88a4eae3a68db8355201b32",
+      "thumbnail_bytes": 1059175,
+      "thumbnail_file": "magoanine-c.png",
+      "thumbnail_sha256": "6ed3fbb0eb85abe024d72c99deb3bfa99ac988dc01a8000335bd5af648af00e3",
+      "thumbnail_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/66a7973e6fc2560001637540/0/66a7973e6fc2560001637541.png",
+      "title": "Bairro de Magoanine C",
+      "visual_bbox": [
+        460008.9726337517,
+        7139883.991725381,
+        461003.93503800407,
+        7140842.683900776
+      ],
+      "visual_bytes": 141818664,
+      "visual_crs": "EPSG:32736",
+      "visual_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/66a7973e6fc2560001637540/0/66a7973e6fc2560001637541.tif"
+    },
+    {
+      "acquisition_end": "2024-01-29T23:00:00Z",
+      "acquisition_start": "2024-01-29T22:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox_wgs84": [
+        32.623274,
+        -25.811417,
+        32.653582,
+        -25.783784
+      ],
+      "fetched_at": "2026-10-19T16:52:09.518710+00:00",
+      "id": "djonasse",
+      "item_id": "67c56b387cc97654af432cab",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/67c56b387cc97654af432cab",
+      "license": "CC-BY-4.0",
+      "producer": "#MapeandoMeuBairro",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.08981041122892366,
+      "source_metadata_sha256": "9ea5b6ba46ab6897c87500c52d2d891725ad74b3e6ed8fdb39bda6e665e59530",
+      "thumbnail_bytes": 609781,
+      "thumbnail_file": "djonasse.png",
+      "thumbnail_sha256": "145ec09c488305b5a6750861b34712f0f378ec6f2ad18436cd582cf18fadb9d2",
+      "thumbnail_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/67c567487cc97654af432ba8/0/67c567487cc97654af432ba9.png",
+      "title": "Bairro Djonasse",
+      "visual_bbox": [
+        462237.9853972294,
+        7145154.542504117,
+        465267.9192408593,
+        7148206.390088087
+      ],
+      "visual_bytes": 214985854,
+      "visual_crs": "EPSG:32736",
+      "visual_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/67c567487cc97654af432ba8/0/67c567487cc97654af432ba9.tif"
+    },
+    {
+      "acquisition_end": "2026-10-04T21:02:59.186000Z",
+      "acquisition_start": "2026-10-03T23:00:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox_wgs84": [
+        35.230564,
+        -14.422423,
+        35.232316,
+        -14.420515
+      ],
+      "fetched_at": "2026-10-19T16:52:11.392081+00:00",
+      "id": "mangochi",
+      "item_id": "6ac2e866a19ff675fdcf084c",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/6ac2e866a19ff675fdcf084c",
+      "license": "CC-BY-4.0",
+      "producer": "Clinton Nkolokosa",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.04999999999982214,
+      "source_metadata_sha256": "4ef2b04fd4e6f4c5a11d07c7f4596889b3bf29d5bd29a3452dd408e21ba5fec5",
+      "thumbnail_bytes": 578560,
+      "thumbnail_file": "mangochi.png",
+      "thumbnail_sha256": "fb6b2d7b4b3beffc8e75415d681756ce5067017c6dfd3796e9e498c4dc1d770b",
+      "thumbnail_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/6ac2e6bda19ff675fdcf0624/0/6ac2e6bda19ff675fdcf0625.png",
+      "title": "Mangochi",
+      "visual_bbox": [
+        740489.4933978792,
+        8404388.55625,
+        740676.364462133,
+        8404598.00625
+      ],
+      "visual_bytes": 4072953,
+      "visual_crs": "EPSG:32736",
+      "visual_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/6ac2e6bda19ff675fdcf0624/0/6ac2e6bda19ff675fdcf0625.tif"
+    },
+    {
+      "acquisition_end": "2026-07-06T10:35:32.626000Z",
+      "acquisition_start": "2026-07-05T18:15:00Z",
+      "attribution": "Open Imagery Network contributors",
+      "bbox_wgs84": [
+        85.318909,
+        27.748551,
+        85.321726,
+        27.75129
+      ],
+      "fetched_at": "2026-10-19T16:52:13.265285+00:00",
+      "id": "baniyataar",
+      "item_id": "6a7d3b3b782d06d7d0eb4d8d",
+      "item_url": "https://api.imagery.hotosm.org/stac/collections/openaerialmap/items/6a7d3b3b782d06d7d0eb4d8d",
+      "license": "CC-BY-4.0",
+      "producer": "Rabi Shrestha",
+      "review_status": "pending-human-review",
+      "source_gsd_m": 0.022239999999999132,
+      "source_metadata_sha256": "8b57d159845b960d1b76c5ec5b0ae21cae1753232ead568aeae1fd0f3ff1bfc2",
+      "thumbnail_bytes": 984271,
+      "thumbnail_file": "baniyataar.png",
+      "thumbnail_sha256": "77a217d51175b6cd6c69e5f6b854a74f05f9f9ee972dc1c7379bdca826a02bd2",
+      "thumbnail_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/6a7d3976782d06d7d0eb4b76/0/6a7d3976782d06d7d0eb4b77.png",
+      "title": "Baniyataar",
+      "visual_bbox": [
+        334318.7186,
+        3070479.24322,
+        334593.42708,
+        3070781.46258
+      ],
+      "visual_bytes": 38045596,
+      "visual_crs": "EPSG:32645",
+      "visual_url": "https://oin-hotosm-temp.s3.us-east-1.amazonaws.com/6a7d3976782d06d7d0eb4b76/0/6a7d3976782d06d7d0eb4b77.tif"
+    }
+  ]
+}
