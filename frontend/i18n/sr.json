@@ -6189,9 +6189,6 @@
         "ownership": {
             "ceded": "{{area}} → {{destination}}"
         },
-        "offer": {
-            "share": "udeo ove parcele ≈ {{amount}}"
-        },
         "status": {
             "local": "Lokalno (ovaj pregledač)",
             "published": "Objavljeno",
@@ -6221,7 +6218,7 @@
             "corridor": "Put / pruga",
             "plots": "Parcele koje postaje",
             "ceded": "Ustupljeno zemljište → kome",
-            "offer": "Ponuda",
+            "offer": "Izvorna ukupna ponuda za ceo predlog",
             "consentNeeded": "Potrebna vaša saglasnost",
             "consentBasis": "Dokazi o pristanku",
             "parcelAccepted": "Pristanak obuhvata izabrane reference",

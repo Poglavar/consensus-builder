@@ -143,21 +143,6 @@
         }
     }
 
-    // This parcel's share of the proposal's declared area, for the offer payout (execution.js uses
-    // the same split). Null when the areas are unknown.
-    function areaShareOf(proposal, parcel) {
-        if (typeof global.getProposalAreaMap !== 'function') return null;
-        const { areaMap, totalArea } = global.getProposalAreaMap(proposal);
-        if (!(totalArea > 0)) return null;
-        let mine = 0;
-        for (const id of parcel.cadastreIds) {
-            const area = areaMap.get(id);
-            if (!(area > 0)) return null;
-            mine += area;
-        }
-        return mine > 0 ? mine / totalArea : null;
-    }
-
     function effectFor(entry, parcel, channels) {
         const proposal = entry.proposal;
         let consent = global.ProposalConsentSummary.unknown(null);
@@ -179,7 +164,6 @@
         return api().parcelEffect(proposal, parcel, {
             consent,
             channel: channels.get(String(proposal.proposalId)) || undefined,
-            areaShare: areaShareOf(proposal, parcel),
             lifecycleKey: typeof global.getProposalLifecycleKey === 'function' ? global.getProposalLifecycleKey(proposal) : undefined,
             isMinted: typeof global.isProposalMinted === 'function' ? !!global.isProposalMinted(proposal) : undefined,
             isTrack: typeof global.isTrackProposal === 'function' ? global.isTrackProposal : undefined
@@ -266,17 +250,9 @@
         return [t('parcelCompare.ownership.ceded', '{{area}} → {{destination}}', { area: m2(o.cededM2), destination: destinationText(o.destination) })];
     }
 
-    function money(amount, currency) {
-        if (!finite(amount)) return DASH;
-        const parts = typeof global.formatOffer === 'function' ? global.formatOffer(amount, currency || 'ETH') : null;
-        return parts ? parts.display : DASH;
-    }
-
     function offerText(o) {
         if (!o) return [DASH];
-        const lines = [money(o.amount, o.currency)];
-        if (finite(o.parcelShare)) lines.push(t('parcelCompare.offer.share', 'this parcel’s share ≈ {{amount}}', { amount: money(o.parcelShare, o.currency) }));
-        return lines;
+        return [CbFormat.formatMoney(o.amount, o.currency)];
     }
 
     function consentText(c) {
@@ -467,7 +443,7 @@
         row(grid, t('parcelCompare.rows.plots', 'Plots it becomes'), both(e => plotsText(e.plots)));
         section(grid, t('parcelCompare.sections.ownership', 'Ownership'));
         row(grid, t('parcelCompare.rows.ceded', 'Ceded ground → to'), both(e => ownershipText(e.ownership)));
-        row(grid, t('parcelCompare.rows.offer', 'Offer'), both(e => offerText(e.offer)));
+        row(grid, t('parcelCompare.rows.offer', 'Original full-proposal offer'), both(e => offerText(e.offer)), { dataKey: 'offer' });
         section(grid, t('parcelCompare.sections.consent', 'What you are asked'));
         row(grid, t('parcelCompare.rows.consentNeeded', 'Your consent needed'), both(e => consentText(e.consent)));
         row(grid, t('parcelCompare.rows.consentBasis', 'Consent evidence'), both(e => [e.consent.basis === 'signed-receipts'

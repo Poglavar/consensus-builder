@@ -439,6 +439,26 @@ human review. [Mobile review contract](world-parcels/parcel-bench/annotation-app
 [validation and state](world-parcels/parcel-bench/annotation-app/public/model.mjs),
 [exporter](world-parcels/parcel-bench/annotation-app/export_reviews.mjs).
 
+A browser **illustrative plot** (`browser-heuristic-v1`, 2026-10-20) is one four-connected region
+generated from prepared imagery, mapped feature seeds/barriers and local manual corrections.
+It is a demonstration hypothesis with a recomputation-local identity, not a cadastral record,
+human visible-division observation, or registered ownership claim. RGB gradients are crossing
+costs; they do not classify roads, buildings or water. Mapped road/water barriers, whole-footprint
+building seeds, manual point seeds and generated open-ground seeds have distinct roles. A manual
+divider is an extended straight line clipped to a connected ground block, rejected if it crosses
+a mapped building. Water conflicts take precedence and warn. Tiny seedless fragments can remain
+unassigned. Street alignment biases the distance cost and does not guarantee rectangular plots.
+
+The `illustrative-plots-v1` GeoJSON export retains exact raster-cell unions with holes, WGS84
+longitude/latitude, source-metric area in m², image and feature hashes, source attribution,
+controls and image-pixel edits. All features are explicitly estimated and unvalidated. Local drafts
+are bound to recipe and source hashes, while undo history is session-local; no compatibility reader
+or migration preserves a draft across changed source identity. The three-example playground does
+not change frozen evaluation records or integrate a runtime cadastre fallback.
+[Recipe](world-parcels/parcel-bench/heuristic-demo/public/core.mjs),
+[export](world-parcels/parcel-bench/heuristic-demo/public/geometry.mjs),
+[usage and limits](world-parcels/parcel-bench/heuristic-demo/README.md).
+
 ## Supporting vocabulary
 
 ### Intent, publication and state
@@ -754,6 +774,13 @@ payment. Missing terms stay unknown, and nonbinding votes show no offer. The pro
 aggregate pending-money amount: summing whole-proposal offers on linked parcels does not establish
 what an agent would receive. [Profile presentation](frontend/js/agents.js),
 [authored offer](frontend/js/proposals/publish-terms.js): `authoredOffer`.
+
+The parcel comparison uses the same explicit original full-proposal offer. It no longer substitutes
+a budget or defaults an unknown currency to ETH, and it does not split the amount by source area.
+An area ratio alone establishes no recipient entitlement; readjustment cash, for example, has its
+own party ledger. A known zero remains zero and missing terms remain unknown. This presentation
+does not calculate a current decayed offer or assert funding, payment or completed transfer.
+[Comparison quantities](frontend/js/proposals/parcel-compare.js).
 
 ### Rights, money and evidence
 

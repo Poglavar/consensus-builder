@@ -6189,9 +6189,6 @@
         "ownership": {
             "ceded": "{{area}} → {{destination}}"
         },
-        "offer": {
-            "share": "udio ove čestice ≈ {{amount}}"
-        },
         "status": {
             "local": "Lokalno (ovaj preglednik)",
             "published": "Objavljeno",
@@ -6221,7 +6218,7 @@
             "corridor": "Cesta / pruga",
             "plots": "Nove čestice koje nastaju",
             "ceded": "Ustupljeno tlo → kome",
-            "offer": "Ponuda",
+            "offer": "Izvorna ukupna ponuda za cijeli prijedlog",
             "consentNeeded": "Potrebna vaša suglasnost",
             "consentBasis": "Dokazi o pristanku",
             "parcelAccepted": "Pristanak obuhvaća odabrane reference",

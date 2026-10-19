@@ -6134,9 +6134,6 @@
         "ownership": {
             "ceded": "{{area}} → {{destination}}"
         },
-        "offer": {
-            "share": "this parcel’s share ≈ {{amount}}"
-        },
         "status": {
             "local": "Local (this browser)",
             "published": "Published",
@@ -6166,7 +6163,7 @@
             "corridor": "Road / track",
             "plots": "Plots it becomes",
             "ceded": "Ceded ground → to",
-            "offer": "Offer",
+            "offer": "Original full-proposal offer",
             "consentNeeded": "Your consent needed",
             "consentBasis": "Consent evidence",
             "parcelAccepted": "Consent covers selected references",

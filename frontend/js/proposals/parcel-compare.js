@@ -45,6 +45,7 @@
     const siteBindingApi = () => dep('__siteBinding', './site-binding.js');
     const planYieldApi = () => dep('__planYield', './plan-yield.js');
     const ownershipFlowApi = () => dep('__ownershipFlow', './ownership-flow.js');
+    const publishTermsApi = () => dep('ProposalPublishTerms', './publish-terms.js');
 
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     function num(value) {
@@ -365,15 +366,8 @@
         return { cededM2: round(ceded, 1), destination };
     }
 
-    function offerOf(record, options) {
-        const amount = num(record && record.offer) !== null ? num(record.offer) : num(record && record.budget);
-        if (amount === null) return null;
-        const share = num(options.areaShare);
-        return {
-            amount,
-            currency: (record.offerCurrency || record.budgetCurrency || record.currency || null),
-            parcelShare: share !== null && share >= 0 && share <= 1 ? amount * share : null
-        };
+    function offerOf(record) {
+        return publishTermsApi().authoredOffer(record);
     }
 
     function consentOf(record, parcel, relation, options) {
@@ -406,10 +400,9 @@
      * What one record does to the parcel.
      * @param {object} record
      * @param {{ id, cadastreIds?: string[], feature, areaM2?: number }} parcel
-     * @param {{ turf?, channel?: string, areaShare?: number, lifecycleKey?: string, isMinted?: boolean,
+     * @param {{ turf?, channel?: string, lifecycleKey?: string, isMinted?: boolean,
      *   isTrack?: Function, consent?: object }} options (consent = a current validated summary;
-     *   channel = the dossier's consent channel for this parcel;
-     *   areaShare = this parcel's share of the proposal's declared area, for the offer payout)
+     *   channel = the dossier's consent channel for this parcel)
      */
     function parcelEffect(record, parcel, options) {
         const opts = options || {};
@@ -443,7 +436,7 @@
             corridor: corridorOn(record, clip, takenM2, opts),
             plots: plotsOn(t, record, parcelFeature),
             ownership: ownershipOn(record, parcel, hasGround),
-            offer: offerOf(record, opts),
+            offer: offerOf(record),
             consent: consentOf(record, parcel, relation, opts),
             status: statusOf(record, opts),
             clip: clip ? clip.geometry : null

@@ -6185,9 +6185,6 @@
         "ownership": {
             "ceded": "{{area}} → {{destination}}"
         },
-        "offer": {
-            "share": "parte de esta parcela ≈ {{amount}}"
-        },
         "status": {
             "local": "Local (este navegador)",
             "published": "Publicada",
@@ -6217,7 +6214,7 @@
             "corridor": "Calle / vía",
             "plots": "Lotes en que se convierte",
             "ceded": "Terreno cedido → a",
-            "offer": "Oferta",
+            "offer": "Oferta total original de la propuesta",
             "consentNeeded": "Requiere su consentimiento",
             "consentBasis": "Evidencia del consentimiento",
             "parcelAccepted": "El consentimiento abarca las referencias seleccionadas",

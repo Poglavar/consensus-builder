@@ -155,7 +155,7 @@ describe('what a proposal does to this parcel', () => {
             offer: 200000, offerCurrency: 'EUR', isMinted: true, acceptedParcelIds: [PARCEL_ID],
             ownerAcceptances: { [PARCEL_ID]: { ownerOrder: ['a', 'b'], acceptedOwnerKeys: ['b'] } } };
         const effect = compare.parcelEffect(record, PARCEL, { areaShare: 0.25, channel: 'offer' });
-        expect(effect.offer).toEqual({ amount: 200000, currency: 'EUR', parcelShare: 50000 });
+        expect(effect.offer).toEqual({ amount: 200000, currency: 'EUR' });
         expect(effect.consent).toMatchObject({ channel: 'offer', needed: false, parcelAccepted: null,
             basis: null, owners: null, parcels: null });
         const consent = require('../../frontend/js/proposals/consent-summary.js').local(record, [PARCEL_ID], {
@@ -171,6 +171,26 @@ describe('what a proposal does to this parcel', () => {
         // A parcel act's site is the parcel itself: it covers the whole of it.
         expect(effect.take.extent).toBe('whole');
         expect(effect.ownership).toBeNull();
+    });
+
+    it('keeps the original full offer without inventing an area-proportional entitlement', () => {
+        const record = { proposalId: 'money', kind: 'owner-deal', goal: 'as-is', cadastreParcelIds: [PARCEL_ID],
+            offer: 125, offerCurrency: ' eur ', budget: 999, budgetCurrency: 'USD',
+            decayEnabled: true, decayPercent: 50, decayDurationMs: 1 };
+        expect(compare.parcelEffect(record, PARCEL, { areaShare: 0.25 }).offer).toEqual({ amount: 125, currency: 'EUR' });
+        expect(compare.parcelEffect({ ...record, offer: 0 }, PARCEL).offer).toEqual({ amount: 0, currency: 'EUR' });
+    });
+
+    it('leaves non-offer quantities, missing currency and nonbinding proposals without an offer', () => {
+        const record = { proposalId: 'unknown-money', goal: 'as-is', cadastreParcelIds: [PARCEL_ID] };
+        for (const fields of [
+            { offer: null, budget: 999, budgetCurrency: 'EUR' },
+            { offer: true, offerCurrency: 'EUR' },
+            { offer: '125', offerCurrency: 'EUR' },
+            { offer: 125, currency: 'EUR' },
+            { tokenBalance: 125000000, ethBalance: 1000000000 },
+            { kind: 'community-vote', offer: 125, offerCurrency: 'EUR' }
+        ]) expect(compare.parcelEffect({ ...record, ...fields }, PARCEL).offer).toBeNull();
     });
 });
 
