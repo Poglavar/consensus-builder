@@ -430,7 +430,7 @@
             'onchainData', 'serverProposalId', 'isMinted', 'chainId', 'contractAddress', 'metadataUri',
             'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt', 'publishedAt',
             'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
-            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt'
+            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
         ].forEach(key => delete output[key]);
         return output;
     }

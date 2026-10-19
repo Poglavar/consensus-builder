@@ -658,14 +658,17 @@ function proposalLadderBadgesHtml(proposal, options = {}) {
 
 function buildProposalActionButtons(proposal, isExecuted = false) {
     // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal.
-    // Exception: open sale offers (Ownership: Third party · Anyone) get a Buy button so a buyer can
-    // claim the offer directly from the list. Stop propagation so the row preview doesn't also run.
+    // Open sale offers have a browser-local purchase simulation. Stop propagation so the row
+    // preview does not also run; retain the separate local result alongside the shared lifecycle.
     const t = getProposalI18nHelper();
     const buttons = [];
-    if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
-        const buyLabel = t('panel.proposal.buy.button', 'Buy');
+    if (proposal.localPurchaseSimulation) {
+        buttons.push(`<span class="proposal-purchase-simulation">${escapeHtml(t('panel.proposal.purchaseSimulation.result', 'Purchase simulated in this browser'))}</span>`);
+    } else if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
+        const buyLabel = t('panel.proposal.purchaseSimulation.button', 'Simulate purchase');
+        const hint = t('panel.proposal.purchaseSimulation.hint', 'Updates modeled parcel ownership in this browser. No payment is made.');
         const pid = proposal.proposalId || proposal.id || '';
-        buttons.push(`<button type="button" class="btn btn-success btn-sm proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');"><i class="fas fa-handshake" aria-hidden="true"></i> ${buyLabel}</button>`);
+        buttons.push(`<button type="button" class="btn btn-success btn-sm proposal-buy-btn" title="${escapeHtml(hint)}" onclick="event.stopPropagation(); simulateSaleOfferPurchase('${pid}');"><i class="fas fa-handshake" aria-hidden="true"></i> ${buyLabel}</button>`);
     }
     // The list has no inline editor. Its row previews the proposal; the explicit Details button
     // opens the details panel with actions such as editing, creating a proposal, parking, or deletion.

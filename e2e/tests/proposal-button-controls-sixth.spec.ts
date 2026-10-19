@@ -276,7 +276,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).__proposalEvmBoundary.filter((method: string) => method === 'eth_call').length)).toBeGreaterThan(ethCallsBefore);
   });
 
-  test('proposal list Buy executes an open ownership offer from its row action', async ({ mockApi: page }) => {
+  test('proposal list simulates a purchase without changing its funding or lifecycle filter', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
@@ -290,14 +290,19 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(row).toContainText('Awaiting funding');
     await page.locator('#proposals-sheet .proposal-filters-toggle').click();
     await selectNativeOption(page.locator('#proposal-filter-lifecycle'), 'awaiting-funding');
-    await expect(buy).toBeVisible();
+    await expect(buy).toHaveText('Simulate purchase');
+    await expect(buy).toHaveAttribute('title', /No payment is made/);
     await buy.click();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.lifecycleStatus, proposalId)).toBe('Executed');
-    await expect(row).toHaveCount(0);
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id)?.localPurchaseSimulation, proposalId)).toBe(true);
     await page.locator('#proposals-button').click();
-    await selectNativeOption(page.locator('#proposal-filter-lifecycle'), 'all');
-    await expect(row).toContainText('Executed');
+    await expect(page.locator('#proposal-filter-lifecycle')).toHaveValue('awaiting-funding');
+    await expect(row).toContainText('Awaiting funding');
+    await expect(row.locator('.proposal-purchase-simulation')).toHaveText('Purchase simulated in this browser');
     await expect(row.locator('.proposal-buy-btn')).toHaveCount(0);
+    expect(await page.evaluate(id => {
+      const p = (window as any).proposalStorage.getProposal(id);
+      return { lifecycle: p.lifecycleStatus, funded: p.funded, direction: p.ownershipTransferProposal.direction };
+    }, proposalId)).toEqual({ lifecycle: 'Active', funded: false, direction: 'from-me' });
   });
 
   test('the owner-row Vote yes and Rescind controls update the vote record', async ({ mockApi: page }) => {

@@ -42,7 +42,8 @@ const sourceRecord = () => ({
     type: 'structure',
     city: 'test-city',
     cadastreParcelIds: ['HR-1'],
-    applied: false
+    applied: false,
+    localPurchaseSimulation: { buyerAgentId: 'buyer', simulatedAt: 'now', cadastreParcelIds: ['HR-1'] }
 });
 
 describe('buildUploadReadyProposal identifiers', () => {
@@ -52,6 +53,7 @@ describe('buildUploadReadyProposal identifiers', () => {
         const upload = loadBuildUploadReadyProposal({ fingerprint: 'content-sha256:authored-fingerprint' })(original);
 
         expect(upload).not.toHaveProperty('id');
+        expect(upload).not.toHaveProperty('localPurchaseSimulation');
         expect(upload).not.toHaveProperty('proposal_id');
         expect(upload.proposalId).toBe('content-sha256:authored-fingerprint');
         expect(original).toEqual(before);
@@ -63,6 +65,7 @@ describe('buildUploadReadyProposal identifiers', () => {
         const upload = loadBuildUploadReadyProposal({ fingerprint: null })(original);
 
         expect(upload).not.toHaveProperty('id');
+        expect(upload).not.toHaveProperty('localPurchaseSimulation');
         expect(upload).not.toHaveProperty('proposal_id');
         expect(upload.proposalId).toBe('local-proposal-9');
         expect(original).toEqual(before);

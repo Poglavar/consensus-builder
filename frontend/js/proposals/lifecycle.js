@@ -9,7 +9,7 @@ const lifecyclePhaseOf = (typeof getLifecycleStatus === 'function')
     : require('./status.js').getLifecycleStatus;
 
 function isProposalOpenSaleOffer(proposal) {
-    if (!proposal) return false;
+    if (!proposal || proposal.localPurchaseSimulation) return false;
     const otp = proposal.ownershipTransferProposal || {};
     if (lifecyclePhaseOf(proposal) !== 'Active' || isProposalExpired(proposal)
         || isNonBindingProposal(proposal) || otp.status === 'sold') return false;

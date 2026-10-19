@@ -545,9 +545,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         : '';
 
     const buyOfferProposal = fullProposal || proposal;
-    const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
-        ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
-        : '';
+    const simulationHint = tProposal('panel.proposal.purchaseSimulation.hint', 'Updates modeled parcel ownership in this browser. No payment is made.');
+    const buyButtonHtml = buyOfferProposal.localPurchaseSimulation
+        ? `<span class="proposal-purchase-simulation">${safeAgentText(tProposal('panel.proposal.purchaseSimulation.result', 'Purchase simulated in this browser'))}</span>`
+        : (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
+            ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="simulateSaleOfferPurchase(${inlineJsArg(buyOfferProposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.purchaseSimulation.button', 'Simulate purchase')}</button><p class="proposal-purchase-hint">${safeAgentText(simulationHint)}</p>`
+            : '';
 
     // "Drive this track" — opens the external 3D tram sim in a new tab with the
     // cab riding on this proposal's drawn centerline. Shown for uploaded (serial

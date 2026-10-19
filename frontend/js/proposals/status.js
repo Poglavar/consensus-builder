@@ -87,11 +87,12 @@ function setProposalApplied(proposal, applied, options = {}) {
     return proposal.applied;
 }
 
-// Server/chain/share payloads must not carry a browser's local visibility choice.
+// Server/chain/share payloads must not carry a browser's local visibility or purchase simulation.
 function stripProposalAppliedState(proposal) {
     if (!proposal || typeof proposal !== 'object') return proposal;
     delete proposal.applied;
     delete proposal.appliedAt;
+    delete proposal.localPurchaseSimulation;
     STATUS_SUB_KEYS.forEach(key => {
         const sub = proposal[key];
         if (!sub || typeof sub !== 'object') return;
@@ -102,6 +103,7 @@ function stripProposalAppliedState(proposal) {
 }
 
 function parkProposalForImport(proposal) {
+    if (proposal) delete proposal.localPurchaseSimulation;
     normalizeProposalStatusAxes(proposal);
     setProposalApplied(proposal, false, { stamp: false });
     return proposal;

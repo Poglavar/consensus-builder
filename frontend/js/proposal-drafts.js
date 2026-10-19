@@ -581,6 +581,8 @@
 
         function createDraftFromProposal(proposal, createOptions = {}) {
             if (!proposal || typeof proposal !== 'object') throw new TypeError('A source proposal is required.');
+            proposal = cloneDraftValue(proposal);
+            delete proposal.localPurchaseSimulation;
             const sourceProposalId = createOptions.sourceProposalId || proposalIdentity(proposal);
             if (!sourceProposalId) throw new Error('The source proposal has no stable ID.');
             const cityId = normalizeDraftCityId(createOptions.cityId !== undefined ? createOptions.cityId : (proposal.city || currentDraftCityId()));
@@ -806,7 +808,7 @@
             delete output.chainProposalId;
             delete output.onchain;
             delete output.nft;
-            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals']
+            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals', 'localPurchaseSimulation']
                 .forEach(key => delete output[key]);
             // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
             // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize

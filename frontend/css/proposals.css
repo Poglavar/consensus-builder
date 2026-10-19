@@ -2452,8 +2452,19 @@ textarea.proposal-description-input {
     }
 }
 
-/* Buy on an open sale offer (Ownership: Third party · Anyone), in proposal list rows and the
-   details card, is btn btn-success; claimSaleOffer() binds the buyer and transfers the parcels. */
+/* A local purchase simulation is separate from the proposal's shared lifecycle. */
+.proposal-purchase-simulation {
+    display: inline-block;
+    max-width: 100%;
+    white-space: normal;
+    font-size: 0.85em;
+}
+
+.proposal-purchase-hint {
+    flex-basis: 100%;
+    margin: 4px 0;
+    font-size: 0.85em;
+}
 
 /* The create dialog opens immediately; its map preview is built a tick later and lands here. The
    placeholder holds the dialog's height steady so the form does not jump when the preview arrives. */

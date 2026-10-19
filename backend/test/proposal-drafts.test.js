@@ -233,12 +233,15 @@ describe('ProposalDraftStore', () => {
         // /proposals/:id and Share would reuse it instead of offering a fresh upload.
         const { store } = harness({ adapterRegistry: { get: () => null } });
         const draft = store.createDraftFromProposal({
+            localPurchaseSimulation: { buyerAgentId: 'buyer' },
             proposalId: 'source-x', serverProposalId: 95, city: 'zagreb', goal: 'park',
             title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }
         });
         const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
         expect(proposal).toBeTruthy();
         expect(proposal.serverProposalId).toBeUndefined();
+        expect(draft.sourceSnapshot).not.toHaveProperty('localPurchaseSimulation');
+        expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal.proposalId).toBeUndefined();
     });
 

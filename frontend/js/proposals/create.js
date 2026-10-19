@@ -2222,6 +2222,7 @@ function buildUploadReadyProposal(proposal) {
     // proposal on their own map.
     delete uploadProposal.applied;
     delete uploadProposal.appliedAt;
+    delete uploadProposal.localPurchaseSimulation;
     // The author's local agent id only says which profile on THIS device owns the draft
     // (GuestPolicy.claimAuthorAgentId); the published record carries the author name.
     delete uploadProposal.authorAgentId;

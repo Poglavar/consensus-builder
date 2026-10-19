@@ -81,8 +81,9 @@ describe('proposal status-axis normalisation', () => {
     });
 
     it('strips every local visibility field from an outbound clone', () => {
-        const proposal = { applied: true, appliedAt: 'now', structureProposal: { applied: true, appliedAt: 'now' } };
+        const proposal = { localPurchaseSimulation: { buyerAgentId: 'buyer' }, applied: true, appliedAt: 'now', structureProposal: { applied: true, appliedAt: 'now' } };
         stripProposalAppliedState(proposal);
+        expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal).not.toHaveProperty('applied');
         expect(proposal).not.toHaveProperty('appliedAt');
         expect(proposal.structureProposal).not.toHaveProperty('applied');
@@ -90,8 +91,9 @@ describe('proposal status-axis normalisation', () => {
     });
 
     it('parks imports even when their shared lifecycle is Executed', () => {
-        const proposal = { lifecycleStatus: 'Executed', applied: true, roadProposal: { applied: true } };
+        const proposal = { localPurchaseSimulation: { buyerAgentId: 'buyer' }, lifecycleStatus: 'Executed', applied: true, roadProposal: { applied: true } };
         parkProposalForImport(proposal);
+        expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal.lifecycleStatus).toBe('Executed');
         expect(proposal.applied).toBe(false);
         expect(proposal.roadProposal).not.toHaveProperty('applied');

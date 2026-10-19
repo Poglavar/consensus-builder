@@ -239,6 +239,7 @@
         // so boot can replay the standing set, but it has no meaning in a portable proposal.
         delete out.applied;
         delete out.appliedAt;
+        delete out.localPurchaseSimulation;
         return { proposal: out, verdict };
     }
 

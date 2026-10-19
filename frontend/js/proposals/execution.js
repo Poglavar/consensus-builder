@@ -514,39 +514,29 @@ function recordRecipientConsent(proposalId) {
     return true;
 }
 
-function claimSaleOffer(proposalId, buyerAgentId) {
+function simulateSaleOfferPurchase(proposalId, buyerAgentId) {
     const all = (proposalStorage && proposalStorage.getAllProposals) ? (proposalStorage.getAllProposals() || []) : [];
     const proposal = all.find(p => (p.proposalId || p.id) === proposalId);
     const buyer = buyerAgentId
         || ((typeof getCurrentUserAgent === 'function' && getCurrentUserAgent()) ? getCurrentUserAgent().id : null);
     if (!proposal || !buyer) return false;
-    if (!isProposalOpenSaleOffer(proposal)) return false;
-    const otp = proposal.ownershipTransferProposal || {};
-
-    proposal.ownershipTransferProposal = {
-        ...otp, direction: 'to-buyer', recipient: 'third-party', recipientScope: 'specific',
-        recipientAddress: buyer, buyer, status: 'sold'
-    };
-    proposal.funded = true;
-    // Executing advances the shared lifecycle only. Map materialisation is a separate local action.
-    proposal.lifecycleStatus = 'Executed';
-    proposal.executedAt = new Date().toISOString();
-
+    if (!isProposalOpenSaleOffer(proposal) || typeof transferParcelOwnership !== 'function') return false;
     const ids = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     ids.forEach(pid => {
         const from = (typeof PersistentStorage !== 'undefined') ? PersistentStorage.getItem(`parcel_${pid}_owner`) : null;
-        if (typeof transferParcelOwnership === 'function') transferParcelOwnership(pid, from, buyer);
+        transferParcelOwnership(pid, from, buyer);
     });
+    // This event records a browser-local model change, never payment or shared execution.
+    proposal.localPurchaseSimulation = {
+        buyerAgentId: buyer, simulatedAt: new Date().toISOString(), cadastreParcelIds: ids.slice()
+    };
     if (proposalStorage._indexProposal) proposalStorage._indexProposal(proposal);
     proposalStorage.save();
 
-    // Confirm, and refresh whatever's open so the offer is no longer buyable (it's sold now —
-    // isProposalOpenSaleOffer() returns false once status is Executed). Only re-render views that
-    // are already open; don't pop a dialog/list on click.
-    const buyerAgent = (typeof agentStorage !== 'undefined') ? agentStorage.getAgent(buyer) : null;
-    const buyerName = (buyerAgent && buyerAgent.name) || 'you';
-    const n = ids.length;
-    const msg = `✅ Purchase successful — proposal executed. ${n} parcel${n === 1 ? '' : 's'} transferred to ${buyerName}.`;
+    // Refresh open views so this browser cannot repeat the same simulation. Other browsers
+    // still see the unchanged offer.
+    const msg = getProposalI18nHelper()('panel.proposal.purchaseSimulation.done',
+        'Purchase simulated in this browser. No payment was made.');
     if (typeof showEphemeralMessage === 'function') showEphemeralMessage(msg, 4000, 'success');
     else if (typeof updateStatus === 'function') updateStatus(msg);
 

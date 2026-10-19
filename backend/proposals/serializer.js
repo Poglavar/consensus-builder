@@ -132,7 +132,7 @@ export function stripLocalProposalState(proposal) {
     if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return proposal;
     const sanitized = JSON.parse(JSON.stringify(proposal));
     [
-        'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
+        'applied', 'appliedAt', 'localPurchaseSimulation', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
         'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',

@@ -106,7 +106,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         isParcelReplacedByChildren: () => false, ensureParcelIdOnFeature: feature => feature,
         getParcelIdFromFeature: feature => feature.properties.parcelId,
         canEditProposalGeometry: () => !road, editProposalGeometry() {},
-        isProposalOpenSaleOffer: item => !!item.saleOffer, claimSaleOffer() {},
+        isProposalOpenSaleOffer: item => !!item.saleOffer, simulateSaleOfferPurchase() {},
         CityConfigManager: { getDriveConfig: () => ({ url: 'https://example.test' }) },
         corridorIsTrack: () => road,
         toggleProposalDetailsPanelMinimized() {}, shareProposalFromDetails() {},
