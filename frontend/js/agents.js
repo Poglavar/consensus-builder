@@ -2150,6 +2150,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                             expiringPercentage: p.expiringPercentage,
                             author: p.owner,
                             chainId: normalizedChainId,
+                            contractAddress: proposalAddress,
                             isMinted: true
                         });
                     } catch (err) {
@@ -2290,7 +2291,7 @@ async function loadAgentChainData(agent, isUserAgent) {
             const uniqPending = uniq([...existingPending, ...pendingProposals]);
             const uniqAccepted = uniq([...existingAccepted, ...acceptedProposals]);
 
-            // Hydrate on-chain proposals (all encountered) into proposalStorage with tokenId as proposalId
+            // Hydrate encountered proposals by their full chain location; token IDs are scoped by program/contract.
             if (proposalAddress && typeof proposalStorage !== 'undefined' && typeof proposalStorage.importOnChainProposal === 'function') {
                 const allProposalIds = uniq([
                     ...createdProposals.map(p => p.proposalId),
@@ -2315,6 +2316,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                         expiringPercentage: proposalData.expiringPercentage,
                         author: proposalData.owner,
                         chainId: normalizedChainId,
+                        contractAddress: proposalAddress,
                         isMinted: true
                     });
                 };

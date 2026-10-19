@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal } = require('../../frontend/js/proposals/chain-ref.js');
+const { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, identityKey, sameReference, findByReference } = require('../../frontend/js/proposals/chain-ref.js');
 
 describe('parseChainProposalRef', () => {
     it('parses an EVM proposal location', () => {
@@ -78,5 +78,32 @@ describe('chainRefFromProposal — Canton detection', () => {
     it('infers canton from a "canton-<network>" chainId and strips the prefix', () => {
         const p = { onchain: { chainId: 'canton-devnet', contractAddress: 'canton', proposalId: 'CID123' } };
         expect(chainRefFromProposal(p)).toEqual({ chainType: 'canton', chainId: 'devnet', contract: 'canton', tokenId: 'CID123' });
+    });
+});
+
+describe('qualified chain proposal identity', () => {
+    const evm = { chainType: 'evm', chainId: '84532', contract: '0xAbC', tokenId: '7' };
+    it('normalizes EVM numeric identities and address case', () => {
+        expect(sameReference(evm, { ...evm, chainId: '0x14a34', contract: '0xabc', tokenId: '0x7' })).toBe(true);
+        for (const change of [{ chainId: '1' }, { contract: '0xdef' }, { tokenId: '8' }]) {
+            expect(sameReference(evm, { ...evm, ...change })).toBe(false);
+        }
+    });
+    it('preserves Solana and Canton program and account case', () => {
+        for (const chainType of ['solana', 'canton']) {
+            const ref = { chainType, chainId: 'devnet', contract: 'Program', tokenId: 'Account' };
+            expect(sameReference(ref, { ...ref, chainId: `${chainType}-devnet` })).toBe(true);
+            expect(sameReference(ref, { ...ref, contract: 'program' })).toBe(false);
+            expect(sameReference(ref, { ...ref, tokenId: 'account' })).toBe(false);
+        }
+    });
+    it('rejects incomplete references and ambiguous local matches', () => {
+        expect(identityKey({ ...evm, contract: '' })).toBeNull();
+        expect(identityKey({ ...evm, chainId: 'unknown' })).toBeNull();
+        expect(identityKey({ ...evm, chainId: '0' })).toBeNull();
+        expect(() => findByReference([], { ...evm, tokenId: null })).toThrow('complete chain');
+        const record = { proposalId: 'local-key', nft: { chain: '84532', contract: '0xabc', tokenId: '7' } };
+        expect(findByReference([{ proposalId: '7' }, record], evm)).toBe(record);
+        expect(() => findByReference([record, { ...record, proposalId: 'other-key' }], evm)).toThrow('Multiple local');
     });
 });

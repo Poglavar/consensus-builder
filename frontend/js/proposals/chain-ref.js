@@ -67,7 +67,41 @@
         return { chainType, chainId, contract: String(contract), tokenId: String(tokenId) };
     }
 
-    const api = { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, CHAIN_TYPES };
+    // Equality is scoped by chain family, network, program/contract and token/account. EVM's
+    // hexadecimal addresses are case-insensitive; Solana and Canton identifiers are not.
+    function identityKey(ref) {
+        if (!ref || !CHAIN_TYPES.includes(ref.chainType)) return null;
+        let { chainType, chainId, contract, tokenId } = ref;
+        if ([chainId, contract, tokenId].some(value => value == null || String(value).trim() === '')) return null;
+        chainId = String(chainId);
+        contract = String(contract);
+        tokenId = String(tokenId);
+        if (chainType === 'evm') {
+            if (!/^(?:0x[0-9a-f]+|\d+)$/i.test(chainId) || !/^(?:0x[0-9a-f]+|\d+)$/i.test(tokenId)) return null;
+            chainId = BigInt(chainId).toString();
+            tokenId = BigInt(tokenId).toString();
+            if (chainId === '0') return null;
+            contract = contract.toLowerCase();
+        } else {
+            chainId = chainId.replace(new RegExp(`^${chainType}-`), '');
+            if (!chainId || chainId === chainType) return null;
+        }
+        return JSON.stringify([chainType, chainId, contract, tokenId]);
+    }
+
+    function sameReference(left, right) {
+        const key = identityKey(left);
+        return key !== null && key === identityKey(right);
+    }
+
+    function findByReference(proposals, ref) {
+        if (!identityKey(ref)) throw new Error('A complete chain proposal reference is required.');
+        const matches = (proposals || []).filter(proposal => sameReference(chainRefFromProposal(proposal), ref));
+        if (matches.length > 1) throw new Error('Multiple local records name the same chain proposal.');
+        return matches[0] || null;
+    }
+
+    const api = { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, identityKey, sameReference, findByReference, CHAIN_TYPES };
 
     if (typeof window !== 'undefined') {
         window.ChainProposalRef = api;

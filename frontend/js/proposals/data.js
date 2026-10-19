@@ -528,7 +528,6 @@ const proposalStorage = {
         }
         const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
         const rawProposalId = chainTokenId !== undefined && chainTokenId !== null ? String(chainTokenId) : null;
-        const metaProposalId = metaProps.proposalId || metaProps.id || null;
         const cadastreParcelIds = normalizeParcelIdList(
             declaredCadastreIds
         );
@@ -553,13 +552,16 @@ const proposalStorage = {
         const contractAddress = raw.contractAddress || (raw.onchain && raw.onchain.contractAddress) || metaProps.contractAddress || null;
         const chainProposalId = buildChainProposalId(normalizedChainId, contractAddress, rawProposalId);
 
-        // Try to reuse any already-known record (by id OR hash) to avoid losing richer metadata/titles
-        const existing =
-            (rawProposalId && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(rawProposalId) : null)
-            || (metaProposalId && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(metaProposalId) : null)
-            || (rawProposalId ? this.proposals.get(rawProposalId) : null)
-            || (metaProposalId ? this.proposals.get(metaProposalId) : null)
-            || null;
+        // A token/account is identified only within its full chain location. Neither a bare token
+        // number, an authored metadata ID nor the same parcel set identifies that chain record.
+        const references = (typeof window !== 'undefined' ? window : globalThis).ChainProposalRef;
+        if (!references) throw new Error('Chain proposal identity is unavailable.');
+        const incomingRef = references.chainRefFromProposal({ onchain: {
+            chainType: raw.onchain?.chainType || raw.chainType,
+            chainId: normalizedChainId, contractAddress, proposalId: rawProposalId
+        } });
+        const existing = references.findByReference(Array.from(this.proposals.values()), incomingRef);
+        if (!chainProposalId) throw new Error('A complete chain proposal reference is required.');
 
         // Prefer any already known human-friendly title/name before falling back to raw chain data
         const pickPreferredString = (...candidates) => {
@@ -592,28 +594,9 @@ const proposalStorage = {
             return best;
         };
 
-        // Try to match an existing local proposal by similarity (parcel set) to borrow its richer title/name
-        const similarityHash = this._computeSimilarityHash(cadastreParcelIds);
-        let similar = null;
-        try {
-            for (const p of this.proposals.values()) {
-                if (!p) continue;
-                const hash = this._computeSimilarityHash(p.cadastreParcelIds || []);
-                if (hash === similarityHash) {
-                    similar = p;
-                    break;
-                }
-            }
-        } catch (_) { /* ignore */ }
-
-        let proposalId = metaProposalId || (existing && existing.proposalId) || rawProposalId || (similar && similar.proposalId) || null;
-        if ((!proposalId || isLocalProposalId(proposalId)) && typeof this._buildDeterministicId === 'function') {
-            try {
-                proposalId = this._buildDeterministicId({ ...(existing || {}), ...raw, cadastreParcelIds });
-            } catch (_) { /* best-effort */ }
-        }
-        if (!proposalId && rawProposalId) {
-            proposalId = rawProposalId;
+        const proposalId = existing?.proposalId || chainProposalId;
+        if (!existing && this.proposals.has(proposalId)) {
+            throw new Error('The chain proposal key is already occupied by a different local record.');
         }
 
         const rawGoal = raw.goal
@@ -637,11 +620,6 @@ const proposalStorage = {
             existing && existing.metadata && existing.metadata.title,
             existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.name,
             existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.title,
-            similar && similar.title,
-            similar && similar.name,
-            similar && similar.proposalName,
-            similar && similar.blockName,
-            similar && similar.structureProposal && similar.structureProposal.blockName,
             raw.title,
             raw.name,
             raw.proposalName,
@@ -710,11 +688,11 @@ const proposalStorage = {
         const mergedOnchain = {
             ...existingOnchain,
             ...incomingOnchain,
-            chainId: normalizedChainId || existingOnchain.chainId || raw.chainId || incomingOnchain.chainId || null,
+            chainId: normalizedChainId,
             proposalId: rawProposalId || proposalId,
             chainProposalId: chainProposalId || existingOnchain.chainProposalId || incomingOnchain.chainProposalId || null,
             transactionHash: incomingOnchain.transactionHash || existingOnchain.transactionHash || raw.transactionHash || null,
-            contractAddress: incomingOnchain.contractAddress || existingOnchain.contractAddress || raw.contractAddress || null,
+            contractAddress,
             metadataUri: incomingOnchain.metadataUri || existingOnchain.metadataUri || raw.metadataUri || raw.metadataUrl || raw.imageURI || null
         };
         if (mergedOnchain.chainId || mergedOnchain.transactionHash || mergedOnchain.contractAddress) {

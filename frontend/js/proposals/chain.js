@@ -25,7 +25,8 @@ function buildChainProposalId(chainId, contractAddress, tokenId) {
     const normalizedChain = typeof normalizeChainId === 'function'
         ? normalizeChainId(chainId)
         : (chainId && chainId.toString ? chainId.toString() : String(chainId));
-    const addressPart = contractAddress && contractAddress.toString ? contractAddress.toString().toLowerCase() : String(contractAddress).toLowerCase();
+    const address = String(contractAddress);
+    const addressPart = /^(solana|canton)(-|$)/.test(String(normalizedChain)) ? address : address.toLowerCase();
     const tokenPart = tokenId && tokenId.toString ? tokenId.toString() : String(tokenId);
     if (!normalizedChain || !addressPart || !tokenPart) {
         return null;

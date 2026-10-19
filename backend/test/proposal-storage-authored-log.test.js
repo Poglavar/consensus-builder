@@ -37,6 +37,10 @@ function bootStore() {
     install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
+    install('ChainProposalRef', require('../../frontend/js/proposals/chain-ref.js'));
+    install('getProposalGoalLabel', value => value);
+    install('ProposalAuthoredRecord', require('../../frontend/js/proposals/authored-record.js'));
+    install('buildChainProposalId', (chain, contract, token) => `${chain}-${contract}-${token}`);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
     install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
@@ -135,13 +139,40 @@ describe('proposalStorage authored-log persistence', () => {
         const result = await loadChainProposalFromRef({ chainType: 'evm', chainId: '84532', contract: '0xC', tokenId: '77' });
         expect(result.ok).toBe(true);
         expect(result.proposal.lifecycleStatus).toBe('Unknown');
-        expect(result.proposal).toMatchObject(source);
+        const localId = '84532-0xC-77';
+        expect(result.proposal).toMatchObject({ ...source, proposalId: localId });
+        expect(result.proposal.metadata.properties.proposal.proposalId).toBe(source.proposalId);
+        if (localDraft) expect(storage.getProposal(source.proposalId).offer).toBe(999);
         expect(result.proposal.onchain).toMatchObject({ proposalId: '77', metadataUri: 'ipfs://committed-metadata' });
         expect(result.proposal).not.toHaveProperty('preparation');
         expect(result.proposal).not.toHaveProperty('buildingProposal');
         storage._persist();
-        expect(JSON.parse(persisted.get('proposal:minted-park'))).toMatchObject(source);
+        expect(JSON.parse(persisted.get(`proposal:${localId}`))).toMatchObject({ ...source, proposalId: localId });
         expect(fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps bare token IDs, authored IDs, shared parcels and different chain locations separate', () => {
+        const { storage } = bootStore();
+        const draft = { proposalId: 'same-authored-id', title: 'Local draft', cadastreParcelIds: ['parcel-a'] };
+        const bare = { ...draft, proposalId: '7' };
+        storage.proposals.set(draft.proposalId, draft);
+        storage.proposals.set(bare.proposalId, bare);
+        const raw = { proposalId: '7', chainId: '84532', contractAddress: '0xA',
+            cadastreParcelIds: ['parcel-a'], lifecycleStatus: 'Active',
+            metadata: { properties: { proposalId: draft.proposalId } } };
+        const first = storage.importOnChainProposal(raw);
+        const otherNetwork = storage.importOnChainProposal({ ...raw, chainId: '1' });
+        const otherContract = storage.importOnChainProposal({ ...raw, contractAddress: '0xB' });
+        expect(new Set([first.proposalId, otherNetwork.proposalId, otherContract.proposalId]).size).toBe(3);
+        const refreshed = storage.importOnChainProposal({ ...raw, lifecycleStatus: 'Executed' });
+        expect(refreshed.proposalId).toBe(first.proposalId);
+        expect(refreshed.lifecycleStatus).toBe('Executed');
+        expect(storage.proposals.size).toBe(5);
+        expect(storage.getProposal(draft.proposalId)).toBe(draft);
+        expect(storage.getProposal(bare.proposalId)).toBe(bare);
+        expect(draft).not.toHaveProperty('onchain');
+        expect(bare).not.toHaveProperty('onchain');
+        expect(() => storage.importOnChainProposal({ ...raw, contractAddress: null })).toThrow('complete chain');
     });
 
     it('persists flat cadastral declarations and strips all materialization output without mutating runtime state', () => {

@@ -19,7 +19,7 @@ small changes; the detailed findings below remain the record of unresolved issue
 | --- | --- | --- |
 | Code-grounded definitions, relationships and standards research | **Done** | Baseline vocabulary, 18 audit findings, Schema.org and construction/geospatial vocabulary mappings recorded. External mappings are proposals, not implemented exports. |
 | Plan commitment coverage — V04 | **Done** | Every member hash covers authored site and decision kind, including readjustment proposals. |
-| Identifier namespaces — V01 | **Partly done** | Row/authored lookup namespaces, creation inputs, HEAD headers and named-plan API fields clarified. General proposal API/browser field names and globally qualified export identifiers remain. |
+| Identifier namespaces — V01 | **Partly done** | Row/authored lookup namespaces, creation inputs, HEAD headers and named-plan API fields clarified. Browser chain imports and sync now match full chain references, preserving case-sensitive program/account IDs and refusing ambiguous local matches. General proposal API/browser field names and globally qualified export identifiers remain. |
 | Published design and named-plan immutability — V03 | **Done in code; locally verified** | Database guards protect published content and named-plan identity. Incomplete commitments are rejected; minting also checks current members and the aggregate hash. Activation requires the backend DDL deployment. |
 | Qualified spatial and planning terms — V02, V05, V10, V11, V13 | **In progress** | V02 labels distinguish local composition from named membership. V05 selection labels distinguish source parcels, source parts, formed ground, readjustment plot pieces and remainders; plot pieces reference their authored content, and custom register references are source-qualified. Remaining: consistent provider/jurisdiction/version qualification and other parcel-labelled surfaces; internal names and statutory plans/drawings; proposal site/project site; permitted envelope/illustrative massing/observed building. |
 | Parties, rights and approvals — V06, V07, V15 | **In progress** | V15 site/subdivision labels state unknown ownership and explain omitted draft accounting; the open-ground accounting marker is documented without a title assertion. V07 removes parcel-to-owner acceptance inference, requires current term commitments for local tallies, and keeps seller-offer creation free of presumed owner consent. Unsigned local tallies are excluded from API/portable records and remote imports. Still queued: right holder/signer/allocation-party namespaces, remaining approval presentations, and other ownership-labelled surfaces. |
@@ -40,6 +40,21 @@ The durable record is the cleaned object handled by `ProposalAuthoredRecord` and
 Identity has several layers: `proposal.id` is a database row key; API `proposalId` / SQL `proposal_id` is the authored/external identifier; `serverProposalId` is used by browser records to refer to the published row; a chain reference also needs chain type, network, contract/program and token/account. These must not be exported as interchangeable identifiers. [Authored boundary](frontend/js/proposals/authored-record.js), [serializer](backend/proposals/serializer.js), [DDL](backend/routes/proposals-ddl.sql), [API validation and lookup](backend/routes/proposals.js), [chain references](frontend/js/proposals/chain-ref.js).
 
 The browser's `proposalId` is a stable local record key, which is not always the published authored ID. `buildUploadReadyProposal` assigns a content fingerprint to the upload copy's `proposalId` while leaving the author's local key intact; imported copies normally use the published authored ID as their local key. `serverProposalId` is the explicit link from either browser copy to the published row. Exact named-plan membership uses that link, never local-key equality or source ancestry.
+
+Browser chain imports use chain family, network, contract/program and token/account together.
+EVM network/token numbers compare in decimal or hexadecimal form, and EVM contract addresses
+compare without case; Solana and Canton program/account case is preserved. A shared parcel set,
+bare token number or metadata's authored ID cannot select a local record to overwrite. A new
+chain import receives a qualified local key; an exact existing reference keeps its local key.
+Multiple local records naming that reference are rejected. EVM sync checks the wallet network
+before each token read; Solana sync checks the fetched account's owner against the named program.
+Missing or unrecognized status from these sync reads remains Unknown. These checks do not make
+unverified metadata into a server mirror or establish physical realization. The browser Solana
+loader still relies on its configured cluster endpoint; genesis verification is currently in
+the server reader, not this sync path. Existing misidentified experimental local records must be
+removed and reimported; no parcel-similarity or bare-ID compatibility path remains.
+[Reference comparison](frontend/js/proposals/chain-ref.js), [chain import](frontend/js/proposals/data.js),
+[EVM sync](frontend/js/blockchain-sync.js), [Solana sync](frontend/js/solana/blockchain-sync.js).
 
 #### Proposal identifiers at API boundaries
 

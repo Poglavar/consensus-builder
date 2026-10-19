@@ -297,6 +297,8 @@ test.describe('Blockchain sync @features', () => {
       const existingProposal = {
         proposalId: 'local-solana-proposal',
         cadastreParcelIds: ['HR-335754-1234'],
+        onchain: { chainId: 'solana-devnet', contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
+          proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' },
       };
 
       globalWindow.getCityConfig = () => ({
@@ -337,7 +339,8 @@ test.describe('Blockchain sync @features', () => {
         { proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' },
       ]);
       globalWindow.SolanaChainDataLoader.getConnection = () => ({
-        getAccountInfo: async () => ({ data: new Uint8Array([1, 2, 3, 4]) }),
+        getAccountInfo: async () => ({ data: new Uint8Array([1, 2, 3, 4]),
+          owner: { toBase58: () => '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg' } }),
       });
       globalWindow.SolanaChainDataLoader.parseProposalAccount = (_data: Uint8Array, address: string) => ({
         proposalId: address,
@@ -383,14 +386,14 @@ test.describe('Blockchain sync @features', () => {
     expect(result.metrics.importCalls[0]).toMatchObject({
       proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
       cadastreParcelIds: ['HR-335754-1234'],
-      status: 'Active',
+      lifecycleStatus: 'Active',
       chainId: 'solana-devnet',
-      contractAddress: '3wsvs6lklo4yslalvxkdwud37fccje2yu9fvh1nmfxbg',
+      contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
     });
     expect(result.metrics.importCalls[0]).toMatchObject({
       onchain: {
         chainId: 'solana-devnet',
-        contractAddress: '3wsvs6lklo4yslalvxkdwud37fccje2yu9fvh1nmfxbg',
+        contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
         proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
         acceptanceCount: '1',
         solBalance: '500000000',
