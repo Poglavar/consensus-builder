@@ -74,10 +74,12 @@ describe('the derivation breathes on the clock', () => {
         manager.indexOf('const undecided = new Set(')
     );
 
-    it('yields when 12 ms have passed, not every Nth item', () => {
+    it('uses the shared 12 ms work slicer and pauses only when its clock says work is due', () => {
+        expect(manager).toContain("? window.__workSlicer");
+        expect(body).toContain('workSlicerApi.createSlicer({');
+        expect(body).toContain('budgetMs: 12');
         expect(body).toContain('const breatheIfDue = async () => {');
-        expect(body).toContain('>= 12');
-        expect(body).not.toContain('await breathe();\n        }');
+        expect(body).toContain('if (slicer.due()) await slicer.pause();');
     });
 
     it('clips one parcel per step, so the clock is consulted between clips', () => {

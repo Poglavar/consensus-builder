@@ -220,7 +220,7 @@ export function flattenJson(obj, prefix = '', out = {}) {
 }
 
 const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', '3D', 'USDC', 'USDT', 'ETH', 'SOL', 'EUR', 'IPFS',
-    'URL', 'JSON', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling']);
+    'URL', 'JSON', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana']);
 
 function isCapitalised(word) {
     return /^[A-Z][a-z]/.test(word);

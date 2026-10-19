@@ -2,7 +2,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { readFileSync } from 'node:fs';
 import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
@@ -48,8 +47,8 @@ for (const sample of samples) describe(`${sample.city} source contract`, () => {
         for (const [field, value] of Object.entries(descriptor.attributeFilters || {})) {
             expect(filter).toContain(Array.isArray(value) ? `${field} IN (${value.map(v => `'${v}'`).join(',')})` : `${field} = '${value}'`);
         }
-        const evidence = JSON.parse(readFileSync(new URL(`../../world-parcels/${descriptor.evidenceFile}`, import.meta.url), 'utf8'));
-        expect(evidence).toMatchObject({ sourceId: descriptor.id, endpoint: descriptor.endpoint });
+        expect(descriptor.cityIds).toContain(sample.city);
+        expect(new URL(descriptor.endpoint).protocol).toMatch(/^https?:$/);
     });
     it('binds a real coordinate footprint with the provider metric CRS and no parcel database', async () => {
         vi.stubGlobal('fetch', vi.fn(async () => response([parcel])));

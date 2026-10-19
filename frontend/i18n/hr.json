@@ -1450,7 +1450,7 @@
                 "plotPiece": "Dio projektirane parcele {{number}}",
                 "remainder": "Preostali dio tla {{number}}",
                 "plotNote": "Tlo izvedeno iz jedne projektirane parcele u prijedlogu preparcelacije. Više prikazanih dijelova može potjecati iz iste projektirane parcele.",
-                "remainderNote": "Tlo koje je ovom preparcelacijom ostalo izvan projektiranih parcela. Vodi se odvojeno od dijelova tih parcela.",
+                "remainderNote": "Tlo koje je ovom preparcelacijom ostalo izvan projektiranih parcela. Vodi se odvojeno od njihovih dijelova.",
                 "source": "Izvorna čestica {{number}}",
                 "sourcePart": "Dio izvorne čestice {{number}}",
                 "formed": "Oblikovani dio tla {{number}}",

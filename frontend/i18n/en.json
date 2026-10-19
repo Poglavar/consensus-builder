@@ -3110,7 +3110,7 @@
                 "shareModalTitle": "Share one proposal",
                 "shareUrlLabel": "Share URL:",
                 "copyUrlButton": "Copy URL",
-                "sharePlanButton": "Share applied proposals…",
+                "sharePlanButton": "Share applied proposals",
                 "plan": {
                     "kindHint": "Applies to selected proposals whose terms were never chosen; the rest keep their own.",
                     "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
@@ -3123,7 +3123,7 @@
                     "materializing": "Starting proposal materialization…",
                     "applyingAllTitle": "Applying shared proposals",
                     "fetchingPlan": "Fetching shared proposals…",
-                    "fetchingPlanTitle": "Fetching shared proposals",
+                    "fetchingPlanTitle": "Shared proposal import",
                     "rebuildingStatus": "Rebuilding the applied composition…",
                     "rebuildingStatusCount": "Rebuilding the applied composition {{done}}/{{total}}…",
                     "progress": {

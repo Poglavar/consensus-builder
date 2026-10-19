@@ -40,9 +40,9 @@ describe('proposal editor review of the approval setup', () => {
                 { parcelId: 'p-2', complete: true, areaM2: 50, owners: [{ ownerId: 'owner-a', share: '1/2' }, { ownerId: 'owner-b', share: '1/2' }] }
             ] }, policy: { type: 'threshold', owners: { numerator: 1, denominator: 2, strict: false }, area: { numerator: 7, denominator: 10, strict: false } } });
         const text = editorShell.reviewValue('approvalConfig', config);
-        expect(text).toBe('Rights for 2 parcel(s), 2 owner(s), from upload · register-1. Passes with at least 1/2 of the owners and at least 7/10 of the area.');
+        expect(text).toBe('Rights for 2 parcel(s), 2 owner(s), from upload · register-1. Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area.');
         expect(editorShell.reviewValue('approvalConfig', { ...config, rights: null, policy: { type: 'unanimous' } }))
-            .toBe('No ownership data. Every owner must accept.');
+            .toBe('No ownership data. Configured approval rules require every owner to accept.');
         expect(editorShell.reviewValue('lens', [{ address: '5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z', name: '' }, 'member-a']))
             .toBe('2 lens member(s): 5x8h…Bg4z, member-a');
         expect(editorShell.reviewValue('lens', [])).toBe('No lens members');

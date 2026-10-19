@@ -1754,7 +1754,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
         showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
             total: totalProposals,
-            title: tShare('plan.fetchingPlanTitle', 'Fetching shared proposals')
+            title: tShare('plan.fetchingPlanTitle', 'Shared proposal import')
         });
 
         const backendBase = resolveBackendBaseUrl();
@@ -2057,7 +2057,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         if (replayHidModal) {
             showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
                 total: totalProposals,
-                title: tShare('plan.fetchingPlanTitle', 'Fetching shared proposals')
+                title: tShare('plan.fetchingPlanTitle', 'Shared proposal import')
             });
             updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         }

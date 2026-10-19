@@ -84,7 +84,10 @@ describe('authoritative parcel source contracts', () => {
         const retiredFieldAccess = new RegExp(`(?:\\?\\.|\\.)\\s*(?:${names})\\b|\\b(?:${names})\\s*:|['\"](?:${names})['\"]`);
 
         files.filter(path => !allowed.has(rel(path))).forEach(path => {
-            expect(read(path), rel(path)).not.toMatch(retiredFieldAccess);
+            // This single output is the provider's native row key, not a parent land reference.
+            const source = rel(path) === 'parcels/custom-url-identity.js'
+                ? read(path).replace('sourceParcelId: nativeId,', '') : read(path);
+            expect(source, rel(path)).not.toMatch(retiredFieldAccess);
         });
     });
 

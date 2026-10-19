@@ -178,8 +178,9 @@ describe('the manager end to end: prefetch returns exact apply options', () => {
     let saved;
 
     beforeEach(() => {
-        saved = { window: globalThis.window, fetch: globalThis.fetch, turf: globalThis.turf };
+        saved = { window: globalThis.window, document: globalThis.document, fetch: globalThis.fetch, turf: globalThis.turf };
         globalThis.window = globalThis;
+        globalThis.document = { addEventListener() {} };
         // proposal-manager registers reapply hooks with window.addEventListener at require time,
         // and this vitest worker's globalThis is not an EventTarget.
         if (typeof globalThis.addEventListener !== 'function') {
@@ -199,7 +200,7 @@ describe('the manager end to end: prefetch returns exact apply options', () => {
     });
 
     afterEach(() => {
-        globalThis.window = saved.window; globalThis.fetch = saved.fetch; globalThis.turf = saved.turf;
+        globalThis.window = saved.window; globalThis.document = saved.document; globalThis.fetch = saved.fetch; globalThis.turf = saved.turf;
         delete globalThis.getBackendBase; delete globalThis.CityConfigManager; delete globalThis.proposalStorage;
         delete globalThis.BuildingSourceClient;
         delete globalThis.__demolitionPrefetch;

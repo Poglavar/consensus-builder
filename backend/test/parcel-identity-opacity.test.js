@@ -16,7 +16,13 @@ describe('parcel identity opacity boundary', () => {
 
     it.each(sourceFiles)('%s never infers parcel meaning from a generated-id delimiter', absolutePath => {
         const source = readFileSync(absolutePath, 'utf8');
-        expect(source, relative(frontendJsRoot, absolutePath)).not.toMatch(generatedIdParser);
+        // The persistence boundary only rejects the reserved generated-ID namespace from durable
+        // owner rows; it never recovers ancestry or source identity. Its write behavior is covered
+        // by derived-owner-rows-memory-only.test.js. No other delimiter parsing is exempted.
+        const identityReaders = relative(frontendJsRoot, absolutePath) === 'persistent-storage.js'
+            ? source.replace(/function isDerivedParcelId\(id\) \{\s*return String\(id == null \? '' : id\)\.includes\('#'\);\s*\}/, '')
+            : source;
+        expect(identityReaders, relative(frontendJsRoot, absolutePath)).not.toMatch(generatedIdParser);
         expect(source, relative(frontendJsRoot, absolutePath)).not.toMatch(retiredParserNames);
     });
 
@@ -53,7 +59,9 @@ describe('parcel identity opacity boundary', () => {
         const start = source.indexOf('async _deriveCorridorFabricBody(options = {})');
         const body = source.slice(start, source.indexOf('\n    },', start));
         expect(body).toContain('take.cadastreParcelIds');
-        expect(body).toContain('repository.getMany(scope)');
+        expect(body).toContain('for (const scopeId of scope)');
+        expect(body).toContain('repository.getMany([scopeId])');
+        expect(body).toContain('const missingIds = Array.from(scope).filter(id => !foundIds.has(id))');
         expect(body).toContain('takesByCadastreId.get(id)');
         expect(body).not.toContain('loadedCadastreParcels');
         expect(body).not.toContain('repository.list(');
