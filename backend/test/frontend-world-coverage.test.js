@@ -329,8 +329,14 @@ describe('region coverage axis', () => {
 describe('searchPlaces', () => {
     it('is diacritic-insensitive both ways', () => {
         expect(coverage.searchPlaces('sibenik')[0]).toMatchObject({ kind: 'live-city', cityId: 'sibenik', name: 'Šibenik' });
-        expect(coverage.searchPlaces('São')[0].name).toBe('São Paulo');
-        expect(coverage.searchPlaces('sao paulo')[0].name).toBe('São Paulo');
+        const fixture = WorldCoverage.create({ countries: [], cities: [], liveCities: [
+            { id: 'accented-city', name: 'São Paulo', cc: 'BR', lat: -23.5, lon: -46.6 },
+            { id: 'plain-city', name: 'Sao Tome', cc: 'ST', lat: 0.3, lon: 6.7 },
+            { id: 'shorter-prefix', name: 'Saoner', cc: 'IN', lat: 21.4, lon: 78.9 }
+        ] });
+        expect(fixture.searchPlaces('São').map(place => place.name)).toContain('São Paulo');
+        expect(fixture.searchPlaces('sao paulo')[0].name).toBe('São Paulo');
+        expect(fixture.searchPlaces('São Tome')[0].name).toBe('Sao Tome');
     });
 
     it('ranks prefix matches above substrings and configured cities above others', () => {
