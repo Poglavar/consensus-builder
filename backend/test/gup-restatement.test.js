@@ -2,7 +2,7 @@
 import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
 import * as turf from '@turf/turf';
-import { classifyParcel, translateParcel, summarizeAudits } from '../gup-restatement/translate.js';
+import { classifyParcel, translateParcel, summarizeAudits, retainSourceQuantities } from '../gup-restatement/translate.js';
 import { parseArgs, PAGE_SQL, verifyProposalReadBack } from '../scripts/build-gup-restatement.mjs';
 import { serializeProposalRow } from '../proposals/serializer.js';
 const require = createRequire(import.meta.url);
@@ -105,6 +105,17 @@ describe('GUP spatial restatement', () => {
     it('has an explicit strict mode for binding scalar limits the app cannot enforce', () => {
         expect(classifyParcel(row(), { strictScalars: true }).reasons).toContain('unsupported_scalar_rule');
         expect(translateParcel(row(), { strictScalars: true }).proposal).toBeNull();
+    });
+
+    it('preserves a cached numeric estimate when only the native representation is unsupported', () => {
+        const input = row(); input.floors[3].is_half_floor = true;
+        const entry = retainSourceQuantities(translateParcel(input));
+        expect(entry.proposal).toBeNull();
+        expect(entry.audit.newBuildCapacityM2).toBe(input.gbp_m2);
+        expect(entry.audit.representedCapacityM2).toBeNull();
+        expect(summarizeAudits([entry.audit])).toMatchObject({ skipped: 1, numericNewBuildParcels: 1, cachedNewBuildGbpM2: input.gbp_m2 });
+        const unknown = retainSourceQuantities(translateParcel(row({ result_status: 'no_validated_candidate' })));
+        expect(unknown.audit.newBuildCapacityM2).toBeNull();
     });
 
     it('counts every parcel once while accounting for multiple reasons and absent area independently', () => {

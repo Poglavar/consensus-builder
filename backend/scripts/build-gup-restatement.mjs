@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { gzipSync, gunzipSync } from 'node:zlib';
 import dotenv from 'dotenv';
 import { createPool, isLocalDatabase } from '../db/connection.cjs';
-import { translateParcel, summarizeAudits, TRANSLATOR_VERSION, digest, REASONS } from '../gup-restatement/translate.js';
+import { translateParcel, summarizeAudits, retainSourceQuantities, TRANSLATOR_VERSION, digest, REASONS } from '../gup-restatement/translate.js';
 import { serializeProposalRow } from '../proposals/serializer.js';
 import { createPlanStore } from '../plans/plan-store.js';
 import { memberHash, planHash, stableStringify } from '../plans/plan-hash.js';
@@ -135,9 +135,20 @@ async function build(pool, options) {
     const summary = summarizeAudits([]), proposals = [];
     for (const page of checkpoint.pages) {
         const bytes = await readFile(resolve(options.out, 'pages', page.file));
+        const entries = [];
         for (const line of gunzipSync(bytes).toString('utf8').trim().split('\n')) {
-            const entry = JSON.parse(line); summarizeAudits([entry.audit], summary);
+            const entry = retainSourceQuantities(JSON.parse(line)); entries.push(entry);
+            summarizeAudits([entry.audit], summary);
             if (entry.proposal) proposals.push(entry.proposal);
+        }
+        // This projection also upgrades completed local pages without re-reading or re-solving
+        // parcels. Only audit quantities change; native geometry and its content identity do not.
+        const projected = gzipSync(entries.map(entry => JSON.stringify(entry)).join('\n') + '\n');
+        if (!projected.equals(bytes)) {
+            const path = resolve(options.out, 'pages', page.file);
+            await writeFile(`${path}.partial`, projected); await rename(`${path}.partial`, path);
+            page.sha256 = createHash('sha256').update(projected).digest('hex');
+            await jsonFile(checkpointPath, checkpoint);
         }
     }
     // A compact native bundle is separate from the larger per-parcel flag pages.

@@ -117,7 +117,7 @@ export function translateParcel(row, options = {}) {
             status: row.existing_gbp_status || null, source: row.existing_gbp_source || null },
         newBuildCapacityM2: classification.status === 'proven_zero' ? 0 : null
     };
-    if (classification.status !== 'represented') return { audit, proposal: null };
+    if (classification.status !== 'represented') return retainSourceQuantities({ audit, proposal: null });
     const floors = row.floors.length;
     const floorHeightM = row.floors[0].height_m;
     const minHeightM = (row.variables?.min_etage || 0) * floorHeightM;
@@ -144,14 +144,29 @@ export function translateParcel(row, options = {}) {
     });
     audit.proposalId = proposal.proposalId;
     audit.newBuildCapacityM2 = row.gbp_m2;
-    return { audit, proposal };
+    return retainSourceQuantities({ audit, proposal });
+}
+
+// Representation coverage and a cached numeric estimate are independent: refusing to draw a
+// stepped roof must not turn its supported source quantity into unknown or zero.
+export function retainSourceQuantities(entry) {
+    const audit = entry.audit;
+    audit.representedCapacityM2 = audit.status === 'represented' ? audit.source.gbpM2 : null;
+    const sourceIsNewBuild = !audit.reasons.includes('source_not_new_build')
+        && !audit.reasons.includes('source_no_candidate') && !audit.reasons.includes('missing_cache')
+        && !audit.reasons.includes('source_identity');
+    audit.newBuildCapacityM2 = audit.status === 'proven_zero' ? 0
+        : sourceIsNewBuild && positive(audit.source.gbpM2) ? audit.source.gbpM2 : null;
+    return entry;
 }
 
 export function summarizeAudits(audits, summary = { parcels: 0, represented: 0, skipped: 0, proven_zero: 0, knownAreaM2: 0,
-    representedAreaM2: 0, missingAreaParcels: 0, reasons: {}, flags: {}, zones: {} }) {
+    representedAreaM2: 0, missingAreaParcels: 0, numericNewBuildParcels: 0, cachedNewBuildGbpM2: 0,
+    reasons: {}, flags: {}, zones: {} }) {
     for (const audit of audits) {
         summary.parcels++;
         summary[audit.status]++;
+        if (finite(audit.newBuildCapacityM2)) { summary.numericNewBuildParcels++; summary.cachedNewBuildGbpM2 += audit.newBuildCapacityM2; }
         if (finite(audit.areaM2)) {
             summary.knownAreaM2 += audit.areaM2;
             if (audit.status === 'represented') summary.representedAreaM2 += audit.areaM2;

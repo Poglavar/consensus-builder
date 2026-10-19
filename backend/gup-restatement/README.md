@@ -32,7 +32,9 @@ Refusals include:
 - Geometric/scalar discrepancies, including a rendered prism exceeding source GBP.
 
 Every intersecting current parcel is audited, including parcels absent from the cache.
-Skipped capacity stays unknown. An evidenced source zero is counted separately and
+Skipping a shape does not erase its independently supported cached numeric estimate:
+`newBuildCapacityM2` and `representedCapacityM2` remain distinct. Missing/unsuccessful
+source capacity stays unknown. An evidenced source zero is counted separately and
 creates no demolition proposal. Existing-stock quantities survive every refusal.
 
 The mapped scope is the union of current `consensus.urban_rule` geometries for 2025:
