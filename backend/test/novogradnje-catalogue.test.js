@@ -31,6 +31,37 @@ const originalRow = { ...row, site_key: 'permit:original', model: { ...model, si
     inventory: originalInventory } };
 
 describe('source-backed residential catalogue', () => {
+    it.each(['PRODANO – stan Siget', 'prodana nekretnina', 'NAJAM, stan Perjavica', 'Stan za iznajmljivanje'])('hides %s from this site without changing the stored model', title => {
+        const hidden = structuredClone(row);
+        hidden.model.label = title;
+        const before = JSON.stringify(hidden);
+        expect(publicProject(hidden)).toBeNull();
+        expect(publicProject(hidden, { detail: true })).toBeNull();
+        expect(JSON.stringify(hidden)).toBe(before);
+    });
+
+    it('removes sold and rental units from mixed projects while preserving other plans', () => {
+        const mixed = structuredClone(row);
+        const apartment = mixed.model.inventory.apartments[0];
+        mixed.model.inventory.apartments.push(
+            { ...apartment, id: 'sold', sourceTitle: 'PRODANO – Stan' },
+            { ...apartment, id: 'rental', source: { listingUrl: 'https://example.test/nekretnine/najam/stan/' } }
+        );
+        mixed.model.inventory.floorPlans = [{ ...apartment, id: 'rental-floor', scope: 'floor', sourceTitle: 'NAJAM' }];
+        expect(publicProject(mixed).apartments.map(a => a.id)).toEqual([apartment.id]);
+        expect(publicProject(mixed).floorPlans).toEqual([]);
+        mixed.model.inventory.apartments = mixed.model.inventory.apartments.filter(a => a.id === 'sold');
+        expect(publicProject(mixed)).toBeNull();
+    });
+
+    it('keeps sale listings, existing buildings and unknown locations eligible', () => {
+        const sale = structuredClone(row);
+        sale.model.label = 'Prodaja stana – nepoznata lokacija';
+        sale.model.location = { status: 'unknown' };
+        sale.model.inventory.kind = 'existing';
+        expect(publicProject(sale)).toMatchObject({ locationAvailable: false, kind: 'existing', planCount: 1 });
+    });
+
     it.each(['ambiguous','unresolved','unknown',null])('publishes plans with %s location without mapping them', status => {
         const project=publicProject({...row,model:{...model,location:{status}}},{detail:true});
         expect(project).toMatchObject({location:null,locationAvailable:false,address:'Nepoznata lokacija',thumbnailUrl:null});
@@ -91,6 +122,28 @@ describe('source-backed residential catalogue', () => {
             apartments: [{ ...originalInventory.apartments[0], source: null }] } } })).toBeNull();
         expect(publicProject({ ...originalRow, model: { ...originalRow.model, inventory: { ...originalInventory,
             apartments: [{ ...originalInventory.apartments[0], hasPlan: false }] } } }, { retained })).toBeNull();
+    });
+});
+
+describe('sold and rental site visibility', () => {
+    const hiddenRows = ['PRODANO stan', 'NAJAM stan'].map((title, i) => ({ ...row, site_key: `listing:hidden-${i}`,
+        model: { ...model, siteKey: `listing:hidden-${i}`, label: title } }));
+    const app = express();
+    setupNovogradnjeRoute(app, { query: async sql => ({ rows: sql.includes('floor_plan.site_model') ? [row, ...hiddenRows] : [] }) });
+
+    it('excludes hidden listings from counts, search HTML, sitemap and direct project/apartment URLs', async () => {
+        const catalogue = await request(app).get('/novogradnje/api/projects').expect(200);
+        expect(catalogue.body.counts).toMatchObject({ projects: 1, apartments: 1 });
+        const index = await request(app).get('/novogradnje/').expect(200);
+        const sitemap = await request(app).get('/novogradnje/sitemap.xml').expect(200);
+        for (const hidden of hiddenRows) {
+            const id = projectId(hidden.site_key);
+            expect(index.text).not.toContain(id);
+            expect(sitemap.text).not.toContain(id);
+            await request(app).get(`/novogradnje/api/projects/${id}`).expect(404);
+            await request(app).get(`/novogradnje/zgrade/${id}/`).expect(404);
+            await request(app).get(`/novogradnje/zgrade/${id}/stanovi/${model.inventory.apartments[0].id}/`).expect(404);
+        }
     });
 });
 

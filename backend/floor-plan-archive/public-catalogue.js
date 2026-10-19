@@ -11,6 +11,17 @@ export const projectId = key => createHash('sha256').update(key).digest('hex').s
 const slugify = value => String(value).normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 85);
 const httpUrl = value => { try { const u = new URL(value); return ['http:', 'https:'].includes(u.protocol) ? u.href : null; } catch { return null; } };
 
+// Presentation policy only: the archive and shared floor-plan API retain these records.
+function hiddenListing(...values) {
+    return values.some(value => /\b(?:prodano|prodan|prodana|najam|iznajmljivanje|iznajmljuje|iznajmljujem|sold|rented|rental|rent)\b/.test(
+        String(value || '').normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]/g, ' ')));
+}
+
+function visiblePlan(plan) {
+    return !hiddenListing(plan.label, plan.sourceTitle, plan.source?.label, plan.postingUrl,
+        plan.source?.listingUrl, ...(plan.sourceUrls || []), ...(plan.source?.urls || []));
+}
+
 function location(model) {
     const g = model.envelope?.footprint;
     const ring = g?.type === 'Polygon' ? g.coordinates?.[0] : g?.type === 'MultiPolygon' ? g.coordinates?.[0]?.[0] : null;
@@ -23,12 +34,12 @@ function location(model) {
 
 export function publicProject(row, { detail = false, retained = new Set() } = {}) {
     const model = row.model, inventory = model?.inventory;
-    if (!inventory || inventory.excludedUse || !model.siteKey) return null;
+    if (!inventory || inventory.excludedUse || !model.siteKey || hiddenListing(model.label, inventory.name)) return null;
     const located = ['located','probable'].includes(model.location?.status) && Boolean(location(model));
     const id = row.public_id || projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
     const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrade/${slug}/`;
     // Facts-only postings stay private; geometry or a retained original drawing qualifies.
-    const apartments = (inventory.apartments || []).map(a => ({ ...a, hasGeometry: Boolean(a.architecture) }))
+    const apartments = (inventory.apartments || []).filter(visiblePlan).map(a => ({ ...a, hasGeometry: Boolean(a.architecture) }))
         .filter(a => a.hasPlan === true && (a.hasGeometry || Boolean(a.source?.sha256 && retained.has(a.source.sha256)))).map(a => {
         const value = { id: a.id, label: a.label, url: `${url}stanovi/${a.id}/`, areaM2: a.areaM2,
             rooms: a.rooms, orientation: a.orientation, floor: a.floor, hasPlan: true,
@@ -40,7 +51,7 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
             placement: (model.placements || []).find(p => p.planId === a.planId) || null });
         return value;
     });
-    const floorPlans = (inventory.floorPlans || []).filter(p => p.scope === 'floor' && p.hasPlan === true
+    const floorPlans = (inventory.floorPlans || []).filter(visiblePlan).filter(p => p.scope === 'floor' && p.hasPlan === true
         && (p.architecture || (p.source?.sha256 && retained.has(p.source.sha256)))).map(p => {
         const value={id:p.id,label:p.label,scope:'floor',levels:p.levels||[],url:`${url}tlocrti/${p.id}/`,hasPlan:true,hasGeometry:Boolean(p.architecture)};
         if(detail)Object.assign(value,{...p,...value,source:p.source?{...p.source,url:httpUrl(p.source.url),

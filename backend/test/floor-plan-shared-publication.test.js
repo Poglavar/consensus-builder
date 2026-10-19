@@ -18,7 +18,13 @@ describe('shared floor-plan publication producer and consumer',()=>{
   const p={...r.document,id:r.id,buildingId:r.building_id,source:{...r.document.source,assetUrl:`/api/floor-plans/sources/${sha}`}};
   const c=catalogueFromPublishedPlans([p]);expect(c.projects[0].id).toBe(r.building_id);
   expect(c.projects[0]).toMatchObject({address:'Nepoznata lokacija',location:null});
-  expect(c.projects[0].apartments[0].url).toContain('/stan/s1/');
+  expect(c.projects[0].apartments[0].url).toContain('/stanovi/s1/');
+ });
+ it.each(['PRODANO – Stan S1','NAJAM – Stan S1'])('preserves %s in shared publications while hiding it from Novogradnje',label=>{
+  const r=publicationRows([{model:{...model,label}}],{city:'Zagreb',country:'HR',blobs});expect(r).toHaveLength(1);
+  const p={...r[0].document,id:r[0].id,buildingId:r[0].building_id};const before=JSON.stringify(p);
+  expect(catalogueFromPublishedPlans([p]).counts).toMatchObject({projects:0,apartments:0});
+  expect(JSON.stringify(p)).toBe(before);
  });
  it('paginates the shared API and fails closed instead of using the collector as fallback',async()=>{
   const calls=[],fetchImpl=async url=>{calls.push(String(url));return{ok:true,json:async()=>({plans:[],hasMore:calls.length===1})}};
