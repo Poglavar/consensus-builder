@@ -2,6 +2,41 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID } from '../helpers/runtime';
 
+test('profile offers retain authored whole-proposal amounts without a pending-money total', async ({ mockApi: page }) => {
+  await openCity(page);
+  await page.evaluate(async parcelId => {
+    const w = window as any;
+    await w.i18n.setLanguage('en');
+    const records = [
+      { title: 'Recorded consideration', offer: 125, offerCurrency: 'EUR', decayEnabled: true, decayPercent: 50 },
+      { title: 'Explicit zero offer', offer: 0, offerCurrency: 'USDC' },
+      { title: 'Unknown consideration', offer: null, budget: 900, budgetCurrency: 'ETH', ethBalance: 1e18 },
+      { title: 'Unknown currency', offer: 75, currency: 'ETH' },
+      { title: 'Nonbinding vote', kind: 'owner-vote', offer: null }
+    ];
+    const agent = w.createAgent();
+    agent.name = 'Offer display preview';
+    agent.proposalsCreated = records.map((record, index) => w.proposalStorage.addProposal({
+      proposalId: `p-profile-offer-${index}`, kind: 'owner-deal', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], ...record
+    }));
+    w.agentStorage.addAgent(agent);
+    w.getChainCurrencySymbol = () => 'SOL';
+    await w.showAgentDialog(agent.id);
+  }, PARCEL_ID);
+  const dialog = page.locator('.agent-dialog-modal');
+  await expect(dialog.locator('[data-agent-pending-amount]')).toHaveCount(0);
+  const created = dialog.locator('[data-list-type="created"]');
+  const row = (title: string) => created.locator('.agent-dialog-proposal-item').filter({ hasText: title });
+  await expect(row('Recorded consideration').locator('.proposal-offer')).toHaveText('Original full-proposal offer: 125 EUR');
+  await expect(row('Explicit zero offer').locator('.proposal-offer')).toHaveText('Original full-proposal offer: 0 USDC');
+  for (const title of ['Unknown consideration', 'Unknown currency']) {
+    await expect(row(title).locator('.proposal-offer')).toHaveText('Original offer not recorded');
+    await expect(row(title).locator('.proposal-offer-amount')).toHaveCount(0);
+  }
+  await expect(row('Nonbinding vote').locator('.proposal-offer')).toHaveCount(0);
+  await expect(created.locator('.proposal-offer').filter({ hasText: 'SOL' })).toHaveCount(0);
+});
+
 test('profile chain links preserve their location and never open a colliding local draft', async ({ mockApi: page }) => {
   await openCity(page);
   const ids = await page.evaluate(async parcelId => {

@@ -727,6 +727,13 @@ decimals or labels an unknown token USDT. Noncanonical metadata amount aliases n
 these terms. Remove and reimport affected experimental records; no old inferred amount is automatically
 reclassified as evidence of consideration.
 
+Agent profile proposal rows show only this explicit authored offer and currency, labeled as the
+original full-proposal offer. It is not a current decayed amount, per-agent entitlement, escrow or
+payment. Missing terms stay unknown, and nonbinding votes show no offer. The profile has no
+aggregate pending-money amount: summing whole-proposal offers on linked parcels does not establish
+what an agent would receive. [Profile presentation](frontend/js/agents.js),
+[authored offer](frontend/js/proposals/publish-terms.js): `authoredOffer`.
+
 ### Rights, money and evidence
 
 | Term | De-facto definition and relationships | Evidence |

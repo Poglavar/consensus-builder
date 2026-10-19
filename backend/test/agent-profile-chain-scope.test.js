@@ -46,7 +46,7 @@ function harness({ chainProposals = [], acceptedTokens = [] } = {}) {
         getAgentParcelDetails: () => localParcels, filterAgentProposalLinksForChain: ids => ids, getUserPendingProposals: () => [],
         agentDialogListData: lists(), agentWalletObservations: {}, agentDialogFetchPromises: new Map(), AGENT_DIALOG_CACHE_TTL_MS: 60000,
         setListLoading() {}, replaceAgentDialogListData: merge, renderFirstPageForList() {}, setSectionCount() {},
-        updatePendingAmountDisplay() {}, updatePendingProposalsCount() {}, setAgentDialogCache: cache, setListError: errors
+        updatePendingProposalsCount() {}, setAgentDialogCache: cache, setListError: errors
     });
     vm.runInContext(loaderSource, context);
     const load = (isUser = true) => context.loadAgentChainData({ id: 'user' }, isUser);

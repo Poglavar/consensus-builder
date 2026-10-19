@@ -1348,9 +1348,6 @@ async function showAgentDialog(agentId, options = {}) {
     const filteredAccepted = filterAgentProposalLinksForChain(initialAcceptedRaw, currentChainId);
     const filteredPending = filterAgentProposalLinksForChain(initialPending, currentChainId);
     const languageSwitcherHtml = renderAgentLanguageSwitcher();
-    const initialPendingAmountDisplay = isUserAgent
-        ? summarizePendingProposalAmounts(filteredPending)
-        : '-';
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
     const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH balance');
@@ -1358,7 +1355,6 @@ async function showAgentDialog(agentId, options = {}) {
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Modeled total');
     const portfolioBasisLabel = translateText('agentDialog.portfolioBasis',
         'Land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}} per ETH.', portfolioBasis);
-    const labelPendingAmount = translateText('agentDialog.pendingAmount', 'Pending Amount');
     const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
     const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
     const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Recorded acceptances ({{count}})', { count: filteredAccepted.length });
@@ -1439,10 +1435,6 @@ async function showAgentDialog(agentId, options = {}) {
                     <div class="stat-item">
                             <div class="stat-label" data-i18n-key="agentDialog.totalWealth">${labelTotalWealth}</div>
                         <div class="stat-value" ${isUserAgent ? 'data-user-total-wealth' : ''} data-agent-total-wealth>${initialTotalWealthDisplay}</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label" data-i18n-key="agentDialog.pendingAmount">${labelPendingAmount}</div>
-                        <div class="stat-value" data-agent-pending-amount>${initialPendingAmountDisplay}</div>
                     </div>
                 </div>
                 <p class="stat-label" data-agent-portfolio-basis data-i18n-key="agentDialog.portfolioBasis" data-i18n-params='${JSON.stringify(portfolioBasis)}'>${portfolioBasisLabel}</p>
@@ -1563,7 +1555,6 @@ async function showAgentDialog(agentId, options = {}) {
                     setSectionCount(type, agentDialogListData[type].data.length);
                     renderFirstPageForList(type);
                 }
-                updatePendingAmountDisplay(agentDialogListData.pending.data);
                 const valueNode = modal.querySelector('[data-agent-portfolio-value]');
                 const totalNode = modal.querySelector('[data-agent-total-wealth]');
                 if (valueNode) valueNode.textContent = '-';
@@ -1787,22 +1778,15 @@ function getAgentProposalTypeLabel(proposal) {
 }
 
 function getAgentProposalOfferDisplay(proposal) {
-    const rawOfferValue = proposal
-        ? (Number.isFinite(Number(proposal.offer))
-            ? Number(proposal.offer)
-            : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : null))
-        : null;
-
-    const amountLabel = rawOfferValue !== null
-        ? CbFormat.formatNumber(Number(rawOfferValue), { maxFractionDigits: 2 })
-        : '-';
-
-    const currencyRaw = proposal
-        ? (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || getChainCurrencySymbol())
-        : '';
-    const currencyLabel = currencyRaw ? String(currencyRaw).toUpperCase() : '';
-
-    return { amountLabel, currencyLabel };
+    if (window.ProposalKind.kindOf(proposal) !== window.ProposalKind.OWNER_DEAL) return null;
+    const offer = window.ProposalPublishTerms.authoredOffer(proposal);
+    return {
+        amountLabel: offer ? CbFormat.formatNumber(offer.amount, { maxFractionDigits: 2 }) : '',
+        currencyLabel: offer?.currency || '',
+        label: offer
+            ? translateText('agentDialog.proposalOffer', 'Original full-proposal offer')
+            : translateText('agentDialog.proposalOfferUnknown', 'Original offer not recorded')
+    };
 }
 
 function getAgentProposalTitle(proposal, fallbackId = '') {
@@ -2329,7 +2313,6 @@ async function loadAgentChainData(agent, isUserAgent) {
             renderFirstPageForList('accepted');
             if (isUserAgent) {
                 renderFirstPageForList('pending');
-                updatePendingAmountDisplay(agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data : uniqPending);
             }
 
             // Update header counts
@@ -2412,69 +2395,6 @@ function getUserPendingProposals(agentId, chainId = null) {
         .filter(Boolean);
 
     return relevantProposals;
-}
-
-function getProposalOfferAmount(proposal) {
-    const candidates = [
-        proposal && proposal.offer,
-        proposal && proposal.budget,
-        proposal && proposal.ethBalance,
-        proposal && proposal.tokenBalance
-    ];
-    for (const value of candidates) {
-        const num = Number(value);
-        if (Number.isFinite(num) && num > 0) {
-            return num;
-        }
-    }
-    return NaN;
-}
-
-function summarizePendingProposalAmounts(proposalIds = []) {
-    if (!Array.isArray(proposalIds) || proposalIds.length === 0) return '-';
-    if (typeof proposalStorage === 'undefined' || (!proposalStorage.getProposal && !proposalStorage.findProposalByIdOrHash)) {
-        return '-';
-    }
-
-    let currency = null;
-    let mixedCurrency = false;
-    let total = 0;
-
-    const records = getAgentProposalRecords();
-    proposalIds.forEach(link => {
-        const proposal = window.AgentProposalLinks.resolve(link, records);
-        if (!proposal) return;
-
-        const amount = getProposalOfferAmount(proposal);
-        if (!Number.isFinite(amount) || amount <= 0) return;
-
-        const proposalCurrency = (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || getChainCurrencySymbol()).toString().toUpperCase();
-        if (!currency) {
-            currency = proposalCurrency;
-        } else if (currency !== proposalCurrency) {
-            mixedCurrency = true;
-        }
-        if (!mixedCurrency) {
-            total += amount;
-        }
-    });
-
-    if (!currency || mixedCurrency) {
-        return '-';
-    }
-
-    return CbFormat.formatMoney(total, currency);
-}
-
-function updatePendingAmountDisplay(pendingProposalIds = null) {
-    const node = document.querySelector('[data-agent-pending-amount]');
-    if (!node) return;
-
-    const ids = Array.isArray(pendingProposalIds)
-        ? pendingProposalIds
-        : (agentDialogListData && agentDialogListData.pending && agentDialogListData.pending.data) || [];
-
-    node.textContent = summarizePendingProposalAmounts(ids);
 }
 
 /**
@@ -2576,10 +2496,6 @@ function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, a
         setSectionCount(listType, listData[listType].data.length);
         renderFirstPageForList(listType);
     });
-    if (listData.pending && listData.pending.data) {
-        updatePendingAmountDisplay(listData.pending.data);
-    }
-
     // Set up scroll listeners for the modal body
     const modalBody = document.querySelector('.agent-dialog-modal-body');
     if (modalBody) {
@@ -2699,12 +2615,12 @@ function renderAgentProposalLink(link, pending = false) {
     const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${escapeHtml(chainLabel)}]</span>` : '';
     const typeBadge = agentProposalTypeBadgeHtml(escapeHtml(getAgentProposalTypeLabel(proposal)));
     const offerInfo = getAgentProposalOfferDisplay(proposal);
-    const offerAmount = `<span class="proposal-offer-amount">${escapeHtml(offerInfo.amountLabel)}</span>`;
-    const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${escapeHtml(offerInfo.currencyLabel)}</span>` : '';
+    const offerHtml = offerInfo ? `<span class="proposal-offer">${escapeHtml(offerInfo.label)}${offerInfo.amountLabel
+        ? `: <span class="proposal-offer-amount">${escapeHtml(offerInfo.amountLabel)}</span> <span class="proposal-offer-currency">${escapeHtml(offerInfo.currencyLabel)}</span>` : ''}</span>` : '';
     return `<div class="proposal-item agent-dialog-proposal-item ${proposalColor ? 'has-color' : ''} ${isUnseen ? 'unseen-proposal' : ''}" ${colorStyle}
         data-proposal-link="${linkData}" onclick="openAgentProposalLink(JSON.parse(this.dataset.proposalLink), ${pending})">
         <span class="agent-dialog-proposal-primary">${isUnseen ? '<span class="unseen-indicator">●</span>' : ''}${escapeHtml(displayTitle)} (${escapeHtml(localKeyLabel)})</span>
-        <span class="agent-dialog-proposal-meta">${typeBadge}${badge}${chainBadge}${offerAmount}${offerCurrency}</span>
+        <span class="agent-dialog-proposal-meta">${typeBadge}${badge}${chainBadge}${offerHtml}</span>
     </div>`;
 }
 

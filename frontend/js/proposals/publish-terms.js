@@ -69,6 +69,14 @@
         return !!record && record.termsConfirmed !== true && !isPublished(record);
     }
 
+    /** Original whole-proposal consideration, never a budget, balance or recipient entitlement. */
+    function authoredOffer(record) {
+        if (!record || kinds().kindOf(record) !== kinds().OWNER_DEAL
+            || typeof record.offer !== 'number' || !Number.isFinite(record.offer) || record.offer < 0
+            || typeof record.offerCurrency !== 'string' || !record.offerCurrency.trim()) return null;
+        return { amount: record.offer, currency: record.offerCurrency.trim().toUpperCase() };
+    }
+
     /** Declared payout terms for a positive offer, never evidence of funding or payment. */
     function payoutMode(record = {}) {
         if (kinds().kindOf(record) !== kinds().OWNER_DEAL
@@ -131,5 +139,5 @@
         return { ...publishFields({ ...record, kind: saleOffer ? 'owner-deal' : kind }, { now, saleOffer }), termsConfirmed: true };
     }
 
-    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, payoutMode, chosenKind, approvalSetupFor, termsInPlace, confirmedRecordFields });
+    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, authoredOffer, payoutMode, chosenKind, approvalSetupFor, termsInPlace, confirmedRecordFields });
 });
