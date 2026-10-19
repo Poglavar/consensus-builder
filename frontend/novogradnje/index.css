@@ -29,6 +29,7 @@
 .original-preview.original-unavailable{display:grid;place-items:center;padding:20px;color:var(--muted);font-size:.85rem}
 .building-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"apartments viewers";gap:18px;align-items:start;margin-top:20px}
 .building-apartment-column{grid-area:apartments;min-width:0}
+.building-detail-layout.plans-only{grid-template-columns:minmax(0,1fr);grid-template-areas:"apartments"}
 .detail-section-title{font:600 1.35rem Fraunces,Georgia,serif;margin:0 0 12px}
 .building-detail-layout .apartment-list{display:flex;flex-direction:column;gap:0;margin:0}
 .building-detail-layout .apartment-row{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:13px 8px;background:transparent}

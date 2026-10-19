@@ -13,6 +13,7 @@ function element(tag) {
         get childNodes() { return this.children; },
         get firstChild() { return this.children[0]; },
         append(...nodes) { this.children.push(...nodes); },
+        prepend(...nodes) { this.children.unshift(...nodes); },
         replaceChildren(...nodes) { this.children = nodes; },
         addEventListener(name, listener) { this.listeners[name] = listener; },
         setAttribute(name, value) { this[name] = value; },
@@ -20,7 +21,7 @@ function element(tag) {
     };
 }
 
-function renderDetail({ selected = false, fallbackPaths = false } = {}) {
+function renderDetail({ selected = false, fallbackPaths = false, located = true, storeys = true } = {}) {
     const ids = ['detail','novogradnje-boot','q','kind','minArea','maxArea','rooms','orientation','clear-search','filters','reset','include-older','catalogue-error','results','catalogue-count','result-summary','empty-state','project-map'];
     const nodes = Object.fromEntries(ids.map(id => [id, element(id)]));
     nodes['novogradnje-boot'].textContent = JSON.stringify({
@@ -29,7 +30,8 @@ function renderDetail({ selected = false, fallbackPaths = false } = {}) {
             id: 'project-a', name: 'Projekt A', address: 'Ulica 1', kind: 'new_build', constructionYear: 2028,
             url: fallbackPaths ? undefined : '/novogradnje/zgrade/projekt-a/',
             sources: [{ url: 'https://example.test/project', label: 'Oglas projekta' }],
-            model: { envelope: { footprint: [{}], storeys: [{ level: 1, elevationM: 3 }] } },
+            location: located ? { lng: 16, lat: 45 } : null,
+            model: { envelope: located ? { footprint: { type: 'Polygon' }, storeys: storeys ? [{ level: 1, elevationM: 3 }] : [] } : null },
             apartments: [{ id: 'apt-1', label: 'Stan 1', hasPlan: true, postingUrl: 'https://example.test/apartment', architecture: { dimensionsM: [4, 5] }, source: { assetUrl: 'https://example.test/plan.png', url: 'https://example.test/plan' } }],
             floorPlans: [{ id: 'floor-2', label: 'Tlocrt drugog kata', scope: 'floor', levels: [2], url: fallbackPaths ? undefined : '/novogradnje/zgrade/projekt-a/tlocrti/floor-2/', architecture: { dimensionsM: [20, 12] }, source: { assetUrl: 'https://example.test/floor.pdf', mediaType: 'application/pdf', page: 4, url: 'https://example.test/floor' } }]
         },
@@ -39,7 +41,7 @@ function renderDetail({ selected = false, fallbackPaths = false } = {}) {
     const body = element('body');
     body.classList = { add() {}, contains: name => name === 'detail-page' };
     const viewer = { mountApartment: vi.fn(() => ({ dispose() {} })), mountEnvelope: vi.fn(() => ({ dispose() {} })), mountContext: vi.fn(() => ({ dispose() {} })) };
-    const catalogue = { decodeFilters: () => ({}), normalizeFilters: value => value, encodeFilters: () => '', filterProjects: () => [], hasEnvelope: () => true };
+    const catalogue = { decodeFilters: () => ({}), normalizeFilters: value => value, encodeFilters: () => '', filterProjects: () => [], hasEnvelope: model => Boolean(model?.envelope?.footprint && model.envelope.storeys?.length) };
     const location = { search: '', href: 'https://example.test/novogradnje/' };
     const context = {
         window: { NovogradnjeCatalogue: catalogue, NovogradnjeViewer: viewer },
@@ -88,6 +90,24 @@ describe('Novogradnje detail layout', () => {
         const floorDetail = renderDetail({ selected: 'floor' }).detail;
         expect(descendants(floorDetail).filter(node => node.className.split(' ').includes('viewer-panel'))).toHaveLength(4);
         expect(descendants(floorDetail).find(node => node.tag === 'iframe').src).toBe('https://example.test/floor.pdf#page=4');
+    });
+
+    it('foregrounds plan rows without empty building panels when the location is unknown', () => {
+        const { detail, viewer } = renderDetail({ located: false });
+        const nodes = descendants(detail);
+        expect(nodes.filter(node => node.className.split(' ').includes('viewer-panel'))).toHaveLength(0);
+        expect(nodes.filter(node => node.className === 'apartment-row')).toHaveLength(1);
+        const layout = nodes.find(node => node.className === 'building-detail-layout plans-only');
+        expect(layout.children.map(node => node.className)).toEqual(['building-apartment-column']);
+        expect(viewer.mountEnvelope).not.toHaveBeenCalled();
+        expect(viewer.mountContext).not.toHaveBeenCalled();
+    });
+
+    it('keeps available surroundings without an empty outline panel when storeys are missing', () => {
+        const { detail, viewer } = renderDetail({ storeys: false });
+        expect(descendants(detail).filter(node => node.className.split(' ').includes('viewer-panel')).map(node => node.children[0].textContent)).toEqual(['Kontekst zgrade']);
+        expect(viewer.mountEnvelope).not.toHaveBeenCalled();
+        expect(viewer.mountContext).toHaveBeenCalledOnce();
     });
 
     it('builds plural detail links when the payload omits URLs', () => {
