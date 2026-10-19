@@ -1,56 +1,53 @@
-// Validate existing private source models and create one self-contained ten-building review page.
+// Generate a private review bundle; --serve exposes only its explicit read-only routes.
 import fs from 'node:fs';
 import path from 'node:path';
+import http from 'node:http';
+import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {geometryIssues} from '../floor-plans/geometry-quality.js';
+import {reviewRoutes} from './stanovanje-plus-review/routes.mjs';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../logs/stanovanje-plus-ten-20261019');
-const selection=JSON.parse(fs.readFileSync(path.join(root,'selection.json')));
-const builds=JSON.parse(fs.readFileSync(path.join(root,'build-results.json')));
+const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+const root=path.join(repo,'backend/logs/stanovanje-plus-ten-20261019');
+const assets=path.join(repo,'backend/scripts/stanovanje-plus-review');
+const read=(name)=>JSON.parse(fs.readFileSync(name,'utf8'));
+const optional=name=>fs.existsSync(name)?read(name):null;
+const selection=read(path.join(root,'selection.json'));
+const originalManifest=optional(path.join(root,'manifest.json'));
 const items=selection.map(source=>{
- const dir=path.join(root,source.code),build=builds.find(s=>s.code===source.code);
- if(!fs.existsSync(path.join(dir,'model.json')))return {source,build};
- const model=JSON.parse(fs.readFileSync(path.join(dir,'model.json')));
- const validation=validateArchitecture(model.architecture),geometryReviewIssues=geometryIssues(model.architecture);
- const data={...build,status:validation.length?'invalid-architecture':'valid-private-draft',validation,geometryReviewIssues};
- fs.writeFileSync(path.join(dir,'validation.json'),JSON.stringify(data,null,2));
- return {source,build:data,model,frame:JSON.parse(fs.readFileSync(path.join(dir,'frame.json'))),image:'data:image/png;base64,'+fs.readFileSync(path.join(dir,'source.png')).toString('base64')};
+ const dir=path.join(root,source.code),revision=fs.existsSync(path.join(dir,'model.refined.json'))?'refined':'original';
+ const file=revision==='refined'?'model.refined.json':'model.json',model=optional(path.join(dir,file));
+ const modelSha256=model?createHash('sha256').update(fs.readFileSync(path.join(dir,file))).digest('hex'):null;
+ const review=optional(path.join(dir,'manual-review.json'));
+ const manualReview=review&&review.modelSha256===modelSha256?review:null;
+ const validation=model?validateArchitecture(model.architecture):['No processed model available.'];
+ const issues=model&&!validation.length?geometryIssues(model.architecture,{rooms:model.rooms||[]}):[];
+ return {source,revision,model,modelSha256,validation,geometryReviewIssues:issues,manualReview,refinementGeometry:optional(path.join(dir,'refinement-geometry.json')),frame:optional(path.join(dir,'frame.json')),
+  image:`/source/${source.code}/source.png`,download:`/model/${source.code}/${file}`,
+  originalReceipt:optional(path.join(dir,'response.json'))&&{file:'response.json'},
+  refinementReceipt:optional(path.join(dir,'refinement-response.json'))&&{file:'refinement-response.json'}};
 });
-const responses=selection.map(s=>{try{return JSON.parse(fs.readFileSync(path.join(root,s.code,'response.json')))}catch{return null}}).filter(Boolean);
-const usage=Object.fromEntries(['input_tokens','output_tokens','cache_read_input_tokens','cache_creation_input_tokens'].map(k=>[k,responses.reduce((sum,r)=>sum+(r.usage?.[k]||0),0)]));
-const priced=responses.every(r=>Number.isFinite(r.equivalentUsd));
-const sum=responses.reduce((n,r)=>n+(r.equivalentUsd||0),0),totalMs=responses.reduce((n,r)=>n+r.ms,0);
-const run=JSON.parse(fs.readFileSync(path.join(root,'run.json')));
-const attempts=selection.map(s=>{try{return JSON.parse(fs.readFileSync(path.join(root,s.code,'attempt.json')))}catch{return null}}).filter(Boolean);
-const finalAt=attempts.map(a=>a.finishedAt).filter(Boolean).sort().at(-1);
-const manifest={startedAt:run.startedAt,finishedAt:finalAt||null,elapsedMs:finalAt?Date.parse(finalAt)-Date.parse(run.startedAt):null,billingMode:'subscription',meteredApiSpendUsd:0,subscriptionFeeAllocationUsd:null,schema:'stanovanje-plus.ten-trial-manifest.v1',private:true,sourceIndex:'https://stanovanje.plus/nacrtitab.php',createdAt:new Date().toISOString(),plannedBuildings:10,attempts:selection.filter(s=>fs.existsSync(path.join(root,s.code,'attempt.json'))).length,responses:responses.length,validDrafts:items.filter(i=>i.build?.status==='valid-private-draft').length,models:items.map(i=>({code:i.source.code,title:i.source.title,sourceUrl:i.source.sourceUrl,sourceSha256:i.source.sourceSha256,status:i.build?.status,validation:i.build?.validation,quality:i.model?Object.fromEntries(Object.entries(i.model.extraction).filter(([k])=>k!=='sourceSubpathIds')):null,issues:i.build?.geometryReviewIssues})),engine:'codex',model:'gpt-6.1-sol',effort:'medium',usage,subscriptionSpendUsd:0,equivalentUsd:priced?sum:null,equivalentBasis:'shared llm-cost rate table; subscription consumption, not metered spend',totalCallMs:totalMs,meanCallMs:responses.length?totalMs/responses.length:null,projection200:{calls:200,representativeFloorsOnly:true,equivalentUsd:priced&&responses.length?sum/responses.length*200:null,serialCallHours:responses.length?totalMs/responses.length*200/3600000:null,atConcurrency2Hours:responses.length?totalMs/responses.length*200/7200000:null,limitations:'Arithmetic extrapolation from this selected sample, excludes source collection, QA, retries, unseen source styles and additional floors. No permission for a 200-building run.'},publication:'none; outreach permission pending',geographicRegistration:'none; local drawing outlines only'};
-fs.writeFileSync(path.join(root,'manifest.json'),JSON.stringify(manifest,null,2));
-const payload=JSON.stringify({manifest,items}).replace(/</g,'\\u003c');
-const html=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Private Stanovanje.plus ten-building review</title><style>
-*{box-sizing:border-box}body{font:15px system-ui;background:#eef1f4;color:#19252d;margin:0}header{padding:20px 28px;background:#172c3e;color:white}header p{max-width:1150px;margin:8px 0;color:#dae4ed}main{padding:20px;max-width:1700px;margin:auto}select{font:inherit;padding:9px;max-width:100%;margin-bottom:15px}.columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}.panel{background:white;border:1px solid #d7dfe5;border-radius:8px;padding:15px;margin-bottom:18px}h2{font-size:19px;margin:0 0 10px}h3{font-size:16px}.source{position:relative;width:100%}.source img{display:block;width:100%}.source svg{position:absolute;inset:0;width:100%;height:100%}canvas{width:100%;height:450px;background:#f8fafc;border:1px solid #e1e7ed}svg.plan{width:100%;height:300px;background:#f9fbfd}.muted{color:#5a6976}.bad{color:#ae361c}.pill{background:#e8f3f7;display:inline-block;border-radius:5px;padding:3px 7px;margin:3px}li{margin:5px 0}a{color:#116da2}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}input{max-width:180px}@media(max-width:850px){.columns{grid-template-columns:1fr}main{padding:10px}canvas{height:340px}}</style>
-<header><h1 style="font-size:24px;margin:0">Private Stanovanje.plus · ten-building trial</h1><p id="summary"></p><p>One characteristic floor per building. Source wall fills are measured SVG geometry; orange outlines and blue opening spans are model readings for review. Heights are illustrative. Global placement is unresolved. Publication permission is pending.</p></header><main><select id="choose"></select><div id="metadata"></div><div class="columns"><section class="panel"><h2>Source plan + local outline</h2><div id="source" class="source"></div><p class="muted">Orange: estimated floor silhouette. Red: exact selected wall fills. No geographic coordinates.</p><details><summary>Metric scale and extraction</summary><pre id="evidence"></pre></details></section><section class="panel"><h2>Illustrative 3D wall model</h2><label>Rotate <input id="rotate" type="range" min="-3.14" max="3.14" step=".02" value="-.65"></label> <label>Wall display <input id="height" type="range" min=".15" max="2.7" step=".05" value="1.4"> m</label><canvas id="three"></canvas><h3>Extracted floor plan</h3><div id="plan"></div></section></div><section class="panel"><h2>Review issues</h2><ul id="issues"></ul><details><summary>Private run manifest</summary><pre id="manifest"></pre></details></section></main><script>
-const D=${payload};const $=id=>document.getElementById(id);let current;
-const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-$('summary').textContent=D.manifest.responses+' / 10 responses · '+D.manifest.validDrafts+' format-valid drafts · subscription API spend $0 · shared-rate equivalent '+(D.manifest.equivalentUsd===null?'unpriced':'$'+D.manifest.equivalentUsd.toFixed(4));
-D.items.forEach((v,i)=>$('choose').add(new Option(v.source.code+' · '+v.source.title,i)));
-$('manifest').textContent=JSON.stringify(D.manifest,null,2);
-const ringpath=r=>'M'+r.map(p=>p.join(',')).join('L')+'Z';const polypath=p=>p.map(ringpath).join(' ');
-function show(){current=D.items[+$('choose').value];const {source,model,build,frame,image}=current;$('metadata').innerHTML='<h2>'+escape(source.title)+'</h2><p>'+escape(source.author||'')+' · '+escape(source.city)+' · <a target="_blank" rel="noreferrer" href="'+escape(source.sourceUrl)+'">Archive source</a> · '+escape(build?.status||'missing')+'</p>';
- if(!model){$('source').innerHTML='No model';$('plan').innerHTML='';$('issues').textContent=build?.error||'Missing response';return}
- const A=model.architecture,F=model.source.sourceFrame;const transform=p=>[F[0]+p[0]*F[2],F[1]+p[1]*F[3]];
- const sourcePaths=A.slabs.map(p=>'<path d="'+polypath(p.map(r=>r.map(transform)))+'" fill="#ff9c0022" stroke="#dc7700" stroke-width=".25"/>').join('')+A.walls.map(p=>'<path d="'+polypath(p.map(r=>r.map(transform)))+'" fill="#d9000044" fill-rule="evenodd"/>').join('');
- $('source').innerHTML='<img alt="Original source floor plan" src="'+image+'"><svg viewBox="'+frame.join(' ')+'" preserveAspectRatio="none">'+sourcePaths+'</svg>';
- $('plan').innerHTML='<svg class="plan" style="height:auto;aspect-ratio:'+A.dimensionsM[0]+'/'+A.dimensionsM[1]+'" viewBox="-.02 -.02 1.04 1.04" preserveAspectRatio="none">'+A.slabs.map(p=>'<path d="'+polypath(p)+'" fill="#dee8eb" stroke="#d78416" stroke-width=".003" fill-rule="evenodd"/>').join('')+A.walls.map(p=>'<path d="'+polypath(p)+'" fill="#344d61" fill-rule="evenodd"/>').join('')+A.openings.map(o=>'<path d="M'+o.a+'L'+o.b+'" stroke="#1589bd" stroke-width=".005"/>').join('')+'</svg>';
- $('evidence').textContent=JSON.stringify({dimensionsM:A.dimensionsM,scale:model.source.scale,wallFillLayers:model.source.wallFillLayers,quality:model.extraction},null,2);
- $('issues').innerHTML=[...model.issues,...(build.geometryReviewIssues||[]),...(build.validation||[]).map(x=>JSON.stringify(x))].map(x=>'<li>'+escape(x)+'</li>').join('');draw();}
-function draw(){if(!current?.model)return;const c=$('three'),ctx=c.getContext('2d'),A=current.model.architecture;const w=c.clientWidth,h=c.clientHeight,dpr=devicePixelRatio||1;c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);const theta=+$('rotate').value,co=Math.cos(theta),si=Math.sin(theta),W=A.dimensionsM[0],H=A.dimensionsM[1],z=+$('height').value;
- const raw=p=>{let x=(p[0]-.5)*W,y=(p[1]-.5)*H;return [(x*co-y*si),(x*si+y*co)*.55-p[2]*1.4]};const corners=[[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,2.7],[1,0,2.7],[1,1,2.7],[0,1,2.7]].map(raw);const xs=corners.map(p=>p[0]),ys=corners.map(p=>p[1]),scale=Math.min((w-40)/(Math.max(...xs)-Math.min(...xs)),(h-40)/(Math.max(...ys)-Math.min(...ys)));const center=[(Math.min(...xs)+Math.max(...xs))/2,(Math.min(...ys)+Math.max(...ys))/2];const project=p=>{const q=raw(p);return [w/2+(q[0]-center[0])*scale,h/2+(q[1]-center[1])*scale]};
- const trace=(rings,height)=>{ctx.beginPath();for(const r of rings){r.forEach((p,i)=>{const q=project([p[0],p[1],height]);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.closePath()}};
- for(const p of A.slabs){trace(p,0);ctx.fillStyle='#cddbdc';ctx.fill('evenodd');ctx.strokeStyle='#be891e';ctx.lineWidth=1;ctx.stroke()}
- const faces=[];for(const p of A.walls){for(const ring of p)ring.forEach((a,i)=>{const b=ring[(i+1)%ring.length];faces.push({points:[[...a,0],[...b,0],[...b,z],[...a,z]],depth:((a[0]+b[0]-1)*W*si+(a[1]+b[1]-1)*H*co)/2,fill:i%2?'#a6b8c4':'#8098aa'})})}faces.sort((a,b)=>a.depth-b.depth);for(const f of faces){ctx.beginPath();f.points.forEach((p,i)=>{const q=project(p);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.closePath();ctx.fillStyle=f.fill;ctx.fill();ctx.strokeStyle='#536c8033';ctx.stroke()}for(const p of A.walls){trace(p,z);ctx.fillStyle='#354e61';ctx.fill('evenodd')}
- ctx.fillStyle='#566775';ctx.font='12px system-ui';ctx.fillText('Illustrative extrusion · wall height slider is display only',12,h-12);}
-$('choose').onchange=show;$('rotate').oninput=draw;$('height').oninput=draw;window.onresize=draw;show();
-</script></html>`;
-fs.writeFileSync(path.join(root,'review.html'),html);
-console.log(JSON.stringify(manifest,null,2));
+const manifest={schema:'stanovanje-plus.private-review.v2',createdAt:new Date().toISOString(),private:true,
+ publication:'none',geographicRegistration:'none; local drawing coordinates only',
+ qualityGate:'Per-model manual review is bound to its exact file hash. Format validation and geometry checks do not establish usability.',
+ originalRunManifest:originalManifest,
+ models:items.map(i=>({code:i.source.code,revision:i.revision,model:i.download,formatValid:!i.validation.length,manualReview:i.manualReview,validation:i.validation,geometryReviewIssues:i.geometryReviewIssues,
+  originalReceipt:i.originalReceipt,refinementReceipt:i.refinementReceipt})),
+ accounting:'Original run totals are preserved above. Refinement receipts are separate; no aggregate or 200-building projection is recomputed here.'};
+fs.writeFileSync(path.join(root,'review-manifest.json'),JSON.stringify(manifest,null,2));
+fs.writeFileSync(path.join(root,'review-data.json'),JSON.stringify({manifest,items}));
+for(const [from,to] of [['index.html','review.html'],['review.css','review.css'],['review.js','review.js']])fs.copyFileSync(path.join(assets,from),path.join(root,to));
+if(process.argv.includes('--serve')){
+ const port=Number(process.argv.find(v=>v.startsWith('--port='))?.split('=')[1]||8603);
+ const routes=reviewRoutes(root,repo,items);
+ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png'};
+ const server=http.createServer((req,res)=>{
+  if(!['GET','HEAD'].includes(req.method)){res.writeHead(405,{Allow:'GET, HEAD'}).end();return;}
+  const file=routes.get(new URL(req.url,'http://localhost').pathname);
+  if(!file||!fs.existsSync(file)){res.writeHead(404).end('Not found');return;}
+  res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});
+  if(req.method==='HEAD')res.end();else fs.createReadStream(file).pipe(res);
+ });
+ server.listen(port,'127.0.0.1',()=>console.log(`Private read-only review: http://localhost:${port}`));
+}else console.log(JSON.stringify({review:'review.html',models:items.length,refined:items.filter(i=>i.revision==='refined').length,manifest:'review-manifest.json'}));
