@@ -15,7 +15,7 @@ await import('../../frontend/js/building-density-stats.js');
 
 const densityStats = globalThis.BuildingDensityStats;
 const RECONSTRUCTION_DATE = '2026-08-13T00:00:00.000Z';
-const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/', import.meta.url));
+const ARCHIVE_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/', import.meta.url));
 
 export const PROJECTS = Object.freeze([
     {

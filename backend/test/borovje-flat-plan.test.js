@@ -3,11 +3,11 @@ import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
-import { buildBorovjeTopology } from '../../rekonstrukcije/upu-borovje/plan-topology.mjs';
-import { BOROVJE_IDS, repairBorovjeRecords } from '../../rekonstrukcije/upu-borovje/flat-plan.mjs';
+import { buildBorovjeTopology } from '../../restatements/upu-borovje/plan-topology.mjs';
+import { BOROVJE_IDS, repairBorovjeRecords } from '../../restatements/upu-borovje/flat-plan.mjs';
 const require = createRequire(import.meta.url);
 const { shouldFormOwnBuildingParcel } = require('../../frontend/js/proposals/apply/buildings.js');
-const load = async file => JSON.parse(await readFile(new URL(`../../rekonstrukcije/upu-borovje/data/${file}`, import.meta.url), 'utf8'));
+const load = async file => JSON.parse(await readFile(new URL(`../../restatements/upu-borovje/data/${file}`, import.meta.url), 'utf8'));
 
 async function fixture() {
     const [parcelation, streets, buildings] = await Promise.all([

@@ -20,7 +20,7 @@ The videos recorded on 19 October 2026 include English narration, captions and t
 - [Local development](development.md) and [test scope](../TEST.md).
 - [API and agent quickstart](https://api.urbangametheory.xyz/docs/agents).
 - [Agent runtime](../backend/agents/README.md).
-- [Reconstructed plans and their sources](../rekonstrukcije/README.md).
+- [Restatements of existing situations and plans](../restatements/README.md).
 
 The protocol build is maintained on `colosseum-worlds-fair`. Its [architecture](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/architecture.md), [protocol contracts](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/protocol.md), [reproducible build](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/hackathon-build.md) and [Solana programs](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/blockchain/solana) describe that branch. They do not imply that every integration is enabled on every branch or location.
 

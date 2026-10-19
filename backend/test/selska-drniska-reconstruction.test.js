@@ -10,7 +10,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 import { mapSelskaBuildings } from '../scripts/seed-selska-drniska-proposal.mjs';
 
-const PROJECT_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/selska-drniska/', import.meta.url));
+const PROJECT_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/selska-drniska/', import.meta.url));
 
 async function readJson(name) {
     return JSON.parse(await readFile(`${PROJECT_ROOT}${name}`, 'utf8'));

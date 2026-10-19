@@ -50,7 +50,7 @@ The frontend uses JavaScript, Leaflet and Three.js. The API uses Node.js, Expres
 | [`frontend/`](frontend/) | Globe, maps, proposal tools, 3D views and public guides |
 | [`backend/`](backend/) | API, shared proposal records, monitoring and agent services |
 | [`blockchain/`](blockchain/) | Smart contracts and chain integrations |
-| [`rekonstrukcije/`](rekonstrukcije/) | Reconstructed plans with source provenance |
+| [`restatements/`](restatements/) | Existing situations and plans restated in the app, with sources |
 | [`world-parcels/`](world-parcels/) | Parcel-source research and coverage evidence |
 
 Start with the [development guide](docs/development.md), check [test scope](TEST.md), and open a focused issue or pull request with a reproducible example. For a planning workshop, a city integration or a research collaboration, [contact the project on Telegram](https://t.me/urbangametheory).

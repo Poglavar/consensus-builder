@@ -252,9 +252,9 @@ describe('junctions with other records', () => {
 
 describe('reproduces what the browser built', () => {
     // The Borovje v3 collector: the browser's own footprint of this definition was captured on
-    // 2026-10-10 (rekonstrukcije/upu-borovje/data/street-footprints.json, built in HTRS96).
-    const snap = JSON.parse(readFileSync(new URL('../../rekonstrukcije/upu-borovje/data/cadastral-snap.json', import.meta.url), 'utf8'));
-    const captured = JSON.parse(readFileSync(new URL('../../rekonstrukcije/upu-borovje/data/street-footprints.json', import.meta.url), 'utf8')).footprints;
+    // 2026-10-10 (restatements/upu-borovje/data/street-footprints.json, built in HTRS96).
+    const snap = JSON.parse(readFileSync(new URL('../../restatements/upu-borovje/data/cadastral-snap.json', import.meta.url), 'utf8'));
+    const captured = JSON.parse(readFileSync(new URL('../../restatements/upu-borovje/data/street-footprints.json', import.meta.url), 'utf8')).footprints;
 
     it('rebuilds the Borovje collector within millimetres of the browser\'s footprint', () => {
         const street = snap.members['upu-borovje-ulice'];

@@ -101,7 +101,7 @@ export async function importBuildingBindings(db, document) {
 }
 
 export async function seedReviewedBindings(db) {
-    const source = JSON.parse(await readFile(new URL('../../rekonstrukcije/avenue-v/floor-plan-sources.json', import.meta.url), 'utf8'));
+    const source = JSON.parse(await readFile(new URL('../../restatements/avenue-v/floor-plan-sources.json', import.meta.url), 'utf8'));
     const identity = {city:'zagreb',source:'landmark',buildingId:source.building.landmarkId,name:source.building.name};
     const evidence = {basis:'Reviewed project and unit source manifest',sourceUrl:source.building.developerUrl};
     const imported = await importBuildingBindings(db,{schema:'consensus-builder.building-bindings.v1',bindings:[

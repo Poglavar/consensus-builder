@@ -1,6 +1,6 @@
 // One-off backfill of ens_plan.supersedes for the UPU Borovje plan versions (v2 supersedes v1 and v3
 // supersedes v2, for both plans), from the chain the importer names them with
-// (rekonstrukcije/upu-borovje/name-plans.mjs). GET /markets folds a superseded version under the
+// (restatements/upu-borovje/name-plans.mjs). GET /markets folds a superseded version under the
 // current one; a database whose versions lack the link lists them as identical rows instead.
 //
 // Idempotent: a link already recorded is left alone, and a different one is reported, never
@@ -12,7 +12,7 @@
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
 import { createClient } from '../db/connection.cjs';
-import { PLANS } from '../../rekonstrukcije/upu-borovje/name-plans.mjs';
+import { PLANS } from '../../restatements/upu-borovje/name-plans.mjs';
 
 const USAGE = `Usage: node scripts/backfill-plan-supersedes.mjs (--dry-run | --apply)
 Records ens_plan.supersedes for the Borovje plan versions where it is missing.

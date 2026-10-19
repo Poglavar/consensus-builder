@@ -20,7 +20,7 @@ export const PROPOSAL_ID = 'lovinciceva-location-permit-2019';
 export const PARCEL_ID = 'HR-335533-4090/1';
 export const RECONSTRUCTION_DATE = '2026-08-09T00:00:00.000Z';
 export const GEOJSON_PATH = fileURLToPath(new URL(
-    '../../rekonstrukcije/pionir-paron/lovinciceva-4090-1/proposal.geojson',
+    '../../restatements/pionir-paron/lovinciceva-4090-1/proposal.geojson',
     import.meta.url
 ));
 export const OFFICIAL_TOTALS = Object.freeze({

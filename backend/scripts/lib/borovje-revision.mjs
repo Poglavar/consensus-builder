@@ -1,4 +1,4 @@
-// A corrected version of a UPU Borovje member (rekonstrukcije/upu-borovje/snap-to-cadastre.mjs for v2,
+// A corrected version of a UPU Borovje member (restatements/upu-borovje/snap-to-cadastre.mjs for v2,
 // fit-streets.mjs for v3): the record it revises with the committed geometry replayed onto it, under a new
 // proposal id `<base id>-v<version>`. Pure: record and change in, record out. The cadastral declaration is
 // left to the target backend, which binds the new site.
