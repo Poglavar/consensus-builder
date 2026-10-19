@@ -245,7 +245,7 @@
 
     function totalsHtml(plan) {
         const members = Array.isArray(plan.members) ? plan.members : [];
-        const total = members.length || (plan.proposalIds || []).length;
+        const total = members.length || (plan.proposalRowIds || []).length;
         const parcels = new Set();
         state.records.forEach(record => (record.cadastreParcelIds || []).forEach(id => parcels.add(String(id))));
         const changed = members.filter(member => member.changed).length;
@@ -266,9 +266,9 @@
     }
 
     function membersHtml(plan) {
-        const members = Array.isArray(plan.members) ? plan.members : (plan.proposalIds || []).map(id => ({ id: String(id) }));
+        const members = Array.isArray(plan.members) ? plan.members : (plan.proposalRowIds || []).map(id => ({ proposalRowId: String(id) }));
         const items = members.map((member, index) => {
-            const id = String(member.id);
+            const id = String(member.proposalRowId);
             const record = state.records.get(id);
             const title = member.title || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
             const type = member.goal || member.type;
@@ -290,7 +290,7 @@
     }
 
     function actionsHtml(plan) {
-        const total = (plan.proposalIds || []).length;
+        const total = (plan.proposalRowIds || []).length;
         const allApplied = total > 0 && state.applied.size >= total;
         const applyLabel = allApplied ? t('plans.view.onMap', 'On the map') : t('plans.view.actions.apply', 'Apply plan');
         const ready = !state.loading && state.records.size > 0 && !allApplied;
@@ -335,7 +335,7 @@
     // ---- actions ----
 
     async function applyPlan(button) {
-        const ids = (state.plan.proposalIds || []).map(String);
+        const ids = (state.plan.proposalRowIds || []).map(String);
         log(`applying ${state.slug} (${ids.length} proposals)`);
         // The apply frames and opens what it applied; the preview and its panel step aside first.
         await win.BusyControl.track(button, async () => {
@@ -422,7 +422,7 @@
             if (token !== state.token) return;
             state.plan = resolved;
             renderPanel();
-            const ids = (resolved.proposalIds || []).map(String);
+            const ids = (resolved.proposalRowIds || []).map(String);
             const { records, applied } = await loadRecords(ids);
             if (token !== state.token) return;
             state.records = records;

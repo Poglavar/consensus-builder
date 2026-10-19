@@ -193,6 +193,31 @@ describe('createPlanStore member query', () => {
     });
 });
 
+describe('createPlanStore named-plan identifier plumbing', () => {
+    it('passes proposalRowIds through list and insert while persisting the SQL proposal_ids column', async () => {
+        const calls = [];
+        const store = createPlanStore({
+            query: async (sql, params) => {
+                calls.push({ sql, params });
+                return { rows: [] };
+            }
+        });
+
+        await store.list('zagreb', { proposalRowIds: ['11', '22'], parcelIds: null });
+        await store.insert({
+            slug: 'row-plan', proposalRowIds: ['11', '22'], title: 'Row plan', description: null,
+            author: null, place: null, city: 'zagreb', memberHashes: { 11: 'a', 22: 'b' },
+            planHash: 'hash', supersedes: null, creatorIp: null, creatorFingerprint: null
+        });
+
+        expect(calls[0].sql).toContain('e.proposal_ids ?| $2::text[]');
+        expect(calls[0].params).toEqual(['zagreb', ['11', '22'], null]);
+        expect(calls[1].sql).toContain('INSERT INTO ens_plan (slug, proposal_ids,');
+        expect(calls[1].params[1]).toBe(JSON.stringify(['11', '22']));
+        expect(calls[1].params[12]).toEqual([11, 22]);
+    });
+});
+
 describe('planHash', () => {
     it('depends on member order', () => {
         const a = { proposalId: '1', hash: 'aa' };

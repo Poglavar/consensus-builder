@@ -61,7 +61,7 @@ test('named-plan grain-score route prepares the real plan and Start runs its ins
     slug,
     title: 'Grain score route plan',
     city: proposal.city || 'zagreb',
-    proposalIds: [serverId],
+    proposalRowIds: [serverId],
   };
   const receiver = await newPlanReceiver(browser, baseURL, `/plans/${slug}/score?city=zg`, server, plan);
   try {

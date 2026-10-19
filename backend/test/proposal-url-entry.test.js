@@ -14,7 +14,7 @@ function boot(pathname, connected = false) {
     };
     const context = vm.createContext({
         window, showAllProposalsModal: vi.fn(), handleSharedPlanRoute: vi.fn(async () => {}),
-        fetch: vi.fn(async () => ({ ok: true, json: async () => ({ proposalIds: [12, 13] }) })),
+        fetch: vi.fn(async () => ({ ok: true, json: async () => ({ proposalRowIds: [12, 13] }) })),
         console: { log() {}, debug() {}, warn: vi.fn(), error: vi.fn() }
     });
     vm.runInContext(source, context);
@@ -49,7 +49,9 @@ describe('proposal URL entry', () => {
         const app = boot(pathname);
         await app.handleProposalRouteFromUrl();
         expect(app.fetch).toHaveBeenCalledWith(expect.stringContaining('/plans/garden-plan'));
-        expect(app.window.PlanView.open).toHaveBeenCalledWith('garden-plan', { plan: expect.objectContaining({ proposalIds: [12, 13] }) });
+        expect(app.window.PlanView.open).toHaveBeenCalledWith('garden-plan', { plan: expect.objectContaining({ proposalRowIds: [12, 13] }) });
+        const openedPlan = app.window.PlanView.open.mock.calls[0][1].plan;
+        expect(openedPlan).not.toHaveProperty('proposalIds');
         expect(app.handleSharedPlanRoute).not.toHaveBeenCalled();
         expect(app.window.location.pathname).toBe(pathname);
     });

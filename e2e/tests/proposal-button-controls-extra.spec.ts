@@ -295,11 +295,17 @@ test.describe('proposal button controls: modal and alternate states @features', 
   test('whole-plan selection, row upload, copy and named-plan validation/save all change the visible state', async ({ mockApi: page }) => {
     const server = createSharedProposalServer();
     await attachSharedProposalServer(page, server);
-    await page.route('**/plans', route => route.fulfill({
-      status: 201,
-      contentType: 'application/json',
-      body: JSON.stringify({ name: 'greenway.proposals.urbangametheory.eth' })
-    }));
+    let submittedPlanBody: Record<string, unknown> | null = null;
+    await page.route('**/plans', route => {
+      if (route.request().method() === 'POST') {
+        submittedPlanBody = route.request().postDataJSON();
+      }
+      return route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ name: 'greenway.proposals.urbangametheory.eth' })
+      });
+    });
     await openCity(page);
     await establishLocalProfile(page);
     const id = await createSpace(page, 'park');
@@ -322,6 +328,8 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await selected.check();
     await row.getByRole('button', { name: 'Upload', exact: true }).click();
     await expect(row).toContainText('Uploaded', { timeout: 30000 });
+    const selectedUploadedRowIds = [...server.records.keys()].map(String);
+    expect(selectedUploadedRowIds.length).toBeGreaterThan(0);
     const link = plan.locator('.share-modal-link');
     await expect(link).toHaveValue(/\/proposals\/\d+/);
     const url = await link.inputValue();
@@ -336,6 +344,9 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await nameInput.fill('greenway');
     await saveName.click();
     await expect(plan).toContainText('greenway.proposals.urbangametheory.eth');
+    expect(submittedPlanBody).toBeTruthy();
+    expect(submittedPlanBody?.proposalRowIds).toEqual(selectedUploadedRowIds);
+    expect(submittedPlanBody).not.toHaveProperty('proposalIds');
     await plan.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(plan).toBeHidden();
   });

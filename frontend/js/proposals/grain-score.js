@@ -883,7 +883,7 @@
         saveAndSimplifyChrome();
         renderLoading(plan);
         if (plan.slug) updateRouteForScore(plan);
-        const scopeIds = plan.slug && Array.isArray(plan.proposalIds) ? plan.proposalIds : null;
+        const scopeIds = plan.slug && Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds : null;
         const prepared = await prepareExperience(plan, scopeIds);
         if (!prepared) return;
         await runInspection({ soundPreparation });
@@ -909,7 +909,7 @@
                 return;
             }
             const plan = await response.json();
-            const ids = Array.isArray(plan.proposalIds) ? plan.proposalIds.map(String).filter(Boolean) : [];
+            const ids = Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds.map(String).filter(Boolean) : [];
             if (!ids.length) {
                 renderError(t('sidebar.proposals.grainScore.emptyPlan', 'This named plan contains no proposals.'));
                 return;
