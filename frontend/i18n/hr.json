@@ -2036,13 +2036,14 @@
                 "anchorMissing": "Još nije usidrena na lancu",
                 "event": {
                     "created": "Prijedlog izrađen",
-                    "published": "Prijedlog kovan na lancu",
+                    "chainObserved": "Prijedlog zabilježen na Solana devnetu",
                     "ownership": "Vlasništvo potvrđeno",
                     "acceptance": "Vlasnik je rekao da",
                     "verdict": "Presuda podmirena",
                     "lifecycle": "Prijedlog je dosegao konačno stanje",
                     "other": "Događaj"
                 },
+                "chainObservationHint": "Potvrđeno opažanje zrcalnog zapisa; ovo nije vrijeme kovanja.",
                 "outcome": {
                     "executed": "izvršen",
                     "cancelled": "otkazan",

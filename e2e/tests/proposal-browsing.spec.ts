@@ -159,6 +159,8 @@ test.describe('Proposal browsing @features', () => {
         anchor: { account: PROPOSAL_ACCOUNT, exists: true, mintedAt: '2026-08-12T10:00:00Z' },
         events: [
           { type: 'proposal_created', at: '2026-08-10T08:00:00Z', title: 'Parcel history proposal' },
+          { type: 'proposal_chain_observed', at: '2026-08-10T08:06:00Z', proposalId: 'proposal-42',
+            link: `https://explorer.solana.com/address/${PROPOSAL_ACCOUNT}?cluster=devnet` },
           { type: 'proposal_acceptance', at: '2026-08-11T09:00:00Z', proposalId: 'proposal-42', owner: SOLANA_WALLET },
         ],
       }),
@@ -179,6 +181,11 @@ test.describe('Proposal browsing @features', () => {
     const history = page.locator('.proposal-parcel-history-card');
     await expect(history).toBeVisible();
     await history.locator(`[data-parcel-history="${PARCEL_ID}"] summary`).click();
+    const observation = history.locator('[data-history-type="proposal_chain_observed"]');
+    await expect(observation).toContainText('Proposal observed on Solana devnet');
+    await expect(observation).toContainText('this is not the mint time');
+    await expect(observation.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:06:00Z');
+    await expect(observation.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
     await expect(history.locator('[data-history-type="proposal_acceptance"]')).toContainText('Owner said yes');
     await expect(history.locator('.parcel-history-anchor')).toContainText('Anchored on chain since');
   });

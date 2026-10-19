@@ -2002,13 +2002,14 @@
                 "anchorMissing": "Not anchored on chain yet",
                 "event": {
                     "created": "Proposal created",
-                    "published": "Proposal minted on chain",
+                    "chainObserved": "Proposal observed on Solana devnet",
                     "ownership": "Ownership attested",
                     "acceptance": "Owner said yes",
                     "verdict": "Verdict settled",
                     "lifecycle": "Proposal reached a final state",
                     "other": "Event"
                 },
+                "chainObservationHint": "Verified mirror observation; this is not the mint time.",
                 "outcome": {
                     "executed": "executed",
                     "cancelled": "cancelled",

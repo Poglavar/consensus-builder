@@ -2049,13 +2049,14 @@
                 "anchorMissing": "Aún no anclada en cadena",
                 "event": {
                     "created": "Propuesta creada",
-                    "published": "Propuesta acuñada en cadena",
+                    "chainObserved": "Propuesta observada en Solana devnet",
                     "ownership": "Propiedad atestada",
                     "acceptance": "El propietario dijo sí",
                     "verdict": "Veredicto liquidado",
                     "lifecycle": "La propuesta llegó a un estado final",
                     "other": "Evento"
                 },
+                "chainObservationHint": "Observación verificada en el registro espejo; esta no es la hora de acuñación.",
                 "outcome": {
                     "executed": "ejecutada",
                     "cancelled": "cancelada",

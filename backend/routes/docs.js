@@ -317,8 +317,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     // oldest first by each source's own time (null and last when the source has none).
                     parcelHistory: {
                         url: `${base}/parcels/{parcelUid}/history`,
-                        response: '{ parcelUid, anchor: { account, exists, mintedAt?, source }, events: [{ type, at, proposalId?, proposalAccount?, member?, owner?, transaction?, hash?, link }] }',
-                        eventTypes: ['proposal_created', 'proposal_published', 'parcel_ownership', 'proposal_acceptance', 'proposal_verdict', 'proposal_lifecycle'],
+                        response: '{ parcelUid, anchor: { account, exists, mintedAt?, source }, events: [{ type, at, proposalId?, proposalAccount?, chainRef?, member?, owner?, transaction?, hash?, link }] }',
+                        eventTypes: ['proposal_created', 'proposal_chain_observed', 'parcel_ownership', 'proposal_acceptance', 'proposal_verdict', 'proposal_lifecycle'],
+                        chainObservation: 'Verified Solana devnet mirror, at its recorded verification time; not a mint event or mint time. Proposal associations use the exact verified network, program and account reference.',
                         anchor: 'parcel_nft PDA ["parcel", parcelUid]; an identity only, it carries no ownership',
                         privacy: 'ownership attestations expose member, owner wallet, ownerCount and the account hash; never the evidence reference',
                         caching: 'no-store'

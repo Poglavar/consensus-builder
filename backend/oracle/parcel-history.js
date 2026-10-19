@@ -1,34 +1,33 @@
 // Permanent per-parcel log (lens-model.md "Evidence log"): merges everything the system knows about one
 // cadastral parcel into a single timeline ordered by each event's own time. Sources: the proposal
-// records listing the parcel (created, published on chain), lens members' ownership attestations
+// records listing the parcel (created, verified chain mirror observed), lens members' ownership attestations
 // (consensus.lens_attestation) and the land events whose evidence names the parcel
 // (consensus.land_event: acceptances by parcelUid, lifecycle and verdicts via the proposals that list
 // it). Every `at` is the source's own time; an event whose source carries no time keeps `at: null`
 // and sorts last, it is never given the time of this read.
 
 import { PublicKey } from '@solana/web3.js';
-import { EVENT_TYPE as LIFECYCLE_EVENT_TYPE, explorer } from './proposal-lifecycle.js';
+import { createRequire } from 'node:module';
+import { EVENT_TYPE as LIFECYCLE_EVENT_TYPE, explorer, PROPOSAL_PROGRAM_ID, VERIFIED_DEVNET_MIRROR_SQL } from './proposal-lifecycle.js';
 import { ACCEPTANCE_EVENT_TYPE, VERDICT_EVENT_TYPE } from './proposal-consent.js';
+
+const { PROTOCOL } = createRequire(import.meta.url)('../../frontend/js/proposals/chain-record.js');
 
 export const PARCEL_PROGRAM_ID = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
 export const OWNERSHIP_EVENT_TYPE = 'parcel_ownership';
 export const PROPOSAL_CREATED_EVENT_TYPE = 'proposal_created';
-export const PROPOSAL_PUBLISHED_EVENT_TYPE = 'proposal_published';
+export const PROPOSAL_CHAIN_OBSERVED_EVENT_TYPE = 'proposal_chain_observed';
 const LAND_EVENT_TYPES = [ACCEPTANCE_EVENT_TYPE, LIFECYCLE_EVENT_TYPE, VERDICT_EVENT_TYPE];
 
 // Tie-break for events sharing one timestamp: the order they can causally happen in.
 const TYPE_RANK = [
-    PROPOSAL_CREATED_EVENT_TYPE, PROPOSAL_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE,
+    PROPOSAL_CREATED_EVENT_TYPE, PROPOSAL_CHAIN_OBSERVED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE,
     ACCEPTANCE_EVENT_TYPE, VERDICT_EVENT_TYPE, LIFECYCLE_EVENT_TYPE
 ];
 const ROW_LIMIT = 500;
 
-// The proposal account a row points at, wherever older writers stored it.
-const PROPOSAL_ACCOUNT_SQL = `COALESCE(
-    onchain_data->>'proposalId',
-    proposal_data #>> '{onchain,proposalId}',
-    proposal_data #>> '{onchainData,proposalId}'
-)`;
+// Only a server-verified mirror establishes a relation to this oracle's devnet program.
+const PROPOSAL_ACCOUNT_SQL = `proposal_data #>> '{chainMirror,ref,tokenId}'`;
 
 export function validParcelUid(value) {
     const text = typeof value === 'string' ? value.trim() : '';
@@ -52,11 +51,14 @@ export function deriveParcelAnchor(parcelUid) {
  */
 export function landEventParcelCondition(paramIndex) {
     const p = `$${paramIndex}`;
-    return `(CASE WHEN event_type = '${ACCEPTANCE_EVENT_TYPE}'
+    return `(evidence #>> '{source,chain}' = 'solana:devnet'
+        AND attester = '${PROPOSAL_PROGRAM_ID}'
+        AND CASE WHEN event_type = '${ACCEPTANCE_EVENT_TYPE}'
             THEN evidence->>'parcelUid' = ${p}::text
             ELSE subject_id IN (
                 SELECT ${PROPOSAL_ACCOUNT_SQL} FROM proposal
                 WHERE cadastre_parcel_ids @> jsonb_build_array(${p}::text)
+                  AND ${VERIFIED_DEVNET_MIRROR_SQL}
             )
         END)`;
 }
@@ -69,9 +71,8 @@ function isoOrNull(value) {
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
-function lensOf(onchainData) {
-    const lens = onchainData && Array.isArray(onchainData.lens) ? onchainData.lens : null;
-    if (!lens) return undefined;
+function lensOf(lens) {
+    if (!Array.isArray(lens)) return undefined;
     return lens.map(entry => (typeof entry === 'string' ? entry : entry?.address ?? entry?.key)).filter(Boolean);
 }
 
@@ -80,9 +81,8 @@ function compact(event) {
 }
 
 export function proposalEvents(row) {
-    const onchain = row.onchain_data && typeof row.onchain_data === 'object' ? row.onchain_data : {};
-    const proposalAccount = row.proposal_account || onchain.proposalId || undefined;
-    const lens = lensOf(onchain);
+    const mirror = verifiedDevnetMirror(row);
+    const proposalAccount = mirror?.ref.tokenId;
     const events = [compact({
         type: PROPOSAL_CREATED_EVENT_TYPE,
         // The proposal record is ours: its creation time is this event's own time.
@@ -92,20 +92,28 @@ export function proposalEvents(row) {
         title: row.title || row.name || undefined,
         link: `/proposals/${encodeURIComponent(row.proposal_id)}`
     })];
-    if (proposalAccount) {
-        const transaction = onchain.transactionHash || undefined;
+    if (mirror) {
         events.push(compact({
-            type: PROPOSAL_PUBLISHED_EVENT_TYPE,
-            // Block time of the mint transaction from the transaction store; null when not stored.
-            at: isoOrNull(row.mint_block_time),
+            type: PROPOSAL_CHAIN_OBSERVED_EVENT_TYPE,
+            // The mirror verified this account at this time. It did not establish its mint time.
+            at: isoOrNull(mirror.verifiedAt),
             proposalId: row.proposal_id,
             proposalAccount,
-            lens,
-            transaction,
-            link: transaction ? explorer('tx', transaction) : explorer('address', proposalAccount)
+            chainRef: { ...mirror.ref },
+            lens: lensOf(row.observed_lens),
+            link: explorer('address', proposalAccount)
         }));
     }
     return events;
+}
+
+function verifiedDevnetMirror(row) {
+    const mirror = row.chain_mirror;
+    const ref = mirror?.ref;
+    if (mirror?.protocol !== PROTOCOL || ref?.chainType !== 'solana' || ref.chainId !== 'solana-devnet'
+        || ref.contract !== PROPOSAL_PROGRAM_ID || typeof ref.tokenId !== 'string') return null;
+    try { return new PublicKey(ref.tokenId).toBase58() === ref.tokenId ? mirror : null; }
+    catch { return null; }
 }
 
 export function ownershipEvent(row) {
@@ -197,11 +205,10 @@ export async function loadParcelHistory(pool, parcelUid, { readAnchorAccount = n
     if (!uid) throw new Error('parcelUid is required');
     const [proposals, attestations, landEvents, anchor] = await Promise.all([
         pool.query(`
-            SELECT p.proposal_id, p.title, p.name, p.created_at, p.onchain_data,
-                   ${PROPOSAL_ACCOUNT_SQL} AS proposal_account,
-                   tx.block_time AS mint_block_time
+            SELECT p.proposal_id, p.title, p.name, p.created_at,
+                   (p.proposal_data->'chainMirror') - 'record' AS chain_mirror,
+                   p.proposal_data #> '{chainMirror,record,lens}' AS observed_lens
             FROM proposal p
-            LEFT JOIN consensus.solana_transaction tx ON tx.signature = p.onchain_data->>'transactionHash'
             WHERE p.cadastre_parcel_ids @> jsonb_build_array($1::text)
             ORDER BY p.created_at, p.id
             LIMIT ${ROW_LIMIT}
@@ -224,9 +231,10 @@ export async function loadParcelHistory(pool, parcelUid, { readAnchorAccount = n
         `, [uid, LAND_EVENT_TYPES]),
         loadAnchor(pool, uid, readAnchorAccount)
     ]);
-    const proposalIdByAccount = new Map(proposals.rows
-        .filter(row => row.proposal_account)
-        .map(row => [row.proposal_account, row.proposal_id]));
+    const proposalIdByAccount = new Map(proposals.rows.flatMap(row => {
+        const mirror = verifiedDevnetMirror(row);
+        return mirror ? [[mirror.ref.tokenId, row.proposal_id]] : [];
+    }));
     const events = sortHistory([
         ...proposals.rows.flatMap(proposalEvents),
         ...attestations.rows.map(ownershipEvent),

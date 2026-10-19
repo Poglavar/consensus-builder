@@ -11,7 +11,7 @@
 })(typeof window !== 'undefined' ? window : null, function (root) {
     const EVENT_LABELS = {
         proposal_created: ['panel.proposal.parcelHistory.event.created', 'Proposal created'],
-        proposal_published: ['panel.proposal.parcelHistory.event.published', 'Proposal minted on chain'],
+        proposal_chain_observed: ['panel.proposal.parcelHistory.event.chainObserved', 'Proposal observed on Solana devnet'],
         parcel_ownership: ['panel.proposal.parcelHistory.event.ownership', 'Ownership attested'],
         proposal_acceptance: ['panel.proposal.parcelHistory.event.acceptance', 'Owner said yes'],
         proposal_verdict: ['panel.proposal.parcelHistory.event.verdict', 'Verdict settled'],
@@ -66,6 +66,7 @@
         const [key, fallback] = EVENT_LABELS[event.type] || ['panel.proposal.parcelHistory.event.other', event.type || 'Event'];
         const title = t(key, fallback);
         const details = [];
+        if (event.type === 'proposal_chain_observed') details.push(t('panel.proposal.parcelHistory.chainObservationHint', 'Verified mirror observation; this is not the mint time.'));
         if (event.outcome && event.type !== 'proposal_acceptance') {
             const label = OUTCOME_LABELS[event.outcome];
             details.push(label ? t(label[0], label[1]) : event.outcome);

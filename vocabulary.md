@@ -442,6 +442,21 @@ execution is not inferred from `chainMirror.lifecycle`: that object can retain t
 observation while later oracle updates change the current projection.
 [Shared display](frontend/js/proposals/display-state.js), [UI language](docs/design-language.md).
 
+**Parcel-history chain observations — intentional contract change, 2026-10-20:**
+`proposal_chain_observed` replaces the derived `proposal_published` event. It records the
+server-verified mirror's observation of a proposal under the exact current protocol, Solana
+devnet network, ProposalNFT program and account reference, at `chainMirror.verifiedAt` (unknown
+stays null). It links to that account, carries the full `chainRef` and takes the lens from the
+verified authored record. A bare `onchain_data.proposalId`, an old projection alias or an attached
+transaction does not prove minting or its time. Creation events remain visible for other proposal
+records; they do not inherit those chain claims. Lifecycle/verdict associations also use only the
+qualified mirror reference, and parcel land-event reads require the devnet source and configured
+proposal-program attester. No historical records are rewritten and no old event alias is retained.
+Other networks and unqualified experimental records require their own verified observation before
+this devnet log can name them. The separate anchor `mintedAt` inference from a touched transaction
+remains an unresolved historical-evidence issue pending its own correction.
+[History projection](backend/oracle/parcel-history.js), [history UI](frontend/js/proposals/parcel-history-card.js).
+
 **API lifecycle reads, 2026-10-19:** the dedicated lifecycle column is authoritative, including when missing or unrecognized; the JSON projection cannot supply a replacement claim. Such reads return `Unknown`, a read result rather than a valid authored lifecycle. SQL lists/filters and the serializer agree: only `Active` may become `Expired` from its deadline; draft, terminal and unknown states retain their meaning. `?lifecycle=Unknown` selects unavailable states. New proposal creation retains its explicit initial-state rule; this does not infer a state for an existing record. No stored record is rewritten. [Read contract](backend/proposals/lifecycle.js), [SQL projection](backend/routes/proposals.js), [serializer](backend/proposals/serializer.js).
 
 **Browser lifecycle reads, 2026-10-19:** canonical reads, imports, reloads and recovered records retain `Unknown` when lifecycle evidence is absent or unrecognized. Chain import adapters read their decoded status without supplying Active. The creation entrypoint `addProposal` initializes an absent lifecycle to Active for a newly authored record; import/recovery paths establish their observed state first. Unknown has a visible “Status unknown” modifier, cannot expire from a deadline, and cannot start a new owner acceptance or wallet acceptance. Existing consent withdrawal and local map application remain separate concerns. This changes no chain enum, adds no compatibility reader and does not reinterpret old application words as lifecycle evidence. [Status axes](frontend/js/proposals/status.js), [storage](frontend/js/proposals/data.js), [display](frontend/js/proposals/lifecycle.js), [consent](frontend/js/proposals/execution.js).
