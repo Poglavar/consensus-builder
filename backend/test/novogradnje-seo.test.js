@@ -5,6 +5,15 @@ import { renderPublicPage, structuredData } from '../routes/novogradnje.js';
 const meta = (html, key) => html.match(new RegExp(`<meta[^>]*(?:name|property)="${key}"[^>]*content="([^"]*)"`))?.[1];
 
 describe('novogradnje search metadata', () => {
+    it('renders Novogradnja branding without the retired notes or parcel explanation', async () => {
+        const html = await renderPublicPage({ catalogue: { projects: [] } });
+        expect(html).toContain('<a class="brand" href="/novogradnje/" aria-label="Novogradnja — početna"><img class="brand-icon" src="/novogradnje/favicon.svg" alt=""><span>Novogradnja</span></a>');
+        expect(html).toContain('<a class="brand" href="https://zagreb.lol/"><span>zagreb.lol</span></a>');
+        expect(html).not.toContain('brand-dot');
+        expect(html).not.toContain('Prikazujemo samo podatke koji su poznati.');
+        expect(html).not.toContain('izgradivost parcele');
+    });
+
     it('renders the catalogue head with robots, share image details and a zagreb.lol breadcrumb', async () => {
         const html = (await renderPublicPage({ catalogue: { projects: [] } })).split('</head>')[0];
         const title = html.match(/<title>([^<]+)<\/title>/)[1];
