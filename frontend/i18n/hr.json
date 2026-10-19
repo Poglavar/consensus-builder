@@ -482,7 +482,7 @@
         "rederived": "Katastar se promijenio ispod ovog nacrta: njegove čestice sada slijede njegovu geometriju ({{count}})."
     },
     "proposalApplyStatus": {
-        "waitingForReplay": "Čeka se da se primijenjeni plan ponovno izgradi…"
+        "waitingForReplay": "Čekam da završi ponovno sastavljanje primijenjene kompozicije…"
     },
     "proposalApplyFailures": {
         "outsideCadastre": "Geometrija prijedloga prelazi granice odabranih katastarskih čestica. Zadržite je unutar odabranog zemljišta ili izradite prijedlog koji uključuje dodatne čestice.",
@@ -976,18 +976,18 @@
             "title": "Prijedlozi",
             "listButton": "Popis prijedloga ({{count}})",
             "mintedButton": "Kovani prijedlozi",
-            "shareButton": "Podijeli cijeli plan (svi prijedlozi)",
-            "shareButtonEmpty": "Nema primijenjenih planova. Prvo primijeni neki",
-            "shareButtonPreparing": "Priprema plana…",
+            "shareButton": "Podijeli primijenjene prijedloge",
+            "shareButtonEmpty": "Nema primijenjenih prijedloga. Prvo primijeni neke",
+            "shareButtonPreparing": "Priprema prijedloga…",
             "clearButton": "Resetiraj prijedloge (ovaj preglednik)",
             "planStats": {
-                "buttonLabel": "Statistika plana",
+                "buttonLabel": "Statistika primijenjenih prijedloga",
                 "calculating": "Izračunavanje…",
-                "modalTitle": "Statistika plana",
+                "modalTitle": "Statistika primijenjenih prijedloga",
                 "floorArea": "Bruto razvijena površina (m²)",
                 "salesSuffix": "EUR po m²",
                 "housingShareSuffix": "% udjela stanovanja",
-                "closeAria": "Zatvori statistiku plana",
+                "closeAria": "Zatvori statistiku primijenjenih prijedloga",
                 "currency": "EUR",
                 "resultingParcels": "Nastale čestice (prosjek m²)",
                 "buildings": "Zgrade (tlocrt m²)",
@@ -1013,7 +1013,7 @@
                 "scope": "Uračunato {{counted}} primijenjenih prijedloga od {{total}} na ovoj karti.",
                 "noteUnmeasured": "{{n}} od {{total}} zgrada nema navedenu visinu — njihova površina nije uračunata.",
                 "noteParcelArea": "Prosječna veličina čestice računa se na {{measured}} čestica čiji je oblik učitan; {{missing}} ih je izbrojeno, ali nije izmjereno.",
-                "unavailable": "Izračun plana nije dostupan — plan-yield.js se nije učitao."
+                "unavailable": "Statistika nije dostupna. Ponovno učitaj stranicu i pokušaj opet."
             },
             "grainScore": {
                 "buttonLabel": "Prizovi pijetla urbanista",
@@ -1021,25 +1021,28 @@
                 "buttonEmpty": "Prvo primijeni barem jedan prijedlog",
                 "institute": "Institut za zrnatost",
                 "title": "Ocjena zrnatosti",
-                "currentPlan": "Trenutačno primijenjeni plan",
-                "unnamedRoute": "Neimenovani plan · ocjena ostaje u ovom pregledniku",
+                "appliedComposition": "Primijenjena kompozicija",
+                "localScope": "Lokalna kompozicija · ocjena ostaje u ovom pregledniku",
+                "namedScope": "Imenovani plan · {{path}}",
                 "closeAria": "Zatvori ocjenu zrnatosti",
-                "loading": "Priprema plana za provjeru…",
+                "loading": "Priprema prijedloga za provjeru…",
                 "loadingNamed": "Učitavanje imenovanog plana…",
-                "applyingPlan": "Ponovno sastavljanje plana na karti…",
+                "applyingNamedPlan": "Primjenjivanje prijedloga imenovanog plana na kartu…",
                 "ready": {
                     "one": "Pijetao je pronašao {{count}} mjerljivu nastalu česticu. Odmah će je iskušati.",
                     "few": "Pijetao je pronašao {{count}} mjerljive nastale čestice. Iskušat će ih jednu po jednu.",
                     "other": "Pijetao je pronašao {{count}} mjerljivih nastalih čestica. Iskušat će ih jednu po jednu."
                 },
                 "start": "Pokreni provjeru",
-                "unavailable": "Ocjena zrnatosti nije dostupna za ovaj plan.",
+                "unavailable": "Ocjena zrnatosti nije dostupna za ove prijedloge.",
                 "noApplied": "Primijeni barem jedan prijedlog prije nego što prizoveš pijetla.",
                 "noGeometry": "Oblici nastalih čestica nisu se mogli izmjeriti.",
                 "planNotFound": "Imenovani plan nije pronađen.",
                 "planLoadFailed": "Imenovani plan nije se mogao učitati.",
-                "emptyPlan": "Imenovani plan ne sadržava prijedloge.",
-                "incompletePlan": "Plan nije moguće ocijeniti jer nisu primijenjeni svi njegovi prijedlozi.",
+                "incompletePlan": "Imenovani plan nije moguće ocijeniti jer nisu svi njegovi prijedlozi mogli biti primijenjeni.",
+                "exactMembersRequired": "Za ovaj imenovani plan svaki izvorni objavljeni prijedlog mora biti provjeren i primijenjen. Lokalna izmjena ili izvedeni prijedlog ne mogu zamijeniti člana plana.",
+                "otherApplied": "Na karti su primijenjeni i drugi prijedlozi. Uklonite njihovu primjenu prije ocjenjivanja ovog imenovanog plana.",
+                "fabricChanged": "Karta se promijenila nakon pripreme pregleda. Ponovno otvorite ocjenu zrnatosti za novo mjerenje.",
                 "verdictFine": "Fina zrnatost",
                 "verdictGood": "Dobar smjer",
                 "verdictMixed": "Mješovita zrnatost",
@@ -1433,6 +1436,17 @@
             },
             "idLabel": "ID:",
             "geometryReferenceNote": "Aplikacijska oznaka izvedena iz geometrije. Izvorni registarski broj nije dostupan; promjena granice stvara novu oznaku.",
+            "identity": {
+                "plotPiece": "Dio projektirane parcele {{number}}",
+                "remainder": "Preostali dio tla {{number}}",
+                "plotNote": "Tlo izvedeno iz jedne projektirane parcele u prijedlogu preparcelacije. Više prikazanih dijelova može potjecati iz iste projektirane parcele.",
+                "remainderNote": "Tlo koje je ovom preparcelacijom ostalo izvan projektiranih parcela. Vodi se odvojeno od dijelova tih parcela.",
+                "source": "Izvorna čestica {{number}}",
+                "sourcePart": "Dio izvorne čestice {{number}}",
+                "formed": "Oblikovani dio tla {{number}}",
+                "formedNote": "Tlo oblikovano primijenjenim prijedlozima. Ova oznaka identificira trenutačni dio tla, a ne upisanu česticu ni projektiranu parcelu.",
+                "sourcePartNote": "Jedan povezani dio izvorne čestice. Ova oznaka identificira prikazani dio; izvorna čestica može sadržavati i druge dijelove."
+            },
             "tabInfo": "Info",
             "tabPropose": "Predloži",
             "tabProposals": "Prijedlozi",
@@ -1737,7 +1751,8 @@
                 "created": "Kreirano:"
             },
             "offer": {
-                "noDepositWarning": "Nema depozita - prijedlog nije poduprt sredstvima"
+                "noDepositWarning": "Polog nije naveden",
+                "sellerFundingUnavailable": "Financiranje ove ponude ovdje nije dostupno."
             },
             "boost": {
                 "buttonLabel": "Založi USDC za ovaj prijedlog",
@@ -1826,14 +1841,6 @@
                 "explorerTx": "Pogledaj u block exploreru",
                 "done": "Gotovo"
             },
-            "acceptTransfer": {
-                "buttonLabel": "Prihvati prijenos vlasništva",
-                "title": "Prihvati prijenos vlasništva",
-                "closeLabel": "Zatvori dijalog",
-                "copy": "Financiraj iznos koji nedostaje u prijedlogu kako bi prihvatio zahtjev za vlasništvo.",
-                "amountNeeded": "Iznos koji još treba",
-                "fund": "Financiraj"
-            },
             "lifecycle": {
                 "active": "Aktivan",
                 "cancelled": "Povučen",
@@ -1841,7 +1848,7 @@
                 "executed": "Izvršen",
                 "minted": "Iskovan",
                 "inMemory": "U memoriji",
-                "acceptedNotFunded": "Prihvaćen (Bez sredstava)",
+                "awaitingFunding": "Čeka financiranje",
                 "viewOnExplorer": "Prikaži u exploreru",
                 "mintedHint": "Iskovano na blockchainu"
             },
@@ -1896,8 +1903,11 @@
                 "relationOverlap": "{{shared}} čestica zajedničko s izvornikom, {{added}} dodano, {{removed}} uklonjeno",
                 "relationDisjoint": "Nema zajedničkih čestica s izvornikom"
             },
-            "buy": {
-                "button": "Kupi"
+            "purchaseSimulation": {
+                "button": "Simuliraj kupnju",
+                "hint": "Mijenja modelirano vlasništvo čestica u ovom pregledniku. Plaćanje se ne provodi.",
+                "result": "Kupnja simulirana u ovom pregledniku",
+                "done": "Kupnja je simulirana u ovom pregledniku. Plaćanje nije provedeno."
             },
             "stats": {
                 "individualOwners": "Pojedinačni vlasnici:",
@@ -2914,7 +2924,7 @@
                     "active": "Aktivan",
                     "minted": "Iskovan",
                     "inMemory": "U memoriji",
-                    "acceptedNotFunded": "Prihvaćen (Bez sredstava)"
+                    "awaitingFunding": "Čeka financiranje"
                 },
                 "epoch": {
                     "rowLabel": "Epoha plana",
@@ -3045,22 +3055,22 @@
                 "uploadError": "Prijenos prijedloga nije uspio. Molimo pokušajte ponovno.",
                 "shareUrlLabel": "URL za dijeljenje:",
                 "copyUrlButton": "Kopiraj URL",
-                "sharePlanButton": "Podijeli cijeli plan (svi primijenjeni prijedlozi)…",
+                "sharePlanButton": "Podijeli primijenjene prijedloge…",
                 "plan": {
-                    "kindHint": "Vrijedi za prijedloge u ovom planu čiji uvjeti nikad nisu odabrani; ostali zadržavaju svoje.",
+                    "kindHint": "Primjenjuje se na odabrane prijedloge za koje uvjeti još nisu odabrani; ostali zadržavaju svoje.",
                     "uploadAncestorsMissing": "Uključite ove nadređene prijedloge u plan: {{list}}",
-                    "title": "Podijeli plan",
+                    "title": "Podijeli primijenjene prijedloge",
                     "fetching": "Preuzimanje prijedloga #{{id}}…",
                     "fetchingParcels": "Preuzimanje čestica predaka za prijedlog #{{id}}…",
                     "applying": "Primjenjivanje prijedloga #{{id}}…",
                     "applyingNamed": "Primjenjujem {{label}} ({{done}}/{{total}})…",
                     "preparingNamed": "Pripremam {{label}} ({{done}}/{{total}})…",
                     "materializing": "Pokrećem primjenu prijedloga…",
-                    "applyingAllTitle": "Primjena zajedničkog plana",
-                    "fetchingPlan": "Preuzimanje plana…",
-                    "fetchingPlanTitle": "Preuzimanje prijedloga",
-                    "rebuildingStatus": "Ponovna izgradnja primijenjenog plana…",
-                    "rebuildingStatusCount": "Ponovna izgradnja primijenjenog plana {{done}}/{{total}}…",
+                    "applyingAllTitle": "Primjenjivanje podijeljenih prijedloga",
+                    "fetchingPlan": "Preuzimanje podijeljenih prijedloga…",
+                    "fetchingPlanTitle": "Preuzimanje podijeljenih prijedloga",
+                    "rebuildingStatus": "Ponovno sastavljanje primijenjene kompozicije…",
+                    "rebuildingStatusCount": "Ponovno sastavljanje primijenjene kompozicije {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} cesta",
@@ -3103,13 +3113,14 @@
                         "corridorStrips": "Osvježavam prikaz cesta i pruga…"
                     },
                     "countHeading": {
-                        "one": "U trenutnom planu je {{count}} prijedlog (to jest, primijenjen na karti)",
-                        "few": "U trenutnom planu su {{count}} prijedloga (to jest, primijenjena na karti)",
-                        "other": "U trenutnom planu je {{count}} prijedloga (to jest, primijenjenih na karti)"
+                        "one": "{{count}} prijedlog primijenjen na ovoj karti",
+                        "few": "{{count}} prijedloga primijenjena na ovoj karti",
+                        "other": "{{count}} prijedloga primijenjeno na ovoj karti"
                     },
-                    "nameHeading": "Ili dajte ovom planu prepoznatljivo ime (ENS):",
+                    "nameHeading": "Izradi imenovani plan od odabranih prijedloga (ENS):",
+                    "compositionHint": "Poveznica dijeli tvoj odabir. Imenovani plan trajno zadržava taj odabir; kasnije promjene zahtijevaju novi imenovani plan.",
                     "namePlaceholder": "npr. luka-obnova",
-                    "nameButton": "Spremi ime",
+                    "nameButton": "Izradi imenovani plan",
                     "namePrepFirst": "Prvo pripremite poveznicu za dijeljenje iznad (prenesite sve odabrane prijedloge).",
                     "nameInvalid": "Koristite najmanje 3 znaka: a–z, 0–9, crtice.",
                     "nameSaving": "Spremanje…",
@@ -3124,7 +3135,7 @@
                     "uploadHint": "Prenesi sve odabrane prijedloge kako bi omogućio dijeljenje ili odznači neke.",
                     "noUploadedHint": "Prenesi barem jedan prijedlog kako bi omogućio dijeljenje.",
                     "alreadyAppliedTitle": "Plan je već primijenjen",
-                    "alreadyAppliedMessage": "Ovaj dijeljeni plan je već primijenjen na kartu.",
+                    "alreadyAppliedMessage": "Ovi podijeljeni prijedlozi već su primijenjeni na karti.",
                     "goneFromServer": "Prijedlog {{ids}} više nije na poslužitelju. Ostala je samo tvoja lokalna kopija, pa se ova poveznica nikome drugome neće otvoriti.",
                     "alreadyAppliedWithOthersTitle": "Plan je već primijenjen",
                     "alreadyAppliedWithOthersMessage": {
@@ -3174,7 +3185,7 @@
                         "other": "Nije primijenjeno {{count}} prijedloga:"
                     },
                     "applyBlockedByDependencies": "Blokirano: ovisnosti nisu zadovoljene nakon pokušaja.",
-                    "summary": "Rezultat dijeljenog plana",
+                    "summary": "Rezultat podijeljenih prijedloga",
                     "cancelledToast": "Nije primijenjeno, povučeno: {{titles}}.",
                     "appliedToast": {
                         "one": "Primijenjen {{count}} prijedlog.",
@@ -3205,7 +3216,7 @@
                 "checkingProposals": "Provjera {{done}}/{{total}} prijedloga na poslužitelju…",
                 "listingProposals": "Popis prijedloga: {{done}}/{{total}}…",
                 "drawingProposals": "Crtanje {{done}}/{{total}} prijedloga na karti…",
-                "preparingPlan": "Priprema plana…"
+                "preparingPlan": "Priprema prijedloga…"
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -3519,7 +3530,7 @@
             },
             "site": {
                 "bound": "Lokacija od {{area}} m², vezanih čestica: {{count}}. Objava provjerava vezu prema cijelom katastru.",
-                "unbound": "Lokacija od {{area}} m² na tlu bez čestica: nijedan vlasnik ne može dati pristanak, pa se može izvršiti samo odlukom nadležnog tijela.",
+                "unbound": "Lokacija od {{area}} m² bez vezanih podataka o česticama. Vlasništvo je nepoznato. Izvršenje na blockchainu zahtijeva odluku nadležnog tijela.",
                 "binding": "Provjera u koje čestice lokacija zadire…"
             },
             "tolerance": {
@@ -4033,11 +4044,12 @@
             "nodeRemoveMerges": "Uklanjanjem se {{joining}} spaja u {{keeper}} — mijenja vlasnika {{moved}} m².",
             "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
             "plotLabel": "čestica {{n}} ({{area}} m²)",
-            "noOwnerBalance": "Otvoreno tlo nema vlasnika: ništa se ne duguje niti plaća.",
-            "openGroundOwner": "Otvoreno tlo (bez vlasnika)",
+            "noOwnerBalance": "Vlasništvo je nepoznato. U ovom nacrtu za to se tlo ne izračunava saldo ni novčana raspodjela.",
+            "openGroundOwner": "Otvoreno tlo (vlasništvo nepoznato)",
             "subdivisionTitle": "Parcelacija",
             "siteParcelsMissing": "Čestice ispod ove lokacije nije moguće učitati: {{ids}}.",
             "siteUnavailable": "Ovu lokaciju ovdje nije moguće parcelirati.",
+            "poolClipFailed": "Zemljište ovog plana nije bilo moguće izračunati: {{reason}}",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi prijedlog: {{names}}. Nacrtajte lokaciju izvan njega ili najprije poništite primjenu tog prijedloga.",
             "layoutTitle": "Početni raspored",
             "activeMode": "Aktivno: {{mode}}",
@@ -4323,6 +4335,7 @@
             },
             "selected_parcel_with_number": "Odabrana čestica {{number}}",
             "select_a_block_first": "Prvo odaberi blok",
+            "parcels_could_not_be_merged": "Odabrane čestice nije bilo moguće spojiti u jednu lokaciju: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Odaberi česticu prije pokušaja preuzimanja.",
             "select_a_parcel_block_before_creating_a_proposal": "Odaberi blok čestica prije kreiranja prijedloga.",
             "select_at_least_one_parcel_before_running_reparcellization": "Odaberi barem jednu česticu prije pokretanja reparcelacije.",
@@ -5065,6 +5078,8 @@
             "building_proposal_workflow_is_unavailable": "Tok za prijedlog zgrade nije dostupan.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Ne može se poništiti prihvaćanje za izvršen prijedlog koji ima potomke čestica.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "Nije moguće pripremiti podatke o zgradi za prijedlog. Pokušaj ponovno.",
+            "proposal_terms_unavailable": "Trenutačni uvjeti prijedloga nisu se mogli provjeriti. Ponovno učitajte prijedlog prije prihvaćanja.",
+            "acceptance_confirmed_status_unavailable": "Prihvaćanje je potvrđeno na lancu, ali status prijedloga nije bilo moguće osvježiti. I dalje se prikazuje prethodni status. Ponovno učitajte prijedlog kako biste ga provjerili.",
             "readjustment_terms_invalid": "Prije prihvaćanja dovršite i ispravite dodjelu čestica i novčane uvjete preparcelacije.",
             "error_accepting_proposal_please_try_again": "Pogreška pri prihvaćanju prijedloga. Pokušaj ponovno.",
             "error_rejecting_proposal_please_try_again": "Pogreška pri odbijanju prijedloga. Pokušaj ponovno.",
@@ -5844,7 +5859,7 @@
             "watchedAreas": "Nadzirana područja",
             "originalCadastre": "Izvorni katastar",
             "aerialLayer": "Postojeći grad (Google snimke)",
-            "planActions": "Radnje plana",
+            "proposalTools": "Alati za prijedloge",
             "statusLog": "Tehnički status",
             "display": "Prikaz"
         }
@@ -6006,7 +6021,7 @@
             "bound": "Vezane čestice ({{count}})",
             "drawingEmpty": "Zatvorite obris da vidite koje čestice veže.",
             "noParcels": "Ne veže nijednu česticu: može se izvršiti samo odlukom nadležnog tijela.",
-            "openGround": "Šrafirano: otvoreno tlo bez upisanog vlasnika; za izvršenje treba odluka nadležnog tijela.",
+            "openGround": "Šrafirano: tlo izvan dostavljenih čestica; vlasništvo je nepoznato. Izvršenje na blockchainu zahtijeva odluku nadležnog tijela.",
             "touched": "Zadire {{width}} u {{parcel}} — ispod tolerancije, nije vezana.",
             "smallIntrusion": "Zadire {{width}} u {{parcel}} — uključite je ili promijenite projekt.",
             "include": "Uključi je",
@@ -6044,6 +6059,7 @@
             "selfIntersecting": "Obris siječe sam sebe; pomaknite kut da ga ne siječe.",
             "tooSmall": "Lokacija je premala.",
             "reshapeSplit": "To bi lokaciju podijelilo na dva dijela; uredite njezine kutove.",
+            "reshapeFailed": "Lokaciju nije bilo moguće preoblikovati: {{reason}}",
             "mapBusy": "Najprije završite otvoreni alat.",
             "parcelsUnavailable": "Te čestice nisu na karti.",
             "plotsUnavailable": "Rezanje čestica nije dostupno."
@@ -6446,28 +6462,28 @@
         "copyName": "Kopiraj ENS naziv"
     },
     "plans": {
-        "title": "Planovi",
+        "title": "Imenovani planovi",
         "unavailable": "Planove nije bilo moguće učitati: {{reason}}",
         "line": {
-            "single": "Dio plana {{name}}",
+            "single": "Dio imenovanog plana {{name}}",
             "many": {
-                "one": "U {{count}} planu",
-                "few": "U {{count}} plana",
-                "other": "U {{count}} planova"
+                "one": "U {{count}} imenovanom planu",
+                "few": "U {{count}} imenovana plana",
+                "other": "U {{count}} imenovanih planova"
             }
         },
         "list": {
-            "empty": "Ovdje još nema planova.",
+            "empty": "Ovdje još nema imenovanih planova.",
             "pool": "Fond oklada",
             "loading": "Učitavanje planova…",
-            "emptyCity": "U ovom gradu još nema planova. Primijenite prijedloge i podijelite ih kao plan da biste ga napravili."
+            "emptyCity": "U ovom gradu još nema imenovanih planova. Podijeli primijenjene prijedloge, zatim odaberi Izradi imenovani plan."
         },
         "parcel": {
             "loading": "Traženje planova…",
             "empty": "Još nijedan plan ne uključuje prijedlog na ovoj čestici."
         },
         "view": {
-            "title": "Plan",
+            "title": "Imenovani plan",
             "notFound": "Ne postoji plan s imenom {{name}}.",
             "loading": "Učitavanje plana…",
             "error": "Plan nije bilo moguće učitati: {{reason}}",

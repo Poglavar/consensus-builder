@@ -482,7 +482,7 @@
         "rederived": "El catastro cambió bajo este borrador: sus parcelas ahora siguen su geometría ({{count}})."
     },
     "proposalApplyStatus": {
-        "waitingForReplay": "Esperando a que termine de reconstruirse el plan aplicado…"
+        "waitingForReplay": "Esperando a que termine la reconstrucción de la composición aplicada…"
     },
     "proposalApplyFailures": {
         "outsideCadastre": "La geometría de la propuesta se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea una propuesta que incluya las parcelas adicionales.",
@@ -1176,19 +1176,19 @@
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
             "mintedButton": "Propuestas acuñadas",
-            "shareButton": "Compartir plan completo (todas las propuestas)",
-            "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
-            "shareButtonPreparing": "Preparando el plan…",
+            "shareButton": "Compartir propuestas aplicadas",
+            "shareButtonEmpty": "No hay propuestas aplicadas. Aplica algunas primero",
+            "shareButtonPreparing": "Preparando propuestas…",
             "clearButton": "Restablecer propuestas (este navegador)",
             "planStats": {
-                "buttonLabel": "Estadísticas del plan",
+                "buttonLabel": "Estadísticas de propuestas aplicadas",
                 "calculating": "Calculando…",
-                "modalTitle": "Estadísticas del plan",
+                "modalTitle": "Estadísticas de propuestas aplicadas",
                 "resultingParcels": "Parcelas resultantes (media m²)",
                 "floorArea": "Superficie construida bruta (m²)",
                 "salesSuffix": "EUR por m²",
                 "housingShareSuffix": "% de vivienda",
-                "closeAria": "Cerrar estadísticas del plan",
+                "closeAria": "Cerrar estadísticas de propuestas aplicadas",
                 "currency": "EUR",
                 "buildings": "Edificios (huella m²)",
                 "openSpace": "Espacio libre — parques, plazas, agua (m²)",
@@ -1213,7 +1213,7 @@
                 "scope": "{{counted}} propuestas aplicadas contadas de {{total}} en este mapa.",
                 "noteUnmeasured": "{{n}} de {{total}} edificios no indican altura — su superficie no se contabiliza.",
                 "noteParcelArea": "El tamaño medio de parcela se calcula sobre las {{measured}} parcelas cuya forma está cargada; {{missing}} se cuentan pero no se miden.",
-                "unavailable": "El cálculo del plan no está disponible — plan-yield.js no se cargó."
+                "unavailable": "Las estadísticas no están disponibles. Recarga la página e inténtalo de nuevo."
             },
             "grainScore": {
                 "buttonLabel": "Invocar al gallo urbanista",
@@ -1221,24 +1221,27 @@
                 "buttonEmpty": "Aplica primero al menos una propuesta",
                 "institute": "Institut za zrnatost",
                 "title": "Puntuación de grano urbano",
-                "currentPlan": "Plan aplicado actualmente",
-                "unnamedRoute": "Plan sin nombre · la puntuación queda en este navegador",
+                "appliedComposition": "Composición aplicada",
+                "localScope": "Composición local · la puntuación queda en este navegador",
+                "namedScope": "Plan con nombre · {{path}}",
                 "closeAria": "Cerrar puntuación de grano",
-                "loading": "Preparando el plan para la revisión…",
+                "loading": "Preparando propuestas para la revisión…",
                 "loadingNamed": "Cargando el plan con nombre…",
-                "applyingPlan": "Reconstruyendo el plan en el mapa…",
+                "applyingNamedPlan": "Aplicando las propuestas del plan con nombre al mapa…",
                 "ready": {
                     "one": "El gallo encontró {{count}} parcela resultante medible. La probará ahora.",
                     "other": "El gallo encontró {{count}} parcelas resultantes medibles. Las probará una a una."
                 },
                 "start": "Iniciar la revisión",
-                "unavailable": "La puntuación de grano no está disponible para este plan.",
+                "unavailable": "La puntuación de grano no está disponible para estas propuestas.",
                 "noApplied": "Aplica al menos una propuesta antes de invocar al gallo.",
                 "noGeometry": "No se pudieron medir las formas de las parcelas resultantes.",
                 "planNotFound": "No se encontró este plan con nombre.",
                 "planLoadFailed": "No se pudo cargar el plan con nombre.",
-                "emptyPlan": "Este plan con nombre no contiene propuestas.",
-                "incompletePlan": "El plan no se puede puntuar porque no se pudieron aplicar todas sus propuestas.",
+                "incompletePlan": "El plan con nombre no se puede puntuar porque no se pudieron aplicar todas sus propuestas.",
+                "exactMembersRequired": "Este plan con nombre requiere que cada propuesta publicada original esté verificada y aplicada. Una edición local o una bifurcación no puede sustituir a un miembro.",
+                "otherApplied": "Hay otras propuestas aplicadas en este mapa. Deja de aplicarlas antes de evaluar este plan con nombre.",
+                "fabricChanged": "El mapa cambió después de preparar esta inspección. Vuelve a abrir la puntuación del grano urbano para medirlo de nuevo.",
                 "verdictFine": "Grano fino",
                 "verdictGood": "Buena dirección",
                 "verdictMixed": "Grano mixto",
@@ -1449,6 +1452,17 @@
             },
             "idLabel": "ID:",
             "geometryReferenceNote": "Referencia de la aplicación derivada de la geometría. No hay número registral de origen; un cambio en el límite genera una nueva referencia.",
+            "identity": {
+                "plotPiece": "Porción de parcela diseñada {{number}}",
+                "remainder": "Terreno remanente {{number}}",
+                "plotNote": "Terreno derivado de una parcela diseñada en una propuesta de reajuste de tierras. Varias porciones actuales pueden proceder de la misma parcela diseñada.",
+                "remainderNote": "Terreno que este reajuste dejó fuera de las parcelas diseñadas. Se mantiene separado de las porciones de esas parcelas.",
+                "source": "Parcela de origen {{number}}",
+                "sourcePart": "Parte de la parcela de origen {{number}}",
+                "formed": "Porción de terreno resultante {{number}}",
+                "formedNote": "Terreno formado por las propuestas aplicadas. Esta referencia identifica la porción actual, no una parcela registrada ni una parcela diseñada.",
+                "sourcePartNote": "Una parte conexa de una parcela de origen. Esta referencia identifica la parte mostrada; la parcela de origen puede contener otras partes."
+            },
             "tabInfo": "Info",
             "tabPropose": "Proponer",
             "tabProposals": "Propuestas",
@@ -1750,7 +1764,8 @@
                 "created": "Creada:"
             },
             "offer": {
-                "noDepositWarning": "Sin depósito: la propuesta no está respaldada por fondos"
+                "noDepositWarning": "No se ha especificado ningún depósito",
+                "sellerFundingUnavailable": "La financiación de esta oferta no está disponible aquí."
             },
             "boost": {
                 "buttonLabel": "Aportar USDC a esta propuesta",
@@ -1839,14 +1854,6 @@
                 "explorerTx": "Ver en el explorador de bloques",
                 "done": "Listo"
             },
-            "acceptTransfer": {
-                "buttonLabel": "Aceptar transferencia de propiedad",
-                "title": "Aceptar transferencia de propiedad",
-                "closeLabel": "Cerrar diálogo",
-                "copy": "Financia el monto que falta en la propuesta para aceptar el reclamo de propiedad.",
-                "amountNeeded": "Monto aún necesario",
-                "fund": "Financiar"
-            },
             "lifecycle": {
                 "active": "Activa",
                 "cancelled": "Retirada",
@@ -1854,7 +1861,7 @@
                 "executed": "Ejecutada",
                 "minted": "Acuñada",
                 "inMemory": "En memoria",
-                "acceptedNotFunded": "Aceptada (Sin fondos)",
+                "awaitingFunding": "A la espera de financiación",
                 "viewOnExplorer": "Ver en el explorador",
                 "mintedHint": "Acuñada en la cadena"
             },
@@ -1909,8 +1916,11 @@
                 "relationOverlap": "{{shared}} parcelas en común con la original, {{added}} añadidas, {{removed}} quitadas",
                 "relationDisjoint": "Ninguna parcela en común con la original"
             },
-            "buy": {
-                "button": "Comprar"
+            "purchaseSimulation": {
+                "button": "Simular compra",
+                "hint": "Actualiza la propiedad modelada de las parcelas en este navegador. No se realiza ningún pago.",
+                "result": "Compra simulada en este navegador",
+                "done": "Compra simulada en este navegador. No se ha realizado ningún pago."
             },
             "stats": {
                 "individualOwners": "Propietarios individuales:",
@@ -2940,7 +2950,7 @@
                     "active": "Activa",
                     "minted": "Acuñada",
                     "inMemory": "En memoria",
-                    "acceptedNotFunded": "Aceptada (Sin fondos)"
+                    "awaitingFunding": "A la espera de financiación"
                 },
                 "syncBlockchainLabel": "Sincronizar",
                 "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?",
@@ -3076,22 +3086,22 @@
                 "shareModalTitle": "Compartir una propuesta",
                 "shareUrlLabel": "URL para compartir:",
                 "copyUrlButton": "Copiar URL",
-                "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
+                "sharePlanButton": "Compartir propuestas aplicadas…",
                 "plan": {
-                    "kindHint": "Se aplica a las propuestas de este plan cuyos términos nunca se eligieron; las demás conservan los suyos.",
+                    "kindHint": "Se aplica a las propuestas seleccionadas cuyos términos aún no se eligieron; las demás conservan los suyos.",
                     "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
-                    "title": "Compartir plan",
+                    "title": "Compartir propuestas aplicadas",
                     "fetching": "Obteniendo propuesta #{{id}}…",
                     "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
                     "applying": "Aplicando propuesta #{{id}}…",
                     "applyingNamed": "Aplicando {{label}} ({{done}}/{{total}})…",
                     "preparingNamed": "Preparando {{label}} ({{done}}/{{total}})…",
                     "materializing": "Iniciando la materialización de las propuestas…",
-                    "applyingAllTitle": "Aplicando el plan compartido",
-                    "fetchingPlan": "Obteniendo plan…",
-                    "fetchingPlanTitle": "Obteniendo propuesta",
-                    "rebuildingStatus": "Reconstruyendo el plan aplicado…",
-                    "rebuildingStatusCount": "Reconstruyendo el plan aplicado {{done}}/{{total}}…",
+                    "applyingAllTitle": "Aplicando propuestas compartidas",
+                    "fetchingPlan": "Obteniendo propuestas compartidas…",
+                    "fetchingPlanTitle": "Obteniendo propuestas compartidas",
+                    "rebuildingStatus": "Reconstruyendo la composición aplicada…",
+                    "rebuildingStatusCount": "Reconstruyendo la composición aplicada {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} carretera",
@@ -3134,13 +3144,14 @@
                         "corridorStrips": "Actualizando las superficies de carreteras y vías…"
                     },
                     "countHeading": {
-                        "one": "Hay {{count}} propuesta en el plan actual (es decir, aplicada en el mapa)",
-                        "few": "Hay {{count}} propuestas en el plan actual (es decir, aplicadas en el mapa)",
-                        "other": "Hay {{count}} propuestas en el plan actual (es decir, aplicadas en el mapa)"
+                        "one": "{{count}} propuesta aplicada en este mapa",
+                        "few": "{{count}} propuestas aplicadas en este mapa",
+                        "other": "{{count}} propuestas aplicadas en este mapa"
                     },
-                    "nameHeading": "O dale a este plan un nombre memorable (ENS):",
+                    "nameHeading": "Crea un plan con nombre a partir de las propuestas seleccionadas (ENS):",
+                    "compositionHint": "El enlace comparte tu selección. Un plan con nombre conserva esa selección fija; los cambios posteriores requieren un nuevo plan con nombre.",
                     "namePlaceholder": "p. ej. puerto-remodelacion",
-                    "nameButton": "Guardar nombre",
+                    "nameButton": "Crear plan con nombre",
                     "namePrepFirst": "Primero prepara el enlace para compartir de arriba (sube todas las propuestas seleccionadas).",
                     "nameInvalid": "Usa al menos 3 caracteres: a–z, 0–9, guiones.",
                     "nameSaving": "Guardando…",
@@ -3155,7 +3166,7 @@
                     "uploadHint": "Sube todas las propuestas seleccionadas para habilitar el enlace, o deselecciona algunas.",
                     "noUploadedHint": "Sube al menos una propuesta para habilitar el enlace.",
                     "alreadyAppliedTitle": "Plan ya aplicado",
-                    "alreadyAppliedMessage": "Este plan compartido ya está aplicado en el mapa.",
+                    "alreadyAppliedMessage": "Estas propuestas compartidas ya están aplicadas en el mapa.",
                     "goneFromServer": "La propuesta {{ids}} ya no está en el servidor. Solo queda tu copia local, así que este enlace no se abrirá para nadie más.",
                     "alreadyAppliedWithOthersTitle": "Plan ya aplicado",
                     "alreadyAppliedWithOthersMessage": {
@@ -3205,7 +3216,7 @@
                         "other": "No se pudieron aplicar {{count}} propuestas:"
                     },
                     "applyBlockedByDependencies": "Bloqueado: dependencias no satisfechas tras los reintentos.",
-                    "summary": "Resultado del plan compartido",
+                    "summary": "Resultado de las propuestas compartidas",
                     "cancelledToast": "No aplicada, retirada: {{titles}}.",
                     "appliedToast": {
                         "one": "Se aplicó {{count}} propuesta.",
@@ -3234,7 +3245,7 @@
                 "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor…",
                 "listingProposals": "Listando {{done}}/{{total}} propuestas…",
                 "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa…",
-                "preparingPlan": "Preparando el plan…",
+                "preparingPlan": "Preparando propuestas…",
                 "uploadExplainer": "Para compartir una propuesta con otros, primero debes subirla al servidor"
             },
             "sharedInspector": {
@@ -3549,7 +3560,7 @@
             },
             "site": {
                 "bound": "Sitio de {{area}} m², parcelas vinculadas: {{count}}. Al publicar se comprueba el vínculo con el catastro completo.",
-                "unbound": "Sitio de {{area}} m² en terreno sin parcelas: ningún propietario puede consentir, así que solo puede ejecutarse con el veredicto de una autoridad.",
+                "unbound": "Sitio de {{area}} m² sin registros de parcelas vinculados. La propiedad es desconocida. La ejecución en la cadena requiere el veredicto de una autoridad.",
                 "binding": "Comprobando en qué parcelas entra el sitio…"
             },
             "tolerance": {
@@ -4054,11 +4065,12 @@
             "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}} — {{moved}} m² cambian de manos.",
             "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
             "plotLabel": "parcela {{n}} ({{area}} m²)",
-            "noOwnerBalance": "El terreno abierto no tiene propietario: no se debe ni se paga nada.",
-            "openGroundOwner": "Terreno abierto (sin propietario)",
+            "noOwnerBalance": "La propiedad es desconocida. Este borrador no calcula un saldo ni una asignación de dinero para este terreno.",
+            "openGroundOwner": "Terreno abierto (propiedad desconocida)",
             "subdivisionTitle": "Parcelación",
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
+            "poolClipFailed": "No se pudo calcular el terreno de este plan: {{reason}}",
             "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta.",
             "cashTermsHint": "Compensación total del balance de propietarios. Edite las ofertas individuales en el editor de reajuste de tierras.",
             "jointShareHint": "Las participaciones del patio parten del terreno privado restante de cada propietario. Usa Editar participaciones para fijar porcentajes.",
@@ -4314,6 +4326,7 @@
             },
             "selected_parcel_with_number": "Parcela seleccionada {{number}}",
             "select_a_block_first": "Selecciona primero un bloque",
+            "parcels_could_not_be_merged": "No se pudieron unir las parcelas seleccionadas en un solo emplazamiento: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Selecciona una parcela antes de intentar reclamarla.",
             "select_a_parcel_block_before_creating_a_proposal": "Selecciona un bloque de parcelas antes de crear una propuesta.",
             "select_at_least_one_parcel_before_running_reparcellization": "Selecciona al menos una parcela antes de ejecutar la reparcelación.",
@@ -5065,6 +5078,8 @@
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de una propuesta ejecutada que tiene parcelas descendientes.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "No se pudieron preparar los datos del edificio para la propuesta. Inténtalo de nuevo.",
+            "proposal_terms_unavailable": "No se pudieron verificar las condiciones actuales de la propuesta. Vuelva a cargarla antes de aceptarla.",
+            "acceptance_confirmed_status_unavailable": "La aceptación se confirmó en la cadena, pero no se pudo actualizar el estado de la propuesta. Se sigue mostrando el estado anterior. Vuelve a cargar la propuesta para comprobarlo.",
             "readjustment_terms_invalid": "Complete y corrija las asignaciones de parcelas y las condiciones monetarias de la reparcelación antes de aceptar.",
             "error_accepting_proposal_please_try_again": "Error al aceptar la propuesta. Inténtalo de nuevo.",
             "error_rejecting_proposal_please_try_again": "Error al rechazar la propuesta. Inténtalo de nuevo.",
@@ -5843,7 +5858,7 @@
             "watchedAreas": "Áreas vigiladas",
             "originalCadastre": "Catastro original",
             "aerialLayer": "Ciudad existente (imágenes de Google)",
-            "planActions": "Acciones del plan",
+            "proposalTools": "Herramientas de propuestas",
             "statusLog": "Estado técnico",
             "display": "Visualización"
         }
@@ -6003,7 +6018,7 @@
             "bound": "Parcelas vinculadas ({{count}})",
             "drawingEmpty": "Cierra el contorno para ver las parcelas que vincula.",
             "noParcels": "No vincula ninguna parcela: solo puede ejecutarse con el veredicto de una autoridad.",
-            "openGround": "Rayado: terreno abierto sin propietario registrado; ejecutarlo requiere el veredicto de una autoridad.",
+            "openGround": "Rayado: terreno fuera de las parcelas proporcionadas; la propiedad es desconocida. La ejecución en la cadena requiere el veredicto de una autoridad.",
             "touched": "Entra {{width}} en {{parcel}}: por debajo de la tolerancia, no queda vinculada.",
             "smallIntrusion": "Entra {{width}} en {{parcel}}: inclúyela o cambia el diseño.",
             "include": "Incluirla",
@@ -6041,6 +6056,7 @@
             "selfIntersecting": "El contorno se cruza consigo mismo; mueve un vértice para evitarlo.",
             "tooSmall": "El sitio es demasiado pequeño.",
             "reshapeSplit": "Eso dividiría el sitio en dos; edita sus vértices en su lugar.",
+            "reshapeFailed": "No se pudo modificar el sitio: {{reason}}",
             "mapBusy": "Termina primero la herramienta abierta.",
             "parcelsUnavailable": "Esas parcelas no están en el mapa.",
             "plotsUnavailable": "El corte de lotes no está disponible."
@@ -6439,27 +6455,27 @@
         "copyName": "Copiar nombre ENS"
     },
     "plans": {
-        "title": "Planes",
+        "title": "Planes con nombre",
         "unavailable": "No se pudieron cargar los planes: {{reason}}",
         "line": {
-            "single": "Parte del plan {{name}}",
+            "single": "Parte del plan con nombre {{name}}",
             "many": {
-                "one": "En {{count}} plan",
-                "other": "En {{count}} planes"
+                "one": "En {{count}} plan con nombre",
+                "other": "En {{count}} planes con nombre"
             }
         },
         "list": {
-            "empty": "Todavía no hay planes aquí.",
+            "empty": "Todavía no hay planes con nombre aquí.",
             "pool": "Fondo de apuestas",
             "loading": "Cargando planes…",
-            "emptyCity": "Todavía no hay planes en esta ciudad. Aplica propuestas y compártelas como plan para crear uno."
+            "emptyCity": "Todavía no hay planes con nombre en esta ciudad. Comparte propuestas aplicadas y luego elige Crear plan con nombre."
         },
         "parcel": {
             "loading": "Buscando planes…",
             "empty": "Ningún plan incluye todavía una propuesta en esta parcela."
         },
         "view": {
-            "title": "Plan",
+            "title": "Plan con nombre",
             "notFound": "No existe ningún plan llamado {{name}}.",
             "loading": "Cargando el plan…",
             "error": "No se pudo cargar el plan: {{reason}}",

@@ -482,7 +482,7 @@
         "rederived": "The cadastre changed under this draft: its parcels now follow its geometry ({{count}})."
     },
     "proposalApplyStatus": {
-        "waitingForReplay": "Waiting for the applied plan to finish rebuilding…"
+        "waitingForReplay": "Waiting for the applied composition to finish rebuilding…"
     },
     "proposalApplyFailures": {
         "outsideCadastre": "The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.",
@@ -998,19 +998,19 @@
             "title": "Proposals",
             "listButton": "Proposals list ({{count}})",
             "mintedButton": "Minted proposals",
-            "shareButton": "Share entire plan (all proposals)",
-            "shareButtonEmpty": "No applied plans. Apply some first",
-            "shareButtonPreparing": "Preparing plan…",
+            "shareButton": "Share applied proposals",
+            "shareButtonEmpty": "No applied proposals. Apply some first",
+            "shareButtonPreparing": "Preparing proposals…",
             "clearButton": "Reset proposals (this browser)",
             "planStats": {
-                "buttonLabel": "Plan stats",
+                "buttonLabel": "Applied proposal stats",
                 "calculating": "Calculating…",
-                "modalTitle": "Plan stats",
+                "modalTitle": "Applied proposal stats",
                 "resultingParcels": "Resulting parcels (avg m²)",
                 "floorArea": "Gross floor area (m²)",
                 "salesSuffix": "EUR per m²",
                 "housingShareSuffix": "% housing share",
-                "closeAria": "Close plan stats",
+                "closeAria": "Close applied proposal stats",
                 "currency": "EUR",
                 "buildings": "Buildings (footprint m²)",
                 "openSpace": "Open space — parks, squares, water (m²)",
@@ -1035,7 +1035,7 @@
                 "scope": "{{counted}} applied proposals counted of {{total}} on this map.",
                 "noteUnmeasured": "{{n}} of {{total}} buildings state no height — their floor area is not counted.",
                 "noteParcelArea": "The average parcel size is over the {{measured}} parcels whose shape is loaded; {{missing}} are counted but not measured.",
-                "unavailable": "Plan arithmetic is unavailable — plan-yield.js did not load."
+                "unavailable": "Statistics are unavailable. Reload and try again."
             },
             "grainScore": {
                 "buttonLabel": "Summon the urbanist rooster",
@@ -1043,24 +1043,27 @@
                 "buttonEmpty": "Apply a proposal first",
                 "institute": "Institut za zrnatost",
                 "title": "Urban grain score",
-                "currentPlan": "Current applied plan",
-                "unnamedRoute": "Unnamed plan · score stays in this browser",
+                "appliedComposition": "Applied composition",
+                "localScope": "Local composition · score stays in this browser",
+                "namedScope": "Named plan · {{path}}",
                 "closeAria": "Close grain score",
-                "loading": "Preparing the plan for inspection…",
+                "loading": "Preparing proposals for inspection…",
                 "loadingNamed": "Loading named plan…",
-                "applyingPlan": "Rebuilding the plan on the map…",
+                "applyingNamedPlan": "Applying named-plan proposals to the map…",
                 "ready": {
                     "one": "The rooster found {{count}} measurable resulting parcel. He will try it now.",
                     "other": "The rooster found {{count}} measurable resulting parcels. He will try them one by one."
                 },
                 "start": "Start the inspection",
-                "unavailable": "The grain score is unavailable for this plan.",
+                "unavailable": "The grain score is unavailable for these proposals.",
                 "noApplied": "Apply at least one proposal before summoning the rooster.",
                 "noGeometry": "The resulting parcel shapes could not be measured.",
                 "planNotFound": "This named plan could not be found.",
                 "planLoadFailed": "The named plan could not be loaded.",
-                "emptyPlan": "This named plan contains no proposals.",
-                "incompletePlan": "The plan cannot be scored because not all of its proposals could be applied.",
+                "incompletePlan": "The named plan cannot be scored because not all of its proposals could be applied.",
+                "exactMembersRequired": "This named plan requires every original published proposal to be verified and applied. A local edit or fork cannot replace a member.",
+                "otherApplied": "Other proposals are applied on this map. Unapply them before scoring this named plan.",
+                "fabricChanged": "The map changed after this inspection was prepared. Reopen the grain score to measure it again.",
                 "verdictFine": "Fine grain",
                 "verdictGood": "A good direction",
                 "verdictMixed": "Mixed grain",
@@ -1402,6 +1405,17 @@
             },
             "idLabel": "ID:",
             "geometryReferenceNote": "Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.",
+            "identity": {
+                "plotPiece": "Plot piece {{number}}",
+                "remainder": "Ground remainder {{number}}",
+                "plotNote": "Ground derived from one authored readjustment plot. Several live pieces can refer to the same plot.",
+                "remainderNote": "Ground left outside the authored plots by this readjustment. It is kept separately from the plot outputs.",
+                "source": "Source parcel {{number}}",
+                "sourcePart": "Source parcel part {{number}}",
+                "formed": "Formed ground piece {{number}}",
+                "formedNote": "Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.",
+                "sourcePartNote": "One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts."
+            },
             "tabInfo": "Info",
             "tabPropose": "Propose",
             "tabProposals": "Proposals",
@@ -1703,7 +1717,8 @@
                 "created": "Created:"
             },
             "offer": {
-                "noDepositWarning": "No deposit - proposal not backed by funds"
+                "noDepositWarning": "No deposit specified",
+                "sellerFundingUnavailable": "Funding this offer is not available here."
             },
             "boost": {
                 "buttonLabel": "Pledge USDC to this proposal",
@@ -1801,14 +1816,6 @@
                 "explorerTx": "View on the block explorer",
                 "done": "Done"
             },
-            "acceptTransfer": {
-                "buttonLabel": "Accept ownership transfer",
-                "title": "Accept ownership transfer",
-                "closeLabel": "Close dialog",
-                "copy": "Fund the amount missing in the proposal to accept ownership claim to you.",
-                "amountNeeded": "Amount still needed",
-                "fund": "Fund"
-            },
             "lifecycle": {
                 "active": "Active",
                 "cancelled": "Withdrawn",
@@ -1816,7 +1823,7 @@
                 "executed": "Executed",
                 "minted": "Minted",
                 "inMemory": "In-memory",
-                "acceptedNotFunded": "Accepted (not funded)",
+                "awaitingFunding": "Awaiting funding",
                 "viewOnExplorer": "View on explorer",
                 "mintedHint": "Minted on-chain"
             },
@@ -1871,8 +1878,11 @@
                 "relationOverlap": "{{shared}} parcels shared with the original, {{added}} added, {{removed}} removed",
                 "relationDisjoint": "No parcels in common with the original"
             },
-            "buy": {
-                "button": "Buy"
+            "purchaseSimulation": {
+                "button": "Simulate purchase",
+                "hint": "Updates modeled parcel ownership in this browser. No payment is made.",
+                "result": "Purchase simulated in this browser",
+                "done": "Purchase simulated in this browser. No payment was made."
             },
             "stats": {
                 "individualOwners": "Individual owners:",
@@ -2918,7 +2928,7 @@
                     "active": "Active",
                     "minted": "Minted",
                     "inMemory": "In-memory",
-                    "acceptedNotFunded": "Accepted (not funded)"
+                    "awaitingFunding": "Awaiting funding"
                 },
                 "syncBlockchainLabel": "Sync",
                 "downloadConfirm": "Proposal is not in local storage yet. Download?",
@@ -3054,22 +3064,22 @@
                 "shareModalTitle": "Share one proposal",
                 "shareUrlLabel": "Share URL:",
                 "copyUrlButton": "Copy URL",
-                "sharePlanButton": "Share the whole plan instead (all applied proposals)…",
+                "sharePlanButton": "Share applied proposals…",
                 "plan": {
-                    "kindHint": "Applies to the proposals in this plan whose terms were never chosen; the rest keep their own.",
+                    "kindHint": "Applies to selected proposals whose terms were never chosen; the rest keep their own.",
                     "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
-                    "title": "Share plan",
+                    "title": "Share applied proposals",
                     "fetching": "Fetching proposal #{{id}}…",
                     "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",
                     "applying": "Applying proposal #{{id}}…",
                     "applyingNamed": "Applying {{label}} ({{done}}/{{total}})…",
                     "preparingNamed": "Preparing {{label}} ({{done}}/{{total}})…",
                     "materializing": "Starting proposal materialization…",
-                    "applyingAllTitle": "Applying the shared plan",
-                    "fetchingPlan": "Fetching plan…",
-                    "fetchingPlanTitle": "Fetching proposal",
-                    "rebuildingStatus": "Rebuilding the applied plan…",
-                    "rebuildingStatusCount": "Rebuilding the applied plan {{done}}/{{total}}…",
+                    "applyingAllTitle": "Applying shared proposals",
+                    "fetchingPlan": "Fetching shared proposals…",
+                    "fetchingPlanTitle": "Fetching shared proposals",
+                    "rebuildingStatus": "Rebuilding the applied composition…",
+                    "rebuildingStatusCount": "Rebuilding the applied composition {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} road",
@@ -3112,13 +3122,14 @@
                         "corridorStrips": "Refreshing road and track surfaces…"
                     },
                     "countHeading": {
-                        "one": "There is {{count}} proposal in the current plan (that is, applied on the map)",
-                        "few": "There are {{count}} proposals in the current plan (that is, applied on the map)",
-                        "other": "There are {{count}} proposals in the current plan (that is, applied on the map)"
+                        "one": "{{count}} proposal applied on this map",
+                        "few": "{{count}} proposals applied on this map",
+                        "other": "{{count}} proposals applied on this map"
                     },
-                    "nameHeading": "Or give this plan a memorable name (ENS):",
+                    "nameHeading": "Create a named plan from the selected proposals (ENS):",
+                    "compositionHint": "A share link shares your selection. A named plan keeps that selection fixed; later changes need a new named plan.",
                     "namePlaceholder": "e.g. harbor-redevelopment",
-                    "nameButton": "Save name",
+                    "nameButton": "Create named plan",
                     "namePrepFirst": "Prepare the share link above first (upload all selected proposals).",
                     "nameInvalid": "Use at least 3 characters: a–z, 0–9, hyphens.",
                     "nameSaving": "Saving…",
@@ -3133,7 +3144,7 @@
                     "uploadHint": "Upload all selected proposals to enable sharing, or deselect some.",
                     "noUploadedHint": "Upload at least one proposal to enable sharing.",
                     "alreadyAppliedTitle": "Plan already applied",
-                    "alreadyAppliedMessage": "This shared plan is already applied to the map.",
+                    "alreadyAppliedMessage": "These shared proposals are already applied to the map.",
                     "goneFromServer": "Proposal {{ids}} is no longer on the server. Only your local copy is left, so this link will not open for anyone else.",
                     "alreadyAppliedWithOthersTitle": "Plan already applied",
                     "alreadyAppliedWithOthersMessage": {
@@ -3189,7 +3200,7 @@
                         "other": "Failed to apply {{count}} proposals:"
                     },
                     "applyBlockedByDependencies": "Blocked: dependencies not satisfied after retries.",
-                    "summary": "Shared plan result",
+                    "summary": "Shared proposals result",
                     "tour": {
                         "title": "Space conflict",
                         "body": "\"{{incoming}}\" needs ground currently held by:",
@@ -3212,7 +3223,7 @@
                 "checkingProposals": "Checking {{done}}/{{total}} proposals on the server…",
                 "listingProposals": "Listing {{done}}/{{total}} proposals…",
                 "drawingProposals": "Drawing {{done}}/{{total}} proposals on the map…",
-                "preparingPlan": "Preparing plan…",
+                "preparingPlan": "Preparing proposals…",
                 "uploadExplainer": "To share a proposal with others, you first need to upload it to the server"
             },
             "sharedInspector": {
@@ -3498,7 +3509,7 @@
             },
             "site": {
                 "bound": "Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.",
-                "unbound": "Site of {{area}} m² on ground without parcels: no owner can consent, so it can only execute through an authority's verdict.",
+                "unbound": "Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict.",
                 "binding": "Checking which parcels the site reaches into…"
             },
             "tolerance": {
@@ -4003,11 +4014,12 @@
             "nodeRemoveMerges": "Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.",
             "nodeRemoveStraightens": "Removing it straightens the boundary — about {{moved}} m² moves across it.",
             "plotLabel": "plot {{n}} ({{area}} m²)",
-            "noOwnerBalance": "Open ground has no owner: nothing is owed or paid.",
-            "openGroundOwner": "Open ground (no owner)",
+            "noOwnerBalance": "Ownership is unknown. This draft calculates no balance or cash allocation for this ground.",
+            "openGroundOwner": "Open ground (ownership unknown)",
             "subdivisionTitle": "Subdivision",
             "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
             "siteUnavailable": "This site cannot be subdivided here.",
+            "poolClipFailed": "The ground of this plan could not be computed: {{reason}}",
             "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.",
             "cashTermsHint": "Total compensation from the owner ledger. Edit individual cash offers in the land readjustment editor.",
             "jointShareHint": "Courtyard shares start from each owner’s remaining private land. Use Edit shares to set fixed percentages.",
@@ -4273,6 +4285,7 @@
             },
             "selected_parcel_with_number": "Selected parcel {{number}}",
             "select_a_block_first": "Select a block first",
+            "parcels_could_not_be_merged": "Could not merge the selected parcels into one site: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Select a parcel before attempting to claim it.",
             "select_a_parcel_block_before_creating_a_proposal": "Select a parcel block before creating a proposal.",
             "select_at_least_one_parcel_before_running_reparcellization": "Select at least one parcel before running reparcellization.",
@@ -5014,6 +5027,8 @@
             "building_proposal_workflow_is_unavailable": "Building proposal workflow is unavailable.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Cannot undo acceptance from an executed proposal that has descendant parcels.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "Could not prepare building data for the proposal. Please try again.",
+            "proposal_terms_unavailable": "The current proposal terms could not be verified. Reload the proposal before accepting.",
+            "acceptance_confirmed_status_unavailable": "Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.",
             "readjustment_terms_invalid": "Complete and correct the readjustment allocations and cash terms before accepting.",
             "error_accepting_proposal_please_try_again": "Error accepting proposal. Please try again.",
             "error_rejecting_proposal_please_try_again": "Error rejecting proposal. Please try again.",
@@ -5792,7 +5807,7 @@
             "watchedAreas": "Watched areas",
             "originalCadastre": "Original cadastre",
             "aerialLayer": "Existing city (Google imagery)",
-            "planActions": "Plan actions",
+            "proposalTools": "Proposal tools",
             "statusLog": "Technical status",
             "display": "Display"
         }
@@ -5952,7 +5967,7 @@
             "bound": "Bound parcels ({{count}})",
             "drawingEmpty": "Close the outline to see the parcels it binds.",
             "noParcels": "Binds no parcel: it can only execute through an authority's verdict.",
-            "openGround": "Hatched: open ground with no owner on record; executing needs an authority's verdict.",
+            "openGround": "Hatched: ground outside the supplied parcels; ownership is unknown. On-chain execution requires an authority verdict.",
             "touched": "Reaches {{width}} into {{parcel}} — below the tolerance, not bound.",
             "smallIntrusion": "Reaches {{width}} into {{parcel}} — include it, or change the design.",
             "include": "Include it",
@@ -5990,6 +6005,7 @@
             "selfIntersecting": "The outline crosses itself; move a corner so it does not.",
             "tooSmall": "The site is too small.",
             "reshapeSplit": "That would split the site in two; edit its corners instead.",
+            "reshapeFailed": "The site could not be reshaped: {{reason}}",
             "mapBusy": "Finish the tool that is open first.",
             "parcelsUnavailable": "Those parcels are not on the map.",
             "plotsUnavailable": "Plot cutting is not available."
@@ -6388,27 +6404,27 @@
         "copyName": "Copy ENS name"
     },
     "plans": {
-        "title": "Plans",
+        "title": "Named plans",
         "unavailable": "Plans could not be loaded: {{reason}}",
         "line": {
-            "single": "Part of plan {{name}}",
+            "single": "Part of named plan {{name}}",
             "many": {
-                "one": "In {{count}} plan",
-                "other": "In {{count}} plans"
+                "one": "In {{count}} named plan",
+                "other": "In {{count}} named plans"
             }
         },
         "list": {
-            "empty": "No plans here yet.",
+            "empty": "No named plans here yet.",
             "pool": "Betting pool",
             "loading": "Loading plans…",
-            "emptyCity": "No plans in this city yet. Apply proposals and share them as a plan to make one."
+            "emptyCity": "No named plans in this city yet. Share applied proposals, then choose Create named plan."
         },
         "parcel": {
             "loading": "Looking for plans…",
             "empty": "No plan includes a proposal on this parcel yet."
         },
         "view": {
-            "title": "Plan",
+            "title": "Named plan",
             "notFound": "There is no plan named {{name}}.",
             "loading": "Loading the plan…",
             "error": "The plan could not be loaded: {{reason}}",
