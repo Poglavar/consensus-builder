@@ -16,10 +16,8 @@ const guidePairs = [
     ['how-to-use-views.html', 'kako-koristiti-prikazi.html']
 ];
 const guidePages = guidePairs.flat();
-const clips = [
-    '01-house', '02-park', '03-square', '04-auto-readjustment', '05-manual-readjustment',
-    '06-keep-parcels', '07-road-section', '08-row-houses', '09-parcel-rules'
-].map(name => `videos/howto/consensus-builder-${name}-review`);
+const clips = ['block', 'row', 'detached', 'freeform', 'readjustment', 'park', 'square', 'lake', 'road', 'track', 'station', 'counterproposal']
+    .map(name => `videos/howto/2026-10-19/${name}`);
 
 describe('public product guides', () => {
     it.each(['how-to-use.html', 'kako-koristiti.html'])('%s explains the current proposal lifecycle', (name) => {
@@ -54,7 +52,7 @@ describe('public product guides', () => {
         const ids = $('[id]').map((_, node) => $(node).attr('id')).get();
         expect(new Set(ids).size).toBe(ids.length);
 
-        $('a[href], link[href], img[src], source[src], video[poster]').each((_, node) => {
+        $('a[href], link[href], img[src], source[src], track[src], video[poster]').each((_, node) => {
             const element = $(node);
             const href = element.attr('href') || element.attr('src') || element.attr('poster');
             const url = new URL(href, `https://guide.test/${name}`);
@@ -74,7 +72,7 @@ describe('public product guides', () => {
         expect(sources(en)).toEqual(sources(hr));
     });
 
-    it.each(guidePairs[0])('%s links all nine clips to their matching walkthrough players', name => {
+    it.each(guidePairs[0])('%s links all twelve clips to their matching walkthrough players', name => {
         const $ = load(readFrontend(name));
         const cards = $('.video-library a.video-card');
         expect(cards).toHaveLength(clips.length);
@@ -99,6 +97,8 @@ describe('public product guides', () => {
             expect(player.attr('aria-label')).toBeTruthy();
             expect($(`#${player.attr('aria-describedby')}`).text().trim()).toBeTruthy();
             expect(player.find('source').attr('type')).toBe('video/mp4');
+            expect(player.find('track[kind="captions"]').attr('srclang')).toBe('en');
+            expect(player.closest('figure').find('.video-transcript p[lang="en"]').text().trim()).toBeTruthy();
             expect(player.find('a').attr('href')).toBe(player.find('source').attr('src'));
         });
     });

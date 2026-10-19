@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:03,808
+Choose Freeform building to design an individual building
+
+2
+00:00:04,168 --> 00:00:05,759
+on the selected site.
+
+3
+00:00:06,109 --> 00:00:09,255
+Drag the corners to reshape the footprint. Use
+
+4
+00:00:09,290 --> 00:00:12,193
+the height slider to set the building’s height.
+
+5
+00:00:12,543 --> 00:00:15,190
+Click Done to create the building and place
+
+6
+00:00:15,225 --> 00:00:18,116
+it on the map. Switch to 3D.
+
+7
+00:00:18,476 --> 00:00:22,249
+Tilt, rotate and zoom to inspect the building’s
+
+8
+00:00:22,296 --> 00:00:24,188
+shape and surroundings.
