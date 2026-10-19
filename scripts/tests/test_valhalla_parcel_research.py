@@ -309,6 +309,9 @@ class FailureClassificationAndPromptTests(unittest.TestCase):
                     "point": [1.25, 2.5], "pop2025k": 123.45}
             research = instance._build_research_prompt(city, (root / "cohort").resolve(), 1)
             review = instance._build_review_prompt([{"cityCode": 42, "name": "Example City", "rank": 1}], [])
+            self.assertNotIn("parcel-alignment-2026-10-14", research)
+            self.assertNotIn("integration learning files", research)
+            self.assertNotIn("valhalla-handoff", research)
             for prompt in (research, review):
                 self.assertRegex(prompt, r"at least one (?:bounded city probe that returns a positive|positive bounded)")
                 self.assertIn("follow-up", prompt)
