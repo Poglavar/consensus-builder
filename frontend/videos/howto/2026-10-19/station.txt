@@ -1,0 +1,7 @@
+Choose a station type. Place a tram stop against a compatible track.
+
+The preview turns green when aligned. Click to create the station and apply it to the map.
+
+Edit the station footprint to adjust its position, then save the revised design.
+
+Inspect the platform and shelter in 3D. Tilt, rotate and zoom to check the station in context.

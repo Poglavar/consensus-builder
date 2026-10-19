@@ -1,0 +1,7 @@
+Select neighbouring parcels, open Propose, and choose Row houses.
+
+Set the row’s length, width and height. The height rule can prescribe an exact value or allow a range.
+
+Finish the design to create the proposal and apply it to the map.
+
+Inspect the row in 3D. Tilt and rotate to see its relationship to the neighbouring buildings.

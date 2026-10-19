@@ -1,0 +1,110 @@
+[
+  {
+    "id": "block",
+    "title": "Block proposal",
+    "file": "block.mp4",
+    "duration": 26.726042,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "row",
+    "title": "Row-house proposal",
+    "file": "row.mp4",
+    "duration": 24.877,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "detached",
+    "title": "Detached-house proposal",
+    "file": "detached.mp4",
+    "duration": 23.577333,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "freeform",
+    "title": "Freeform building proposal",
+    "file": "freeform.mp4",
+    "duration": 24.553646,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "readjustment",
+    "title": "Land readjustment proposal",
+    "file": "readjustment.mp4",
+    "duration": 25.410677,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "park",
+    "title": "Park proposal",
+    "file": "park.mp4",
+    "duration": 27.509333,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "square",
+    "title": "Square proposal",
+    "file": "square.mp4",
+    "duration": 24.127,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "lake",
+    "title": "Lake proposal",
+    "file": "lake.mp4",
+    "duration": 17.363667,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "road",
+    "title": "Road proposal",
+    "file": "road.mp4",
+    "duration": 31.93737,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "track",
+    "title": "Rail proposal",
+    "file": "track.mp4",
+    "duration": 19.310677,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "station",
+    "title": "Transit station proposal",
+    "file": "station.mp4",
+    "duration": 26.580667,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  },
+  {
+    "id": "counterproposal",
+    "title": "Parcel proposals and counterproposals",
+    "file": "counterproposal.mp4",
+    "duration": 33.262,
+    "width": 1600,
+    "height": 900,
+    "voice": "Daniel — Steady Broadcaster (ElevenLabs)"
+  }
+]

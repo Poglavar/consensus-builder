@@ -6,7 +6,7 @@ spend funds or call an LLM.
 
 ## 1. Checkout
 
-Requirements for the core review are Git, Node.js 20, and npm.
+Requirements for the core review are Git, a Node.js version supported by the dependency lockfile, and npm. See [local development](development.md) for the map and API setup.
 
 ```sh
 git clone --branch colosseum-worlds-fair https://github.com/Poglavar/consensus-builder.git
@@ -28,9 +28,7 @@ npm test
 The backend suite uses Vitest. Network, signing, database, and live-ledger behavior is mocked unless
 a test explicitly documents an opt-in environment flag.
 
-The complete fast suite for this revision passed 6,366 tests with 6 skipped. The headed Playwright
-suite covers 253 distinct collected cases across 64 specs; its full run passed 250/250, and
-focused headed runs passed 30 affected checks covering the added circle, SEO, and localization flows. The runs overlap.
+Historical test counts are recorded in [`TEST.md`](../TEST.md); they are not a verification of a newer checkout. Run the affected headless unit tests first.
 See [`TEST.md`](../TEST.md) for coverage scope and limitations. To run the browser suite visibly:
 
 ```sh
@@ -66,7 +64,7 @@ npx vitest run \
 The frontend is static HTML, CSS, and JavaScript; there is no compile step.
 
 ```sh
-python3 -m http.server 8080 --directory frontend
+npx http-server frontend -p 8080 -c-1
 ```
 
 Then open:
@@ -84,7 +82,7 @@ The API expects PostgreSQL/PostGIS and the existing Urban Game Theory datasets. 
 `backend/.env` containing at least:
 
 ```dotenv
-DATABASE_URL=postgres://consensus:replace-me@localhost:5432/consensus
+DATABASE_URL=postgres://app_role:replace-me@localhost:5432/geodata
 API_PORT=3000
 ENABLE_DEV_CORS=true
 ```

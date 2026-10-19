@@ -1,0 +1,7 @@
+Choose Freeform building to design an individual building on the selected site.
+
+Drag the corners to reshape the footprint. Use the height slider to set the building’s height.
+
+Click Done to create the building and place it on the map. Switch to 3D.
+
+Tilt, rotate and zoom to inspect the building’s shape and surroundings.

@@ -1,5 +1,8 @@
 # Walrus storage — how it works
 
+> Integration reference: deployment statements below describe the implementation at the time of writing. For current app workflows, videos and setup, use the [documentation index](docs/README.md). Verify the active network and contracts before running these procedures.
+
+
 This document describes **what we built** and **how it works**. It's the outcome, not the plan —
 for the design/requirements see [`feature-walrus.md`](./feature-walrus.md), and for day-to-day
 operations (env vars, run commands, troubleshooting) see [`WALRUS.md`](./WALRUS.md).

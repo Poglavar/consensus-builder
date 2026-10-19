@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:04,261
+Select adjoining parcels and choose Land readjustment to
+
+2
+00:00:04,377 --> 00:00:06,548
+redesign their boundaries together.
+
+3
+00:00:06,900 --> 00:00:09,779
+Start with an automatic layout, or edit the
+
+4
+00:00:09,826 --> 00:00:12,101
+parcel boundaries directly on the map.
+
+5
+00:00:12,467 --> 00:00:15,660
+Compare the original and proposed plots, then review
+
+6
+00:00:15,776 --> 00:00:19,120
+each owner’s allocation. Finish to apply the new
+
+7
+00:00:19,189 --> 00:00:20,176
+boundaries.
+
+8
+00:00:20,533 --> 00:00:23,691
+Switch to 3D to inspect the surrounding buildings
+
+9
+00:00:23,853 --> 00:00:25,038
+and streets.

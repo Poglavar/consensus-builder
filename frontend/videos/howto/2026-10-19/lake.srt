@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:02,972
+Select a parcel and choose Lake to create
+
+2
+00:00:03,042 --> 00:00:05,248
+a lake proposal on the map.
+
+3
+00:00:05,600 --> 00:00:08,456
+The lake follows the selected site. Switch to
+
+4
+00:00:08,572 --> 00:00:10,894
+3D to inspect the result.
+
+5
+00:00:11,244 --> 00:00:14,437
+Tilt, rotate and zoom to see the water
+
+6
+00:00:14,669 --> 00:00:17,003
+and shoreline in context.

@@ -1,0 +1,9 @@
+Select a parcel, open Propose, and choose Park.
+
+Use the selected parcel, or select the surrounding block for a larger park.
+
+Open Edit geometry to add trees, flowerbeds, ponds and paths directly on the map.
+
+Finish the path, then save the design to apply it on the map.
+
+Tilt, rotate and zoom to inspect the planting, paths and water in 3D.

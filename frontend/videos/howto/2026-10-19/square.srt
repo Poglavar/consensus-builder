@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:03,355
+Select a parcel and choose Square to create
+
+2
+00:00:03,471 --> 00:00:05,387
+a public-space proposal.
+
+3
+00:00:05,737 --> 00:00:09,789
+Use Edit geometry to place fountains, trees, benches,
+
+4
+00:00:09,986 --> 00:00:11,914
+tables and statues.
+
+5
+00:00:12,270 --> 00:00:14,824
+Save the design to apply the square and
+
+6
+00:00:14,882 --> 00:00:16,589
+its furniture to the map.
+
+7
+00:00:16,939 --> 00:00:20,608
+View the square in 3D. Tilt, rotate and
+
+8
+00:00:20,689 --> 00:00:23,766
+zoom to inspect the layout at street scale.
