@@ -6186,14 +6186,12 @@
             "ceded": "{{area}} → {{destination}}"
         },
         "status": {
-            "local": "Local (este navegador)",
-            "published": "Publicada",
-            "minted": "Acuñada",
-            "executed": "Ejecutada"
+            "local": "Local (este navegador)"
         },
         "market": {
             "none": "Sin mercado",
-            "noStakes": "Aún sin apuestas"
+            "noStakes": "Aún sin apuestas",
+            "totalStake": "Total apostado: {{amount}}"
         },
         "sections": {
             "ground": "Su terreno",
@@ -6220,9 +6218,9 @@
             "parcelAccepted": "El consentimiento abarca las referencias seleccionadas",
             "owners": "Consentimiento de los propietarios para las referencias seleccionadas",
             "parcels": "Referencias de origen con consentimiento (propuesta completa)",
-            "donations": "Donaciones",
-            "pledges": "Compromisos",
-            "market": "Mercado: se ejecuta (SÍ)",
+            "donations": "Total donado (USDC de devnet)",
+            "pledges": "Compromisos activos (USDC de devnet)",
+            "market": "Cuota de SÍ en el fondo (USDC de devnet)",
             "status": "Estado"
         },
         "bar": {

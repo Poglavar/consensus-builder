@@ -62,4 +62,21 @@ test('comparison distinguishes current consent evidence and explicit full-propos
   expect(await page.evaluate(({ id, parcelId }) => (window as any).proposalStorage.peekAllProposals()
     .find((p: any) => p.proposalId === id).ownerAcceptances[parcelId].acceptedOwnerKeys, { id: ids.local, parcelId: PARCEL_ID }))
     .toEqual(['a', 'b']);
+
+  await page.evaluate(({ ids, parcelId }) => {
+    const w = window as any;
+    const all = w.proposalStorage.peekAllProposals();
+    all.find((p: any) => p.proposalId === ids.local).lifecycleStatus = 'Executed';
+    const withdrawn = all.find((p: any) => p.proposalId === ids.signed);
+    withdrawn.lifecycleStatus = 'Cancelled';
+    withdrawn.applied = true;
+    w.ParcelCompare.open(parcelId, [ids.local, ids.signed]);
+  }, { ids, parcelId: PARCEL_ID });
+  await expect(cell('status-a')).toContainText('Execution recorded');
+  await expect(cell('status-a')).toContainText('does not verify payment, legal registration or physical construction');
+  await expect(cell('status-b')).toContainText('Withdrawn');
+  await expect(cell('status-b')).not.toContainText('Applied');
+  await expect(dialog.getByText('YES pool share (devnet USDC)', { exact: true })).toBeVisible();
+  await expect(dialog.getByText('Total donated (devnet USDC)', { exact: true })).toBeVisible();
+  await expect(dialog.getByText('Active pledges (devnet USDC)', { exact: true })).toBeVisible();
 });

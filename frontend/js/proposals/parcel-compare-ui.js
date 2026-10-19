@@ -165,7 +165,7 @@
             consent,
             channel: channels.get(String(proposal.proposalId)) || undefined,
             lifecycleKey: typeof global.getProposalLifecycleKey === 'function' ? global.getProposalLifecycleKey(proposal) : undefined,
-            isMinted: typeof global.isProposalMinted === 'function' ? !!global.isProposalMinted(proposal) : undefined,
+            applied: typeof global.isProposalApplied === 'function' ? !!global.isProposalApplied(proposal) : undefined,
             isTrack: typeof global.isTrackProposal === 'function' ? global.isTrackProposal : undefined
         });
     }
@@ -270,17 +270,15 @@
     const tally = value => (value ? `${value.accepted} / ${value.total}` : DASH);
 
     function statusText(e, proposal) {
-        const keys = {
-            local: t('parcelCompare.status.local', 'Local (this browser)'),
-            published: t('parcelCompare.status.published', 'Published'),
-            minted: t('parcelCompare.status.minted', 'Minted'),
-            executed: t('parcelCompare.status.executed', 'Executed')
-        };
-        const lines = [keys[e.status.key]];
+        const display = global.__proposalDisplayState;
+        const lines = [e.status.key === 'local'
+            ? t('parcelCompare.status.local', 'Local (this browser)')
+            : display.rungLabel(e.status.key, t)];
+        if (e.status.key === 'executed') lines.push(display.rungHint('executed', t));
         if (e.status.lifecycle && e.status.key !== 'executed' && typeof global.getProposalLifecycleLabel === 'function') {
             lines.push(global.getProposalLifecycleLabel(e.status.lifecycle));
         }
-        if (typeof global.isProposalApplied === 'function' && global.isProposalApplied(proposal)) {
+        if (e.status.applied) {
             lines.push(t('panel.parcel.proposalsSection.badges.applied', 'Applied'));
         }
         return lines;
@@ -458,10 +456,10 @@
                 : t('parcelCompare.ownerEntries', '{{accepted}}/{{total}} local owner entries', e.consent.owners)]), { dataKey: 'owner-consent' });
         row(grid, t('parcelCompare.rows.parcels', 'Source references with consent (whole proposal)'), both(e => [tally(e.consent.parcels)]), { dataKey: 'proposal-consent' });
         section(grid, t('parcelCompare.sections.support', 'Support'));
-        row(grid, t('parcelCompare.rows.donations', 'Donations'), both(() => [DASH]), { dataKey: 'donations' });
-        row(grid, t('parcelCompare.rows.pledges', 'Pledges'), both(() => [DASH]), { dataKey: 'pledges' });
-        row(grid, t('parcelCompare.rows.market', 'Market: executes (YES)'), both(() => [DASH]), { dataKey: 'market' });
-        row(grid, t('parcelCompare.rows.status', 'Status'), both(statusText));
+        row(grid, t('parcelCompare.rows.donations', 'Total donated (devnet USDC)'), both(() => [DASH]), { dataKey: 'donations' });
+        row(grid, t('parcelCompare.rows.pledges', 'Active pledges (devnet USDC)'), both(() => [DASH]), { dataKey: 'pledges' });
+        row(grid, t('parcelCompare.rows.market', 'YES pool share (devnet USDC)'), both(() => [DASH]), { dataKey: 'market' });
+        row(grid, t('parcelCompare.rows.status', 'Status'), both(statusText), { dataKey: 'status' });
         content.appendChild(grid);
 
         hydrateSupport(dialog, picked.map(p => p.proposal));
@@ -472,7 +470,7 @@
         if (cell) cell.textContent = text;
     }
 
-    // Pledges, donations and market odds are chain state of minted Solana proposals (the same
+    // Pledges, donations and market pool shares are chain state of minted Solana proposals (the same
     // reads the details panel's funding and market cards make). Anything else shows "—".
     function hydrateSupport(dialog, proposals) {
         const token = ++state.hydration;
@@ -515,7 +513,7 @@
                     const m = view.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
                     const text = !m.exists
                         ? t('parcelCompare.market.none', 'No market')
-                        : (finite(m.yesOdds) ? `${CbFormat.formatPercent(m.yesOdds, { ofHundred: true, maxFractionDigits: 1 })} · ${CbFormat.formatMoney(Number(view.formatAtomic(m.total)), 'USDC')}` : t('parcelCompare.market.noStakes', 'No stakes yet'));
+                        : (finite(m.yesOdds) ? `${t('bets.row.poolShare', '{{percent}} of pool', { percent: CbFormat.formatPercent(m.yesOdds, { ofHundred: true, maxFractionDigits: 1 }) })} · ${t('parcelCompare.market.totalStake', '{{amount}} total stake', { amount: CbFormat.formatMoney(Number(view.formatAtomic(m.total)), 'USDC') })}` : t('parcelCompare.market.noStakes', 'No stakes yet'));
                     setCell(dialog, 'market', side, text);
                 }).catch(error => {
                     console.warn(`[${new Date().toISOString()}] [ParcelCompare] market summary unavailable`, error);

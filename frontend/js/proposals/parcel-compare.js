@@ -46,6 +46,8 @@
     const planYieldApi = () => dep('__planYield', './plan-yield.js');
     const ownershipFlowApi = () => dep('__ownershipFlow', './ownership-flow.js');
     const publishTermsApi = () => dep('ProposalPublishTerms', './publish-terms.js');
+    const displayStateApi = () => dep('__proposalDisplayState', './display-state.js');
+    const publicationApi = () => dep('SharedLinkCopies', './shared-link-copies.js');
 
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     function num(value) {
@@ -385,14 +387,15 @@
     }
 
     function statusOf(record, options) {
-        const lifecycle = typeof options.lifecycleKey === 'string' ? options.lifecycleKey : null;
-        const executed = lifecycle === 'executed'
-            || String(record.lifecycleStatus || record.status || '').toLowerCase() === 'executed';
-        const minted = typeof options.isMinted === 'boolean' ? options.isMinted : record.isMinted === true;
-        const published = !!(record.serverProposalId || record.server_proposal_id);
+        const state = displayStateApi().of(record, {
+            lifecycleKey: options.lifecycleKey,
+            applied: options.applied,
+            serial: publicationApi().rowId(record.serverProposalId)
+        });
         return {
-            key: executed ? 'executed' : (minted ? 'minted' : (published ? 'published' : 'local')),
-            lifecycle
+            key: state.rung === 'draft' ? 'local' : state.rung,
+            lifecycle: state.modifier || state.lifecycle.toLowerCase(),
+            applied: state.applied
         };
     }
 
@@ -400,7 +403,7 @@
      * What one record does to the parcel.
      * @param {object} record
      * @param {{ id, cadastreIds?: string[], feature, areaM2?: number }} parcel
-     * @param {{ turf?, channel?: string, lifecycleKey?: string, isMinted?: boolean,
+     * @param {{ turf?, channel?: string, lifecycleKey?: string, applied?: boolean,
      *   isTrack?: Function, consent?: object }} options (consent = a current validated summary;
      *   channel = the dossier's consent channel for this parcel)
      */

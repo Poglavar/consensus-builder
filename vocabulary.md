@@ -641,6 +641,14 @@ and settlement, not verified construction. Group help states that shared parcel 
 contest and multiple grouped proposals can execute. [Pure market view](frontend/js/bets/bets-model.js),
 [card model](frontend/js/proposals/market-view.js), [market UI](frontend/js/bets/bets-sheet.js).
 
+Parcel comparison uses the same canonical lifecycle, publication-row validation and mint evidence
+as the shared proposal display. A retired `status` field, a row alias or a stale applied flag cannot
+establish execution, publication or application of a withdrawn proposal. Its execution row includes
+the shared evidence caveat. Comparison funding labels distinguish cumulative donations from active
+pledges, and the market cell names the YES pool share separately from the total stake; all three
+quantities name devnet USDC. [Comparison](frontend/js/proposals/parcel-compare.js),
+[comparison presentation](frontend/js/proposals/parcel-compare-ui.js).
+
 ### Consent decisions and recorded execution — independent state
 
 **Execution display, 2026-10-20:** the shared `Executed` lifecycle value displays as

@@ -173,6 +173,22 @@ describe('what a proposal does to this parcel', () => {
         expect(effect.ownership).toBeNull();
     });
 
+    it('uses canonical lifecycle and publication evidence without legacy aliases or inferred execution', () => {
+        const base = { proposalId: 'status', goal: 'as-is', cadastreParcelIds: [PARCEL_ID] };
+        const status = (fields, options) => compare.parcelEffect({ ...base, ...fields }, PARCEL, options).status;
+        expect(status({ status: 'Executed', server_proposal_id: 17 })).toMatchObject({ key: 'local', lifecycle: 'unknown' });
+        expect(status({ lifecycleStatus: 'Active', status: 'Executed' }, { lifecycleKey: 'executed' }))
+            .toMatchObject({ key: 'local', lifecycle: 'active' });
+        for (const serverProposalId of [0, -1, 'x', true, '01']) {
+            expect(status({ serverProposalId }).key).toBe('local');
+        }
+        expect(status({ serverProposalId: '17' }).key).toBe('published');
+        expect(status({ nft: { contract: 'program', tokenId: 'account' } }).key).toBe('minted');
+        expect(status({ lifecycleStatus: 'Executed' })).toMatchObject({ key: 'executed', lifecycle: 'executed' });
+        expect(status({ lifecycleStatus: 'Cancelled', applied: true }, { applied: true }))
+            .toMatchObject({ key: 'local', lifecycle: 'cancelled', applied: false });
+    });
+
     it('keeps the original full offer without inventing an area-proportional entitlement', () => {
         const record = { proposalId: 'money', kind: 'owner-deal', goal: 'as-is', cadastreParcelIds: [PARCEL_ID],
             offer: 125, offerCurrency: ' eur ', budget: 999, budgetCurrency: 'USD',

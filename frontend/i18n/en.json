@@ -6135,14 +6135,12 @@
             "ceded": "{{area}} → {{destination}}"
         },
         "status": {
-            "local": "Local (this browser)",
-            "published": "Published",
-            "minted": "Minted",
-            "executed": "Executed"
+            "local": "Local (this browser)"
         },
         "market": {
             "none": "No market",
-            "noStakes": "No stakes yet"
+            "noStakes": "No stakes yet",
+            "totalStake": "{{amount}} total stake"
         },
         "sections": {
             "ground": "Your ground",
@@ -6169,9 +6167,9 @@
             "parcelAccepted": "Consent covers selected references",
             "owners": "Owner consent for selected references",
             "parcels": "Source references with consent (whole proposal)",
-            "donations": "Donations",
-            "pledges": "Pledges",
-            "market": "Market: executes (YES)",
+            "donations": "Total donated (devnet USDC)",
+            "pledges": "Active pledges (devnet USDC)",
+            "market": "YES pool share (devnet USDC)",
             "status": "Status"
         },
         "bar": {

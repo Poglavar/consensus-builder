@@ -6190,14 +6190,12 @@
             "ceded": "{{area}} → {{destination}}"
         },
         "status": {
-            "local": "Lokalno (ovaj pregledač)",
-            "published": "Objavljeno",
-            "minted": "Mintovano",
-            "executed": "Izvršeno"
+            "local": "Lokalno (ovaj pregledač)"
         },
         "market": {
             "none": "Nema tržišta",
-            "noStakes": "Još nema uloga"
+            "noStakes": "Još nema uloga",
+            "totalStake": "Ukupno uloženo: {{amount}}"
         },
         "sections": {
             "ground": "Vaše zemljište",
@@ -6224,9 +6222,9 @@
             "parcelAccepted": "Pristanak obuhvata izabrane reference",
             "owners": "Pristanak vlasnika za izabrane reference",
             "parcels": "Izvorne reference sa pristankom (ceo predlog)",
-            "donations": "Donacije",
-            "pledges": "Obećanja",
-            "market": "Tržište: izvršava se (DA)",
+            "donations": "Ukupno donirano (devnet USDC)",
+            "pledges": "Aktivna obećanja (devnet USDC)",
+            "market": "Udeo za DA u fondu (devnet USDC)",
             "status": "Status"
         },
         "bar": {
