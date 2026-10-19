@@ -1,0 +1,1574 @@
+{
+  "schemaVersion": 1,
+  "checkedOn": "2026-10-19",
+  "scope": "All fields in the current public Districts and Slices dictionaries; not an audit of every local ordinance or the authenticated API. Field names and types are source schema facts.",
+  "products": {
+    "districts": {
+      "dictionaryUrl": "https://docs.landuselabs.com/guides/data-dictionaries/districts/",
+      "htmlSha256": "1a5b4cba0fd409d227771f8d41e033f93bffb804741fb0456c52b745517d180a",
+      "fields": [
+        {
+          "field": "district_id",
+          "sourceType": "integer",
+          "family": "source_identity"
+        },
+        {
+          "field": "jurisdiction",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "county",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "state",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "cbsa",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "lul_id",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "county_fips",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "state_fips",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "cbsa_fips",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "updated",
+          "sourceType": "date",
+          "family": "source_identity"
+        },
+        {
+          "field": "acres",
+          "sourceType": "numeric",
+          "family": "source_identity"
+        },
+        {
+          "field": "extinct",
+          "sourceType": "logical",
+          "family": "applicability"
+        },
+        {
+          "field": "overlay",
+          "sourceType": "logical",
+          "family": "applicability"
+        },
+        {
+          "field": "abbrvname",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "name",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "type",
+          "sourceType": "character",
+          "family": "uses"
+        },
+        {
+          "field": "nonresidential_type",
+          "sourceType": "character",
+          "family": "uses"
+        },
+        {
+          "field": "affordable_definition",
+          "sourceType": "character",
+          "family": "affordability_formula"
+        },
+        {
+          "field": "affordable_district",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "elderly_district",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family1_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family1_minlotacres",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family1_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family1_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family1_frontsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_sidesetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_rearsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_maxlotcoverage_building",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family1_maxlotcoverage_buildingimpervious",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family1_minparking",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family1_maxstories",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family1_maxheightft",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family1_floorarearatio",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family1_minunitsqft",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family2_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family2_affordable_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family2_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family2_minlotacres",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family2_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family2_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family2_maxunitsperacre",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "family2_frontsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_sidesetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_rearsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_maxlotcoverage_building",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family2_maxlotcoverage_buildingimpervious",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family2_minparking_1br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family2_minparking_2br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family2_maxstories",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family2_maxheightft",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family2_floorarearatio",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family2_minunitsqft",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family3_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family3_affordable_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family3_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family3_minlotacres",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family3_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family3_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family3_maxunitsperacre",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "family3_frontsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_sidesetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_rearsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_maxlotcoverage_building",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family3_maxlotcoverage_buildingimpervious",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family3_minparking_1br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family3_minparking_2br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family3_water_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family3_transit_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family3_maxstories",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family3_maxheightft",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family3_floorarearatio",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family3_minunitsqft",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family3_maxbedrooms",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "family4_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family4_affordable_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family4_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family4_minlotacres",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family4_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family4_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family4_maxunitsperacre",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "family4_frontsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_sidesetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_rearsetbackft",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_maxlotcoverage_building",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family4_maxlotcoverage_buildingimpervious",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family4_minparking_1br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family4_minparking_2br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family4_water_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family4_transit_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family4_maxstories",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family4_maxheightft",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family4_floorarearatio",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family4_minunitsqft",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family4_maxbedrooms",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "family4_maxunitsperbldg",
+          "sourceType": "character",
+          "family": "units_per_building"
+        },
+        {
+          "field": "affordable_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "affordable_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "affordable_minlotacres",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "affordable_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "affordable_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "affordable_maxunitsperacre",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "affordable_minparking_1br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "affordable_minparking_2br",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "affordable_water_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "affordable_transit_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "affordable_minunitsqft",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "affordable_maxbedrooms",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "affordable_maxunitsperbldg",
+          "sourceType": "character",
+          "family": "units_per_building"
+        },
+        {
+          "field": "accessory_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "accessory_family_required",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_renter_prohibited",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_owner_required",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_minlotacres",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "accessory_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "accessory_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "accessory_minparking",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "accessory_primarystructure_only",
+          "sourceType": "logical",
+          "family": "accessory_location"
+        },
+        {
+          "field": "accessory_maxpercent",
+          "sourceType": "character",
+          "family": "accessory_size"
+        },
+        {
+          "field": "accessory_maxsqft",
+          "sourceType": "character",
+          "family": "accessory_size"
+        },
+        {
+          "field": "accessory_maxbedrooms",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "plannedresidential_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "plannedresidential_mobilehome",
+          "sourceType": "logical",
+          "family": "mobile_home"
+        },
+        {
+          "field": "plannedresidential_maxunitsperacre",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "plannedresidential_maxunits",
+          "sourceType": "character",
+          "family": "units_per_development"
+        },
+        {
+          "field": "plannedresidential_mindevacres",
+          "sourceType": "character",
+          "family": "development_area"
+        }
+      ]
+    },
+    "slices": {
+      "dictionaryUrl": "https://docs.landuselabs.com/guides/data-dictionaries/slices/",
+      "htmlSha256": "6266834612f9f52353bacd83f518b12e7530e75903279c48d9f7ba18304c5720",
+      "fields": [
+        {
+          "field": "slice_id",
+          "sourceType": "integer",
+          "family": "source_identity"
+        },
+        {
+          "field": "jurisdiction",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "county",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "state",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "cbsa",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "lul_id",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "county_fips",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "state_fips",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "cbsa_fips",
+          "sourceType": "character",
+          "family": "source_identity"
+        },
+        {
+          "field": "updated",
+          "sourceType": "date",
+          "family": "source_identity"
+        },
+        {
+          "field": "acres",
+          "sourceType": "numeric",
+          "family": "source_identity"
+        },
+        {
+          "field": "type",
+          "sourceType": "character",
+          "family": "uses"
+        },
+        {
+          "field": "nonresidential_type",
+          "sourceType": "character",
+          "family": "uses"
+        },
+        {
+          "field": "affordable_definition",
+          "sourceType": "character",
+          "family": "affordability_formula"
+        },
+        {
+          "field": "affordable_district",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "elderly_district",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family1_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family1_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family1_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family1_minlotacres",
+          "sourceType": "numeric",
+          "family": "lot_area"
+        },
+        {
+          "field": "family1_frontsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_sidesetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_rearsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_maxlotcoverage_building",
+          "sourceType": "numeric",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family1_maxlotcoverage_buildingimpervious",
+          "sourceType": "numeric",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family1_minparking",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family1_maxstories",
+          "sourceType": "numeric",
+          "family": "storeys"
+        },
+        {
+          "field": "family1_maxheightft",
+          "sourceType": "numeric",
+          "family": "height"
+        },
+        {
+          "field": "family1_floorarearatio",
+          "sourceType": "numeric",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family1_minunitsqft",
+          "sourceType": "numeric",
+          "family": "unit_area"
+        },
+        {
+          "field": "family1_minlotacres_method",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family1_frontsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_sidesetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_rearsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family1_maxlotcoverage_building_method",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family1_maxlotcoverage_buildingimpervious_method",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family1_minparking_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family1_maxstories_method",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family1_maxheightft_method",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family1_floorarearatio_method",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family1_minunitsqft_method",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family2_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family2_affordable_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family2_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family2_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family2_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family2_minlotacres",
+          "sourceType": "numeric",
+          "family": "lot_area"
+        },
+        {
+          "field": "family2_maxunitsperacre",
+          "sourceType": "numeric",
+          "family": "unit_density"
+        },
+        {
+          "field": "family2_frontsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_sidesetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_rearsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_maxlotcoverage_building",
+          "sourceType": "numeric",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family2_maxlotcoverage_buildingimpervious",
+          "sourceType": "numeric",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family2_minparking_1br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family2_minparking_2br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family2_maxstories",
+          "sourceType": "numeric",
+          "family": "storeys"
+        },
+        {
+          "field": "family2_maxheightft",
+          "sourceType": "numeric",
+          "family": "height"
+        },
+        {
+          "field": "family2_floorarearatio",
+          "sourceType": "numeric",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family2_minunitsqft",
+          "sourceType": "numeric",
+          "family": "unit_area"
+        },
+        {
+          "field": "family2_minlotacres_method",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family2_maxunitsperacre_method",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "family2_frontsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_sidesetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_rearsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family2_maxlotcoverage_building_method",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family2_maxlotcoverage_buildingimpervious_method",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family2_minparking_1br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family2_minparking_2br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family2_maxstories_method",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family2_maxheightft_method",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family2_floorarearatio_method",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family2_minunitsqft_method",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family3_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family3_affordable_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family3_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family3_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family3_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family3_minlotacres",
+          "sourceType": "numeric",
+          "family": "lot_area"
+        },
+        {
+          "field": "family3_maxunitsperacre",
+          "sourceType": "numeric",
+          "family": "unit_density"
+        },
+        {
+          "field": "family3_frontsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_sidesetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_rearsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_maxlotcoverage_building",
+          "sourceType": "numeric",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family3_maxlotcoverage_buildingimpervious",
+          "sourceType": "numeric",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family3_minparking_1br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family3_minparking_2br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family3_water_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family3_transit_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family3_maxstories",
+          "sourceType": "numeric",
+          "family": "storeys"
+        },
+        {
+          "field": "family3_maxheightft",
+          "sourceType": "numeric",
+          "family": "height"
+        },
+        {
+          "field": "family3_floorarearatio",
+          "sourceType": "numeric",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family3_minunitsqft",
+          "sourceType": "numeric",
+          "family": "unit_area"
+        },
+        {
+          "field": "family3_maxbedrooms",
+          "sourceType": "numeric",
+          "family": "bedrooms"
+        },
+        {
+          "field": "family3_minlotacres_method",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family3_maxunitsperacre_method",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "family3_frontsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_sidesetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_rearsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family3_maxlotcoverage_building_method",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family3_maxlotcoverage_buildingimpervious_method",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family3_minparking_1br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family3_minparking_2br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family3_maxstories_method",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family3_maxheightft_method",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family3_floorarearatio_method",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family3_minunitsqft_method",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family3_maxbedrooms_method",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "family4_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "family4_affordable_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family4_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "family4_minlotacres_min",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family4_minlotacres_max",
+          "sourceType": "numeric",
+          "family": "lot_range"
+        },
+        {
+          "field": "family4_minlotacres",
+          "sourceType": "numeric",
+          "family": "lot_area"
+        },
+        {
+          "field": "family4_maxunitsperacre",
+          "sourceType": "numeric",
+          "family": "unit_density"
+        },
+        {
+          "field": "family4_frontsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_sidesetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_rearsetbackft",
+          "sourceType": "numeric",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_maxlotcoverage_building",
+          "sourceType": "numeric",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family4_maxlotcoverage_buildingimpervious",
+          "sourceType": "numeric",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family4_minparking_1br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family4_minparking_2br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "family4_water_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family4_transit_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "family4_maxstories",
+          "sourceType": "numeric",
+          "family": "storeys"
+        },
+        {
+          "field": "family4_maxheightft",
+          "sourceType": "numeric",
+          "family": "height"
+        },
+        {
+          "field": "family4_floorarearatio",
+          "sourceType": "numeric",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family4_minunitsqft",
+          "sourceType": "numeric",
+          "family": "unit_area"
+        },
+        {
+          "field": "family4_maxbedrooms",
+          "sourceType": "numeric",
+          "family": "bedrooms"
+        },
+        {
+          "field": "family4_maxunitsperbldg",
+          "sourceType": "numeric",
+          "family": "units_per_building"
+        },
+        {
+          "field": "family4_minlotacres_method",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "family4_maxunitsperacre_method",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "family4_frontsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_sidesetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_rearsetbackft_method",
+          "sourceType": "character",
+          "family": "setbacks"
+        },
+        {
+          "field": "family4_maxlotcoverage_building_method",
+          "sourceType": "character",
+          "family": "building_coverage"
+        },
+        {
+          "field": "family4_maxlotcoverage_buildingimpervious_method",
+          "sourceType": "character",
+          "family": "impervious_coverage"
+        },
+        {
+          "field": "family4_minparking_1br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family4_minparking_2br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "family4_maxstories_method",
+          "sourceType": "character",
+          "family": "storeys"
+        },
+        {
+          "field": "family4_maxheightft_method",
+          "sourceType": "character",
+          "family": "height"
+        },
+        {
+          "field": "family4_floorarearatio_method",
+          "sourceType": "character",
+          "family": "floor_area_ratio"
+        },
+        {
+          "field": "family4_minunitsqft_method",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "family4_maxbedrooms_method",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "family4_maxunitsperbldg_method",
+          "sourceType": "character",
+          "family": "units_per_building"
+        },
+        {
+          "field": "affordable_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "affordable_minlotacres",
+          "sourceType": "numeric",
+          "family": "lot_area"
+        },
+        {
+          "field": "affordable_maxunitsperacre",
+          "sourceType": "numeric",
+          "family": "unit_density"
+        },
+        {
+          "field": "affordable_minparking_1br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "affordable_minparking_2br",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "affordable_water_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "affordable_transit_required",
+          "sourceType": "logical",
+          "family": "infrastructure"
+        },
+        {
+          "field": "affordable_minunitsqft",
+          "sourceType": "numeric",
+          "family": "unit_area"
+        },
+        {
+          "field": "affordable_maxbedrooms",
+          "sourceType": "numeric",
+          "family": "bedrooms"
+        },
+        {
+          "field": "affordable_maxunitsperbldg",
+          "sourceType": "numeric",
+          "family": "units_per_building"
+        },
+        {
+          "field": "affordable_minlotacres_method",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "affordable_maxunitsperacre_method",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "affordable_minparking_1br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "affordable_minparking_2br_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "affordable_minunitsqft_method",
+          "sourceType": "character",
+          "family": "unit_area"
+        },
+        {
+          "field": "affordable_maxbedrooms_method",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "affordable_maxunitsperbldg_method",
+          "sourceType": "character",
+          "family": "units_per_building"
+        },
+        {
+          "field": "accessory_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "accessory_family_required",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_renter_prohibited",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_owner_required",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_elderly_only",
+          "sourceType": "logical",
+          "family": "occupancy"
+        },
+        {
+          "field": "accessory_minlotacres",
+          "sourceType": "numeric",
+          "family": "lot_area"
+        },
+        {
+          "field": "accessory_minparking",
+          "sourceType": "numeric",
+          "family": "parking"
+        },
+        {
+          "field": "accessory_primarystructure_only",
+          "sourceType": "logical",
+          "family": "accessory_location"
+        },
+        {
+          "field": "accessory_maxpercent",
+          "sourceType": "numeric",
+          "family": "accessory_size"
+        },
+        {
+          "field": "accessory_maxsqft",
+          "sourceType": "numeric",
+          "family": "accessory_size"
+        },
+        {
+          "field": "accessory_maxbedrooms",
+          "sourceType": "numeric",
+          "family": "bedrooms"
+        },
+        {
+          "field": "accessory_minlotacres_method",
+          "sourceType": "character",
+          "family": "lot_area"
+        },
+        {
+          "field": "accessory_minparking_method",
+          "sourceType": "character",
+          "family": "parking"
+        },
+        {
+          "field": "accessory_maxpercent_method",
+          "sourceType": "character",
+          "family": "accessory_size"
+        },
+        {
+          "field": "accessory_maxsqft_method",
+          "sourceType": "character",
+          "family": "accessory_size"
+        },
+        {
+          "field": "accessory_maxbedrooms_method",
+          "sourceType": "character",
+          "family": "bedrooms"
+        },
+        {
+          "field": "plannedresidential_treatment",
+          "sourceType": "character",
+          "family": "use_procedure"
+        },
+        {
+          "field": "plannedresidential_mobilehome",
+          "sourceType": "logical",
+          "family": "mobile_home"
+        },
+        {
+          "field": "plannedresidential_maxunitsperacre",
+          "sourceType": "numeric",
+          "family": "unit_density"
+        },
+        {
+          "field": "plannedresidential_maxunits",
+          "sourceType": "numeric",
+          "family": "units_per_development"
+        },
+        {
+          "field": "plannedresidential_mindevacres",
+          "sourceType": "numeric",
+          "family": "development_area"
+        },
+        {
+          "field": "plannedresidential_maxunitsperacre_method",
+          "sourceType": "character",
+          "family": "unit_density"
+        },
+        {
+          "field": "plannedresidential_maxunits_method",
+          "sourceType": "character",
+          "family": "units_per_development"
+        },
+        {
+          "field": "plannedresidential_mindevacres_method",
+          "sourceType": "character",
+          "family": "development_area"
+        }
+      ]
+    }
+  }
+}

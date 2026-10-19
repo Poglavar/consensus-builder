@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-19: Existing regulations, permitted massing and permits are to be restated as obligatory proposals through scripts and automation. Manual conversion into a new proposal is not the main flow. Keep binding applicability and authority separate from voting/deal kind, local application and construction: an obligatory maximum does not oblige building to that maximum. Import Colosseum's vocabulary and maintain it with domain changes. Audit the National Zoning Atlas against native capabilities and the GUP restatement before outreach; demonstrate supported visualization before making the pitch.
+
 - 2026-10-19: Design existing buildings, permitted envelopes/massing and proposals around shared city-neutral geometry and 2D/3D presentation, using the finished Zagreb solver as the first provider adapter; keep local planning rules and source formats behind adapters.
 
 - 2026-10-19: Resume NYC envelopes with a narrow R6A interior-lot pilot in Brooklyn Community District 3, expanding by explicit rule families; parcel capacity requires cited site evidence because clean PLUTO attributes do not establish zoning-lot rights.

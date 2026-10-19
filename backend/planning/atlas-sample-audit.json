@@ -1,0 +1,1294 @@
+{
+  "inputSha256": "0e0256d03a5e3bec542815a2b6eb4243d4a9dae1a62d5a980d0bfa76fb542a2f",
+  "schemaVersion": 1,
+  "purpose": "Schema and source-evidence audit only; no parcel, geometry or legal-compliance certification.",
+  "product": "slices",
+  "dictionaryUrl": "https://docs.landuselabs.com/guides/data-dictionaries/slices/",
+  "dictionaryHtmlSha256": "6266834612f9f52353bacd83f518b12e7530e75903279c48d9f7ba18304c5720",
+  "featureCount": 31,
+  "documentedFieldCount": 185,
+  "observedDocumentedFieldCount": 184,
+  "absentFromAllFeatures": [
+    "affordable_treatment"
+  ],
+  "unknownFields": {},
+  "families": {
+    "source_identity": 11,
+    "uses": 2,
+    "affordability_formula": 1,
+    "occupancy": 12,
+    "use_procedure": 7,
+    "lot_range": 8,
+    "lot_area": 12,
+    "setbacks": 24,
+    "building_coverage": 8,
+    "impervious_coverage": 8,
+    "parking": 20,
+    "storeys": 8,
+    "height": 8,
+    "floor_area_ratio": 8,
+    "unit_area": 10,
+    "unit_density": 10,
+    "infrastructure": 6,
+    "bedrooms": 8,
+    "units_per_building": 4,
+    "accessory_location": 1,
+    "accessory_size": 4,
+    "mobile_home": 1,
+    "units_per_development": 2,
+    "development_area": 2
+  },
+  "fields": {
+    "slice_id": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "jurisdiction": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "county": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "state": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "cbsa": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "lul_id": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "county_fips": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "state_fips": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "cbsa_fips": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "updated": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "acres": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "type": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "nonresidential_type": {
+      "present": 31,
+      "absent": 0,
+      "null": 9
+    },
+    "affordable_definition": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_district": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "elderly_district": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_treatment": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_minlotacres_min": {
+      "present": 31,
+      "absent": 0,
+      "null": 2
+    },
+    "family1_minlotacres_max": {
+      "present": 31,
+      "absent": 0,
+      "null": 2
+    },
+    "family1_minlotacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 7
+    },
+    "family1_frontsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 4
+    },
+    "family1_sidesetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 8
+    },
+    "family1_rearsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 8
+    },
+    "family1_maxlotcoverage_building": {
+      "present": 31,
+      "absent": 0,
+      "null": 6
+    },
+    "family1_maxlotcoverage_buildingimpervious": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family1_minparking": {
+      "present": 31,
+      "absent": 0,
+      "null": 4
+    },
+    "family1_maxstories": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family1_maxheightft": {
+      "present": 31,
+      "absent": 0,
+      "null": 2
+    },
+    "family1_floorarearatio": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family1_minunitsqft": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family1_minlotacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_frontsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_sidesetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_rearsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_maxlotcoverage_building_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_maxlotcoverage_buildingimpervious_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_minparking_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_maxstories_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_maxheightft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_floorarearatio_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family1_minunitsqft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_treatment": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_affordable_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "family2_elderly_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_minlotacres_min": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "family2_minlotacres_max": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "family2_minlotacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 13
+    },
+    "family2_maxunitsperacre": {
+      "present": 31,
+      "absent": 0,
+      "null": 13
+    },
+    "family2_frontsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 11
+    },
+    "family2_sidesetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family2_rearsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family2_maxlotcoverage_building": {
+      "present": 31,
+      "absent": 0,
+      "null": 9
+    },
+    "family2_maxlotcoverage_buildingimpervious": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family2_minparking_1br": {
+      "present": 31,
+      "absent": 0,
+      "null": 12
+    },
+    "family2_minparking_2br": {
+      "present": 31,
+      "absent": 0,
+      "null": 12
+    },
+    "family2_maxstories": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family2_maxheightft": {
+      "present": 31,
+      "absent": 0,
+      "null": 9
+    },
+    "family2_floorarearatio": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family2_minunitsqft": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family2_minlotacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_maxunitsperacre_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_frontsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_sidesetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_rearsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_maxlotcoverage_building_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_maxlotcoverage_buildingimpervious_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_minparking_1br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_minparking_2br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_maxstories_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_maxheightft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_floorarearatio_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family2_minunitsqft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_treatment": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_affordable_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family3_elderly_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_minlotacres_min": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family3_minlotacres_max": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family3_minlotacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 19
+    },
+    "family3_maxunitsperacre": {
+      "present": 31,
+      "absent": 0,
+      "null": 19
+    },
+    "family3_frontsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 14
+    },
+    "family3_sidesetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 18
+    },
+    "family3_rearsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 18
+    },
+    "family3_maxlotcoverage_building": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "family3_maxlotcoverage_buildingimpervious": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family3_minparking_1br": {
+      "present": 31,
+      "absent": 0,
+      "null": 17
+    },
+    "family3_minparking_2br": {
+      "present": 31,
+      "absent": 0,
+      "null": 17
+    },
+    "family3_water_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_transit_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxstories": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family3_maxheightft": {
+      "present": 31,
+      "absent": 0,
+      "null": 12
+    },
+    "family3_floorarearatio": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family3_minunitsqft": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family3_maxbedrooms": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family3_minlotacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxunitsperacre_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_frontsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_sidesetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_rearsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxlotcoverage_building_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxlotcoverage_buildingimpervious_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_minparking_1br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_minparking_2br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxstories_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxheightft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_floorarearatio_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_minunitsqft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family3_maxbedrooms_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_treatment": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_affordable_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family4_elderly_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_minlotacres_min": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family4_minlotacres_max": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family4_minlotacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 19
+    },
+    "family4_maxunitsperacre": {
+      "present": 31,
+      "absent": 0,
+      "null": 19
+    },
+    "family4_frontsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 14
+    },
+    "family4_sidesetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 18
+    },
+    "family4_rearsetbackft": {
+      "present": 31,
+      "absent": 0,
+      "null": 18
+    },
+    "family4_maxlotcoverage_building": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "family4_maxlotcoverage_buildingimpervious": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family4_minparking_1br": {
+      "present": 31,
+      "absent": 0,
+      "null": 17
+    },
+    "family4_minparking_2br": {
+      "present": 31,
+      "absent": 0,
+      "null": 17
+    },
+    "family4_water_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_transit_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxstories": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family4_maxheightft": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "family4_floorarearatio": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family4_minunitsqft": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family4_maxbedrooms": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family4_maxunitsperbldg": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "family4_minlotacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxunitsperacre_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_frontsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_sidesetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_rearsetbackft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxlotcoverage_building_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxlotcoverage_buildingimpervious_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_minparking_1br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_minparking_2br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxstories_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxheightft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_floorarearatio_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_minunitsqft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxbedrooms_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "family4_maxunitsperbldg_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_treatment": {
+      "present": 0,
+      "absent": 31,
+      "null": 0
+    },
+    "affordable_minlotacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_maxunitsperacre": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_minparking_1br": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_minparking_2br": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_water_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 29
+    },
+    "affordable_transit_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 29
+    },
+    "affordable_minunitsqft": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_maxbedrooms": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_maxunitsperbldg": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "affordable_minlotacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_maxunitsperacre_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_minparking_1br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_minparking_2br_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_minunitsqft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_maxbedrooms_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "affordable_maxunitsperbldg_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "accessory_treatment": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "accessory_family_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 26
+    },
+    "accessory_renter_prohibited": {
+      "present": 31,
+      "absent": 0,
+      "null": 26
+    },
+    "accessory_owner_required": {
+      "present": 31,
+      "absent": 0,
+      "null": 26
+    },
+    "accessory_elderly_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 26
+    },
+    "accessory_minlotacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 29
+    },
+    "accessory_minparking": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "accessory_primarystructure_only": {
+      "present": 31,
+      "absent": 0,
+      "null": 29
+    },
+    "accessory_maxpercent": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "accessory_maxsqft": {
+      "present": 31,
+      "absent": 0,
+      "null": 15
+    },
+    "accessory_maxbedrooms": {
+      "present": 31,
+      "absent": 0,
+      "null": 31
+    },
+    "accessory_minlotacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "accessory_minparking_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "accessory_maxpercent_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "accessory_maxsqft_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "accessory_maxbedrooms_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "plannedresidential_treatment": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "plannedresidential_mobilehome": {
+      "present": 31,
+      "absent": 0,
+      "null": 6
+    },
+    "plannedresidential_maxunitsperacre": {
+      "present": 31,
+      "absent": 0,
+      "null": 10
+    },
+    "plannedresidential_maxunits": {
+      "present": 31,
+      "absent": 0,
+      "null": 17
+    },
+    "plannedresidential_mindevacres": {
+      "present": 31,
+      "absent": 0,
+      "null": 7
+    },
+    "plannedresidential_maxunitsperacre_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "plannedresidential_maxunits_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    },
+    "plannedresidential_mindevacres_method": {
+      "present": 31,
+      "absent": 0,
+      "null": 0
+    }
+  },
+  "methodCounts": {
+    "direct_number": 397,
+    "estimation": 171,
+    "not_applicable": 1395,
+    "indeterminate": 145
+  },
+  "treatmentCounts": {
+    "family1_treatment": {
+      "hearing": 7,
+      "allowed": 22,
+      "prohibited": 2
+    },
+    "family2_treatment": {
+      "allowed": 17,
+      "prohibited": 10,
+      "hearing": 4
+    },
+    "family3_treatment": {
+      "allowed": 12,
+      "prohibited": 15,
+      "hearing": 4
+    },
+    "family4_treatment": {
+      "allowed": 12,
+      "prohibited": 15,
+      "hearing": 4
+    },
+    "accessory_treatment": {
+      "allowed": 22,
+      "nomention": 2,
+      "hearing": 2,
+      "prohibited": 5
+    },
+    "plannedresidential_treatment": {
+      "allowed": 19,
+      "hearing": 7,
+      "nomention": 5
+    }
+  },
+  "numericEvidence": {
+    "family1_minlotacres": {
+      "direct": 24,
+      "not_applicable": 7
+    },
+    "family1_frontsetbackft": {
+      "estimated": 23,
+      "direct": 4,
+      "not_applicable": 4
+    },
+    "family1_sidesetbackft": {
+      "estimated": 5,
+      "direct": 18,
+      "not_applicable": 8
+    },
+    "family1_rearsetbackft": {
+      "estimated": 4,
+      "direct": 19,
+      "not_applicable": 8
+    },
+    "family1_maxlotcoverage_building": {
+      "direct": 11,
+      "estimated": 9,
+      "indeterminate": 5,
+      "not_applicable": 6
+    },
+    "family1_maxlotcoverage_buildingimpervious": {
+      "not_applicable": 31
+    },
+    "family1_minparking": {
+      "indeterminate": 8,
+      "estimated": 10,
+      "direct": 9,
+      "not_applicable": 4
+    },
+    "family1_maxstories": {
+      "not_applicable": 31
+    },
+    "family1_maxheightft": {
+      "direct": 14,
+      "estimated": 15,
+      "not_applicable": 2
+    },
+    "family1_floorarearatio": {
+      "not_applicable": 31
+    },
+    "family1_minunitsqft": {
+      "not_applicable": 31
+    },
+    "family2_minlotacres": {
+      "direct": 18,
+      "not_applicable": 13
+    },
+    "family2_maxunitsperacre": {
+      "estimated": 4,
+      "direct": 14,
+      "not_applicable": 13
+    },
+    "family2_frontsetbackft": {
+      "estimated": 16,
+      "direct": 4,
+      "not_applicable": 11
+    },
+    "family2_sidesetbackft": {
+      "estimated": 5,
+      "direct": 11,
+      "not_applicable": 15
+    },
+    "family2_rearsetbackft": {
+      "estimated": 4,
+      "direct": 12,
+      "not_applicable": 15
+    },
+    "family2_maxlotcoverage_building": {
+      "direct": 8,
+      "estimated": 6,
+      "indeterminate": 8,
+      "not_applicable": 9
+    },
+    "family2_maxlotcoverage_buildingimpervious": {
+      "not_applicable": 31
+    },
+    "family2_minparking_1br": {
+      "indeterminate": 19,
+      "not_applicable": 12
+    },
+    "family2_minparking_2br": {
+      "indeterminate": 19,
+      "not_applicable": 12
+    },
+    "family2_maxstories": {
+      "not_applicable": 31
+    },
+    "family2_maxheightft": {
+      "direct": 15,
+      "estimated": 7,
+      "not_applicable": 9
+    },
+    "family2_floorarearatio": {
+      "not_applicable": 31
+    },
+    "family2_minunitsqft": {
+      "not_applicable": 31
+    },
+    "family3_minlotacres": {
+      "direct": 12,
+      "not_applicable": 19
+    },
+    "family3_maxunitsperacre": {
+      "direct": 12,
+      "not_applicable": 19
+    },
+    "family3_frontsetbackft": {
+      "estimated": 13,
+      "direct": 4,
+      "not_applicable": 14
+    },
+    "family3_sidesetbackft": {
+      "estimated": 4,
+      "direct": 9,
+      "not_applicable": 18
+    },
+    "family3_rearsetbackft": {
+      "estimated": 4,
+      "direct": 9,
+      "not_applicable": 18
+    },
+    "family3_maxlotcoverage_building": {
+      "direct": 7,
+      "estimated": 4,
+      "indeterminate": 10,
+      "not_applicable": 10
+    },
+    "family3_maxlotcoverage_buildingimpervious": {
+      "not_applicable": 31
+    },
+    "family3_minparking_1br": {
+      "indeterminate": 14,
+      "not_applicable": 17
+    },
+    "family3_minparking_2br": {
+      "indeterminate": 14,
+      "not_applicable": 17
+    },
+    "family3_maxstories": {
+      "not_applicable": 31
+    },
+    "family3_maxheightft": {
+      "direct": 17,
+      "not_applicable": 12,
+      "estimated": 2
+    },
+    "family3_floorarearatio": {
+      "not_applicable": 31
+    },
+    "family3_minunitsqft": {
+      "not_applicable": 31
+    },
+    "family3_maxbedrooms": {
+      "not_applicable": 31
+    },
+    "family4_minlotacres": {
+      "direct": 12,
+      "not_applicable": 19
+    },
+    "family4_maxunitsperacre": {
+      "direct": 12,
+      "not_applicable": 19
+    },
+    "family4_frontsetbackft": {
+      "estimated": 13,
+      "direct": 4,
+      "not_applicable": 14
+    },
+    "family4_sidesetbackft": {
+      "estimated": 4,
+      "direct": 9,
+      "not_applicable": 18
+    },
+    "family4_rearsetbackft": {
+      "estimated": 4,
+      "direct": 9,
+      "not_applicable": 18
+    },
+    "family4_maxlotcoverage_building": {
+      "direct": 7,
+      "estimated": 4,
+      "indeterminate": 10,
+      "not_applicable": 10
+    },
+    "family4_maxlotcoverage_buildingimpervious": {
+      "not_applicable": 31
+    },
+    "family4_minparking_1br": {
+      "indeterminate": 14,
+      "not_applicable": 17
+    },
+    "family4_minparking_2br": {
+      "indeterminate": 14,
+      "not_applicable": 17
+    },
+    "family4_maxstories": {
+      "not_applicable": 31
+    },
+    "family4_maxheightft": {
+      "direct": 14,
+      "not_applicable": 15,
+      "estimated": 2
+    },
+    "family4_floorarearatio": {
+      "not_applicable": 31
+    },
+    "family4_minunitsqft": {
+      "not_applicable": 31
+    },
+    "family4_maxbedrooms": {
+      "not_applicable": 31
+    },
+    "family4_maxunitsperbldg": {
+      "not_applicable": 31
+    },
+    "affordable_minlotacres": {
+      "not_applicable": 31
+    },
+    "affordable_maxunitsperacre": {
+      "not_applicable": 31
+    },
+    "affordable_minparking_1br": {
+      "not_applicable": 31
+    },
+    "affordable_minparking_2br": {
+      "not_applicable": 31
+    },
+    "affordable_minunitsqft": {
+      "not_applicable": 31
+    },
+    "affordable_maxbedrooms": {
+      "not_applicable": 31
+    },
+    "affordable_maxunitsperbldg": {
+      "not_applicable": 31
+    },
+    "accessory_minlotacres": {
+      "not_applicable": 29,
+      "direct": 2
+    },
+    "accessory_minparking": {
+      "indeterminate": 5,
+      "direct": 16,
+      "not_applicable": 10
+    },
+    "accessory_maxpercent": {
+      "not_applicable": 31
+    },
+    "accessory_maxsqft": {
+      "not_applicable": 15,
+      "direct": 16
+    },
+    "accessory_maxbedrooms": {
+      "not_applicable": 31
+    },
+    "plannedresidential_maxunitsperacre": {
+      "direct": 21,
+      "not_applicable": 10
+    },
+    "plannedresidential_maxunits": {
+      "not_applicable": 17,
+      "direct": 14
+    },
+    "plannedresidential_mindevacres": {
+      "direct": 10,
+      "estimated": 9,
+      "indeterminate": 5,
+      "not_applicable": 7
+    }
+  },
+  "family1DimensionalScreen": {
+    "fields": [
+      "family1_frontsetbackft",
+      "family1_sidesetbackft",
+      "family1_rearsetbackft",
+      "family1_maxheightft"
+    ],
+    "directDimensions": 0,
+    "allowedWithDirectDimensions": 0,
+    "limitation": "Even a match needs parcel boundaries, classified edges, applicable source rules and other constraints before envelope generation."
+  }
+}
