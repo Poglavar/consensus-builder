@@ -1325,9 +1325,10 @@ async function showAgentDialog(agentId, options = {}) {
     const walletState = window.walletManager ? window.walletManager.getState() : null;
     const walletConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
     const walletAccounts = walletConnected ? (walletState.accounts || []) : [];
-    const ownedParcels = getAgentOwnedParcels(agentId, { includePersistent: walletConnected, includeTransient: true });
+    const parcelScope = { includeTransient: isUserAgent };
+    const ownedParcels = getAgentOwnedParcels(agentId, parcelScope);
     const portfolioBasis = getPortfolioValuationBasis();
-    const parcelDetails = getAgentParcelDetails(agentId);
+    const parcelDetails = getAgentParcelDetails(agentId, parcelScope);
     const cachedLists = getAgentDialogCache(agentId);
     let portfolioValue = null;
     const createdProposals = agent.proposalsCreated || [];
@@ -1345,7 +1346,7 @@ async function showAgentDialog(agentId, options = {}) {
 
     // Prefer cached on-chain data when available so lists don't rebuild on every open
     const cacheMatchesChain = cachedLists && cachedLists.chainId && cachedLists.chainId === currentChainId;
-    const usableCache = cacheMatchesChain ? cachedLists : null;
+    const usableCache = isUserAgent && cacheMatchesChain ? cachedLists : null;
 
     const initialParcels = usableCache && Array.isArray(usableCache.parcels) && usableCache.parcels.length
         ? cachedLists.parcels
@@ -1378,8 +1379,14 @@ async function showAgentDialog(agentId, options = {}) {
     const labelPendingAmount = translateText('agentDialog.pendingAmount', 'Pending Amount');
     const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
     const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
-    const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Proposals Accepted ({{count}})', { count: filteredAccepted.length });
-    const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Owned Parcels ({{count}})', { count: initialParcels.length });
+    const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Recorded acceptances ({{count}})', { count: filteredAccepted.length });
+    const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Linked parcels ({{count}})', { count: initialParcels.length });
+    const parcelBasisKey = isUserAgent ? 'agentDialog.walletParcelsBasis' : 'agentDialog.localParcelsBasis';
+    const parcelBasisLabel = translateText(parcelBasisKey, isUserAgent
+        ? 'Local model assignments and parcel NFTs observed in the connected wallet; these do not establish registered land ownership.'
+        : 'Parcels assigned to this agent in the local model.');
+    const acceptanceBasisLabel = translateText('agentDialog.acceptanceBasis',
+        'Local consent records and observed on-chain acceptances; these do not by themselves establish execution or payment.');
     const labelAgentLog = translateText('agentDialog.agentLog', 'Agent Log');
     const labelUser = translateText('agentDialog.userLabel', 'You');
     const labelLogout = translateText('agentDialog.logoutButton', 'Log Out');
@@ -1393,6 +1400,7 @@ async function showAgentDialog(agentId, options = {}) {
     const modal = document.createElement('div');
     modal.className = 'cb-dialog cb-dialog--lg agent-dialog-modal';
     modal.dataset.portfolioUsdPerEth = String(portfolioBasis.usdPerEth);
+    modal.dataset.agentId = agent.id;
     if (readOnly) {
         modal.classList.add('agent-dialog-readonly');
     }
@@ -1467,10 +1475,12 @@ async function showAgentDialog(agentId, options = {}) {
                 </div>
                 <div class="info-section">
                         <h4 data-i18n-key="agentDialog.proposalsAccepted" data-i18n-params='${JSON.stringify({ count: filteredAccepted.length })}'>${labelProposalsAccepted}</h4>
+                    <p class="stat-label" data-i18n-key="agentDialog.acceptanceBasis">${acceptanceBasisLabel}</p>
                     <div class="parcels-list" data-list-type="accepted"></div>
                 </div>
                 <div class="info-section">
                         <h4 data-i18n-key="agentDialog.ownedParcels" data-i18n-params='${JSON.stringify({ count: initialParcels.length })}'>${labelOwnedParcels}</h4>
+                    <p class="stat-label" data-agent-parcels-basis data-i18n-key="${parcelBasisKey}">${parcelBasisLabel}</p>
                     <div class="parcels-list" data-list-type="parcels"></div>
                 </div>
                 <div class="info-section">
@@ -1972,6 +1982,10 @@ function setSectionCount(sectionType, count, fallbackLabel = '') {
  * Load on-chain data for agent modal and merge into UI
  */
 async function loadAgentChainData(agent, isUserAgent) {
+    // The loaders below observe the connected wallet, never another agent's wallet.
+    if (!isUserAgent) return;
+    const targetModal = document.querySelector('.agent-dialog-modal');
+    if (!targetModal || targetModal.dataset.agentId !== agent.id) return;
     const solanaWalletManager = window.solanaWalletManager;
     const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function'
         ? solanaWalletManager.getState()
@@ -2011,6 +2025,12 @@ async function loadAgentChainData(agent, isUserAgent) {
     handleAgentDialogChainChange(normalizedChainId);
     pruneAgentDialogListDataForChain(normalizedChainId);
 
+    if (!agentDialogListData) {
+        ensureAgentDialogListState(agent.id, [], [], [], []);
+    }
+    const targetList = agentDialogListData;
+    const isCurrentProfile = () => targetModal.isConnected && agentDialogListData === targetList;
+
     const cache = getAgentDialogCache(agent.id);
     const cacheFresh = cache
         && cache.chainId === normalizedChainId
@@ -2020,9 +2040,9 @@ async function loadAgentChainData(agent, isUserAgent) {
 
     const cacheKey = `${agent.id}:${normalizedChainId}:${walletAddress}`;
     const existingFetch = agentDialogFetchPromises.get(cacheKey);
-    if (existingFetch) {
+    if (existingFetch && existingFetch.list === targetList) {
         console.log('[AgentDialog] Reusing in-flight chain fetch', { cacheKey });
-        return existingFetch;
+        return existingFetch.promise;
     }
     if (cacheFresh) {
         console.log('[AgentDialog] Cache still fresh; skipping chain refetch', { cacheKey });
@@ -2059,15 +2079,12 @@ async function loadAgentChainData(agent, isUserAgent) {
     } catch (err) {
         console.warn('Failed to resolve contract addresses', err);
     }
+    if (!isCurrentProfile()) return;
     if (!parcelAddress && !proposalAddress) {
         console.warn('Missing contract addresses for chain', chainId);
         return;
     }
     console.log('[AgentDialog] Resolved addresses', { parcelAddress, proposalAddress, useSolana });
-
-    if (!agentDialogListData) {
-        ensureAgentDialogListState(agent.id, [], [], [], []);
-    }
 
     const hasExistingListData = agentDialogListData && (
         (agentDialogListData.parcels && agentDialogListData.parcels.data.length) ||
@@ -2115,6 +2132,8 @@ async function loadAgentChainData(agent, isUserAgent) {
                         : Promise.resolve([])
                 ]);
             }
+
+            if (!isCurrentProfile()) return;
 
             const pendingProposals = [];
             const acceptedProposals = [];
@@ -2181,7 +2200,7 @@ async function loadAgentChainData(agent, isUserAgent) {
             renderFirstPageForList('parcels');
             renderFirstPageForList('created');
             if (agentDialogListData && agentDialogListData.parcels) {
-                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Owned Parcels');
+                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Linked parcels');
             }
             if (agentDialogListData && agentDialogListData.created) {
                 setSectionCount('created', agentDialogListData.created.data.length, 'Proposals Created');
@@ -2193,7 +2212,8 @@ async function loadAgentChainData(agent, isUserAgent) {
                     const ownedNow = getAgentOwnedParcels(agent.id);
                     const displayedBasis = document.querySelector('.agent-dialog-modal')?.dataset.portfolioUsdPerEth;
                     const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true, usdPerEth: Number(displayedBasis) });
-                    const modal = document.querySelector('.agent-dialog-modal');
+                    if (!isCurrentProfile()) return;
+                    const modal = targetModal;
                     if (modal) {
                         const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
                         const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
@@ -2292,6 +2312,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                 await scanPerParcel();
             }
 
+            if (!isCurrentProfile()) return;
             const uniqPending = uniq([...existingPending, ...pendingProposals]);
             const uniqAccepted = uniq([...existingAccepted, ...acceptedProposals]);
 
@@ -2342,6 +2363,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                 } else if (allProposalIds.length > 0 && window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsBatch === 'function') {
                     try {
                         const batch = await window.ChainDataLoader.getProposalsBatch(chainId, proposalAddress, allProposalIds);
+                        if (!isCurrentProfile()) return;
                         const byId = new Map(batch.map(p => [String(p.proposalId), p]));
                         allProposalIds.forEach(pid => {
                             const acceptanceInfo = proposalAcceptanceMap.get(pid);
@@ -2358,6 +2380,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                 }
             }
 
+            if (!isCurrentProfile()) return;
             acceptedAdded = mergeAgentDialogListData('accepted', uniqAccepted);
             pendingAdded = isUserAgent ? mergeAgentDialogListData('pending', uniqPending) : false;
 
@@ -2369,13 +2392,13 @@ async function loadAgentChainData(agent, isUserAgent) {
 
             // Update header counts
             if (agentDialogListData && agentDialogListData.parcels) {
-                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Owned Parcels');
+                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Linked parcels');
             }
             if (agentDialogListData && agentDialogListData.created) {
                 setSectionCount('created', agentDialogListData.created.data.length, 'Proposals Created');
             }
             if (agentDialogListData && agentDialogListData.accepted) {
-                setSectionCount('accepted', agentDialogListData.accepted.data.length, 'Proposals Accepted');
+                setSectionCount('accepted', agentDialogListData.accepted.data.length, 'Recorded acceptances');
             }
             if (isUserAgent) {
                 updatePendingProposalsCount(agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data.length : 0);
@@ -2398,6 +2421,7 @@ async function loadAgentChainData(agent, isUserAgent) {
             }
         } catch (err) {
             console.warn('[AgentDialog] Failed to load on-chain data', err);
+            if (!isCurrentProfile()) return;
             const errMsg = 'Could not connect to chain';
             setListError('parcels', errMsg);
             setListError('created', errMsg);
@@ -2409,13 +2433,15 @@ async function loadAgentChainData(agent, isUserAgent) {
         }
     })();
 
-    agentDialogFetchPromises.set(cacheKey, fetchPromise);
+    agentDialogFetchPromises.set(cacheKey, { list: targetList, promise: fetchPromise });
     try {
         await fetchPromise;
     } catch (error) {
         console.warn('Failed to load chain data for agent modal', error);
     } finally {
-        agentDialogFetchPromises.delete(cacheKey);
+        if (agentDialogFetchPromises.get(cacheKey)?.promise === fetchPromise) {
+            agentDialogFetchPromises.delete(cacheKey);
+        }
     }
 }
 
@@ -3060,8 +3086,8 @@ function getParcelProposalCount(parcelId) {
  * @param {string} agentId - The agent ID
  * @returns {Array} - Array of parcel objects with proposal counts
  */
-function getAgentParcelDetails(agentId) {
-    const ownedParcels = getAgentOwnedParcels(agentId);
+function getAgentParcelDetails(agentId, options = {}) {
+    const ownedParcels = getAgentOwnedParcels(agentId, options);
 
     const parcelDetails = ownedParcels.map(parcelId => {
         const proposalCount = getParcelProposalCount(parcelId);

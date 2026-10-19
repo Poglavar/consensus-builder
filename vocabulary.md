@@ -478,6 +478,21 @@ signature, timestamp or chain lifecycle is created by refreshing the display.
 [labels](frontend/js/proposals/approval-text.js): `consentLabels`,
 [list metrics](frontend/js/proposals/geometry.js): `computeProposalMetrics`.
 
+### Agent profile evidence
+
+“Linked parcels” combines browser model assignments with observed parcel NFTs only for the
+current user's profile. Other agents show their local model assignments; opening their profile
+never queries the viewer's wallet as their own. Wallet results apply only to the dialog/list
+instance that requested them, so a late response cannot populate a different profile. These
+links do not establish registered land ownership. Model assignments remain available to the
+valuation without a connected wallet. The transient chain cache and account-change handling
+still require a separate audit of observation freshness and scope.
+
+“Recorded acceptances” combines local consent records with chain-observed acceptances. This
+activity list is not the current-terms consent tally and establishes neither execution nor
+payment. Per-entry evidence and qualified proposal references remain audit work.
+[Profile rendering and connected-wallet loader](frontend/js/agents.js).
+
 ### Modeled land value and total
 
 The agent dialog's land estimate uses USD 200 per m² and an ETH/USD conversion estimate (default
