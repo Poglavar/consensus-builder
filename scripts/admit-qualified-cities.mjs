@@ -14,7 +14,7 @@
 //
 // Usage: node scripts/admit-qualified-cities.mjs --state <qualification state dir> [--state ...]
 //          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--outcomes <file>]
-//          [--country-config <json>] [--switch] [--apply]
+//          [--country-config <json>] [--switch] [--plan-output <json>] [--apply]
 // Without --apply nothing is written; the plan and any refusal are printed.
 
 import fs from 'node:fs';
@@ -63,7 +63,7 @@ const writeJson = (rel, value, indent = 2) => fs.writeFileSync(path.join(REPO, r
 
 function parseArgs(argv) {
     const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null, switch: false,
-        outcomes: null, countryConfig: null };
+        outcomes: null, countryConfig: null, planOutput: null };
     for (let i = 0; i < argv.length; i++) {
         const flag = argv[i];
         if (flag === '--state') args.states.push(path.resolve(argv[++i]));
@@ -72,6 +72,7 @@ function parseArgs(argv) {
         else if (flag === '--codes') args.codes = new Set(argv[++i].split(','));
         else if (flag === '--outcomes') args.outcomes = path.resolve(argv[++i]);
         else if (flag === '--country-config') args.countryConfig = path.resolve(argv[++i]);
+        else if (flag === '--plan-output') args.planOutput = path.resolve(argv[++i]);
         else if (flag === '--apply') args.apply = true;
         else if (flag === '--switch') args.switch = true;
         else if (flag === '--help') args.help = true;
@@ -327,6 +328,35 @@ export function verifyAdmissionEvidence(evidence, catalogSource) {
         checks, initialQualificationReview: initialReview, warnings: initialReview.followUp, producerInitialReview };
 }
 
+export function buildAdmissionPlanSummary(plan, refused, requestedCodes, outcomes, live, release,
+    plannedAtUtc = new Date().toISOString()) {
+    const requested = requestedCodes === null ? null : [...requestedCodes].map(String);
+    const accepted = plan.map(item => ({
+        cityCode: String(item.code), appCityId: item.appCityId, cityName: item.name,
+        countryCode: item.countryCode, sourceId: item.descriptor?.id || item.catalogSource?.id,
+        candidateSha256: item.qualification?.candidateSha256,
+        cacheSha256: item.qualification?.cacheSha256,
+        ...(item.qualificationSha256 ? { qualificationSha256: item.qualificationSha256 } : {}),
+        initialQualificationReview: sanitize(item.initialQualificationReview)
+    }));
+    const acceptedCodes = new Set(accepted.map(item => item.cityCode));
+    const refusedCodes = new Set(refused.map(item => String(item.code)));
+    const skipped = [];
+    for (const cityCode of requested || []) {
+        if (acceptedCodes.has(cityCode) || refusedCodes.has(cityCode)) continue;
+        const outcome = outcomes instanceof Map ? outcomes.get(cityCode) : outcomes?.[cityCode];
+        const reason = live.has(cityCode) ? 'city is already live or previously admitted'
+            : !outcome ? 'no qualification outcome is recorded in the selected outcomes'
+                : outcome.outcome !== 'qualified' ? `latest qualification outcome is ${outcome.outcome}`
+                    : 'qualified outcome did not produce an admission candidate in the final plan';
+        skipped.push({ cityCode, reason });
+    }
+    return {
+        schemaVersion: 1, release, plannedAtUtc, requestedCodes: requested,
+        accepted, refused: sanitize(refused.map(({ code, name, reason }) => ({ code: String(code), name, reason }))), skipped
+    };
+}
+
 function slug(name) {
     return name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ß/g, 'ss').replace(/ł/gi, 'l')
         .toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
@@ -466,6 +496,7 @@ async function main() {
         const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${selectedSource.stateCode || code})` : '';
         plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource: selectedSource,
             activationDecision: activation.activation, countryCode, currency, qualifier,
+            qualificationSha256: sha256(fs.readFileSync(ev.qualification)),
             name: outcome.cityName, label: `${outcome.cityName}${qualifier}, ${countryNames.en[countryCode]}`,
             center: [point[1], point[0]], metricSrid: Number(String(metricCrs).split(':')[1]),
             population2025: w?.pop ?? null, population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
@@ -489,6 +520,7 @@ async function main() {
             const point = checked.candidate.city.point; // [longitude, latitude]
             plan.push({ code, appCityId: config.id, switchedFrom: config.sourceId, outcome: { cityName: name }, evidence: ev, ...checked,
                 catalogSource, countryCode, qualifier: '', name, label: null, center: [config.lat, config.lon], wupPoint: [point[1], point[0]],
+                qualificationSha256: sha256(fs.readFileSync(ev.qualification)),
                 metricSrid: Number(String(metricCrs).split(':')[1]), population2025: wup.get(code)?.['2025']?.pop ?? null,
                 population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
         }
@@ -523,6 +555,13 @@ async function main() {
     for (const item of plan) bySource[item.descriptor.id] = (bySource[item.descriptor.id] || 0) + 1;
     log(`by source: ${JSON.stringify(bySource)}`);
     for (const r of refused) log(`refused ${r.code} ${r.name}: ${r.reason}`);
+
+    if (args.planOutput) {
+        const summary = buildAdmissionPlanSummary(plan, refused, args.codes, outcomes, live, args.release);
+        fs.mkdirSync(path.dirname(args.planOutput), { recursive: true });
+        fs.writeFileSync(args.planOutput, `${JSON.stringify(summary, null, 2)}\n`);
+        log(`plan details written: ${args.planOutput}`);
+    }
 
     if (!args.apply) { log('dry run: nothing written (pass --apply)'); return; }
     if (!plan.length) { log('no eligible cities; nothing written'); return; }
