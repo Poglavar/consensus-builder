@@ -72,6 +72,11 @@ export function planHousingSites(parcels, { turf, assumptions = {}, reform = {},
     const financeInputs = model.validateAssumptions(assumptions), proposed = validateReform(reform);
     const candidates = [], failures = [], excluded = [];
     for (const parcel of parcels) {
+        // Use the same road authority as the map. Residential zoning or a missing land-use
+        // polygon does not make an existing street available for a housing proposal.
+        if (['road', 'likely_road'].includes(parcel.roadClassification)) {
+            excluded.push({ parcelId: parcel.parcelId, reason: 'road-parcel' }); continue;
+        }
         if (!finite(parcel.buildingCount)) { failures.push({ parcelId: parcel.parcelId, error: 'Missing building inventory' }); continue; }
         if (parcel.buildingCount > 0) { excluded.push({ parcelId: parcel.parcelId, reason: 'existing-buildings' }); continue; }
         if (parcel.planning?.sensitiveUse) { excluded.push({ parcelId: parcel.parcelId, reason: 'sensitive-land-use' }); continue; }

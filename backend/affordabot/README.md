@@ -38,6 +38,9 @@ this feature does not install a schedule or enable background jobs.
 ## Data and interpretation
 
 * Parcels: `public.parcel`, with immutable composed cadastral IDs and source `date_added`.
+* Roads: the shared `public.road_parcel_classification` excludes both `road` and
+  `likely_road` parcels before generating massing. This preserves the map's classification
+  and manual overrides, rather than inferring roads from parcel shape or zoning gaps.
 * Buildings: any mapped `public.gdi_building_footprint` intersection over 5 m² excludes a
   site, including buildings straddling a cadastral boundary.
 * Planning: the 2025 `public.planned_land_use` (`razina_plana = 'GUP'`) and
@@ -140,3 +143,18 @@ A real bounded CLI run and the live review desk each returned eight research lea
 100 parcels with no processing failures. Desktop and 375-pixel mobile screens were
 inspected in a dedicated headed Chrome. Tests also verify that an edited zero land cost
 and a deliberately unknown land cost survive export and draft recovery correctly.
+
+### Street-parcel regression
+
+The initial eight-lead sample included seven parcels already classified as roads by the
+shared road materialized view. The scanner now reads that classification and the planner
+excludes road and likely-road inputs before generating any housing geometry. Ordinary
+unclassified plots remain eligible; road proximity alone is not an exclusion. The focused
+planner regression was confirmed red on the previous implementation before the fix.
+
+Street-fix validation: the planner file first ran 16 headless unit tests with five expected
+regression failures; after the fix, the planner and API files passed all 21 headless unit
+tests. No runs were stopped and no full suites were run. A new live scan excluded 25
+classified road parcels from the 100-parcel sample and returned one lead with zero
+processing failures. The restarted preview was checked in a dedicated headed Chrome;
+all seven former street leads disappeared and the remaining parcel was inspected on the map.

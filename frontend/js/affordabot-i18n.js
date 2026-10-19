@@ -134,10 +134,10 @@
         "Pronađi prilike →"
     ],
     "searchNote": [
-        "Up to 100 parcels per search, 1,200–20,000 m². Sites with mapped buildings, green space, water, sports, public-service or infrastructure uses are excluded.",
-        "Hasta 100 parcelas por búsqueda, de 1.200 a 20.000 m². Se excluyen edificios cartografiados, zonas verdes, agua, deporte, servicios públicos e infraestructura.",
-        "Do 100 parcela po pretrazi, 1.200–20.000 m². Isključuju se parcele s evidentiranim zgradama, zelenilom, vodama, sportom, javnom namenom ili infrastrukturom.",
-        "Do 100 čestica po pretrazi, 1.200–20.000 m². Isključuju se čestice s evidentiranim zgradama, zelenilom, vodama, sportom, javnom namjenom ili infrastrukturom."
+        "Up to 100 parcels per search, 1,200–20,000 m². Classified roads and likely roads, mapped buildings, green space, water, sports, public-service and infrastructure uses are excluded.",
+        "Hasta 100 parcelas por búsqueda, de 1.200 a 20.000 m². Se excluyen carreteras clasificadas o probables, edificios cartografiados, zonas verdes, agua, deporte, servicios públicos e infraestructura.",
+        "Do 100 parcela po pretrazi, 1.200–20.000 m². Isključuju se evidentirani i verovatni putevi, parcele sa zgradama, zelenilom, vodama, sportom, javnom namenom ili infrastrukturom.",
+        "Do 100 čestica po pretrazi, 1.200–20.000 m². Isključuju se evidentirane i vjerojatne ceste, čestice sa zgradama, zelenilom, vodama, sportom, javnom namjenom ili infrastrukturom."
     ],
     "start": [
         "Choose an area and run the first scan. Cost inputs are illustrative and editable.",

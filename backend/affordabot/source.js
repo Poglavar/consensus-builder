@@ -24,12 +24,13 @@ SELECT s.cestica_id,s.maticni_broj_ko,s.broj_cestice,s.ko_name,s.area_m2,
        s.date_added AS parcel_date_added,
        ST_AsGeoJSON(ST_Transform(s.geom,4326))::json AS geometry,
        ST_X(ST_Transform(s.anchor,4326)) AS lng,ST_Y(ST_Transform(s.anchor,4326)) AS lat,
-       b.building_count,scope.sensitive_use,
+       b.building_count,scope.sensitive_use,road.classification AS road_classification,
        lu.oznaka AS land_use_mark,lu.namjena AS land_use_name,lu.updated_at AS land_use_updated_at,
        r.rule_short_name,r.rule_id,r.variables,r.updated_at AS rule_updated_at,
        f.id AS feed_id,f.fetched_at AS feed_fetched_at,
        stop.stop_id,stop.stop_name,stop.stop_lon,stop.stop_lat,stop.distance_m
 FROM sized s
+LEFT JOIN public.road_parcel_classification road ON road.cestica_id=s.cestica_id
 LEFT JOIN LATERAL (
     SELECT count(*)::int AS building_count FROM public.gdi_building_footprint b
     WHERE b.geom && s.geom AND ST_Intersects(b.geom,s.geom)
@@ -83,6 +84,7 @@ export function siteFromRow(row) {
         areaM2: numberOrNull(row.area_m2), geometry: row.geometry,
         centroid: { lng: numberOrNull(row.lng), lat: numberOrNull(row.lat) },
         buildingCount: numberOrNull(row.building_count),
+        roadClassification: row.road_classification ?? null,
         planning: {
             vintage: '2025', sampling: 'parcel-point-on-surface', housingUse,
             sensitiveUse: row.sensitive_use === true || (!!mark && /^(Z|R|V|Š|IS|D)/.test(mark)),
@@ -104,7 +106,7 @@ export function siteFromRow(row) {
                 lng: numberOrNull(row.stop_lon), lat: numberOrNull(row.stop_lat), distanceM: numberOrNull(row.distance_m) } : null
         },
         source: { parcelDateAdded: row.parcel_date_added ?? null, cadastre: 'public.parcel',
-            buildings: 'public.gdi_building_footprint', planning: '2025-plan-extract', transit: 'zet.stops / zet.gtfs_feeds' }
+            buildings: 'public.gdi_building_footprint', roads: 'public.road_parcel_classification', planning: '2025-plan-extract', transit: 'zet.stops / zet.gtfs_feeds' }
     };
 }
 export const scanDefaults = Object.freeze({ bbox: [15.93,45.78,15.97,45.81], minAreaM2: 1200, maxAreaM2: 20000, sampleLimit: 100, limit: 10 });

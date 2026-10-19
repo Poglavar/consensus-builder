@@ -34,6 +34,17 @@ describe('housing alternatives',()=>{
         const [candidate]=planHousingSites([site({planning:{housingUse:false,landUse:{mark:'K2'},rule:null}})],options).candidates;
         expect(candidate.currentHomes).toBe(0);expect(candidate.changes).toContainEqual({field:'housingUse',from:'K2',to:'residential-or-mixed'});
     });
+    it.each(['road','likely_road'])('never generates housing on a %s parcel, even with residential zoning',classification=>{
+        const result=planHousingSites([site({parcelId:'HR-335614-190',roadClassification:classification})],options);
+        expect(result.candidates).toEqual([]);
+        expect(result.excluded).toEqual([{parcelId:'HR-335614-190',reason:'road-parcel'}]);
+        expect(result.failures).toEqual([]);
+    });
+    it('keeps an unclassified plot eligible rather than excluding it for being near a street',()=>{
+        const result=planHousingSites([site({roadClassification:null})],options);
+        expect(result.candidates).toHaveLength(1);
+        expect(result.excluded).toEqual([]);
+    });
     it('excludes mapped occupation and sensitive land rather than optimizing over them',()=>{
         const result=planHousingSites([site({buildingCount:1}),site({parcelId:'HR-1-3',planning:{sensitiveUse:true}})],options);
         expect(result.candidates).toEqual([]);expect(result.excluded.map(x=>x.reason)).toEqual(['existing-buildings','sensitive-land-use']);
@@ -57,6 +68,11 @@ describe('source mapping and bounded scope',()=>{
         expect(value.parcelId).toBe('HR-1-2/1');expect(value.planning.housingUse).toBe(true);expect(value.planning.rule.maxFloors).toBeNull();
         expect(value.accessibility.feedFetchedAt).toBe('2026-10-18T10:00:00Z');expect(value.source.parcelDateAdded).toBe('2026-10-01T10:00:00Z');
         expect(value.accessibility.nearestStop).toBeNull();
+    });
+    it.each(['road','likely_road',null])('carries the shared road classification %s into the planner input',classification=>{
+        const value=siteFromRow({maticni_broj_ko:1,broj_cestice:'2',road_classification:classification});
+        expect(value.roadClassification).toBe(classification);
+        expect(value.source.roads).toBe('public.road_parcel_classification');
     });
     it('refuses inverted, unbounded and unsupported-city scans',()=>{
         expect(()=>validateScan({bbox:[-180,-90,180,90]})).toThrow();expect(()=>validateScan({bbox:[15.97,45.81,15.93,45.78]})).toThrow();
