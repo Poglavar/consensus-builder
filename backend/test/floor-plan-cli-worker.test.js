@@ -16,7 +16,8 @@ function fakeDb(tasks = []) {
             return { rows: [{ locked: true }] };
         }
         if (sql.includes('pg_advisory_unlock')) { state.lock = false; return { rows: [] }; }
-        if (sql.startsWith('SELECT q.*')) return { rows: state.tasks.filter(task => task.status === 'queued').slice(0, params[1]) };
+        if (sql.startsWith('SELECT q.*')) return { rows: state.tasks.filter(task => task.status === 'queued'
+            && (!params[2] || params[2].includes(task.id))).slice(0, params[1]) };
         const match = sql.match(/UPDATE floor_plan\.(building_task|image_task|plan_task)/);
         if (match) {
             const task = state.tasks.find(item => item.id === params[0]);
@@ -127,5 +128,19 @@ describe('subscription CLI floor-plan worker', () => {
         expect(reader.complete).toHaveBeenCalledTimes(1);
         expect(db.state.tasks[1].status).toBe('queued');
         expect(db.state.lock).toBe(false);
+    });
+
+    it('pins the requested model and effort over a stage cheap tier and restricts retries to named tasks', async () => {
+        const id = 'a'.repeat(64), other = 'b'.repeat(64);
+        const db = fakeDb([makeTask({ id: other }), makeTask({ id })]);
+        const stage = adapter({ prepare: vi.fn(async (_db, task, llm) => ({
+            request: llm.batchRequest(task.id, { content: ['Read this drawing'], tier: 'cheap' }), evidence: {},
+        })) });
+        const reader = { complete: vi.fn(async () => ({ data: {}, usage: {}, costUsd: 0 })) };
+        await expect(run(db, stage, reader, { limit: 2, model: 'gpt-6.1-sol', effort: 'high', taskIds: [id] }))
+            .resolves.toMatchObject({ selected: 1, completed: 1, engine: 'codex', model: 'gpt-6.1-sol', effort: 'high' });
+        expect(reader.complete).toHaveBeenCalledWith(expect.objectContaining({ tier: 'cheap', model: 'gpt-6.1-sol', effort: 'high' }));
+        expect(db.state.tasks[1].result.cliAttempt).toMatchObject({ model: 'gpt-6.1-sol', effort: 'high' });
+        expect(db.state.tasks[0].result.cliAttempt).toBeUndefined();
     });
 });

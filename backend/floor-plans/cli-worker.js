@@ -6,7 +6,7 @@ import { locatedListingSql } from './building-location.js';
 
 const TABLES = { buildings: 'building_task', images: 'image_task', plans: 'plan_task' };
 
-export function cliTaskSelection(adapter) {
+export function cliTaskSelection(adapter, { taskIds = false } = {}) {
     const table = TABLES[adapter.stage];
     if (!table) throw new Error('Unknown CLI stage.');
     const currentOwner = adapter.stage === 'buildings'
@@ -23,28 +23,33 @@ export function cliTaskSelection(adapter) {
         : `EXISTS (SELECT 1 FROM floor_plan.listing l JOIN floor_plan.target t ON ${currentOwner}
              WHERE l.url=q.listing_url AND t.current_sha256=q.source_sha256 AND ${eligibleListingSql()})`;
     return `SELECT q.* FROM floor_plan.${table} q WHERE q.processor=$1 AND q.status='queued'
-        AND NOT (q.result ? 'paidResponse') AND ${ownership}
+        AND NOT (q.result ? 'paidResponse') AND ${ownership}${taskIds ? ' AND q.id=ANY($3::text[])' : ''}
         ORDER BY (q.result ? 'cliResponse') DESC,q.created_at,q.id LIMIT $2`;
 }
 
 export async function runCliStage(db, adapter, {
-    limit = 1, engine = 'claude', timeoutMs = 600_000, maxOutputTokens = DEFAULT_MAX_TOKENS,
+    limit = 1, engine = 'codex', model = null, effort, taskIds = null,
+    timeoutMs = 600_000, maxOutputTokens = DEFAULT_MAX_TOKENS,
     llm, log = value => console.log(JSON.stringify(value)),
 } = {}) {
     if (!Number.isInteger(limit) || limit < 1 || limit > 20) throw new Error('CLI limit must be 1..20.');
     if (!['claude', 'codex'].includes(engine)) throw new Error('CLI engine must be claude or codex.');
+    if (model !== null && (typeof model !== 'string' || !model.trim())) throw new Error('Invalid CLI model.');
+    if (effort !== undefined && !['medium', 'high'].includes(effort)) throw new Error('CLI effort must be medium or high.');
+    if (taskIds !== null && (!Array.isArray(taskIds) || !taskIds.length || taskIds.length > 20
+        || new Set(taskIds).size !== taskIds.length || taskIds.some(id => !/^[a-f0-9]{64}$/.test(id)))) throw new Error('Invalid CLI task IDs.');
     if (!Number.isFinite(timeoutMs) || timeoutMs < 1000 || timeoutMs > 1_800_000) throw new Error('Invalid CLI timeout.');
-    const table = TABLES[adapter.stage], selection = cliTaskSelection(adapter);
+    const table = TABLES[adapter.stage], selection = cliTaskSelection(adapter, { taskIds: taskIds !== null });
     const locked = (await db.query("SELECT pg_try_advisory_lock(hashtext('floor-plan-ai')) AS locked")).rows[0].locked;
     if (!locked) throw new Error('Another floor-plan recognition worker is running.');
-    const result = { mode: 'subscription-cli', engine, processor: adapter.processor, selected: 0,
+    const result = { mode: 'subscription-cli', engine, model, effort, processor: adapter.processor, selected: 0,
         completed: 0, local: 0, replayed: 0, deferred: 0, failed: 0, costUsd: 0 };
     const requestBuilder = { batchRequest: (id, options) => ({ id, options }) };
     const add = counters => { for (const [key, value] of Object.entries(counters || {})) {
         if (typeof value === 'number') result[key] = (result[key] || 0) + value;
     } };
     try {
-        const tasks = (await db.query(selection, [adapter.processor, limit])).rows;
+        const tasks = (await db.query(selection, [adapter.processor, limit, ...(taskIds === null ? [] : [taskIds])])).rows;
         result.selected = tasks.length;
         for (const task of tasks) {
             // A killed invocation may have consumed subscription usage. Keep that uncertainty visible.
@@ -62,13 +67,14 @@ export async function runCliStage(db, adapter, {
                     if (prepared.localResult) { add(prepared.localResult); result.local++; continue; }
                     if (prepared.request?.id !== task.id) throw new Error('CLI request identity mismatch.');
                     const evidence = { ...prepared.evidence, billing: { mode: 'subscription', engine },
-                        cliAttempt: { startedAt: new Date().toISOString(), engine } };
+                        cliAttempt: { startedAt: new Date().toISOString(), engine, model, effort } };
                     await db.query(`UPDATE floor_plan.${table} SET result=result||$2::jsonb,updated_at=now()
                         WHERE id=$1 AND status='queued'`, [task.id, JSON.stringify(evidence)]);
                     task.result = { ...task.result, ...evidence };
                     log({ task: task.id, phase: 'cli-started', ...result });
                     llm ||= createCliLlm({ engine, repo: 'consensus-builder', script: `floor-plan-cli-${adapter.processor}`, timeoutMs });
-                    const response = await llm.complete({ ...prepared.request.options, allowedTools: ['Read'] });
+                    const response = await llm.complete({ ...prepared.request.options,
+                        ...(model ? { model } : {}), ...(effort ? { effort } : {}), allowedTools: ['Read'] });
                     if (response.costUsd !== 0) throw new Error('Subscription CLI returned metered spend.');
                     item = { data: response.data, text: response.text, model: response.model, usage: response.usage,
                         equivalentUsd: response.equivalentUsd, costUsd: 0 };

@@ -53,17 +53,24 @@
     function mountApartment(host, apartment) {
         host.replaceChildren(); const view = el('div','viewer-canvas'); host.append(view);
         const actions = el('div','viewer-actions'), button=el('button','view-toggle');button.type='button';button.textContent='Prikaži u 3D';actions.append(button);host.append(actions);
-        let current=mountPlan(view,apartment), is3d=false, generation=0;
-        button.addEventListener('click',async()=>{
-            current.dispose(); const token=++generation;
-            view.replaceChildren();is3d=!is3d;button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
-            if(!is3d){current=mountPlan(view,apartment);return;}
+        let current=null, is3d=Boolean(apartment?.architecture), generation=0;
+        async function show3d(){
+            const token=++generation;
+            view.replaceChildren();
             if(!apartment?.architecture){const p=el('p','viewer-copy');p.textContent='3D rekonstrukcija nije dostupna za ovaj stan.';view.append(p);return;}
             const renderer=root.__floorPlanReviewRenderer, three=root.__threeFloorPlans, plans=root.__buildingFloorPlans;
             try { const dispose=await renderer.preview(view,THREE=>three.createLocalUnitGroup(THREE,apartment.architecture,plans),()=>token===generation);if(token!==generation){dispose?.();return;}current={dispose(){generation++;dispose?.();}}; }
             catch { if(token!==generation)return;const p=el('p','viewer-copy');p.textContent='3D prikaz nije dostupan u ovom pregledniku.';view.replaceChildren(p);current={dispose(){}}; }
+        }
+        function show2d(){current=mountPlan(view,apartment);}
+        button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
+        if(is3d)show3d();else show2d();
+        button.addEventListener('click',async()=>{
+            current?.dispose(); generation++;
+            is3d=!is3d;button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
+            if(is3d)await show3d();else show2d();
         });
-        return {dispose(){generation++;current.dispose();host.replaceChildren();}};
+        return {dispose(){generation++;current?.dispose();host.replaceChildren();}};
     }
     root.NovogradnjeViewer={mountPlan,mountApartment,mountEnvelope};
 })(window);
