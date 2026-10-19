@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 
 const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
+const sharedLinkCopies = createRequire(import.meta.url)('../../frontend/js/proposals/shared-link-copies.js');
 
 const source = readFileSync(
     new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url),
@@ -11,6 +12,9 @@ const source = readFileSync(
 );
 
 function loadSharedImportHelpers(overrides = {}) {
+    const browserWindow = overrides.window || {};
+    browserWindow.__proposalDisplayState ||= displayState;
+    browserWindow.SharedLinkCopies ||= sharedLinkCopies;
     const context = {
         console,
         prepareProposalForImport: proposal => structuredClone(proposal),
@@ -18,9 +22,9 @@ function loadSharedImportHelpers(overrides = {}) {
         ensureArrayOfStrings: value => Array.isArray(value) ? value.map(String) : [],
         isProposalCurrentlyApplied: proposal => proposal?.applied === true,
         setProposalApplied: (proposal, applied) => { proposal.applied = applied; },
-        window: { __proposalDisplayState: displayState },
         followServerLifecycle: async () => false,
-        ...overrides
+        ...overrides,
+        window: browserWindow
     };
     vm.createContext(context);
     vm.runInContext(
@@ -32,13 +36,13 @@ function loadSharedImportHelpers(overrides = {}) {
 
 describe('shared floor model refresh', () => {
     it('updates only derived buildings belonging to the applied source and requests one redraw', () => {
-        const local = { proposalId:'local',serverProposalId:'server',applied:true,geometry:{untouched:true} };
+        const local = { proposalId:'local',serverProposalId:'781',applied:true,geometry:{untouched:true} };
         const before=structuredClone(local),target={properties:{proposalId:'local'}},other={properties:{proposalId:'another'}};
         const plans={schema:'model'},sources=[{properties:{floorPlans:plans}}];
         const refresh=vi.fn(current=>({changed:1,buildings:current.map(b=>({...b,properties:{...b.properties,floorPlans:plans}}))}));
         const browser={proposedBuildings:[target,other],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
         const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser,CustomEvent:class{constructor(type){this.type=type;}}});
-        expect(refreshSharedFloorPlanModels([local],new Map([['server',{geometry:{buildings:sources}}]]))).toBe(1);
+        expect(refreshSharedFloorPlanModels([local],new Map([['781',{id:'781',geometry:{buildings:sources}}]]))).toBe(1);
         expect(refresh).toHaveBeenCalledExactlyOnceWith([target],sources);
         expect(browser.proposedBuildings[0].properties.floorPlans).toBe(plans);
         expect(browser.proposedBuildings[1]).toBe(other);
@@ -49,8 +53,8 @@ describe('shared floor model refresh', () => {
     it('leaves replacements, missing sources and unchanged models untouched', () => {
         const refresh=vi.fn(()=>({changed:0,buildings:[]})),browser={proposedBuildings:[],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
         const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser});
-        const remote=new Map([['server',{geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
-        expect(refreshSharedFloorPlanModels([{proposalId:'edit',serverProposalId:'server',replacementOfProposalId:'original'},{proposalId:'absent'},{proposalId:'same',serverProposalId:'server'}],remote)).toBe(0);
+        const remote=new Map([['782',{id:'782',geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
+        expect(refreshSharedFloorPlanModels([{proposalId:'edit',serverProposalId:'782',replacementOfProposalId:'original'},{proposalId:'absent'},{proposalId:'same',serverProposalId:'782'}],remote)).toBe(0);
         expect(refresh).toHaveBeenCalledOnce();expect(browser.dispatchEvent).not.toHaveBeenCalled();
     });
 });
@@ -124,6 +128,61 @@ describe('shared-plan focus selection', () => {
 });
 
 describe('shared-plan import boundary', () => {
+    it('does not mistake an unrelated same-named local record for the published row copy', async () => {
+        const unrelated = { proposalId: 'shared-building', applied: true, lifecycleStatus: 'Active' };
+        const proposalStorage = {
+            getProposal: vi.fn(() => unrelated),
+            getProposalByServerRowId: vi.fn(() => null),
+            importProposal: vi.fn(proposal => structuredClone(proposal)),
+            _indexProposal: vi.fn(),
+            save: vi.fn()
+        };
+        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage });
+
+        const result = await importAndApplySharedProposal({
+            proposalId: 'shared-building',
+            serverProposalId: '781',
+            goal: 'building',
+            cadastreParcelIds: ['HR-1'],
+            buildingProposal: {}
+        }, { skipDependencyFetch: true });
+
+        expect(result).toMatchObject({ applied: true, skipped: false, queued: true });
+        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781');
+        expect(proposalStorage.getProposal).not.toHaveBeenCalled();
+        expect(proposalStorage.importProposal).toHaveBeenCalledOnce();
+        expect(unrelated).toEqual({ proposalId: 'shared-building', applied: true, lifecycleStatus: 'Active' });
+    });
+
+    it('skips only the exact row-linked applied copy and returns its local key', async () => {
+        const localCopy = { proposalId: 'custom-local-key', serverProposalId: '781', applied: true };
+        const proposalStorage = {
+            getProposal: vi.fn(() => null),
+            getProposalByServerRowId: vi.fn(rowId => rowId === '781' ? localCopy : null),
+            importProposal: vi.fn(),
+            save: vi.fn()
+        };
+        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage });
+
+        const result = await importAndApplySharedProposal({
+            proposalId: 'shared-building',
+            serverProposalId: '781',
+            goal: 'building',
+            cadastreParcelIds: ['HR-1'],
+            buildingProposal: {}
+        }, { skipDependencyFetch: true });
+
+        expect(result).toEqual({
+            applied: false,
+            skipped: true,
+            proposalId: 'custom-local-key',
+            reason: 'Already applied'
+        });
+        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781');
+        expect(proposalStorage.getProposal).not.toHaveBeenCalled();
+        expect(proposalStorage.importProposal).not.toHaveBeenCalled();
+    });
+
     it('gives the browser frames for cached-member progress and the two final phases', async () => {
         let clock = 0;
         const actions = [];
@@ -407,13 +466,13 @@ describe('shared-plan import boundary', () => {
 
     it('refuses an externally-held ordinary member before replay without stopping its siblings', async () => {
         const applyProposal = vi.fn(async () => true);
-        const alreadyStanding = { proposalId: 'outside', goal: 'building', buildingProposal: {}, applied: true };
-        const planMate = { proposalId: 'already-applied-plan-mate', goal: 'building', buildingProposal: {}, applied: true };
+        const alreadyStanding = { proposalId: 'outside', serverProposalId: '781', goal: 'building', buildingProposal: {}, applied: true };
+        const planMate = { proposalId: '781', goal: 'building', buildingProposal: {}, applied: true };
         const records = new Map([
             ['clear', { proposalId: 'clear', goal: 'building', buildingProposal: {} }],
             ['held', { proposalId: 'held', goal: 'building', buildingProposal: {} }],
             ['outside', alreadyStanding],
-            ['already-applied-plan-mate', planMate]
+            ['781', planMate]
         ]);
         const validateSharedProposalGround = vi.fn(id => ({ ok: id !== 'held', blockers: id === 'held' ? [{}] : [] }));
         const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
@@ -426,7 +485,7 @@ describe('shared-plan import boundary', () => {
         });
 
         const result = await materializeQueuedSharedProposals(['clear', 'held'], {
-            planMemberIds: new Set(['already-applied-plan-mate'])
+            planMemberIds: new Set(['781'])
         });
 
         expect(result).toEqual({ appliedIds: ['clear'], failedIds: ['held'] });
@@ -438,7 +497,7 @@ describe('shared-plan import boundary', () => {
         });
         expect(validateSharedProposalGround).toHaveBeenCalledTimes(2);
         const membership = validateSharedProposalGround.mock.calls[0][1];
-        expect([...membership].sort()).toEqual(['already-applied-plan-mate', 'clear', 'held']);
+        expect([...membership].sort()).toEqual(['781', 'clear', 'held']);
         expect(validateSharedProposalGround.mock.calls[0][2], 'plan-mates were scanned as external holders')
             .toEqual([alreadyStanding]);
     });
@@ -646,6 +705,7 @@ describe('shared import of a cancelled proposal', () => {
         const imported = [];
         const proposalStorage = {
             getProposal: vi.fn(() => null),
+            getProposalByServerRowId: vi.fn(() => null),
             importProposal: vi.fn(proposal => { const stored = structuredClone(proposal); imported.push(stored); return stored; }),
             _indexProposal: vi.fn(),
             save: vi.fn()

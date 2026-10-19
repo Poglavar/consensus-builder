@@ -63,6 +63,21 @@ rather than retaining the former alias rules. [Storage](frontend/js/proposals/da
 [server list](frontend/js/proposals/list-ui.js). General proposal API/browser field names and other
 identifier-shaped lineage/share fields remain separate audit work.
 
+Shared publication URLs resolve numeric references only through a local record's explicit
+`serverProposalId`; authored URL references first require the API response's row ID. Local-key,
+chain-token and ancestry equality cannot satisfy the route's “already applied” check. Ambiguous
+row copies fail instead of selecting one. Import reuse, lifecycle reconciliation, floor-model
+refresh and map focus follow that exact copy. Materialization receives local record keys only,
+so an unrelated record's row number cannot make it a member of the shared composition.
+
+**2026-10-20 shared-link contract change:** a local fork no longer substitutes for its published
+source on reopening a source URL. The fork remains separate; the existing ground-holder gate
+refuses a conflicting source instead of removing unrelated applied work. Share the fork's own
+publication to identify it. This removes an ancestry-based alias without migrating old records;
+the unqualified stored lineage fields still require their own coordinated contract correction.
+[Publication-copy matching](frontend/js/proposals/shared-link-copies.js),
+[shared routes](frontend/js/proposals/sharing-routes.js).
+
 Mint confirmation takes a separate `localProposalId` for opening browser details and a complete
 `chainRef` for display. It labels the chain/network, contract/program and token/account separately;
 a bare token/account is never used as the browser navigation key. [Confirmation](frontend/js/proposals/chain.js),
